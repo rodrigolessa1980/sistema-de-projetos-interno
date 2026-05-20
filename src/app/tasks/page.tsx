@@ -9,7 +9,7 @@ import { useTaskStore, useProjectStore, useUserStore } from "@/stores";
 import { useAuth } from "@/hooks/use-auth";
 import { formatDate, ALL_STATUSES, getStatusLabel, cn } from "@/lib/utils";
 import { motion } from "framer-motion";
-import { ListTodo, Filter, Plus, Search, ChevronDown, Clock, AlertTriangle, Timer } from "lucide-react";
+import { ListTodo, Filter, Plus, Search, ChevronDown, Clock, AlertTriangle, Timer, Lock } from "lucide-react";
 import { useWorkSessionStore } from "@/stores/work-session-store";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
@@ -21,7 +21,7 @@ import type { TaskStatus } from "@/types";
 import { TaskCreateDialog } from "@/features/tasks/task-create-dialog";
 
 export default function TasksPage() {
-  const { tasks } = useTaskStore();
+  const { tasks, getBlockersForTask } = useTaskStore();
   const { projects } = useProjectStore();
   const { users } = useUserStore();
   const { user, isAdmin } = useAuth();
@@ -46,9 +46,9 @@ export default function TasksPage() {
   return (
     <AppLayout>
       <PageHeader
-        title="Tasks"
-        description={`${visibleTasks.length} task${visibleTasks.length !== 1 ? "s" : ""}`}
-        actions={isAdmin ? [{ label: "Nova Task", onClick: () => setIsCreateOpen(true) }] : undefined}
+        title="Tarefas"
+        description={`${visibleTasks.length} tarefa${visibleTasks.length !== 1 ? "s" : ""}`}
+        actions={isAdmin ? [{ label: "Nova Tarefa", onClick: () => setIsCreateOpen(true) }] : undefined}
       />
 
       <div className="p-6 space-y-4">
@@ -57,7 +57,7 @@ export default function TasksPage() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
             <Input
               value={search} onChange={(e) => setSearch(e.target.value)}
-              placeholder="Pesquisar tasks..."
+              placeholder="Pesquisar tarefas..."
               className="pl-9 bg-zinc-800/50 border-zinc-700/50 text-zinc-100 h-9"
             />
           </div>
@@ -88,16 +88,16 @@ export default function TasksPage() {
         {visibleTasks.length === 0 ? (
           <EmptyState
             icon={ListTodo}
-            title="Nenhuma task encontrada"
-            description="Tente ajustar os filtros ou crie uma nova task."
-            action={isAdmin ? { label: "Criar Task", onClick: () => setIsCreateOpen(true) } : undefined}
+            title="Nenhuma tarefa encontrada"
+            description="Tente ajustar os filtros ou crie uma nova tarefa."
+            action={isAdmin ? { label: "Criar Tarefa", onClick: () => setIsCreateOpen(true) } : undefined}
           />
         ) : (
           <div className="bg-zinc-900/60 border border-zinc-800/50 rounded-xl overflow-hidden">
             <table className="w-full">
               <thead>
                 <tr className="border-b border-zinc-800/50">
-                  <th className="text-left text-xs font-semibold text-zinc-500 px-4 py-3">Task</th>
+                  <th className="text-left text-xs font-semibold text-zinc-500 px-4 py-3">Tarefa</th>
                   <th className="text-left text-xs font-semibold text-zinc-500 px-4 py-3 hidden md:table-cell">Status</th>
                   <th className="text-left text-xs font-semibold text-zinc-500 px-4 py-3 hidden lg:table-cell">Projeto</th>
                   <th className="text-left text-xs font-semibold text-zinc-500 px-4 py-3 hidden lg:table-cell">Responsável</th>
@@ -132,9 +132,16 @@ export default function TasksPage() {
                             {isBeingWorked && (
                               <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse shrink-0" />
                             )}
-                            {task.status === "BLOQUEADA" && !isBeingWorked && (
-                              <AlertTriangle className="w-3.5 h-3.5 text-red-400 shrink-0" />
-                            )}
+                            {(() => {
+                              const blockers = getBlockersForTask(task.id);
+                              return blockers.length > 0 ? (
+                                <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-red-500/15 border border-red-500/25 text-[9px] font-semibold text-red-400 shrink-0">
+                                  <Lock className="w-2.5 h-2.5" />{blockers.length}
+                                </span>
+                              ) : task.status === "BLOQUEADA" && !isBeingWorked ? (
+                                <AlertTriangle className="w-3.5 h-3.5 text-red-400 shrink-0" />
+                              ) : null;
+                            })()}
                             <span className={cn(
                               "text-sm transition-colors line-clamp-1",
                               isBeingWorked

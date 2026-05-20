@@ -64,7 +64,7 @@ export default function EpicsPage() {
                           <Progress value={epic.progress} className="h-1.5 bg-zinc-800 mb-2" />
                           <div className="flex items-center justify-between text-xs text-zinc-500">
                             <span>{epic.progress}% concluído</span>
-                            <span>{epicTasks.length} tasks · {formatDate(epic.startDate)} – {formatDate(epic.endDate)}</span>
+                            <span>{epicTasks.length} tarefa{epicTasks.length !== 1 ? "s" : ""} · {formatDate(epic.startDate)} – {formatDate(epic.endDate)}</span>
                           </div>
                         </motion.div>
                       );

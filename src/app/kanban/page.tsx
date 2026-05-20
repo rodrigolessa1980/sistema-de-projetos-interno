@@ -11,7 +11,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { AlertTriangle, Clock, GripVertical, Plus } from "lucide-react";
+import { AlertTriangle, Clock, GripVertical, Plus, Lock } from "lucide-react";
+import { toast } from "sonner";
 import Link from "next/link";
 import type { TaskStatus, Task } from "@/types";
 import {
@@ -32,7 +33,7 @@ const KANBAN_STATUSES: TaskStatus[] = [
   "BACKLOG", "PLANEJADA", "EM_DESENVOLVIMENTO", "EM_REVISAO", "HOMOLOGACAO", "CONCLUIDA",
 ];
 
-/** Cronômetro inline leve — só renderiza quando a task está ativa */
+/** Cronômetro inline leve — só renderiza quando a tarefa está ativa */
 function ActiveElapsed({ taskId }: { taskId: string }) {
   const { getElapsedSeconds } = useWorkSessionStore();
   const [elapsed, setElapsed] = useState(getElapsedSeconds);
@@ -51,10 +52,12 @@ function ActiveElapsed({ taskId }: { taskId: string }) {
 
 function KanbanCard({ task, isDragging }: { task: Task; isDragging?: boolean }) {
   const { users } = useUserStore();
-  const { activeSession, getElapsedSeconds } = useWorkSessionStore();
+  const { activeSession } = useWorkSessionStore();
+  const { getBlockersForTask } = useTaskStore();
   const assignee = users.find((u) => u.id === task.assigneeId);
   const isOverdue = task.dueDate && new Date(task.dueDate) < new Date() && task.status !== "CONCLUIDA";
   const isBeingWorked = activeSession?.taskId === task.id;
+  const pendingBlockers = getBlockersForTask(task.id);
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging: isSortableDragging } = useSortable({ id: task.id });
   const style = {
@@ -87,8 +90,14 @@ function KanbanCard({ task, isDragging }: { task: Task; isDragging?: boolean }) 
       )}
 
       <div className="flex items-start justify-between gap-2 mb-2">
-        <div className="flex items-center gap-1.5">
-          {task.status === "BLOQUEADA" && <AlertTriangle className="w-3 h-3 text-red-400 shrink-0" />}
+        <div className="flex items-center gap-1.5 flex-wrap">
+          {pendingBlockers.length > 0 ? (
+            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-red-500/15 border border-red-500/25 text-[9px] font-semibold text-red-400">
+              <Lock className="w-2.5 h-2.5" /> {pendingBlockers.length} bloqueio{pendingBlockers.length > 1 ? "s" : ""}
+            </span>
+          ) : task.status === "BLOQUEADA" ? (
+            <AlertTriangle className="w-3 h-3 text-red-400 shrink-0" />
+          ) : null}
           <ComplexityBadge complexity={task.complexity} />
         </div>
         <GripVertical className="w-3.5 h-3.5 text-zinc-700 opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -169,8 +178,10 @@ function KanbanColumn({ status, tasks, onDrop }: { status: TaskStatus; tasks: Ta
   );
 }
 
+const BLOCKED_TRANSITIONS: TaskStatus[] = ["EM_DESENVOLVIMENTO", "EM_REVISAO", "HOMOLOGACAO", "CONCLUIDA"];
+
 export default function KanbanPage() {
-  const { tasks, updateTaskStatus, reorderTasks } = useTaskStore();
+  const { tasks, updateTaskStatus, reorderTasks, getBlockersForTask } = useTaskStore();
   const { projects } = useProjectStore();
   const { user, isAdmin } = useAuth();
   const updateStatusMutation = useUpdateTaskStatus();
@@ -213,11 +224,24 @@ export default function KanbanPage() {
     const targetStatus = (over.data.current?.sortable?.containerId ?? overTask?.status ?? activeTask.status) as TaskStatus;
 
     if (activeTask.status !== targetStatus) {
-      await updateStatusMutation.mutateAsync({
-        taskId: activeTask.id,
-        status: targetStatus,
-        userId: user?.id ?? "",
-      });
+      if (BLOCKED_TRANSITIONS.includes(targetStatus)) {
+        const blockers = getBlockersForTask(activeTask.id);
+        if (blockers.length > 0) {
+          const names = blockers.map((b) => `"${b.title}"`).join(", ");
+          toast.error(`Não é possível mover: bloqueada por ${names}`);
+          return;
+        }
+      }
+      try {
+        await updateStatusMutation.mutateAsync({
+          taskId: activeTask.id,
+          status: targetStatus,
+          userId: user?.id ?? "",
+        });
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : "Erro ao mover tarefa";
+        toast.error(message);
+      }
     }
   };
 
@@ -227,7 +251,7 @@ export default function KanbanPage() {
         <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-800/50">
           <div>
             <h1 className="text-lg font-bold text-zinc-100">Quadro Kanban</h1>
-            <p className="text-xs text-zinc-500">{visibleTasks.length} tasks</p>
+            <p className="text-xs text-zinc-500">{visibleTasks.length} {visibleTasks.length === 1 ? "tarefa" : "tarefas"}</p>
           </div>
           <div className="flex items-center gap-3">
             <Select value={projectFilter} onValueChange={setProjectFilter}>
@@ -244,7 +268,7 @@ export default function KanbanPage() {
                 onClick={() => setIsCreateOpen(true)}
                 className="flex items-center gap-1.5 px-3 py-1.5 bg-violet-600 hover:bg-violet-700 rounded-lg text-xs font-medium text-white transition-colors"
               >
-                <Plus className="w-3.5 h-3.5" /> Nova Task
+                <Plus className="w-3.5 h-3.5" /> Nova Tarefa
               </button>
             )}
           </div>

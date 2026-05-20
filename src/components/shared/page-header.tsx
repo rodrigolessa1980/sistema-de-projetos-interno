@@ -2,20 +2,25 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import type { LucideIcon } from "lucide-react";
 import { Plus } from "lucide-react";
+import type { ReactNode } from "react";
+
+type ActionItem = {
+  label: string;
+  onClick: () => void;
+  icon?: LucideIcon;
+  variant?: "default" | "outline" | "ghost";
+};
 
 interface PageHeaderProps {
   title: string;
   description?: string;
-  actions?: {
-    label: string;
-    onClick: () => void;
-    icon?: LucideIcon;
-    variant?: "default" | "outline" | "ghost";
-  }[];
-  children?: React.ReactNode;
+  actions?: ActionItem[] | ReactNode;
+  children?: ReactNode;
 }
 
 export function PageHeader({ title, description, actions, children }: PageHeaderProps) {
+  const isArray = Array.isArray(actions);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: -8 }}
@@ -28,21 +33,23 @@ export function PageHeader({ title, description, actions, children }: PageHeader
       </div>
       <div className="flex items-center gap-2">
         {children}
-        {actions?.map((action) => {
-          const Icon = action.icon ?? Plus;
-          return (
-            <Button
-              key={action.label}
-              onClick={action.onClick}
-              variant={action.variant ?? "default"}
-              size="sm"
-              className={action.variant ? undefined : "bg-violet-600 hover:bg-violet-700 text-white"}
-            >
-              <Icon className="w-4 h-4 mr-1.5" />
-              {action.label}
-            </Button>
-          );
-        })}
+        {isArray
+          ? (actions as ActionItem[]).map((action) => {
+              const Icon = action.icon ?? Plus;
+              return (
+                <Button
+                  key={action.label}
+                  onClick={action.onClick}
+                  variant={action.variant ?? "default"}
+                  size="sm"
+                  className={action.variant ? undefined : "bg-violet-600 hover:bg-violet-700 text-white"}
+                >
+                  <Icon className="w-4 h-4 mr-1.5" />
+                  {action.label}
+                </Button>
+              );
+            })
+          : actions}
       </div>
     </motion.div>
   );

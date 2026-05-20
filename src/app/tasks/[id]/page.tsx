@@ -10,7 +10,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   ChevronLeft, Clock, AlertTriangle, MessageSquare, CheckSquare,
   Square, Plus, Send, Calendar, User2, Layers, Timer, Activity,
+  Link2, Lock, CheckCircle2, ArrowRight, X,
 } from "lucide-react";
+import { ReassignPopover } from "@/components/shared/reassign-popover";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -30,10 +32,10 @@ import { AttachmentsPanel } from "@/features/tasks/attachments-panel";
 
 export default function TaskDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
-  const { getTaskById, getSubtasksByTask, getCommentsByTask, getTimeLogsByTask, addComment, toggleSubtask, addSubtask, getDependenciesByTask } = useTaskStore();
+  const { getTaskById, getSubtasksByTask, getCommentsByTask, getTimeLogsByTask, addComment, toggleSubtask, addSubtask, getDependenciesByTask, updateTask, getBlockersForTask, tasks, addDependency, removeDependency, dependencies } = useTaskStore();
   const { getProjectById } = useProjectStore();
   const { users } = useUserStore();
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
   const updateStatus = useUpdateTaskStatus();
   const logTimeMutation = useLogTime();
 
@@ -41,6 +43,8 @@ export default function TaskDetailPage({ params }: { params: Promise<{ id: strin
   const [newSubtask, setNewSubtask] = useState("");
   const [logHours, setLogHours] = useState("");
   const [logDesc, setLogDesc] = useState("");
+
+  const [depSearch, setDepSearch] = useState("");
 
   const task = getTaskById(id);
   if (!task) notFound();
@@ -53,9 +57,67 @@ export default function TaskDetailPage({ params }: { params: Promise<{ id: strin
   const timeLogs = getTimeLogsByTask(id);
   const completedSubtasks = subtasks.filter((s) => s.completed).length;
 
+  // Dependências desta tarefa (o que ela depende) — type BLOCKED_BY
+  const myDeps = getDependenciesByTask(id).filter((d) => d.taskId === id && d.type === "BLOCKED_BY");
+  const blockerTasks = myDeps.map((d) => tasks.find((t) => t.id === d.dependsOnTaskId)).filter(Boolean) as import("@/types").Task[];
+  const pendingBlockers = blockerTasks.filter((t) => t.status !== "CONCLUIDA" && t.status !== "CANCELADA");
+  const isBlocked = pendingBlockers.length > 0;
+
+  // Tarefas que dependem desta (ela bloqueia outras)
+  const blocksOthers = getDependenciesByTask(id).filter((d) => d.dependsOnTaskId === id && d.type === "BLOCKED_BY");
+  const blockedByMe = blocksOthers.map((d) => tasks.find((t) => t.id === d.taskId)).filter(Boolean) as import("@/types").Task[];
+
+  // Tarefas disponíveis para adicionar como dependência
+  const availableToAdd = tasks.filter(
+    (t) => t.projectId === task.projectId && t.id !== id && !myDeps.some((d) => d.dependsOnTaskId === t.id)
+  );
+  const filteredAvailable = depSearch.trim()
+    ? availableToAdd.filter((t) => t.title.toLowerCase().includes(depSearch.toLowerCase()))
+    : availableToAdd;
+
+  const BLOCKED_STATUSES: TaskStatus[] = ["EM_DESENVOLVIMENTO", "EM_REVISAO", "HOMOLOGACAO", "CONCLUIDA"];
+
   const handleStatusChange = async (status: TaskStatus) => {
-    await updateStatus.mutateAsync({ taskId: id, status, userId: user?.id ?? "" });
+    try {
+      await updateStatus.mutateAsync({ taskId: id, status, userId: user?.id ?? "" });
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Erro ao alterar status";
+      toast.error(message);
+    }
   };
+
+  async function handleAddDep(depTaskId: string) {
+    const depTask = tasks.find((t) => t.id === depTaskId);
+    if (!depTask) return;
+    await addDependency({ taskId: id, dependsOnTaskId: depTaskId, type: "BLOCKED_BY" });
+    const isPending = depTask.status !== "CONCLUIDA" && depTask.status !== "CANCELADA";
+    if (isPending) {
+      await updateTask(id, {
+        status: "BLOQUEADA",
+        blockedReason: `Aguardando conclusão de: "${depTask.title}"`,
+      });
+      toast.warning(`Tarefa bloqueada por "${depTask.title}"`);
+    } else {
+      toast.success("Dependência adicionada");
+    }
+    setDepSearch("");
+  }
+
+  async function handleRemoveDep(depRecord: import("@/types").TaskDependency) {
+    await removeDependency(depRecord.id);
+    // Se não há mais bloqueadores pendentes, desbloqueia a tarefa
+    const remaining = myDeps.filter((d) => d.id !== depRecord.id);
+    const stillBlocked = remaining.some((d) => {
+      const t = tasks.find((tt) => tt.id === d.dependsOnTaskId);
+      return t && t.status !== "CONCLUIDA" && t.status !== "CANCELADA";
+    });
+    if (!stillBlocked && task.status === "BLOQUEADA") {
+      await updateTask(id, { status: "PLANEJADA", blockedReason: undefined });
+      toast.success("Dependência removida — tarefa desbloqueada");
+    } else {
+      toast.success("Dependência removida");
+    }
+  }
 
   const handleAddComment = async () => {
     if (!commentText.trim()) return;
@@ -87,7 +149,7 @@ export default function TaskDetailPage({ params }: { params: Promise<{ id: strin
       <div className="p-6 max-w-6xl mx-auto">
         <div className="flex items-center gap-2 mb-6">
           <Link href="/tasks" className="flex items-center gap-1 text-sm text-zinc-500 hover:text-zinc-300">
-            <ChevronLeft className="w-4 h-4" /> Tasks
+            <ChevronLeft className="w-4 h-4" /> Tarefas
           </Link>
           <span className="text-zinc-700">/</span>
           <span className="text-sm text-zinc-400 truncate">{task.title}</span>
@@ -117,10 +179,21 @@ export default function TaskDetailPage({ params }: { params: Promise<{ id: strin
                 </Select>
               </div>
 
-              {task.status === "BLOQUEADA" && task.blockedReason && (
+              {isBlocked && (
                 <div className="flex items-start gap-2 p-3 rounded-lg bg-red-500/10 border border-red-500/20 mb-4">
-                  <AlertTriangle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
-                  <p className="text-sm text-red-300">{task.blockedReason}</p>
+                  <Lock className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
+                  <div>
+                    <p className="text-sm font-medium text-red-300 mb-1">Tarefa bloqueada por dependências</p>
+                    <div className="space-y-1">
+                      {pendingBlockers.map((b) => (
+                        <div key={b.id} className="flex items-center gap-1.5 text-xs text-red-300/80">
+                          <ArrowRight className="w-3 h-3 shrink-0" />
+                          <Link href={`/tasks/${b.id}`} className="hover:underline truncate">{b.title}</Link>
+                          <span className="text-red-400/60 shrink-0">({getStatusLabel(b.status)})</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               )}
 
@@ -129,7 +202,7 @@ export default function TaskDetailPage({ params }: { params: Promise<{ id: strin
               {subtasks.length > 0 && (
                 <div className="mt-4">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs font-semibold text-zinc-400">Subtasks ({completedSubtasks}/{subtasks.length})</span>
+                    <span className="text-xs font-semibold text-zinc-400">Subtarefas ({completedSubtasks}/{subtasks.length})</span>
                     <span className="text-xs text-zinc-500">{Math.round((completedSubtasks / subtasks.length) * 100)}%</span>
                   </div>
                   <Progress value={(completedSubtasks / subtasks.length) * 100} className="h-1.5 bg-zinc-800 mb-3" />
@@ -157,7 +230,7 @@ export default function TaskDetailPage({ params }: { params: Promise<{ id: strin
                   value={newSubtask}
                   onChange={(e) => setNewSubtask(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleAddSubtask()}
-                  placeholder="Adicionar subtask..."
+                  placeholder="Adicionar subtarefa..."
                   className="h-8 text-xs bg-zinc-800/50 border-zinc-700 text-zinc-300"
                 />
                 <Button size="sm" onClick={handleAddSubtask} className="h-8 bg-zinc-700 hover:bg-zinc-600 text-xs">
@@ -315,21 +388,47 @@ export default function TaskDetailPage({ params }: { params: Promise<{ id: strin
                 <div className="flex items-center gap-3">
                   <User2 className="w-4 h-4 text-zinc-500 shrink-0" />
                   <div className="flex-1">
-                    <p className="text-[10px] text-zinc-600 mb-1">Responsável</p>
+                    <div className="flex items-center gap-1 mb-1">
+                      <p className="text-[10px] text-zinc-600">Responsável</p>
+                      {isAdmin && (
+                        <ReassignPopover
+                          currentUserId={task.assigneeId}
+                          label="Reatribuir"
+                          allowClear
+                          onReassign={async (userId) => {
+                            await updateTask(id, { assigneeId: userId ?? undefined });
+                            toast.success(userId ? "Task reatribuída" : "Responsável removido");
+                          }}
+                        />
+                      )}
+                    </div>
                     <div className="flex items-center gap-2">
                       <Avatar className="w-5 h-5">
                         <AvatarImage src={assignee?.avatar} />
                         <AvatarFallback className="text-[8px] bg-zinc-700">{assignee?.name?.slice(0, 2)}</AvatarFallback>
                       </Avatar>
-                      <span className="text-xs text-zinc-300">{assignee?.name}</span>
+                      <span className="text-xs text-zinc-300">{assignee?.name ?? "Sem responsável"}</span>
                     </div>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-3">
                   <User2 className="w-4 h-4 text-zinc-500 shrink-0" />
-                  <div>
-                    <p className="text-[10px] text-zinc-600 mb-1">Reporter</p>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-1 mb-1">
+                      <p className="text-[10px] text-zinc-600">Criado por</p>
+                      {isAdmin && (
+                        <ReassignPopover
+                          currentUserId={task.reporterId}
+                          label="Trocar"
+                          onReassign={async (userId) => {
+                            if (!userId) return;
+                            await updateTask(id, { reporterId: userId });
+                            toast.success("Criador atualizado");
+                          }}
+                        />
+                      )}
+                    </div>
                     <span className="text-xs text-zinc-300">{reporter?.name}</span>
                   </div>
                 </div>
@@ -368,6 +467,101 @@ export default function TaskDetailPage({ params }: { params: Promise<{ id: strin
                   {progressPercent > 100 ? `${(progressPercent - 100).toFixed(0)}% acima do estimado` : `${(100 - progressPercent).toFixed(0)}% restante`}
                 </p>
               </div>
+            </div>
+
+            {/* Dependências */}
+            <div className="bg-zinc-900/60 border border-zinc-800/50 rounded-xl p-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <h3 className="text-xs font-semibold text-zinc-400 uppercase tracking-wide flex items-center gap-1.5">
+                  <Link2 className="w-3.5 h-3.5" /> Dependências
+                </h3>
+                {(blockerTasks.length > 0 || blockedByMe.length > 0) && (
+                  <span className="text-[10px] text-zinc-600">
+                    {blockerTasks.length} bloqueadora{blockerTasks.length !== 1 ? "s" : ""} · {blockedByMe.length} dependente{blockedByMe.length !== 1 ? "s" : ""}
+                  </span>
+                )}
+              </div>
+
+              {/* Esta tarefa está bloqueada por */}
+              {blockerTasks.length > 0 && (
+                <div className="space-y-1.5">
+                  <p className="text-[10px] text-zinc-600 uppercase tracking-wide">Precisa que terminem primeiro</p>
+                  {blockerTasks.map((bt) => {
+                    const dep = myDeps.find((d) => d.dependsOnTaskId === bt.id);
+                    const done = bt.status === "CONCLUIDA" || bt.status === "CANCELADA";
+                    return (
+                      <div key={bt.id} className={`flex items-center gap-2 p-2 rounded-lg border text-xs group ${done ? "bg-emerald-500/5 border-emerald-500/20" : "bg-red-500/5 border-red-500/20"}`}>
+                        {done
+                          ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                          : <Lock className="w-3.5 h-3.5 text-red-400 shrink-0" />
+                        }
+                        <Link href={`/tasks/${bt.id}`} className={`flex-1 truncate hover:underline ${done ? "text-emerald-300/80 line-through" : "text-zinc-300"}`}>
+                          {bt.title}
+                        </Link>
+                        <span className={`text-[10px] shrink-0 ${done ? "text-emerald-400/60" : "text-red-400/60"}`}>
+                          {getStatusLabel(bt.status)}
+                        </span>
+                        {dep && (
+                          <button
+                            onClick={() => handleRemoveDep(dep)}
+                            className="opacity-0 group-hover:opacity-100 p-0.5 rounded text-zinc-600 hover:text-red-400 transition-all"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
+              {/* Esta tarefa bloqueia */}
+              {blockedByMe.length > 0 && (
+                <div className="space-y-1.5">
+                  <p className="text-[10px] text-zinc-600 uppercase tracking-wide">Esta tarefa desbloqueia</p>
+                  {blockedByMe.map((bt) => (
+                    <div key={bt.id} className="flex items-center gap-2 p-2 rounded-lg border border-zinc-700/30 bg-zinc-800/30 text-xs">
+                      <ArrowRight className="w-3.5 h-3.5 text-zinc-500 shrink-0" />
+                      <Link href={`/tasks/${bt.id}`} className="flex-1 truncate text-zinc-400 hover:text-zinc-200 hover:underline">
+                        {bt.title}
+                      </Link>
+                      <span className="text-[10px] text-zinc-600 shrink-0">{getStatusLabel(bt.status)}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Adicionar dependência */}
+              <div className="space-y-1.5">
+                <input
+                  value={depSearch}
+                  onChange={(e) => setDepSearch(e.target.value)}
+                  placeholder="Adicionar dependência... (buscar tarefa)"
+                  className="w-full h-7 text-[11px] bg-zinc-800 border border-zinc-700/50 rounded-md px-2.5 text-zinc-300 placeholder-zinc-600 outline-none focus:border-violet-500/50 transition-colors"
+                />
+                {depSearch.trim() && filteredAvailable.length > 0 && (
+                  <div className="border border-zinc-700/50 rounded-lg divide-y divide-zinc-800/50 max-h-32 overflow-y-auto">
+                    {filteredAvailable.slice(0, 6).map((t) => (
+                      <button
+                        key={t.id}
+                        onClick={() => handleAddDep(t.id)}
+                        className="w-full flex items-center gap-2 px-3 py-1.5 text-[11px] text-zinc-300 hover:bg-zinc-800/60 transition-colors text-left"
+                      >
+                        <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${t.status === "CONCLUIDA" ? "bg-emerald-400" : t.status === "EM_DESENVOLVIMENTO" ? "bg-blue-400" : "bg-zinc-500"}`} />
+                        <span className="flex-1 truncate">{t.title}</span>
+                        <span className="text-zinc-600 text-[10px] shrink-0">{getStatusLabel(t.status)}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+                {depSearch.trim() && filteredAvailable.length === 0 && (
+                  <p className="text-[11px] text-zinc-600 text-center py-1">Nenhuma tarefa encontrada</p>
+                )}
+              </div>
+
+              {blockerTasks.length === 0 && blockedByMe.length === 0 && !depSearch && (
+                <p className="text-[11px] text-zinc-700 text-center py-1">Nenhuma dependência definida</p>
+              )}
             </div>
 
             <div className="bg-zinc-900/60 border border-zinc-800/50 rounded-xl p-4">

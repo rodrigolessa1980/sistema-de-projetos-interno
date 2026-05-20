@@ -70,13 +70,53 @@ export const useUIStore = create<UIStore>()(
   )
 );
 
-export const useUserStore = create<{
+interface UserStore {
   users: import("@/types").User[];
   getUserById: (id: string) => import("@/types").User | undefined;
-}>((set, get) => {
-  const { mockUsers } = require("@/mocks/users");
-  return {
-    users: [...mockUsers],
-    getUserById: (id) => get().users.find((u) => u.id === id),
-  };
-});
+  createUser: (data: Omit<import("@/types").User, "id" | "createdAt" | "updatedAt">) => import("@/types").User;
+  updateUser: (id: string, data: Partial<import("@/types").User>) => void;
+  deleteUser: (id: string) => void;
+}
+
+export const useUserStore = create<UserStore>()(
+  (persist as any)(
+    (set: any, get: any) => {
+      const { mockUsers } = require("@/mocks/users");
+      return {
+        users: [...mockUsers],
+        getUserById: (id: string) => get().users.find((u: import("@/types").User) => u.id === id),
+
+        createUser: (data: Omit<import("@/types").User, "id" | "createdAt" | "updatedAt">) => {
+          const now = new Date().toISOString();
+          const user: import("@/types").User = {
+            ...data,
+            id: `user-${Date.now()}`,
+            createdAt: now,
+            updatedAt: now,
+          };
+          set((state: UserStore) => ({ users: [...state.users, user] }));
+          return user;
+        },
+
+        updateUser: (id: string, data: Partial<import("@/types").User>) => {
+          const now = new Date().toISOString();
+          set((state: UserStore) => ({
+            users: state.users.map((u) =>
+              u.id === id ? { ...u, ...data, updatedAt: now } : u
+            ),
+          }));
+        },
+
+        deleteUser: (id: string) => {
+          set((state: UserStore) => ({
+            users: state.users.filter((u) => u.id !== id),
+          }));
+        },
+      };
+    },
+    {
+      name: "devflow-users",
+      partialize: (state: UserStore) => ({ users: state.users }),
+    }
+  )
+);

@@ -39,7 +39,7 @@ export default function TimeLogsPage() {
 
   return (
     <AppLayout>
-      <PageHeader title="Logs de Tempo" description="Registro de horas trabalhadas por task" />
+      <PageHeader title="Logs de Tempo" description="Registro de horas trabalhadas por tarefa" />
 
       <div className="p-6 space-y-6 max-w-5xl mx-auto">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">

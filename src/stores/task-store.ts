@@ -34,6 +34,7 @@ interface TaskStore {
   getDependenciesByTask: (taskId: string) => TaskDependency[];
   getBlockedTasks: () => Task[];
   isTaskBlocked: (taskId: string) => boolean;
+  getBlockersForTask: (taskId: string) => Task[];
 
   createTask: (data: Omit<Task, "id" | "createdAt" | "updatedAt">) => Promise<Task>;
   updateTask: (id: string, data: Partial<Task>) => Promise<Task>;
@@ -87,13 +88,14 @@ export const useTaskStore = create<TaskStore>()(
   getBlockedTasks: () => get().tasks.filter((t) => t.status === "BLOQUEADA"),
 
   isTaskBlocked: (taskId) => {
-    const task = get().tasks.find((t) => t.id === taskId);
-    if (!task) return false;
+    return get().getBlockersForTask(taskId).length > 0;
+  },
+
+  getBlockersForTask: (taskId) => {
     const deps = get().dependencies.filter((d) => d.taskId === taskId && d.type === "BLOCKED_BY");
-    return deps.some((dep) => {
-      const depTask = get().tasks.find((t) => t.id === dep.dependsOnTaskId);
-      return depTask && depTask.status !== "CONCLUIDA" && depTask.status !== "CANCELADA";
-    });
+    return deps
+      .map((dep) => get().tasks.find((t) => t.id === dep.dependsOnTaskId))
+      .filter((t): t is Task => !!t && t.status !== "CONCLUIDA" && t.status !== "CANCELADA");
   },
 
   createTask: async (data) => {
@@ -123,8 +125,13 @@ export const useTaskStore = create<TaskStore>()(
     const task = get().tasks.find((t) => t.id === id);
     if (!task) return;
 
-    if (newStatus === "CONCLUIDA" && get().isTaskBlocked(id)) {
-      throw new Error("Task bloqueada não pode ser concluída. Resolva as dependências primeiro.");
+    const REQUIRES_UNBLOCKED: TaskStatus[] = ["EM_DESENVOLVIMENTO", "EM_REVISAO", "HOMOLOGACAO", "CONCLUIDA"];
+    if (REQUIRES_UNBLOCKED.includes(newStatus)) {
+      const blockers = get().getBlockersForTask(id);
+      if (blockers.length > 0) {
+        const names = blockers.map((b) => `"${b.title}"`).join(", ");
+        throw new Error(`Esta tarefa está bloqueada. Conclua primeiro: ${names}`);
+      }
     }
 
     const historyEntry: StatusHistory = {

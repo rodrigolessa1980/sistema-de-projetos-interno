@@ -112,7 +112,7 @@ export function Header({ title }: { title?: string }) {
                       autoFocus
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      placeholder="Pesquisar tasks, projetos..."
+                      placeholder="Pesquisar tarefas, projetos..."
                       className="flex-1 bg-transparent text-sm text-zinc-100 placeholder-zinc-500 outline-none"
                     />
                     <button onClick={() => { setSearchOpen(false); setSearchQuery(""); }}>
@@ -141,7 +141,7 @@ export function Header({ title }: { title?: string }) {
                         )}
                         {searchResults.tasks.length > 0 && (
                           <div>
-                            <p className="text-[10px] font-semibold text-zinc-500 uppercase px-2 mb-1">Tasks</p>
+                            <p className="text-[10px] font-semibold text-zinc-500 uppercase px-2 mb-1">Tarefas</p>
                             {searchResults.tasks.map((t) => (
                               <button
                                 key={t.id}

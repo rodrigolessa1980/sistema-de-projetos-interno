@@ -191,8 +191,8 @@ export default function MetricsPage() {
                   {[
                     { label: "Horas Estimadas", value: summary.totalHoursEstimated, max: summary.totalHoursEstimated, color: "bg-violet-500" },
                     { label: "Horas Realizadas", value: summary.totalHoursActual, max: summary.totalHoursEstimated, color: "bg-emerald-500" },
-                    { label: "Tasks Completas", value: summary.completedTasks, max: summary.totalTasks, color: "bg-blue-500" },
-                    { label: "Tasks Bloqueadas", value: summary.blockedTasks, max: summary.totalTasks, color: "bg-red-500" },
+                    { label: "Tarefas Completas", value: summary.completedTasks, max: summary.totalTasks, color: "bg-blue-500" },
+                    { label: "Tarefas Bloqueadas", value: summary.blockedTasks, max: summary.totalTasks, color: "bg-red-500" },
                   ].map((kpi) => (
                     <div key={kpi.label}>
                       <div className="flex justify-between text-xs mb-1.5">

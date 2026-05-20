@@ -101,7 +101,7 @@ export function WorkTimer({ taskId, taskTitle, disabled = false }: WorkTimerProp
                 </motion.p>
               ) : (
                 <p className="text-xs text-zinc-500 mt-0.5">
-                  {hasOtherActiveSession ? "Há trabalho ativo em outra task" : "Clique em iniciar para começar"}
+                  {hasOtherActiveSession ? "Há trabalho ativo em outra tarefa" : "Clique em iniciar para começar"}
                 </p>
               )}
             </div>
@@ -186,7 +186,7 @@ export function WorkTimer({ taskId, taskTitle, disabled = false }: WorkTimerProp
             <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-amber-500/10 border border-amber-500/20">
               <AlertTriangle className="w-3.5 h-3.5 text-amber-400 shrink-0" />
               <p className="text-xs text-amber-300">
-                Você está trabalhando em outra task. Finalize para iniciar aqui.
+                Você está trabalhando em outra tarefa. Finalize para iniciar aqui.
               </p>
             </div>
           </div>
@@ -202,7 +202,7 @@ export function WorkTimer({ taskId, taskTitle, disabled = false }: WorkTimerProp
               Finalizar trabalho
             </DialogTitle>
             <DialogDescription className="text-zinc-500 text-sm">
-              O tempo será registrado automaticamente no log da task.
+              O tempo será registrado automaticamente no log da tarefa.
             </DialogDescription>
           </DialogHeader>
 

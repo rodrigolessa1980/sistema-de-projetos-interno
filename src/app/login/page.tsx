@@ -80,7 +80,7 @@ export default function LoginPage() {
           <div className="mt-10 grid grid-cols-3 gap-4">
             {[
               { label: "Projetos Ativos", value: "4" },
-              { label: "Tasks Concluídas", value: "28" },
+              { label: "Tarefas Concluídas", value: "28" },
               { label: "Horas Registradas", value: "1.2k" },
             ].map((stat, i) => (
               <motion.div

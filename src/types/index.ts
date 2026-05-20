@@ -58,6 +58,8 @@ export interface Project {
   actualHours: number;
   progress: number;
   color: string;
+  avatar?: string;
+  testUrl?: string;
   createdAt: string;
   updatedAt: string;
 }

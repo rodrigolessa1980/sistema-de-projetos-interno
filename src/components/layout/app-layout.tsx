@@ -38,14 +38,18 @@ export function AppLayout({ children, title }: AppLayoutProps) {
 
   return (
     <div className="flex h-screen bg-zinc-950 overflow-hidden">
-      <Sidebar />
+      <div data-print-hide className="print:hidden">
+        <Sidebar />
+      </div>
       <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
-        <Header title={title} />
+        <div data-print-hide className="print:hidden">
+          <Header title={title} />
+        </div>
         <motion.main
           initial={{ opacity: 0, y: 4 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.2 }}
-          className="flex-1 overflow-y-auto bg-zinc-950"
+          className="flex-1 overflow-y-auto bg-zinc-950 print:overflow-visible print:h-auto"
         >
           {children}
         </motion.main>

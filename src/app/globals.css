@@ -158,3 +158,85 @@
     overflow: hidden;
   }
 }
+
+/* ── Estilos de Impressão / PDF ───────────────────────────────────────────── */
+@media print {
+  /* Oculta elementos de navegação e interação */
+  [data-print-hide],
+  aside,
+  nav,
+  header {
+    display: none !important;
+  }
+
+  /* Layout de impressão: sem sidebar, página branca */
+  body {
+    background: #ffffff !important;
+    color: #111111 !important;
+    font-size: 11pt;
+  }
+
+  /* Expande o conteúdo para ocupar a página inteira */
+  [data-print-content] {
+    margin: 0 !important;
+    padding: 1.5cm 2cm !important;
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+
+  /* Cards e bordas adaptados ao papel */
+  [data-print-card] {
+    background: #f9f9f9 !important;
+    border: 1px solid #e0e0e0 !important;
+    border-radius: 6px !important;
+    break-inside: avoid;
+    margin-bottom: 12pt;
+    color: #111 !important;
+  }
+
+  /* Textos claros ficam escuros no papel */
+  .text-zinc-100, .text-zinc-200, .text-zinc-300 { color: #111 !important; }
+  .text-zinc-400, .text-zinc-500               { color: #555 !important; }
+  .text-zinc-600, .text-zinc-700               { color: #888 !important; }
+
+  /* Fundos escuros ficam brancos */
+  .bg-zinc-900, .bg-zinc-950, .bg-zinc-800     { background: transparent !important; }
+
+  /* Bordas escuras ficam cinza claro */
+  .border-zinc-800, .border-zinc-700           { border-color: #ddd !important; }
+
+  /* Badges e pills mantêm cor mas ficam mais suaves */
+  .bg-violet-500\/20, .bg-emerald-500\/20,
+  .bg-red-500\/20, .bg-blue-500\/20,
+  .bg-amber-500\/20, .bg-orange-500\/20        { opacity: 0.7; }
+
+  /* Gráficos: preserva mas não quebra página */
+  .recharts-wrapper { break-inside: avoid; }
+
+  /* Tabelas não quebram no meio da linha */
+  tr { break-inside: avoid; }
+
+  /* Cabeçalho de página impresso */
+  [data-print-header] {
+    border-bottom: 2px solid #6366f1;
+    padding-bottom: 8pt;
+    margin-bottom: 16pt;
+  }
+
+  /* Rodapé de impressão */
+  [data-print-footer]::after {
+    content: "Gerado em " attr(data-date) " · DevFlow";
+    display: block;
+    font-size: 8pt;
+    color: #aaa;
+    margin-top: 24pt;
+    border-top: 1px solid #ddd;
+    padding-top: 6pt;
+  }
+
+  /* Links não mostram URL */
+  a[href]::after { content: none !important; }
+
+  /* Quebra de página entre seções grandes */
+  [data-print-break-before] { break-before: page; }
+}

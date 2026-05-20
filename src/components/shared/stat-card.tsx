@@ -24,6 +24,7 @@ export function StatCard({ title, value, subtitle, icon: Icon, trend, color = "v
     red: { bg: "bg-red-500/10", text: "text-red-400", icon: "text-red-400", border: "border-red-500/20" },
     blue: { bg: "bg-blue-500/10", text: "text-blue-400", icon: "text-blue-400", border: "border-blue-500/20" },
     cyan: { bg: "bg-cyan-500/10", text: "text-cyan-400", icon: "text-cyan-400", border: "border-cyan-500/20" },
+    orange: { bg: "bg-orange-500/10", text: "text-orange-400", icon: "text-orange-400", border: "border-orange-500/20" },
   };
 
   const colors = colorMap[color] ?? colorMap.violet;

@@ -7,6 +7,7 @@ import { useProjectStore, useTaskStore } from "@/stores";
 import { useAuth } from "@/hooks/use-auth";
 import { motion } from "framer-motion";
 import { Box, Plus } from "lucide-react";
+import { ProjectAvatar } from "@/components/shared/project-avatar";
 import { Progress } from "@/components/ui/progress";
 import { EmptyState } from "@/components/shared/empty-state";
 
@@ -29,7 +30,7 @@ export default function ModulesPage() {
               return (
                 <div key={project.id}>
                   <div className="flex items-center gap-2 mb-3">
-                    <div className="w-3 h-3 rounded-full" style={{ background: project.color }} />
+                    <ProjectAvatar name={project.name} color={project.color} avatar={project.avatar} size="xs" />
                     <h2 className="text-sm font-semibold text-zinc-300">{project.name}</h2>
                     <span className="text-xs text-zinc-600">({projectModules.length} módulos)</span>
                   </div>
@@ -53,7 +54,7 @@ export default function ModulesPage() {
                           <Progress value={mod.progress} className="h-1.5 bg-zinc-800 mb-3" />
                           <div className="flex items-center gap-3 text-xs text-zinc-500">
                             <span>{modEpics.length} epics</span>
-                            <span>{modTasks.length} tasks</span>
+                            <span>{modTasks.length} tarefas</span>
                             <span>{modTasks.filter((t) => t.status === "CONCLUIDA").length} concluídas</span>
                           </div>
                         </motion.div>

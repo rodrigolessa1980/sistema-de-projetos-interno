@@ -22,9 +22,13 @@ interface ProjectStore {
   deleteProject: (id: string) => Promise<void>;
   createModule: (data: Omit<Module, "id" | "createdAt" | "updatedAt">) => Promise<Module>;
   updateModule: (id: string, data: Partial<Module>) => Promise<Module>;
+  deleteModule: (id: string) => void;
+  createModulesBulk: (projectId: string, modules: { name: string; description: string }[]) => Promise<Module[]>;
   createEpic: (data: Omit<Epic, "id" | "createdAt" | "updatedAt">) => Promise<Epic>;
   updateEpic: (id: string, data: Partial<Epic>) => Promise<Epic>;
   setSelectedProject: (id: string | null) => void;
+  addDeveloperToProject: (projectId: string, userId: string) => void;
+  removeDeveloperFromProject: (projectId: string, userId: string) => void;
 }
 
 export const useProjectStore = create<ProjectStore>((set, get) => ({
@@ -72,11 +76,31 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
   },
 
   createModule: async (data) => {
-    await delay(400);
+    await delay(200);
     const now = new Date().toISOString();
     const module: Module = { ...data, id: generateId("mod"), createdAt: now, updatedAt: now };
     set((state) => ({ modules: [...state.modules, module] }));
     return module;
+  },
+
+  deleteModule: (id) => {
+    set((state) => ({ modules: state.modules.filter((m) => m.id !== id) }));
+  },
+
+  createModulesBulk: async (projectId, modulesData) => {
+    const now = new Date().toISOString();
+    const created: Module[] = modulesData.map((m, i) => ({
+      id: generateId("mod"),
+      projectId,
+      name: m.name,
+      description: m.description,
+      order: i,
+      progress: 0,
+      createdAt: now,
+      updatedAt: now,
+    }));
+    set((state) => ({ modules: [...state.modules, ...created] }));
+    return created;
   },
 
   updateModule: async (id, data) => {
@@ -114,4 +138,24 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
   },
 
   setSelectedProject: (id) => set({ selectedProjectId: id }),
+
+  addDeveloperToProject: (projectId, userId) => {
+    set((state) => ({
+      projects: state.projects.map((p) =>
+        p.id === projectId && !p.developerIds.includes(userId)
+          ? { ...p, developerIds: [...p.developerIds, userId], updatedAt: new Date().toISOString() }
+          : p
+      ),
+    }));
+  },
+
+  removeDeveloperFromProject: (projectId, userId) => {
+    set((state) => ({
+      projects: state.projects.map((p) =>
+        p.id === projectId
+          ? { ...p, developerIds: p.developerIds.filter((id) => id !== userId), updatedAt: new Date().toISOString() }
+          : p
+      ),
+    }));
+  },
 }));

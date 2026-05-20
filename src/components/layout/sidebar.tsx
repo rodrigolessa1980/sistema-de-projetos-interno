@@ -7,6 +7,7 @@ import {
   LayoutDashboard, FolderKanban, ListTodo, Kanban, GitBranch,
   BarChart3, Clock, Network, Users, ChevronLeft, ChevronRight,
   Zap, Settings, LogOut, ChevronDown, Box, Layers,
+  FileBarChart2, ClipboardList, Timer, TrendingUp,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useUIStore } from "@/stores";
@@ -26,7 +27,7 @@ const navItems = [
     { href: "/epics", label: "Epics", icon: Layers, adminOnly: false },
   ]},
   { group: "Trabalho", items: [
-    { href: "/tasks", label: "Tasks", icon: ListTodo, adminOnly: false },
+    { href: "/tasks", label: "Tarefas", icon: ListTodo, adminOnly: false },
     { href: "/kanban", label: "Kanban", icon: Kanban, adminOnly: false },
     { href: "/gantt", label: "Timeline", icon: GitBranch, adminOnly: false },
     { href: "/dependencies", label: "Dependências", icon: Network, adminOnly: false },
@@ -34,6 +35,12 @@ const navItems = [
   { group: "Análise", items: [
     { href: "/metrics", label: "Métricas", icon: BarChart3, adminOnly: false },
     { href: "/time-logs", label: "Logs de Tempo", icon: Clock, adminOnly: false },
+  ]},
+  { group: "Relatórios", items: [
+    { href: "/reports/productivity", label: "Produtividade", icon: TrendingUp, adminOnly: false },
+    { href: "/reports/hours", label: "Horas por Tarefa", icon: Timer, adminOnly: false },
+    { href: "/reports/projects", label: "Progresso Projetos", icon: ClipboardList, adminOnly: false },
+    { href: "/reports/overview", label: "Visão Geral", icon: FileBarChart2, adminOnly: true },
   ]},
   { group: "Admin", items: [
     { href: "/users", label: "Usuários", icon: Users, adminOnly: true },
@@ -45,7 +52,7 @@ export function Sidebar() {
   const router = useRouter();
   const { sidebarCollapsed, toggleSidebar } = useUIStore();
   const { user, logout, isAdmin } = useAuth();
-  const [expandedGroups, setExpandedGroups] = useState<string[]>(["Principal", "Projetos", "Trabalho", "Análise", "Admin"]);
+  const [expandedGroups, setExpandedGroups] = useState<string[]>(["Principal", "Projetos", "Trabalho", "Análise", "Relatórios", "Admin"]);
 
   const toggleGroup = (group: string) => {
     setExpandedGroups((prev) =>

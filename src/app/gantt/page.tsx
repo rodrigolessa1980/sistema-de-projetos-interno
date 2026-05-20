@@ -78,7 +78,7 @@ export default function GanttPage() {
         <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-800/50">
           <div>
             <h1 className="text-lg font-bold text-zinc-100">Timeline / Gantt</h1>
-            <p className="text-xs text-zinc-500">{visibleTasks.length} tasks com datas definidas</p>
+            <p className="text-xs text-zinc-500">{visibleTasks.length} tarefa{visibleTasks.length !== 1 ? "s" : ""} com datas definidas</p>
           </div>
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-1">
@@ -106,7 +106,7 @@ export default function GanttPage() {
           <div className="min-w-[900px]">
             <div className="flex sticky top-0 z-10 bg-zinc-950/95 backdrop-blur-sm border-b border-zinc-800/50">
               <div className="w-64 shrink-0 px-4 py-2.5 border-r border-zinc-800/50">
-                <span className="text-xs font-semibold text-zinc-500">Task</span>
+                <span className="text-xs font-semibold text-zinc-500">Tarefa</span>
               </div>
               <div className="flex-1 flex relative">
                 {months.map((month) => (
@@ -176,7 +176,7 @@ export default function GanttPage() {
 
               {visibleTasks.length === 0 && (
                 <div className="flex items-center justify-center py-20 text-zinc-500 text-sm">
-                  Nenhuma task com data definida encontrada
+                  Nenhuma tarefa com data definida encontrada
                 </div>
               )}
             </div>

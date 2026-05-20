@@ -29,7 +29,7 @@ export default function DependenciesPage() {
       <div className="p-6 max-w-5xl mx-auto">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-xl font-bold text-zinc-100">Dependências entre Tasks</h1>
+            <h1 className="text-xl font-bold text-zinc-100">Dependências entre Tarefas</h1>
             <p className="text-sm text-zinc-500">{visibleDeps.length} dependências encontradas</p>
           </div>
           <Select value={projectFilter} onValueChange={setProjectFilter}>
@@ -46,7 +46,7 @@ export default function DependenciesPage() {
         <div className="grid grid-cols-3 gap-4 mb-6">
           {[
             { label: "Total de Dependências", value: visibleDeps.length, color: "text-zinc-200", icon: Network },
-            { label: "Tasks Bloqueadas", value: visibleTasks.filter((t) => t.status === "BLOQUEADA").length, color: "text-red-400", icon: AlertTriangle },
+            { label: "Tarefas Bloqueadas", value: visibleTasks.filter((t) => t.status === "BLOQUEADA").length, color: "text-red-400", icon: AlertTriangle },
             { label: "Dependências Resolvidas", value: visibleDeps.filter((d) => {
               const depTask = tasks.find((t) => t.id === d.dependsOnTaskId);
               return depTask?.status === "CONCLUIDA" || depTask?.status === "CANCELADA";
@@ -138,7 +138,7 @@ export default function DependenciesPage() {
             <div className="flex flex-col items-center justify-center py-16 text-center">
               <Network className="w-10 h-10 text-zinc-600 mb-3" />
               <p className="text-sm font-medium text-zinc-400">Nenhuma dependência encontrada</p>
-              <p className="text-xs text-zinc-600 mt-1">Dependências entre tasks serão exibidas aqui</p>
+              <p className="text-xs text-zinc-600 mt-1">Dependências entre tarefas serão exibidas aqui</p>
             </div>
           )}
         </div>

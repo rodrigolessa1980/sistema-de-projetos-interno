@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -15,6 +16,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { ALL_STATUSES, getStatusLabel, COMPLEXITY_OPTIONS, getComplexityLabel } from "@/lib/utils";
 import type { TaskComplexity, TaskStatus } from "@/types";
 import { toast } from "sonner";
+import { Link2, X, AlertTriangle } from "lucide-react";
 
 const schema = z.object({
   title: z.string().min(5, "Mínimo 5 caracteres"),
@@ -37,10 +39,13 @@ interface Props {
 }
 
 export function TaskCreateDialog({ open, onOpenChange }: Props) {
-  const { createTask } = useTaskStore();
+  const { createTask, addDependency, tasks, getBlockersForTask } = useTaskStore();
   const { projects, modules, epics } = useProjectStore();
   const { users } = useUserStore();
   const { user } = useAuth();
+
+  const [selectedDepIds, setSelectedDepIds] = useState<string[]>([]);
+  const [depSearch, setDepSearch] = useState("");
 
   const form = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -55,26 +60,64 @@ export function TaskCreateDialog({ open, onOpenChange }: Props) {
   const filteredModules = modules.filter((m) => m.projectId === projectId);
   const filteredEpics = epics.filter((e) => e.moduleId === moduleId);
 
+  // Tarefas disponíveis para serem dependências (mesmo projeto, exceto a própria)
+  const availableDeps = tasks.filter(
+    (t) => t.projectId === projectId && !selectedDepIds.includes(t.id)
+  );
+  const filteredDeps = depSearch.trim()
+    ? availableDeps.filter((t) => t.title.toLowerCase().includes(depSearch.toLowerCase()))
+    : availableDeps;
+
+  const selectedDepTasks = tasks.filter((t) => selectedDepIds.includes(t.id));
+  const hasPendingDeps = selectedDepTasks.some(
+    (t) => t.status !== "CONCLUIDA" && t.status !== "CANCELADA"
+  );
+
+  function toggleDep(taskId: string) {
+    setSelectedDepIds((prev) =>
+      prev.includes(taskId) ? prev.filter((id) => id !== taskId) : [...prev, taskId]
+    );
+  }
+
   const onSubmit = async (data: FormData) => {
-    await createTask({
+    // Se há dependências pendentes, força status BLOQUEADA
+    const finalStatus: TaskStatus = hasPendingDeps ? "BLOQUEADA" : (data.status as TaskStatus);
+
+    const task = await createTask({
       ...data,
       complexity: data.complexity as TaskComplexity,
-      status: data.status as TaskStatus,
+      status: finalStatus,
       reporterId: user?.id ?? "",
       actualHours: 0,
-      dependencyIds: [],
+      dependencyIds: selectedDepIds,
       tags: [],
       order: 0,
+      blockedReason: hasPendingDeps
+        ? `Aguardando conclusão de: ${selectedDepTasks.filter((t) => t.status !== "CONCLUIDA" && t.status !== "CANCELADA").map((t) => t.title).join(", ")}`
+        : undefined,
     });
+
+    // Cria os registros de dependência
+    for (const depId of selectedDepIds) {
+      await addDependency({ taskId: task.id, dependsOnTaskId: depId, type: "BLOCKED_BY" });
+    }
+
+    if (hasPendingDeps) {
+      toast.warning("Tarefa criada como BLOQUEADA até que as dependências sejam concluídas");
+    } else {
+      toast.success("Tarefa criada com sucesso!");
+    }
     onOpenChange(false);
     form.reset();
+    setSelectedDepIds([]);
+    setDepSearch("");
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="bg-zinc-900 border-zinc-700/50 max-w-xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-zinc-100">Nova Task</DialogTitle>
+          <DialogTitle className="text-zinc-100">Nova Tarefa</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -82,7 +125,7 @@ export function TaskCreateDialog({ open, onOpenChange }: Props) {
               <FormItem>
                 <Label className="text-zinc-300 text-sm">Título</Label>
                 <FormControl>
-                  <Input {...field} placeholder="Título da task" className="bg-zinc-800 border-zinc-700 text-zinc-100" />
+                  <Input {...field} placeholder="Título da tarefa" className="bg-zinc-800 border-zinc-700 text-zinc-100" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -216,9 +259,84 @@ export function TaskCreateDialog({ open, onOpenChange }: Props) {
                 <FormMessage />
               </FormItem>
             )} />
+            {/* Dependências */}
+            {projectId && (
+              <div className="space-y-2 pt-1">
+                <div className="flex items-center gap-1.5">
+                  <Link2 className="w-3.5 h-3.5 text-zinc-500" />
+                  <Label className="text-zinc-300 text-sm">Dependências</Label>
+                  <span className="text-[10px] text-zinc-600 ml-auto">Só inicia quando essas tarefas forem concluídas</span>
+                </div>
+
+                {/* Chips das selecionadas */}
+                {selectedDepTasks.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5">
+                    {selectedDepTasks.map((dep) => (
+                      <span
+                        key={dep.id}
+                        className={`inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full border ${
+                          dep.status === "CONCLUIDA"
+                            ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400"
+                            : "bg-amber-500/10 border-amber-500/30 text-amber-400"
+                        }`}
+                      >
+                        {dep.status === "CONCLUIDA" ? "✓" : "⏳"} {dep.title.length > 28 ? dep.title.slice(0, 28) + "…" : dep.title}
+                        <button type="button" onClick={() => toggleDep(dep.id)} className="hover:text-red-400 ml-0.5">
+                          <X className="w-3 h-3" />
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
+
+                {/* Aviso quando há deps pendentes */}
+                {hasPendingDeps && (
+                  <div className="flex items-center gap-1.5 p-2 rounded-lg bg-amber-500/10 border border-amber-500/20">
+                    <AlertTriangle className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                    <p className="text-[11px] text-amber-300">Tarefa será criada como <strong>Bloqueada</strong> até as dependências serem concluídas</p>
+                  </div>
+                )}
+
+                {/* Campo de busca + lista */}
+                <div className="relative">
+                  <input
+                    value={depSearch}
+                    onChange={(e) => setDepSearch(e.target.value)}
+                    placeholder="Buscar tarefa para adicionar como dependência..."
+                    className="w-full h-8 text-xs bg-zinc-800 border border-zinc-700 rounded-md px-3 text-zinc-300 placeholder-zinc-600 outline-none focus:border-violet-500/50 transition-colors"
+                  />
+                </div>
+                {(depSearch.trim() || filteredDeps.length <= 8) && filteredDeps.length > 0 && (
+                  <div className="max-h-36 overflow-y-auto border border-zinc-700/50 rounded-lg divide-y divide-zinc-800/50">
+                    {filteredDeps.slice(0, 10).map((dep) => (
+                      <button
+                        key={dep.id}
+                        type="button"
+                        onClick={() => { toggleDep(dep.id); setDepSearch(""); }}
+                        className="w-full flex items-center gap-2 px-3 py-2 text-xs text-zinc-300 hover:bg-zinc-800/60 transition-colors text-left"
+                      >
+                        <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${
+                          dep.status === "CONCLUIDA" ? "bg-emerald-400" :
+                          dep.status === "EM_DESENVOLVIMENTO" ? "bg-blue-400" :
+                          dep.status === "BLOQUEADA" ? "bg-red-400" : "bg-zinc-500"
+                        }`} />
+                        <span className="flex-1 truncate">{dep.title}</span>
+                        <span className="text-[10px] text-zinc-600 shrink-0">{getStatusLabel(dep.status)}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+                {availableDeps.length === 0 && (
+                  <p className="text-[11px] text-zinc-600 text-center py-1">Nenhuma outra tarefa neste projeto</p>
+                )}
+              </div>
+            )}
+
             <div className="flex justify-end gap-2 pt-2">
-              <Button type="button" variant="ghost" onClick={() => onOpenChange(false)} className="text-zinc-400">Cancelar</Button>
-              <Button type="submit" className="bg-violet-600 hover:bg-violet-700">Criar Task</Button>
+              <Button type="button" variant="ghost" onClick={() => { onOpenChange(false); setSelectedDepIds([]); setDepSearch(""); }} className="text-zinc-400">Cancelar</Button>
+              <Button type="submit" className="bg-violet-600 hover:bg-violet-700">
+                {hasPendingDeps ? "Criar como Bloqueada" : "Criar Tarefa"}
+              </Button>
             </div>
           </form>
         </Form>
