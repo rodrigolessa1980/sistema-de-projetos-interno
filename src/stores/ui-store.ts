@@ -115,7 +115,7 @@ export const useUserStore = create<UserStore>()(
       };
     },
     {
-      name: "devflow-users",
+      name: "devflow-users-v3",
       partialize: (state: UserStore) => ({ users: state.users }),
     }
   )

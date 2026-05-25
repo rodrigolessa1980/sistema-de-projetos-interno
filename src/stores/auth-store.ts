@@ -61,7 +61,7 @@ export const useAuthStore = create<AuthStore>()(
       clearError: () => set({ error: null }),
     }),
     {
-      name: "devflow-auth",
+      name: "devflow-auth-v2",
       partialize: (state) => ({ session: state.session }),
     }
   )

@@ -68,6 +68,12 @@ export function getStoredSession(): AuthSession | null {
       localStorage.removeItem(SESSION_KEY);
       return null;
     }
+    // Sempre sincroniza o objeto user com os dados mais recentes dos mocks
+    const freshUser = mockUsers.find((u) => u.id === session.user.id);
+    if (freshUser) {
+      session.user = freshUser;
+      localStorage.setItem(SESSION_KEY, JSON.stringify(session));
+    }
     return session;
   } catch {
     return null;
