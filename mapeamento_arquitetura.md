@@ -1,0 +1,516 @@
+# Mapeamento Geral do Sistema e Arquitetura do Backend (NestJS + Prisma + MySQL)
+
+Este documento contém o mapeamento geral da aplicação de gerenciamento de projetos internos (DevFlow), seu modelo de dados relacional e a arquitetura sugerida para o desenvolvimento de uma camada de backend robusta seguindo Clean Architecture, SOLID e conceitos de modularidade.
+
+---
+
+## 1. Mapeamento Geral & Usabilidade
+
+O sistema é uma plataforma completa e moderna de Gestão de Projetos e Timesheets dedicada a empresas de tecnologia e agências de desenvolvimento de software. Ele integra cronogramas, execução de tarefas (Kanban/Gantt), controle financeiro de horas de desenvolvimento por empresa cliente e métricas ágeis de performance em tempo real.
+
+### Principais Módulos da Aplicação:
+
+1. **Dashboard de Métricas & BI**:
+   - Apresenta métricas consolidadas (Burndown, Throughput, Rework, Cycle Time, Lead Time).
+   - Ranking de produtividade de desenvolvedores baseado em horas integradas.
+   - Monitoramento de tarefas atrasadas e bloqueios ativos.
+
+2. **Gestão Multitenant (Empresas/Clientes)**:
+   - Gerencia as empresas do grupo econômico ou clientes externos.
+   - Cada empresa possui cores personalizadas e identificação visual rápida em todas as views do sistema.
+
+3. **Gestão de Projetos, Módulos e Épicos**:
+   - Arquitetura hierárquica clara: **Empresa ➔ Projeto ➔ Módulo ➔ Épico ➔ Tarefas**.
+   - Fluxo de priorização com controle visual e reordenação (Drag-and-Drop) de uma **Fila de Desenvolvimento**.
+
+4. **Quadro Kanban & Linha do Tempo Gantt**:
+   - Visualização de fluxo de trabalho segmentado por status (**Backlog, Planejada, Bloqueada, Em Desenvolvimento, Em Revisão, Homologação, Concluída, Cancelada**).
+   - Planejamento temporal de tarefas através do diagrama Gantt interativo.
+
+5. **Timesheet de Sessões de Trabalho (Time Tracker)**:
+   - Registro de horas de trabalho manuais e controle de sessões dinâmicas (cronômetro ativo de desenvolvimento).
+   - Bloqueio automático de tarefas por regras de urgência (tarefas críticas pausam ou bloqueiam tarefas paralelas do mesmo desenvolvedor).
+
+---
+
+## 2. Estrutura de Dados (Esquema MySQL via Prisma)
+
+Abaixo está a modelagem de banco de dados relacional mapeada do frontend atual para uma estrutura robusta e segura em MySQL, configurada via Prisma.
+
+### Entidades do Sistema
+* **Company**: Empresa associada a múltiplos projetos.
+* **User**: Cadastro de usuários com controle de nível de acesso (Roles: `ADMIN` e `DEVELOPER`).
+* **Project**: Projetos que contêm progresso, priorização na fila e estimativas de horas.
+* **Module**: Subdivisão lógica dos projetos.
+* **Epic**: Agrupamento de tarefas com datas de início/fim e progresso.
+* **Task**: Tarefas de desenvolvimento com controle de status, complexidade (Fibonacci), prazos, prioridade e urgência.
+* **Subtask**: Checklist de tarefas.
+* **TaskDependency**: Relacionamento de dependências lógicas (`BLOCKS`, `BLOCKED_BY`, `RELATED`).
+* **TimeLog**: Registro de horas de trabalho integradas com a tarefa e status.
+* **Comment**: Feed de discussões de tarefas com suporte a menções.
+* **Notification**: Notificações in-app e push.
+* **AuditLog**: Histórico de auditoria completo para rastreamento de ações críticas.
+* **StatusHistory**: Registro do tempo gasto por tarefa em cada status para métricas.
+* **TaskNote**: Notas rápidas fixadas nas tarefas.
+* **TaskAttachment**: Arquivos anexados às tarefas (imagens, documentos, etc.).
+
+---
+
+## 3. Arquitetura Clean Architecture e SOLID no NestJS
+
+Para garantir que o backend seja escalável e fácil de manter, a arquitetura proposta adota as diretrizes do **Clean Architecture**:
+
+```
+src/
+├── core/
+│   ├── domain/               # Entidades TypeScript puras e Enums
+│   │   ├── entities/
+│   │   └── exceptions/
+│   └── use-cases/            # Casos de uso do negócio (Application Layer)
+│       ├── companies/
+│       ├── projects/
+│       ├── tasks/
+│       ├── time-logs/
+│       └── users/
+├── infra/                    # Lógica de infraestrutura e frameworks (NestJS, Prisma)
+│   ├── config/
+│   ├── database/             # Conexão com banco e repositórios Prisma
+│   │   ├── prisma/
+│   │   └── repositories/
+│   └── http/                 # Controllers, DTOs, Guards, WebSockets e Swagger
+│       ├── controllers/
+│       ├── dtos/
+│       └── presenters/
+└── app.module.ts             # Módulo principal da aplicação
+```
+
+### Princípios SOLID Aplicados:
+* **Single Responsibility (SRP)**: Cada Use Case executa exatamente uma única operação de negócio (Ex: `BlockTaskByUrgencyUseCase`).
+* **Open/Closed (OCP)**: Extensibilidade usando eventos. Novas funcionalidades de notificação podem ser plugadas sem alterar os casos de uso principais.
+* **Liskov Substitution (LSP)**: Repositórios expõem interfaces abstratas. Podemos trocar a tecnologia do banco de dados a qualquer momento sem afetar as regras de negócios.
+* **Interface Segregation (ISP)**: Interfaces curtas e específicas no Core (Domain Ports).
+* **Dependency Inversion (DIP)**: O core do sistema depende apenas de abstrações. O framework (NestJS) injeta os adaptadores de infraestrutura específicos.
+
+---
+
+## 4. Prisma Schema Proposto
+
+```prisma
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum UserRole {
+  ADMIN
+  DEVELOPER
+}
+
+enum ProjectStatus {
+  ATIVO
+  PAUSADO
+  CONCLUIDO
+  CANCELADO
+  NA_FILA
+}
+
+enum TaskStatus {
+  BACKLOG
+  PLANEJADA
+  BLOQUEADA
+  EM_DESENVOLVIMENTO
+  EM_REVISAO
+  HOMOLOGACAO
+  CONCLUIDA
+  CANCELADA
+}
+
+enum DependencyType {
+  BLOCKS
+  BLOCKED_BY
+  RELATED
+}
+
+enum AuditEntityType {
+  TASK
+  PROJECT
+  MODULE
+  EPIC
+  USER
+}
+
+enum AuditAction {
+  CREATED
+  UPDATED
+  DELETED
+  STATUS_CHANGED
+  ASSIGNED
+  COMMENTED
+  TIME_LOGGED
+}
+
+enum NotificationType {
+  TASK_ASSIGNED
+  TASK_UPDATED
+  TASK_BLOCKED
+  TASK_COMPLETED
+  TASK_OVERDUE
+  COMMENT_ADDED
+  DEPENDENCY_RESOLVED
+  PROJECT_UPDATED
+}
+
+model Company {
+  id        String    @id @default(uuid())
+  name      String    @db.VarChar(100)
+  shortName String    @db.VarChar(10)
+  color     String    @db.VarChar(7) // Hex: #FFFFFF
+  cnpj      String?   @unique @db.VarChar(18)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  projects  Project[]
+
+  @@map("companies")
+}
+
+model User {
+  id           String             @id @default(uuid())
+  name         String             @db.VarChar(100)
+  email        String             @unique @db.VarChar(150)
+  passwordHash String             @db.VarChar(255)
+  role         UserRole           @default(DEVELOPER)
+  avatar       String?            @db.VarChar(255)
+  position     String             @db.VarChar(100)
+  department   String             @db.VarChar(100)
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+  
+  managedProjects Project[]       @relation("ProjectOwner")
+  projects        ProjectDeveloper[]
+  assignedTasks   Task[]          @relation("TaskAssignee")
+  reportedTasks   Task[]          @relation("TaskReporter")
+  subtasks        Subtask[]
+  timeLogs        TimeLog[]
+  comments        Comment[]
+  notifications   Notification[]
+  auditLogs       AuditLog[]
+  statusHistories StatusHistory[]
+  taskNotes       TaskNote[]
+  attachments     TaskAttachment[]
+
+  @@index([email])
+  @@map("users")
+}
+
+model Project {
+  id             String             @id @default(uuid())
+  companyId      String
+  company        Company            @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  name           String             @db.VarChar(150)
+  description    String             @db.Text
+  status         ProjectStatus      @default(NA_FILA)
+  ownerId        String
+  owner          User               @relation("ProjectOwner", fields: [ownerId], references: [id], onDelete: Restrict)
+  startDate      DateTime           @db.Date
+  endDate        DateTime?          @db.Date
+  estimatedHours Int                @default(0)
+  actualHours    Float              @default(0.0)
+  progress       Int                @default(0)
+  color          String             @db.VarChar(7)
+  avatar         String?            @db.VarChar(255)
+  testUrl        String?            @db.VarChar(255)
+  queueOrder     Int?
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+
+  developers     ProjectDeveloper[]
+  modules        Module[]
+  epics          Epic[]
+  tasks          Task[]
+  notifications  Notification[]
+
+  @@index([companyId])
+  @@index([ownerId])
+  @@index([status])
+  @@map("projects")
+}
+
+model ProjectDeveloper {
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([projectId, userId])
+  @@map("project_developers")
+}
+
+model Module {
+  id          String   @id @default(uuid())
+  projectId   String
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  name        String   @db.VarChar(100)
+  description String   @db.Text
+  order       Int      @default(0)
+  progress    Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  epics       Epic[]
+  tasks       Task[]
+
+  @@index([projectId])
+  @@map("modules")
+}
+
+model Epic {
+  id          String        @id @default(uuid())
+  projectId   String
+  project     Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  moduleId    String
+  module      Module        @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  name        String        @db.VarChar(100)
+  description String        @db.Text
+  status      ProjectStatus @default(ATIVO)
+  startDate   DateTime      @db.Date
+  endDate     DateTime?     @db.Date
+  progress    Int           @default(0)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  tasks       Task[]
+
+  @@index([projectId])
+  @@index([moduleId])
+  @@map("epics")
+}
+
+model Task {
+  id                    String      @id @default(uuid())
+  projectId             String
+  project               Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  moduleId              String
+  module                Module      @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  epicId                String
+  epic                  Epic        @relation(fields: [epicId], references: [id], onDelete: Cascade)
+  parentTaskId          String?
+  parentTask            Task?       @relation("TaskSubtask", fields: [parentTaskId], references: [id], onDelete: SetNull)
+  title                 String      @db.VarChar(200)
+  description           String      @db.Text
+  status                TaskStatus  @default(BACKLOG)
+  complexity            Int         @default(1)
+  assigneeId            String
+  assignee              User        @relation("TaskAssignee", fields: [assigneeId], references: [id], onDelete: Restrict)
+  reporterId            String
+  reporter              User        @relation("TaskReporter", fields: [reporterId], references: [id], onDelete: Restrict)
+  estimatedHours        Int         @default(0)
+  actualHours           Float       @default(0.0)
+  startDate             DateTime?   @db.Date
+  dueDate               DateTime?   @db.Date
+  completedAt           DateTime?
+  blockedReason         String?     @db.Text
+  isUrgent              Boolean     @default(false)
+  urgentBlockedById     String?
+  urgentPreviousStatus  TaskStatus?
+  order                 Int         @default(0)
+  createdAt             DateTime    @default(now())
+  updatedAt             DateTime    @updatedAt
+
+  subtasks              Subtask[]
+  childTasks            Task[]            @relation("TaskSubtask")
+  dependencies          TaskDependency[]  @relation("TaskPrimary")
+  dependencyOf          TaskDependency[]  @relation("TaskDependent")
+  timeLogs              TimeLog[]
+  comments              Comment[]
+  statusHistories       StatusHistory[]
+  notes                 TaskNote[]
+  attachments           TaskAttachment[]
+  notifications         Notification[]
+
+  @@index([projectId])
+  @@index([moduleId])
+  @@index([epicId])
+  @@index([assigneeId])
+  @@index([status])
+  @@map("tasks")
+}
+
+model Subtask {
+  id         String   @id @default(uuid())
+  taskId     String
+  task       Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  title      String   @db.VarChar(200)
+  completed  Boolean  @default(false)
+  assigneeId String?
+  assignee   User?    @relation(fields: [assigneeId], references: [id], onDelete: SetNull)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([taskId])
+  @@map("subtasks")
+}
+
+model TaskDependency {
+  id              String         @id @default(uuid())
+  taskId          String
+  task            Task           @relation("TaskPrimary", fields: [taskId], references: [id], onDelete: Cascade)
+  dependsOnTaskId String
+  dependsOnTask   Task           @relation("TaskDependent", fields: [dependsOnTaskId], references: [id], onDelete: Cascade)
+  type            DependencyType @default(BLOCKED_BY)
+  createdAt       DateTime       @default(now())
+
+  @@unique([taskId, dependsOnTaskId])
+  @@map("task_dependencies")
+}
+
+model TimeLog {
+  id          String     @id @default(uuid())
+  taskId      String
+  task        Task       @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  hours       Float
+  description String     @db.Text
+  date        DateTime   @db.Date
+  status      TaskStatus
+  createdAt   DateTime   @default(now())
+
+  @@index([taskId])
+  @@index([userId])
+  @@index([date])
+  @@map("time_logs")
+}
+
+model Comment {
+  id        String   @id @default(uuid())
+  taskId    String
+  task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  content   String   @db.Text
+  mentions  Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([taskId])
+  @@map("comments")
+}
+
+model Notification {
+  id               String           @id @default(uuid())
+  userId           String
+  user             User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type             NotificationType
+  title            String           @db.VarChar(150)
+  message          String           @db.Text
+  read             Boolean          @default(false)
+  relatedTaskId    String?
+  relatedTask      Task?            @relation(fields: [relatedTaskId], references: [id], onDelete: SetNull)
+  relatedProjectId String?
+  relatedProject   Project?         @relation(fields: [relatedProjectId], references: [id], onDelete: SetNull)
+  createdAt        DateTime         @default(now())
+
+  @@index([userId])
+  @@index([read])
+  @@map("notifications")
+}
+
+model AuditLog {
+  id            String          @id @default(uuid())
+  entityType    AuditEntityType
+  entityId      String
+  action        AuditAction
+  userId        String
+  user          User            @relation(fields: [userId], references: [id], onDelete: Restrict)
+  previousValue Json?
+  newValue      Json?
+  description   String          @db.Text
+  createdAt     DateTime        @default(now())
+
+  @@index([entityType, entityId])
+  @@index([userId])
+  @@map("audit_logs")
+}
+
+model StatusHistory {
+  id         String     @id @default(uuid())
+  taskId     String
+  task       Task       @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  fromStatus TaskStatus
+  toStatus   TaskStatus
+  userId     String
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  duration   Int        @default(0)
+  createdAt  DateTime   @default(now())
+
+  @@index([taskId])
+  @@map("status_histories")
+}
+
+model TaskNote {
+  id        String   @id @default(uuid())
+  taskId    String
+  task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  content   String   @db.Text
+  isPinned  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([taskId])
+  @@map("task_notes")
+}
+
+model TaskAttachment {
+  id        String   @id @default(uuid())
+  taskId    String
+  task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name      String   @db.VarChar(150)
+  type      String   @db.VarChar(100)
+  size      Int
+  dataUrl   String   @db.LongText
+  createdAt DateTime @default(now())
+
+  @@index([taskId])
+  @@map("task_attachments")
+}
+```
+
+---
+
+## 5. Progresso da Implementação (atualizado em 25/05/2026)
+
+### Concluído
+
+| Camada | Status | Detalhes |
+|--------|--------|----------|
+| Prisma Schema | ✅ | Modelo completo em `backend/prisma/schema.prisma` (Prisma 7 + `prisma.config.ts`) |
+| Domain — Entidades | ✅ | `User`, `Company`, `Project`, `Task`, `TimeLog` + enums |
+| Domain — Repositórios (ports) | ✅ | Interfaces para as 5 entidades acima |
+| Domain — Exceções | ✅ | `NotFound`, `Unauthorized`, `Conflict` |
+| Infra — Prisma | ✅ | `PrismaService` com `@prisma/adapter-mariadb`, client em `src/generated/prisma` |
+| Infra — Repositórios | ✅ | Implementações Prisma para User, Company, Project, Task, TimeLog |
+| Use Cases | ✅ | Auth (`Login`, `GetCurrentUser`) + Companies (CRUD completo) |
+| HTTP | ✅ | `POST /api/auth/login`, `GET /api/auth/me`, CRUD `/api/companies`, `GET /api/health` |
+| Auth JWT | ✅ | Guard + bcrypt no login |
+| Seed | ✅ | `backend/prisma/seed.ts` (admin + devs + empresas) |
+
+### Próximos passos
+
+1. **Rodar migrations e seed** (requer MySQL local):
+   ```bash
+   cd backend
+   cp .env.example .env   # ajuste MYSQL_* conforme seu ambiente
+   npx prisma migrate dev --name init
+   npm run prisma:seed
+   npm run start:dev
+   ```
+2. **Use cases de Projects, Tasks e TimeLogs** — repositórios já existem, falta expor via HTTP.
+3. **Entidades restantes** — `Module`, `Epic`, `Subtask`, `TaskDependency`, `Comment`, `Notification`, `AuditLog`, `StatusHistory`, `TaskNote`, `TaskAttachment`.
+4. **Integração frontend** — substituir mocks em `use-auth` e stores por chamadas à API (`NEXT_PUBLIC_API_URL=http://localhost:3001/api`).
+5. **WebSockets** — notificações em tempo real (fase posterior).

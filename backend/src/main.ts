@@ -1,0 +1,28 @@
+import 'dotenv/config';
+import { ValidationPipe } from '@nestjs/common';
+import { NestFactory } from '@nestjs/core';
+import { AppModule } from './app.module';
+import { DomainExceptionFilter } from './infra/http/filters/domain-exception.filter';
+
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule);
+
+  app.setGlobalPrefix('api');
+  app.enableCors({
+    origin: process.env.CORS_ORIGIN?.split(',') ?? ['http://localhost:3000'],
+    credentials: true,
+  });
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+    }),
+  );
+  app.useGlobalFilters(new DomainExceptionFilter());
+
+  const port = process.env.PORT ?? 3001;
+  await app.listen(port);
+  console.log(`DevFlow API rodando em http://localhost:${port}/api`);
+}
+bootstrap();

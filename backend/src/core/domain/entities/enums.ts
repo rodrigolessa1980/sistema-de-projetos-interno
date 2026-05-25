@@ -1,0 +1,29 @@
+export enum UserRole {
+  ADMIN = 'ADMIN',
+  DEVELOPER = 'DEVELOPER',
+}
+
+export enum ProjectStatus {
+  ATIVO = 'ATIVO',
+  PAUSADO = 'PAUSADO',
+  CONCLUIDO = 'CONCLUIDO',
+  CANCELADO = 'CANCELADO',
+  NA_FILA = 'NA_FILA',
+}
+
+export enum TaskStatus {
+  BACKLOG = 'BACKLOG',
+  PLANEJADA = 'PLANEJADA',
+  BLOQUEADA = 'BLOQUEADA',
+  EM_DESENVOLVIMENTO = 'EM_DESENVOLVIMENTO',
+  EM_REVISAO = 'EM_REVISAO',
+  HOMOLOGACAO = 'HOMOLOGACAO',
+  CONCLUIDA = 'CONCLUIDA',
+  CANCELADA = 'CANCELADA',
+}
+
+export enum DependencyType {
+  BLOCKS = 'BLOCKS',
+  BLOCKED_BY = 'BLOCKED_BY',
+  RELATED = 'RELATED',
+}
