@@ -9,7 +9,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useUserStore } from "@/stores";
 import { formatDate } from "@/lib/utils";
 import { motion } from "framer-motion";
-import { FolderKanban, Plus, Users, Calendar, TrendingUp, MoreVertical, Edit, Trash2, Eye, Crown, UserCog, ImagePlus, X, Link2, ExternalLink, Box, GripVertical } from "lucide-react";
+import { FolderKanban, Plus, Users, Calendar, TrendingUp, MoreVertical, Edit, Trash2, Eye, Crown, UserCog, ImagePlus, X, Link2, ExternalLink, Box, GripVertical, ListOrdered, Flag, Building2 } from "lucide-react";
 import { ProjectAvatar } from "@/components/shared/project-avatar";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
@@ -39,6 +39,7 @@ const statusLabels: Record<ProjectStatus, string> = {
   PAUSADO: "Pausado",
   CONCLUIDO: "Concluído",
   CANCELADO: "Cancelado",
+  NA_FILA: "Na Fila",
 };
 
 const statusColors: Record<ProjectStatus, string> = {
@@ -46,14 +47,16 @@ const statusColors: Record<ProjectStatus, string> = {
   PAUSADO: "bg-amber-500/20 text-amber-400 border-amber-500/30",
   CONCLUIDO: "bg-blue-500/20 text-blue-400 border-blue-500/30",
   CANCELADO: "bg-zinc-700/20 text-zinc-500 border-zinc-700/30",
+  NA_FILA: "bg-violet-500/20 text-violet-400 border-violet-500/30",
 };
 
 const createProjectSchema = z.object({
+  companyId: z.string().min(1, "Selecione a empresa"),
   name: z.string().min(3, "Mínimo 3 caracteres"),
   description: z.string().min(10, "Mínimo 10 caracteres"),
-  status: z.enum(["ATIVO", "PAUSADO", "CONCLUIDO", "CANCELADO"]),
+  status: z.enum(["ATIVO", "PAUSADO", "CONCLUIDO", "CANCELADO", "NA_FILA"]),
   startDate: z.string().min(1, "Data obrigatória"),
-  endDate: z.string().optional(),
+  endDate: z.string().min(1, "Prazo de entrega obrigatório"),
   estimatedHours: z.number().min(1),
   color: z.string(),
   testUrl: z.string().url("URL inválida").optional().or(z.literal("")),
@@ -64,7 +67,7 @@ type CreateProjectForm = z.infer<typeof createProjectSchema>;
 type ModuleDraft = { id: string; name: string; description: string };
 
 export default function ProjectsPage() {
-  const { projects, createProject, deleteProject, updateProject, addDeveloperToProject, removeDeveloperFromProject, createModulesBulk } = useProjectStore();
+  const { projects, companies, createProject, deleteProject, updateProject, addDeveloperToProject, removeDeveloperFromProject, createModulesBulk } = useProjectStore();
   const { users } = useUserStore();
   const { user, isAdmin } = useAuth();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -77,8 +80,10 @@ export default function ProjectsPage() {
   const form = useForm<CreateProjectForm>({
     resolver: zodResolver(createProjectSchema),
     defaultValues: {
+      companyId: "",
       name: "", description: "", status: "ATIVO",
       startDate: new Date().toISOString().split("T")[0],
+      endDate: "",
       estimatedHours: 160, color: projectColors[0], testUrl: "",
     },
   });
@@ -103,8 +108,10 @@ export default function ProjectsPage() {
     setModuleDrafts([]);
     setNewModuleName("");
     form.reset({
+      companyId: "",
       name: "", description: "", status: "ATIVO",
       startDate: new Date().toISOString().split("T")[0],
+      endDate: "",
       estimatedHours: 160, color: projectColors[0], testUrl: "",
     });
     setIsCreateOpen(true);
@@ -135,6 +142,7 @@ export default function ProjectsPage() {
       estimatedHours: data.estimatedHours,
       avatar: avatarPreview ?? undefined,
       testUrl: data.testUrl || undefined,
+      endDate: data.endDate || undefined,
     });
     if (moduleDrafts.length > 0) {
       await createModulesBulk(newProject.id, moduleDrafts.map((m) => ({ name: m.name, description: m.description })));
@@ -169,6 +177,7 @@ export default function ProjectsPage() {
               const devs = users.filter((u) => project.developerIds.includes(u.id));
               const owner = users.find((u) => u.id === project.ownerId);
               const nonMembers = users.filter((u) => !project.developerIds.includes(u.id) && u.id !== project.ownerId);
+              const company = companies.find((c) => c.id === project.companyId);
               return (
                 <motion.div
                   key={project.id}
@@ -182,9 +191,31 @@ export default function ProjectsPage() {
                       <ProjectAvatar name={project.name} color={project.color} avatar={project.avatar} size="md" />
                       <div>
                         <h3 className="text-sm font-semibold text-zinc-100 group-hover:text-white">{project.name}</h3>
-                        <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-medium border mt-0.5 ${statusColors[project.status]}`}>
-                          {statusLabels[project.status]}
-                        </span>
+                        <div className="flex items-center gap-1 mt-0.5 flex-wrap">
+                          <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-medium border ${statusColors[project.status]}`}>
+                            {statusLabels[project.status]}
+                          </span>
+                          {project.queueOrder != null && (
+                            <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-md text-[10px] font-semibold bg-violet-500/10 text-violet-400 border border-violet-500/20">
+                              <ListOrdered className="w-2.5 h-2.5" />#{project.queueOrder}
+                            </span>
+                          )}
+                        </div>
+                        {company && (
+                          <div className="flex items-center gap-1 mt-1">
+                            <span
+                              className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium border"
+                              style={{
+                                background: `${company.color}18`,
+                                color: company.color,
+                                borderColor: `${company.color}35`,
+                              }}
+                            >
+                              <Building2 className="w-2.5 h-2.5" />
+                              {company.shortName}
+                            </span>
+                          </div>
+                        )}
                       </div>
                     </div>
                     <DropdownMenu>
@@ -352,6 +383,37 @@ export default function ProjectsPage() {
                 </div>
               </div>
 
+              {/* Empresa do grupo */}
+              <FormField control={form.control} name="companyId" render={({ field }) => (
+                <FormItem>
+                  <Label className="text-zinc-300 text-sm flex items-center gap-1.5">
+                    <Building2 className="w-3.5 h-3.5 text-zinc-400" />
+                    Empresa do Grupo
+                  </Label>
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <FormControl>
+                      <SelectTrigger className="bg-zinc-800 border-zinc-700 text-zinc-100">
+                        <SelectValue placeholder="Selecione a empresa..." />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent className="bg-zinc-800 border-zinc-700">
+                      {companies.map((company) => (
+                        <SelectItem key={company.id} value={company.id} className="text-zinc-100 focus:bg-zinc-700">
+                          <div className="flex items-center gap-2">
+                            <span
+                              className="w-2 h-2 rounded-full shrink-0"
+                              style={{ background: company.color }}
+                            />
+                            {company.name}
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )} />
+
               <FormField control={form.control} name="name" render={({ field }) => (
                 <FormItem>
                   <Label className="text-zinc-300 text-sm">Nome</Label>
@@ -370,10 +432,30 @@ export default function ProjectsPage() {
                   <FormMessage />
                 </FormItem>
               )} />
+              {/* Prazo de entrega — define posição na fila */}
+              <FormField control={form.control} name="endDate" render={({ field }) => (
+                <FormItem>
+                  <Label className="text-zinc-300 text-sm flex items-center gap-1.5">
+                    <Flag className="w-3.5 h-3.5 text-amber-400" />
+                    Prazo de Entrega
+                    <span className="ml-1 px-1.5 py-0.5 rounded-full bg-amber-500/15 text-amber-400 text-[10px] font-semibold border border-amber-500/20">
+                      define posição na fila
+                    </span>
+                  </Label>
+                  <FormControl>
+                    <Input {...field} type="date" className="bg-zinc-800 border-amber-500/30 text-zinc-100 focus-visible:ring-amber-500/40" />
+                  </FormControl>
+                  <p className="text-[11px] text-zinc-500 -mt-1">
+                    Projetos com prazo mais próximo ficam no topo da fila de desenvolvimento.
+                  </p>
+                  <FormMessage />
+                </FormItem>
+              )} />
+
               <div className="grid grid-cols-2 gap-3">
                 <FormField control={form.control} name="startDate" render={({ field }) => (
                   <FormItem>
-                    <Label className="text-zinc-300 text-sm">Início</Label>
+                    <Label className="text-zinc-300 text-sm">Data de Início</Label>
                     <FormControl>
                       <Input {...field} type="date" className="bg-zinc-800 border-zinc-700 text-zinc-100" />
                     </FormControl>

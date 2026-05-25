@@ -7,7 +7,7 @@ import {
   LayoutDashboard, FolderKanban, ListTodo, Kanban, GitBranch,
   BarChart3, Clock, Network, Users, ChevronLeft, ChevronRight,
   Zap, Settings, LogOut, ChevronDown, Box, Layers,
-  FileBarChart2, ClipboardList, Timer, TrendingUp,
+  FileBarChart2, ClipboardList, Timer, TrendingUp, ListOrdered, Building2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useUIStore } from "@/stores";
@@ -23,8 +23,10 @@ const navItems = [
   ]},
   { group: "Projetos", items: [
     { href: "/projects", label: "Projetos", icon: FolderKanban, adminOnly: false },
+    { href: "/queue", label: "Fila de Dev", icon: ListOrdered, adminOnly: false },
     { href: "/modules", label: "Módulos", icon: Box, adminOnly: false },
     { href: "/epics", label: "Epics", icon: Layers, adminOnly: false },
+    { href: "/companies", label: "Empresas", icon: Building2, adminOnly: false },
   ]},
   { group: "Trabalho", items: [
     { href: "/tasks", label: "Tarefas", icon: ListTodo, adminOnly: false },

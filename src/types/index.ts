@@ -12,13 +12,14 @@ export type TaskStatus =
 
 export type TaskComplexity = 1 | 2 | 3 | 5 | 8;
 
-export type ProjectStatus = "ATIVO" | "PAUSADO" | "CONCLUIDO" | "CANCELADO";
+export type ProjectStatus = "ATIVO" | "PAUSADO" | "CONCLUIDO" | "CANCELADO" | "NA_FILA";
 
 export type NotificationType =
   | "TASK_ASSIGNED"
   | "TASK_UPDATED"
   | "TASK_BLOCKED"
   | "TASK_COMPLETED"
+  | "TASK_OVERDUE"
   | "COMMENT_ADDED"
   | "DEPENDENCY_RESOLVED"
   | "PROJECT_UPDATED";
@@ -31,6 +32,18 @@ export type AuditAction =
   | "ASSIGNED"
   | "COMMENTED"
   | "TIME_LOGGED";
+
+export interface Company {
+  id: string;
+  name: string;
+  /** Sigla/abreviação exibida nos badges */
+  shortName: string;
+  /** Cor de destaque em hex */
+  color: string;
+  cnpj?: string;
+  createdAt: string;
+  updatedAt: string;
+}
 
 export interface User {
   id: string;
@@ -47,6 +60,8 @@ export interface User {
 
 export interface Project {
   id: string;
+  /** Empresa do grupo à qual o projeto pertence */
+  companyId: string;
   name: string;
   description: string;
   status: ProjectStatus;
@@ -60,6 +75,8 @@ export interface Project {
   color: string;
   avatar?: string;
   testUrl?: string;
+  /** Posição na fila de desenvolvimento (1 = primeiro). Ausente = não está na fila. */
+  queueOrder?: number;
   createdAt: string;
   updatedAt: string;
 }

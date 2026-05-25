@@ -1,16 +1,22 @@
 "use client";
 
 import { create } from "zustand";
-import type { Project, Module, Epic } from "@/types";
-import { mockProjects, mockModules, mockEpics } from "@/mocks";
+import type { Project, Module, Epic, Company } from "@/types";
+import { mockProjects, mockModules, mockEpics, mockCompanies } from "@/mocks";
 import { generateId, delay } from "@/lib/utils";
 
 interface ProjectStore {
   projects: Project[];
   modules: Module[];
   epics: Epic[];
+  companies: Company[];
   selectedProjectId: string | null;
   isLoading: boolean;
+
+  getCompanyById: (id: string) => Company | undefined;
+  createCompany: (data: Omit<Company, "id" | "createdAt" | "updatedAt">) => Company;
+  updateCompany: (id: string, data: Partial<Company>) => void;
+  deleteCompany: (id: string) => void;
 
   fetchProjects: () => Promise<void>;
   getProjectById: (id: string) => Project | undefined;
@@ -29,19 +35,44 @@ interface ProjectStore {
   setSelectedProject: (id: string | null) => void;
   addDeveloperToProject: (projectId: string, userId: string) => void;
   removeDeveloperFromProject: (projectId: string, userId: string) => void;
+
+  // Fila de desenvolvimento
+  getQueuedProjects: () => Project[];
+  reorderQueue: (orderedIds: string[]) => void;
 }
 
 export const useProjectStore = create<ProjectStore>((set, get) => ({
   projects: [...mockProjects],
   modules: [...mockModules],
   epics: [...mockEpics],
+  companies: [...mockCompanies],
   selectedProjectId: null,
   isLoading: false,
+
+  getCompanyById: (id) => get().companies.find((c) => c.id === id),
+
+  createCompany: (data) => {
+    const now = new Date().toISOString();
+    const company: Company = { ...data, id: generateId("company"), createdAt: now, updatedAt: now };
+    set((state) => ({ companies: [...state.companies, company] }));
+    return company;
+  },
+
+  updateCompany: (id, data) => {
+    const now = new Date().toISOString();
+    set((state) => ({
+      companies: state.companies.map((c) => c.id === id ? { ...c, ...data, updatedAt: now } : c),
+    }));
+  },
+
+  deleteCompany: (id) => {
+    set((state) => ({ companies: state.companies.filter((c) => c.id !== id) }));
+  },
 
   fetchProjects: async () => {
     set({ isLoading: true });
     await delay(400);
-    set({ projects: [...mockProjects], modules: [...mockModules], epics: [...mockEpics], isLoading: false });
+    set({ projects: [...mockProjects], modules: [...mockModules], epics: [...mockEpics], companies: [...mockCompanies], isLoading: false });
   },
 
   getProjectById: (id) => get().projects.find((p) => p.id === id),
@@ -52,8 +83,30 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
   createProject: async (data) => {
     await delay(600);
     const now = new Date().toISOString();
-    const project: Project = { ...data, id: generateId("proj"), createdAt: now, updatedAt: now };
-    set((state) => ({ projects: [...state.projects, project] }));
+
+    // Calcula posição na fila pela data de entrega (endDate)
+    const state = get();
+    const queued = state.projects
+      .filter((p) => p.status !== "CONCLUIDO" && p.status !== "CANCELADO" && p.queueOrder != null)
+      .sort((a, b) => (a.queueOrder ?? 0) - (b.queueOrder ?? 0));
+
+    let insertAt: number;
+    if (!data.endDate) {
+      insertAt = queued.length + 1;
+    } else {
+      const idx = queued.findIndex((p) => p.endDate && p.endDate > data.endDate!);
+      insertAt = idx === -1 ? queued.length + 1 : (queued[idx].queueOrder ?? idx + 1);
+    }
+
+    // Empurra para baixo quem está na posição >= insertAt
+    const shifted = state.projects.map((p) =>
+      p.queueOrder != null && p.queueOrder >= insertAt
+        ? { ...p, queueOrder: p.queueOrder + 1 }
+        : p
+    );
+
+    const project: Project = { ...data, id: generateId("proj"), queueOrder: insertAt, createdAt: now, updatedAt: now };
+    set({ projects: [...shifted, project] });
     return project;
   },
 
@@ -156,6 +209,24 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
           ? { ...p, developerIds: p.developerIds.filter((id) => id !== userId), updatedAt: new Date().toISOString() }
           : p
       ),
+    }));
+  },
+
+  getQueuedProjects: () => {
+    return get()
+      .projects.filter(
+        (p) => p.status !== "CONCLUIDO" && p.status !== "CANCELADO" && p.queueOrder != null
+      )
+      .sort((a, b) => (a.queueOrder ?? 0) - (b.queueOrder ?? 0));
+  },
+
+  reorderQueue: (orderedIds) => {
+    set((state) => ({
+      projects: state.projects.map((p) => {
+        const pos = orderedIds.indexOf(p.id);
+        if (pos === -1) return p;
+        return { ...p, queueOrder: pos + 1, updatedAt: new Date().toISOString() };
+      }),
     }));
   },
 }));

@@ -16,6 +16,7 @@ const statusColors: Record<ProjectStatus, string> = {
   PAUSADO: "bg-amber-500/20 text-amber-400 border-amber-500/30",
   CONCLUIDO: "bg-blue-500/20 text-blue-400 border-blue-500/30",
   CANCELADO: "bg-zinc-700/20 text-zinc-500 border-zinc-700/30",
+  NA_FILA: "bg-violet-500/20 text-violet-400 border-violet-500/30",
 };
 
 export default function EpicsPage() {
