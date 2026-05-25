@@ -35,6 +35,8 @@ interface TaskStore {
   getBlockedTasks: () => Task[];
   isTaskBlocked: (taskId: string) => boolean;
   getBlockersForTask: (taskId: string) => Task[];
+  getUrgentTaskForDev: (assigneeId: string) => Task | undefined;
+  setTaskUrgent: (taskId: string, urgent: boolean) => void;
 
   createTask: (data: Omit<Task, "id" | "createdAt" | "updatedAt">) => Promise<Task>;
   updateTask: (id: string, data: Partial<Task>) => Promise<Task>;
@@ -98,11 +100,68 @@ export const useTaskStore = create<TaskStore>()(
       .filter((t): t is Task => !!t && t.status !== "CONCLUIDA" && t.status !== "CANCELADA");
   },
 
+  getUrgentTaskForDev: (assigneeId) =>
+    get().tasks.find((t) => t.assigneeId === assigneeId && t.isUrgent && !["CONCLUIDA", "CANCELADA"].includes(t.status)),
+
+  setTaskUrgent: (taskId, urgent) => {
+    const now = new Date().toISOString();
+    const task = get().tasks.find((t) => t.id === taskId);
+    if (!task) return;
+
+    if (urgent) {
+      // Bloqueia todas as outras tarefas do mesmo dev que não estão concluídas/canceladas
+      set((state) => ({
+        tasks: state.tasks.map((t) => {
+          if (t.id === taskId) return { ...t, isUrgent: true, updatedAt: now };
+          if (
+            t.assigneeId === task.assigneeId &&
+            !["CONCLUIDA", "CANCELADA"].includes(t.status) &&
+            !t.urgentBlockedById // não sobrescreve bloqueio urgente existente
+          ) {
+            return {
+              ...t,
+              status: "BLOQUEADA" as TaskStatus,
+              urgentBlockedById: taskId,
+              urgentPreviousStatus: t.status,
+              blockedReason: `Tarefa urgente em andamento: "${task.title}"`,
+              updatedAt: now,
+            };
+          }
+          return t;
+        }),
+      }));
+    } else {
+      // Remove urgência e restaura as tarefas bloqueadas por ela
+      set((state) => ({
+        tasks: state.tasks.map((t) => {
+          if (t.id === taskId) return { ...t, isUrgent: false, updatedAt: now };
+          if (t.urgentBlockedById === taskId) {
+            return {
+              ...t,
+              status: t.urgentPreviousStatus ?? ("PLANEJADA" as TaskStatus),
+              urgentBlockedById: undefined,
+              urgentPreviousStatus: undefined,
+              blockedReason: undefined,
+              updatedAt: now,
+            };
+          }
+          return t;
+        }),
+      }));
+    }
+  },
+
   createTask: async (data) => {
     await delay(500);
     const now = new Date().toISOString();
     const task: Task = { ...data, id: generateId("task"), createdAt: now, updatedAt: now };
     set((state) => ({ tasks: [...state.tasks, task] }));
+
+    // Se a tarefa criada é urgente, bloqueia as demais do mesmo dev
+    if (task.isUrgent && task.assigneeId) {
+      get().setTaskUrgent(task.id, true);
+    }
+
     return task;
   },
 
@@ -165,6 +224,7 @@ export const useTaskStore = create<TaskStore>()(
     }));
 
     if (newStatus === "CONCLUIDA") {
+      // Desbloqueia tarefas dependentes (dependências normais)
       const dependentTasks = get().dependencies
         .filter((d) => d.dependsOnTaskId === id && d.type === "BLOCKED_BY")
         .map((d) => d.taskId);
@@ -174,12 +234,33 @@ export const useTaskStore = create<TaskStore>()(
         if (!isStillBlocked) {
           set((state) => ({
             tasks: state.tasks.map((t) =>
-              t.id === depTaskId && t.status === "BLOQUEADA"
+              t.id === depTaskId && t.status === "BLOQUEADA" && !t.urgentBlockedById
                 ? { ...t, status: "PLANEJADA", blockedReason: undefined, updatedAt: now }
                 : t
             ),
           }));
         }
+      }
+
+      // Se era tarefa urgente, restaura todas as tarefas bloqueadas por ela
+      const completedTask = get().tasks.find((t) => t.id === id);
+      if (completedTask?.isUrgent) {
+        set((state) => ({
+          tasks: state.tasks.map((t) => {
+            if (t.id === id) return { ...t, isUrgent: false };
+            if (t.urgentBlockedById === id) {
+              return {
+                ...t,
+                status: t.urgentPreviousStatus ?? ("PLANEJADA" as TaskStatus),
+                urgentBlockedById: undefined,
+                urgentPreviousStatus: undefined,
+                blockedReason: undefined,
+                updatedAt: now,
+              };
+            }
+            return t;
+          }),
+        }));
       }
     }
   },

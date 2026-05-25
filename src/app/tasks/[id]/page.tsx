@@ -10,7 +10,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   ChevronLeft, Clock, AlertTriangle, MessageSquare, CheckSquare,
   Square, Plus, Send, Calendar, User2, Layers, Timer, Activity,
-  Link2, Lock, CheckCircle2, ArrowRight, X,
+  Link2, Lock, CheckCircle2, ArrowRight, X, Flame, ShieldAlert,
 } from "lucide-react";
 import { ReassignPopover } from "@/components/shared/reassign-popover";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -32,7 +32,7 @@ import { AttachmentsPanel } from "@/features/tasks/attachments-panel";
 
 export default function TaskDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
-  const { getTaskById, getSubtasksByTask, getCommentsByTask, getTimeLogsByTask, addComment, toggleSubtask, addSubtask, getDependenciesByTask, updateTask, getBlockersForTask, tasks, addDependency, removeDependency, dependencies } = useTaskStore();
+  const { getTaskById, getSubtasksByTask, getCommentsByTask, getTimeLogsByTask, addComment, toggleSubtask, addSubtask, getDependenciesByTask, updateTask, getBlockersForTask, tasks, addDependency, removeDependency, dependencies, setTaskUrgent } = useTaskStore();
   const { getProjectById } = useProjectStore();
   const { users } = useUserStore();
   const { user, isAdmin } = useAuth();
@@ -160,9 +160,14 @@ export default function TaskDetailPage({ params }: { params: Promise<{ id: strin
             <div className="bg-zinc-900/60 border border-zinc-800/50 rounded-xl p-6">
               <div className="flex items-start justify-between gap-4 mb-4">
                 <div>
-                  <div className="flex items-center gap-2 mb-2">
+                  <div className="flex items-center gap-2 mb-2 flex-wrap">
                     <StatusBadge status={task.status} />
                     <ComplexityBadge complexity={task.complexity} />
+                    {task.isUrgent && (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-red-500/20 border border-red-500/40 text-[10px] font-bold text-red-400">
+                        <Flame className="w-3 h-3" /> URGENTE
+                      </span>
+                    )}
                     {task.tags.map((tag) => (
                       <span key={tag} className="text-[10px] px-1.5 py-0.5 bg-zinc-800 text-zinc-400 rounded">{tag}</span>
                     ))}
@@ -179,7 +184,47 @@ export default function TaskDetailPage({ params }: { params: Promise<{ id: strin
                 </Select>
               </div>
 
-              {isBlocked && (
+              {/* Banner URGENTE */}
+              {task.isUrgent && (
+                <div className="flex items-center justify-between gap-3 p-3 rounded-lg bg-red-500/10 border border-red-500/30 mb-4">
+                  <div className="flex items-center gap-2">
+                    <Flame className="w-4 h-4 text-red-400 shrink-0 animate-pulse" />
+                    <div>
+                      <p className="text-sm font-bold text-red-300">Tarefa Urgente</p>
+                      <p className="text-xs text-red-400/70">Todas as demais tarefas do responsável estão bloqueadas até a conclusão desta</p>
+                    </div>
+                  </div>
+                  {isAdmin && (
+                    <button
+                      onClick={() => { setTaskUrgent(id, false); toast.success("Urgência removida — tarefas desbloqueadas"); }}
+                      className="shrink-0 px-2.5 py-1 rounded-md bg-red-500/20 hover:bg-red-500/30 text-red-300 text-xs font-medium transition-colors"
+                    >
+                      Remover urgência
+                    </button>
+                  )}
+                </div>
+              )}
+
+              {/* Banner bloqueado por urgência */}
+              {task.urgentBlockedById && (() => {
+                const urgentTask = tasks.find((t) => t.id === task.urgentBlockedById);
+                return urgentTask ? (
+                  <div className="flex items-start gap-2 p-3 rounded-lg bg-orange-500/10 border border-orange-500/20 mb-4">
+                    <ShieldAlert className="w-4 h-4 text-orange-400 shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-sm font-medium text-orange-300">Bloqueada por tarefa urgente</p>
+                      <div className="flex items-center gap-1.5 mt-0.5">
+                        <span className="text-xs text-orange-400/70">Aguardando conclusão de:</span>
+                        <Link href={`/tasks/${urgentTask.id}`} className="text-xs text-orange-300 hover:underline font-medium">
+                          {urgentTask.title}
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                ) : null;
+              })()}
+
+              {isBlocked && !task.urgentBlockedById && (
                 <div className="flex items-start gap-2 p-3 rounded-lg bg-red-500/10 border border-red-500/20 mb-4">
                   <Lock className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
                   <div>
@@ -196,6 +241,7 @@ export default function TaskDetailPage({ params }: { params: Promise<{ id: strin
                   </div>
                 </div>
               )}
+              {/* Fim banners de status */}
 
               <p className="text-sm text-zinc-300 leading-relaxed mb-4">{task.description}</p>
 
@@ -456,6 +502,36 @@ export default function TaskDetailPage({ params }: { params: Promise<{ id: strin
                   </div>
                 )}
               </div>
+
+              {/* Toggle urgência — sidebar */}
+              {isAdmin && (
+                <div className="pt-3 border-t border-zinc-800/50">
+                  <button
+                    onClick={() => {
+                      const next = !task.isUrgent;
+                      setTaskUrgent(id, next);
+                      toast[next ? "warning" : "success"](
+                        next ? "Tarefa marcada como URGENTE — outras tarefas bloqueadas" : "Urgência removida — tarefas desbloqueadas"
+                      );
+                    }}
+                    className={`w-full flex items-center justify-between p-2.5 rounded-lg border transition-all ${
+                      task.isUrgent
+                        ? "bg-red-500/10 border-red-500/30 hover:bg-red-500/15"
+                        : "bg-zinc-800/30 border-zinc-700/40 hover:border-zinc-600/50"
+                    }`}
+                  >
+                    <div className="flex items-center gap-2">
+                      <Flame className={`w-3.5 h-3.5 ${task.isUrgent ? "text-red-400" : "text-zinc-500"}`} />
+                      <span className={`text-xs font-medium ${task.isUrgent ? "text-red-300" : "text-zinc-400"}`}>
+                        {task.isUrgent ? "Urgente (ativo)" : "Marcar como Urgente"}
+                      </span>
+                    </div>
+                    <div className={`w-8 h-4 rounded-full relative transition-colors ${task.isUrgent ? "bg-red-500" : "bg-zinc-700"}`}>
+                      <div className={`absolute top-0.5 w-3 h-3 bg-white rounded-full shadow transition-all ${task.isUrgent ? "left-4" : "left-0.5"}`} />
+                    </div>
+                  </button>
+                </div>
+              )}
 
               <div className="pt-3 border-t border-zinc-800/50">
                 <div className="flex items-center justify-between mb-2">

@@ -9,7 +9,7 @@ import { useTaskStore, useProjectStore, useUserStore } from "@/stores";
 import { useAuth } from "@/hooks/use-auth";
 import { formatDate, ALL_STATUSES, getStatusLabel, cn } from "@/lib/utils";
 import { motion } from "framer-motion";
-import { ListTodo, Filter, Plus, Search, ChevronDown, Clock, AlertTriangle, Timer, Lock } from "lucide-react";
+import { ListTodo, Filter, Plus, Search, ChevronDown, Clock, AlertTriangle, Timer, Lock, Flame } from "lucide-react";
 import { useWorkSessionStore } from "@/stores/work-session-store";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
@@ -132,7 +132,17 @@ export default function TasksPage() {
                             {isBeingWorked && (
                               <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse shrink-0" />
                             )}
-                            {(() => {
+                            {task.isUrgent && (
+                              <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-red-500/20 border border-red-500/40 text-[9px] font-bold text-red-400 shrink-0">
+                                <Flame className="w-2.5 h-2.5" /> URGENTE
+                              </span>
+                            )}
+                            {task.urgentBlockedById && (
+                              <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-orange-500/15 border border-orange-500/25 text-[9px] font-semibold text-orange-400 shrink-0">
+                                <Lock className="w-2.5 h-2.5" /> urgência
+                              </span>
+                            )}
+                            {!task.isUrgent && !task.urgentBlockedById && (() => {
                               const blockers = getBlockersForTask(task.id);
                               return blockers.length > 0 ? (
                                 <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-red-500/15 border border-red-500/25 text-[9px] font-semibold text-red-400 shrink-0">

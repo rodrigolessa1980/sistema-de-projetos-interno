@@ -16,7 +16,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { ALL_STATUSES, getStatusLabel, COMPLEXITY_OPTIONS, getComplexityLabel } from "@/lib/utils";
 import type { TaskComplexity, TaskStatus } from "@/types";
 import { toast } from "sonner";
-import { Link2, X, AlertTriangle } from "lucide-react";
+import { Link2, X, AlertTriangle, Flame, ShieldAlert } from "lucide-react";
 
 const schema = z.object({
   title: z.string().min(5, "Mínimo 5 caracteres"),
@@ -39,13 +39,14 @@ interface Props {
 }
 
 export function TaskCreateDialog({ open, onOpenChange }: Props) {
-  const { createTask, addDependency, tasks, getBlockersForTask } = useTaskStore();
+  const { createTask, addDependency, tasks, getBlockersForTask, getUrgentTaskForDev } = useTaskStore();
   const { projects, modules, epics } = useProjectStore();
   const { users } = useUserStore();
   const { user } = useAuth();
 
   const [selectedDepIds, setSelectedDepIds] = useState<string[]>([]);
   const [depSearch, setDepSearch] = useState("");
+  const [isUrgent, setIsUrgent] = useState(false);
 
   const form = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -57,6 +58,14 @@ export function TaskCreateDialog({ open, onOpenChange }: Props) {
 
   const projectId = form.watch("projectId");
   const moduleId = form.watch("moduleId");
+  const assigneeId = form.watch("assigneeId");
+
+  // Tarefa urgente ativa para o dev selecionado
+  const existingUrgent = assigneeId ? getUrgentTaskForDev(assigneeId) : undefined;
+  // Qtd de tarefas do dev que serão bloqueadas
+  const willBlockCount = isUrgent && assigneeId
+    ? tasks.filter((t) => t.assigneeId === assigneeId && !["CONCLUIDA", "CANCELADA"].includes(t.status)).length
+    : 0;
   const filteredModules = modules.filter((m) => m.projectId === projectId);
   const filteredEpics = epics.filter((e) => e.moduleId === moduleId);
 
@@ -92,6 +101,7 @@ export function TaskCreateDialog({ open, onOpenChange }: Props) {
       dependencyIds: selectedDepIds,
       tags: [],
       order: 0,
+      isUrgent,
       blockedReason: hasPendingDeps
         ? `Aguardando conclusão de: ${selectedDepTasks.filter((t) => t.status !== "CONCLUIDA" && t.status !== "CANCELADA").map((t) => t.title).join(", ")}`
         : undefined,
@@ -102,7 +112,9 @@ export function TaskCreateDialog({ open, onOpenChange }: Props) {
       await addDependency({ taskId: task.id, dependsOnTaskId: depId, type: "BLOCKED_BY" });
     }
 
-    if (hasPendingDeps) {
+    if (isUrgent) {
+      toast.warning(`Tarefa URGENTE criada — ${willBlockCount} tarefa(s) do desenvolvedor foram bloqueadas`);
+    } else if (hasPendingDeps) {
       toast.warning("Tarefa criada como BLOQUEADA até que as dependências sejam concluídas");
     } else {
       toast.success("Tarefa criada com sucesso!");
@@ -111,6 +123,7 @@ export function TaskCreateDialog({ open, onOpenChange }: Props) {
     form.reset();
     setSelectedDepIds([]);
     setDepSearch("");
+    setIsUrgent(false);
   };
 
   return (
@@ -259,6 +272,56 @@ export function TaskCreateDialog({ open, onOpenChange }: Props) {
                 <FormMessage />
               </FormItem>
             )} />
+            {/* Urgente */}
+            <div className={`rounded-xl border p-3 transition-all cursor-pointer select-none ${
+              isUrgent
+                ? "bg-red-500/10 border-red-500/40"
+                : "bg-zinc-800/30 border-zinc-700/40 hover:border-zinc-600/50"
+            }`}
+              onClick={() => setIsUrgent((v) => !v)}
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-colors ${
+                    isUrgent ? "bg-red-500/20" : "bg-zinc-700/50"
+                  }`}>
+                    <Flame className={`w-4 h-4 transition-colors ${isUrgent ? "text-red-400" : "text-zinc-500"}`} />
+                  </div>
+                  <div>
+                    <p className={`text-sm font-semibold transition-colors ${isUrgent ? "text-red-300" : "text-zinc-300"}`}>
+                      Tarefa Urgente
+                    </p>
+                    <p className="text-[11px] text-zinc-500">Bloqueia todas as demais tarefas do responsável</p>
+                  </div>
+                </div>
+                {/* Toggle visual */}
+                <div className={`w-10 h-5 rounded-full transition-colors relative shrink-0 ${isUrgent ? "bg-red-500" : "bg-zinc-700"}`}>
+                  <div className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-all ${isUrgent ? "left-5" : "left-0.5"}`} />
+                </div>
+              </div>
+
+              {/* Aviso de impacto */}
+              {isUrgent && assigneeId && (
+                <div className="mt-2.5 pt-2.5 border-t border-red-500/20">
+                  {existingUrgent ? (
+                    <div className="flex items-start gap-1.5 text-[11px] text-amber-300">
+                      <AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+                      <span>Este dev já tem a tarefa urgente <strong>"{existingUrgent.title}"</strong> em andamento</span>
+                    </div>
+                  ) : willBlockCount > 0 ? (
+                    <div className="flex items-start gap-1.5 text-[11px] text-red-300">
+                      <ShieldAlert className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+                      <span><strong>{willBlockCount}</strong> tarefa{willBlockCount > 1 ? "s" : ""} do desenvolvedor serão bloqueadas até a conclusão desta</span>
+                    </div>
+                  ) : (
+                    <p className="text-[11px] text-zinc-500 flex items-center gap-1">
+                      <ShieldAlert className="w-3 h-3" /> Selecione um responsável para ver o impacto
+                    </p>
+                  )}
+                </div>
+              )}
+            </div>
+
             {/* Dependências */}
             {projectId && (
               <div className="space-y-2 pt-1">

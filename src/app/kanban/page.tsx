@@ -11,7 +11,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { AlertTriangle, Clock, GripVertical, Plus, Lock } from "lucide-react";
+import { AlertTriangle, Clock, GripVertical, Plus, Lock, Flame } from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link";
 import type { TaskStatus, Task } from "@/types";
@@ -72,7 +72,9 @@ function KanbanCard({ task, isDragging }: { task: Task; isDragging?: boolean }) 
       style={style}
       className={cn(
         "border rounded-xl p-3 group cursor-grab active:cursor-grabbing transition-all",
-        isBeingWorked
+        task.isUrgent
+          ? "bg-red-500/5 border-red-500/40 shadow-lg shadow-red-500/10"
+          : isBeingWorked
           ? "bg-violet-500/5 border-violet-500/40 shadow-lg shadow-violet-500/10"
           : "bg-zinc-900 border-zinc-800/60",
         isDragging && "shadow-2xl shadow-black/50 rotate-1"
@@ -91,13 +93,24 @@ function KanbanCard({ task, isDragging }: { task: Task; isDragging?: boolean }) 
 
       <div className="flex items-start justify-between gap-2 mb-2">
         <div className="flex items-center gap-1.5 flex-wrap">
-          {pendingBlockers.length > 0 ? (
+          {task.isUrgent && (
+            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-red-500/20 border border-red-500/40 text-[9px] font-bold text-red-400 animate-pulse">
+              <Flame className="w-2.5 h-2.5" /> URGENTE
+            </span>
+          )}
+          {task.urgentBlockedById && (
+            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-orange-500/15 border border-orange-500/25 text-[9px] font-semibold text-orange-400">
+              <Lock className="w-2.5 h-2.5" /> urgência
+            </span>
+          )}
+          {!task.isUrgent && !task.urgentBlockedById && pendingBlockers.length > 0 && (
             <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-red-500/15 border border-red-500/25 text-[9px] font-semibold text-red-400">
               <Lock className="w-2.5 h-2.5" /> {pendingBlockers.length} bloqueio{pendingBlockers.length > 1 ? "s" : ""}
             </span>
-          ) : task.status === "BLOQUEADA" ? (
+          )}
+          {!task.isUrgent && !task.urgentBlockedById && pendingBlockers.length === 0 && task.status === "BLOQUEADA" && (
             <AlertTriangle className="w-3 h-3 text-red-400 shrink-0" />
-          ) : null}
+          )}
           <ComplexityBadge complexity={task.complexity} />
         </div>
         <GripVertical className="w-3.5 h-3.5 text-zinc-700 opacity-0 group-hover:opacity-100 transition-opacity" />

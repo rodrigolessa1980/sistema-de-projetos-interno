@@ -110,6 +110,12 @@ export interface Task {
   tags: string[];
   order: number;
   blockedReason?: string;
+  /** Tarefa marcada como urgente — bloqueia todas as demais do mesmo dev */
+  isUrgent?: boolean;
+  /** ID da tarefa urgente que bloqueou esta tarefa */
+  urgentBlockedById?: string;
+  /** Status anterior ao bloqueio por urgência, para restaurar depois */
+  urgentPreviousStatus?: TaskStatus;
   createdAt: string;
   updatedAt: string;
 }
