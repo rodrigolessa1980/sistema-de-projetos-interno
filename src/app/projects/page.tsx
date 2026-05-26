@@ -219,17 +219,17 @@ export default function ProjectsPage() {
                       </div>
                     </div>
                     <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <button className="p-1.5 rounded-lg opacity-0 group-hover:opacity-100 hover:bg-zinc-700 text-zinc-400 transition-all">
+                      <DropdownMenuTrigger
+                        render={<button className="p-1.5 rounded-lg opacity-0 group-hover:opacity-100 hover:bg-zinc-700 text-zinc-400 transition-all">
                           <MoreVertical className="w-3.5 h-3.5" />
-                        </button>
-                      </DropdownMenuTrigger>
+                        </button>}
+                      />
                       <DropdownMenuContent className="bg-zinc-900 border-zinc-700/50 w-52">
-                        <DropdownMenuItem asChild>
-                          <Link href={`/projects/${project.id}`} className="flex items-center gap-2">
+                        <DropdownMenuItem
+                          render={<Link href={`/projects/${project.id}`} className="flex items-center gap-2">
                             <Eye className="w-3.5 h-3.5" /> Ver detalhes
-                          </Link>
-                        </DropdownMenuItem>
+                          </Link>}
+                        />
                         {isAdmin && (
                           <>
                             <DropdownMenuItem

@@ -131,9 +131,9 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
   createModule: async (data) => {
     await delay(200);
     const now = new Date().toISOString();
-    const module: Module = { ...data, id: generateId("mod"), createdAt: now, updatedAt: now };
-    set((state) => ({ modules: [...state.modules, module] }));
-    return module;
+    const projectModule: Module = { ...data, id: generateId("mod"), createdAt: now, updatedAt: now };
+    set((state) => ({ modules: [...state.modules, projectModule] }));
+    return projectModule;
   },
 
   deleteModule: (id) => {

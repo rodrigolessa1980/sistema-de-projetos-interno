@@ -24,14 +24,14 @@ function formatBytes(bytes: number): string {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-function getFileIcon(mimeType: string) {
-  if (mimeType.startsWith("image/")) return FileImage;
-  if (mimeType.startsWith("video/")) return FileVideo;
+function FileTypeIcon({ mimeType }: { mimeType: string }) {
+  if (mimeType.startsWith("image/")) return <FileImage className="w-4.5 h-4.5" />;
+  if (mimeType.startsWith("video/")) return <FileVideo className="w-4.5 h-4.5" />;
   if (mimeType.includes("zip") || mimeType.includes("rar") || mimeType.includes("tar"))
-    return FileArchive;
+    return <FileArchive className="w-4.5 h-4.5" />;
   if (mimeType.includes("pdf") || mimeType.includes("text") || mimeType.includes("document"))
-    return FileText;
-  return File;
+    return <FileText className="w-4.5 h-4.5" />;
+  return <File className="w-4.5 h-4.5" />;
 }
 
 function getFileColor(mimeType: string): string {
@@ -53,7 +53,6 @@ interface AttachmentCardProps {
 function AttachmentCard({ attachment, onDelete, currentUserId }: AttachmentCardProps) {
   const { users } = useUserStore();
   const uploader = users.find((u) => u.id === attachment.userId);
-  const Icon = getFileIcon(attachment.type);
   const colorClass = getFileColor(attachment.type);
   const isImage = attachment.type.startsWith("image/");
 
@@ -88,7 +87,7 @@ function AttachmentCard({ attachment, onDelete, currentUserId }: AttachmentCardP
       <div className="flex items-center gap-3 p-3">
         {/* Ícone */}
         <div className={cn("w-9 h-9 rounded-lg flex items-center justify-center shrink-0", colorClass)}>
-          <Icon className="w-4.5 h-4.5" />
+          <FileTypeIcon mimeType={attachment.type} />
         </div>
 
         {/* Info */}

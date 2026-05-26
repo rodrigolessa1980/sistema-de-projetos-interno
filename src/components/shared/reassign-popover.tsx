@@ -45,8 +45,8 @@ export function ReassignPopover({
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button
+      <PopoverTrigger
+        render={<Button
           variant="ghost"
           size="sm"
           className="h-6 px-1.5 text-[10px] text-violet-400 hover:text-violet-300 hover:bg-violet-500/10 gap-1 font-normal"
@@ -54,8 +54,8 @@ export function ReassignPopover({
           <UserRoundCog className="w-3 h-3" />
           {label}
           <ChevronsUpDown className="w-2.5 h-2.5 opacity-50" />
-        </Button>
-      </PopoverTrigger>
+        </Button>}
+      />
       <PopoverContent
         className="w-64 p-0 bg-zinc-950 border-zinc-800 shadow-2xl"
         align="start"

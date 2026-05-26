@@ -7,7 +7,7 @@ import { useTaskStore, useUserStore } from "@/stores";
 import { useAuth } from "@/hooks/use-auth";
 import { formatDate, formatHours } from "@/lib/utils";
 import { motion } from "framer-motion";
-import { Clock, Plus, Timer, User2 } from "lucide-react";
+import { Clock, Timer, TrendingUp, User2 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { StatusBadge } from "@/components/shared/task-badge";
@@ -51,7 +51,7 @@ export default function TimeLogsPage() {
 
         {isAdmin && (
           <div className="flex items-center gap-3">
-            <Select value={userFilter} onValueChange={setUserFilter}>
+            <Select value={userFilter} onValueChange={(value) => setUserFilter(value ?? "all")}>
               <SelectTrigger className="w-48 bg-zinc-800/50 border-zinc-700/50 text-zinc-300 h-9">
                 <SelectValue />
               </SelectTrigger>
@@ -116,14 +116,5 @@ export default function TimeLogsPage() {
         </div>
       </div>
     </AppLayout>
-  );
-}
-
-function TrendingUp({ className }: { className?: string }) {
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-      <polyline points="22 7 13.5 15.5 8.5 10.5 2 17" />
-      <polyline points="16 7 22 7 22 13" />
-    </svg>
   );
 }

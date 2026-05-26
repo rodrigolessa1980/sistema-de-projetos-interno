@@ -5,19 +5,18 @@ import { AppLayout } from "@/components/layout/app-layout";
 import { useTaskStore, useProjectStore, useUserStore } from "@/stores";
 import { useAuth } from "@/hooks/use-auth";
 import { useUpdateTaskStatus } from "@/hooks/use-tasks";
-import { StatusBadge, ComplexityBadge } from "@/components/shared/task-badge";
-import { formatDate, ALL_STATUSES, getStatusLabel, getStatusDotColor } from "@/lib/utils";
+import { ComplexityBadge } from "@/components/shared/task-badge";
+import { formatDate, getStatusLabel, getStatusDotColor } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
 import { AlertTriangle, Clock, GripVertical, Plus, Lock, Flame } from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link";
 import type { TaskStatus, Task } from "@/types";
 import {
-  DndContext, closestCorners, PointerSensor, useSensor, useSensors,
-  type DragEndEvent, type DragOverEvent, DragOverlay, type DragStartEvent,
+  DndContext, closestCorners, PointerSensor, useDroppable, useSensor, useSensors,
+  type DragEndEvent, DragOverlay, type DragStartEvent,
 } from "@dnd-kit/core";
 import {
   SortableContext, useSortable, verticalListSortingStrategy,
@@ -30,11 +29,12 @@ import { useWorkSessionStore } from "@/stores/work-session-store";
 import { formatElapsed } from "@/hooks/use-work-session";
 
 const KANBAN_STATUSES: TaskStatus[] = [
-  "BACKLOG", "PLANEJADA", "EM_DESENVOLVIMENTO", "EM_REVISAO", "HOMOLOGACAO", "CONCLUIDA",
+  "BACKLOG", "PLANEJADA", "BLOQUEADA", "EM_DESENVOLVIMENTO",
+  "EM_REVISAO", "HOMOLOGACAO", "CONCLUIDA", "CANCELADA",
 ];
 
 /** Cronômetro inline leve — só renderiza quando a tarefa está ativa */
-function ActiveElapsed({ taskId }: { taskId: string }) {
+function ActiveElapsed() {
   const { getElapsedSeconds } = useWorkSessionStore();
   const [elapsed, setElapsed] = useState(getElapsedSeconds);
 
@@ -87,7 +87,7 @@ function KanbanCard({ task, isDragging }: { task: Task; isDragging?: boolean }) 
         <div className="flex items-center gap-1.5 mb-2 px-2 py-1 rounded-md bg-violet-500/15 border border-violet-500/20">
           <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse shrink-0" />
           <span className="text-[10px] font-semibold text-violet-300">Em andamento</span>
-          <ActiveElapsed taskId={task.id} />
+          <ActiveElapsed />
         </div>
       )}
 
@@ -150,11 +150,21 @@ function KanbanCard({ task, isDragging }: { task: Task; isDragging?: boolean }) 
   );
 }
 
-function KanbanColumn({ status, tasks, onDrop }: { status: TaskStatus; tasks: Task[]; onDrop?: () => void }) {
+function KanbanColumn({ status, tasks }: { status: TaskStatus; tasks: Task[] }) {
   const dotColor = getStatusDotColor(status);
+  const { isOver, setNodeRef } = useDroppable({
+    id: status,
+    data: { type: "column", status },
+  });
 
   return (
-    <div className="flex flex-col h-full min-w-0 bg-zinc-900/30 rounded-xl border border-zinc-800/40 overflow-hidden">
+    <div
+      ref={setNodeRef}
+      className={cn(
+        "flex flex-col h-full min-w-0 bg-zinc-900/30 rounded-xl border overflow-hidden transition-colors",
+        isOver ? "border-violet-500/60 bg-violet-500/5" : "border-zinc-800/40"
+      )}
+    >
       <div className="flex items-center justify-between p-3 border-b border-zinc-800/40">
         <div className="flex items-center gap-2">
           <div className={cn("w-2 h-2 rounded-full", dotColor)} />
@@ -166,7 +176,7 @@ function KanbanColumn({ status, tasks, onDrop }: { status: TaskStatus; tasks: Ta
       </div>
 
       <div className="flex-1 overflow-y-auto p-2 space-y-2">
-        <SortableContext items={tasks.map((t) => t.id)} strategy={verticalListSortingStrategy}>
+        <SortableContext id={status} items={tasks.map((t) => t.id)} strategy={verticalListSortingStrategy}>
           <AnimatePresence>
             {tasks.map((task) => (
               <motion.div
@@ -194,7 +204,7 @@ function KanbanColumn({ status, tasks, onDrop }: { status: TaskStatus; tasks: Ta
 const BLOCKED_TRANSITIONS: TaskStatus[] = ["EM_DESENVOLVIMENTO", "EM_REVISAO", "HOMOLOGACAO", "CONCLUIDA"];
 
 export default function KanbanPage() {
-  const { tasks, updateTaskStatus, reorderTasks, getBlockersForTask } = useTaskStore();
+  const { tasks, reorderTasks, getBlockersForTask } = useTaskStore();
   const { projects } = useProjectStore();
   const { user, isAdmin } = useAuth();
   const updateStatusMutation = useUpdateTaskStatus();
@@ -234,7 +244,22 @@ export default function KanbanPage() {
     if (!activeTask) return;
 
     const overTask = tasks.find((t) => t.id === over.id);
-    const targetStatus = (over.data.current?.sortable?.containerId ?? overTask?.status ?? activeTask.status) as TaskStatus;
+    const overColumn = KANBAN_STATUSES.includes(over.id as TaskStatus) ? over.id as TaskStatus : null;
+    const targetStatus = overColumn ?? overTask?.status ?? activeTask.status;
+
+    if (activeTask.status === targetStatus) {
+      if (!overTask || overTask.projectId !== activeTask.projectId) return;
+      const ids = (tasksByStatus[targetStatus] ?? [])
+        .filter((task) => task.projectId === activeTask.projectId)
+        .map((task) => task.id);
+      const oldIndex = ids.indexOf(activeTask.id);
+      const newIndex = ids.indexOf(overTask.id);
+      if (oldIndex !== -1 && newIndex !== -1 && oldIndex !== newIndex) {
+        reorderTasks(activeTask.projectId, targetStatus, arrayMove(ids, oldIndex, newIndex));
+        toast.success("Ordem das tarefas atualizada");
+      }
+      return;
+    }
 
     if (activeTask.status !== targetStatus) {
       if (BLOCKED_TRANSITIONS.includes(targetStatus)) {
@@ -267,7 +292,7 @@ export default function KanbanPage() {
             <p className="text-xs text-zinc-500">{visibleTasks.length} {visibleTasks.length === 1 ? "tarefa" : "tarefas"}</p>
           </div>
           <div className="flex items-center gap-3">
-            <Select value={projectFilter} onValueChange={setProjectFilter}>
+            <Select value={projectFilter} onValueChange={(value) => setProjectFilter(value ?? "all")}>
               <SelectTrigger className="w-44 bg-zinc-800/50 border-zinc-700/50 text-zinc-300 h-8 text-xs">
                 <SelectValue placeholder="Todos os projetos" />
               </SelectTrigger>

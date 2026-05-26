@@ -6,7 +6,7 @@ export default defineConfig({
   schema: 'prisma/schema.prisma',
   migrations: {
     path: 'prisma/migrations',
-    seed: 'ts-node --compiler-options {"module":"CommonJS"} prisma/seed.ts',
+    seed: 'npm run prisma:seed:run',
   },
   datasource: {
     url: buildMysqlConnectionString(),

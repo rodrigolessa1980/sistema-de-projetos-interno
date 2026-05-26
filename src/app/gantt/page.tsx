@@ -90,7 +90,7 @@ export default function GanttPage() {
                 <ChevronRight className="w-4 h-4" />
               </button>
             </div>
-            <Select value={projectFilter} onValueChange={setProjectFilter}>
+            <Select value={projectFilter} onValueChange={(value) => setProjectFilter(value ?? "all")}>
               <SelectTrigger className="w-44 bg-zinc-800/50 border-zinc-700/50 text-zinc-300 h-8 text-xs">
                 <SelectValue />
               </SelectTrigger>

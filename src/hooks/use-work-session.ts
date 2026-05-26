@@ -23,24 +23,21 @@ export function useWorkSession(taskId: string) {
     useWorkSessionStore();
   const { logTime, updateTaskStatus, getTaskById } = useTaskStore();
 
-  const [elapsed, setElapsed] = useState(getElapsedSeconds);
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-
   const isActive = isWorking(taskId);
+  const [elapsed, setElapsed] = useState(() => isActive ? getElapsedSeconds() : 0);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Tick em tempo real enquanto a sessão estiver ativa para ESTE task
   useEffect(() => {
-    if (isActive) {
-      // Sincroniza com o valor real ao montar (ex: volta de outra página)
+    if (!isActive) return;
+
+    const initialTick = setTimeout(() => setElapsed(getElapsedSeconds()), 0);
+    intervalRef.current = setInterval(() => {
       setElapsed(getElapsedSeconds());
-      intervalRef.current = setInterval(() => {
-        setElapsed(getElapsedSeconds());
-      }, 1000);
-    } else {
-      setElapsed(0);
-    }
+    }, 1000);
 
     return () => {
+      clearTimeout(initialTick);
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
   }, [isActive, getElapsedSeconds]);
@@ -63,6 +60,7 @@ export function useWorkSession(taskId: string) {
     }
 
     startSession(taskId, user.id);
+    setElapsed(0);
     toast.success("Cronômetro iniciado! Bom trabalho 🚀", { duration: 3000 });
   }, [user, activeSession, taskId, getTaskById, updateTaskStatus, startSession]);
 
@@ -74,6 +72,7 @@ export function useWorkSession(taskId: string) {
       if (!result) return;
 
       const { hours, elapsedSeconds } = result;
+      setElapsed(0);
 
       // Registra automaticamente o tempo no time log
       await logTime({
@@ -99,13 +98,16 @@ export function useWorkSession(taskId: string) {
 
   const cancel = useCallback(() => {
     cancelSession();
+    setElapsed(0);
     toast.info("Sessão cancelada. Tempo não registrado.");
   }, [cancelSession]);
 
+  const displayedElapsed = isActive ? elapsed : 0;
+
   return {
     isActive,
-    elapsed,
-    elapsedFormatted: formatElapsed(elapsed),
+    elapsed: displayedElapsed,
+    elapsedFormatted: formatElapsed(displayedElapsed),
     /** Se há alguma sessão ativa em outra task */
     hasOtherActiveSession: !!activeSession && activeSession.taskId !== taskId,
     activeSession,
@@ -122,17 +124,17 @@ export function useActiveWorkSession() {
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
-    if (activeSession) {
-      setElapsed(getElapsedSeconds());
-      intervalRef.current = setInterval(() => setElapsed(getElapsedSeconds()), 1000);
-    } else {
-      setElapsed(0);
-      if (intervalRef.current) clearInterval(intervalRef.current);
-    }
+    if (!activeSession) return;
+
+    const initialTick = setTimeout(() => setElapsed(getElapsedSeconds()), 0);
+    intervalRef.current = setInterval(() => setElapsed(getElapsedSeconds()), 1000);
+
     return () => {
+      clearTimeout(initialTick);
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
   }, [activeSession, getElapsedSeconds]);
 
-  return { activeSession, elapsed, elapsedFormatted: formatElapsed(elapsed) };
+  const displayedElapsed = activeSession ? elapsed : 0;
+  return { activeSession, elapsed: displayedElapsed, elapsedFormatted: formatElapsed(displayedElapsed) };
 }

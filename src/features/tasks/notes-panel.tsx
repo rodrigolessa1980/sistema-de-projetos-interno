@@ -320,7 +320,9 @@ export function NotesPanel({ taskId }: NotesPanelProps) {
                 key={note.id}
                 note={note}
                 currentUserId={user?.id ?? ""}
-                onUpdate={updateNote}
+                onUpdate={async (noteId, content) => {
+                  await updateNote(noteId, content);
+                }}
                 onDelete={deleteNote}
                 onTogglePin={togglePinNote}
               />

@@ -32,7 +32,7 @@ export default function DependenciesPage() {
             <h1 className="text-xl font-bold text-zinc-100">Dependências entre Tarefas</h1>
             <p className="text-sm text-zinc-500">{visibleDeps.length} dependências encontradas</p>
           </div>
-          <Select value={projectFilter} onValueChange={setProjectFilter}>
+          <Select value={projectFilter} onValueChange={(value) => setProjectFilter(value ?? "all")}>
             <SelectTrigger className="w-48 bg-zinc-800/50 border-zinc-700/50 text-zinc-300 h-9">
               <SelectValue />
             </SelectTrigger>

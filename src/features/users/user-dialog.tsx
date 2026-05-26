@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -37,12 +37,17 @@ interface UserDialogProps {
   editUser?: User | null;
 }
 
-export function UserDialog({ open, onOpenChange, editUser }: UserDialogProps) {
+export function UserDialog(props: UserDialogProps) {
+  const formKey = `${props.open ? "open" : "closed"}-${props.editUser?.id ?? "new"}-${props.editUser?.updatedAt ?? ""}`;
+  return <UserDialogForm {...props} key={formKey} />;
+}
+
+function UserDialogForm({ open, onOpenChange, editUser }: UserDialogProps) {
   const { createUser, updateUser } = useUserStore();
   const { projects, addDeveloperToProject, removeDeveloperFromProject } = useProjectStore();
   const { tasks, updateTask } = useTaskStore();
 
-  const [selectedProjects, setSelectedProjects] = useState<string[]>([]);
+  const [selectedProjects, setSelectedProjects] = useState<string[]>(() => editUser?.projectIds ?? []);
   const [selectedTaskId, setSelectedTaskId] = useState<string>("");
   const [isSaving, setIsSaving] = useState(false);
 
@@ -50,31 +55,22 @@ export function UserDialog({ open, onOpenChange, editUser }: UserDialogProps) {
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
-    defaultValues: {
-      name: "",
-      email: "",
-      role: "DEVELOPER",
-      position: "",
-      department: "",
-    },
+    defaultValues: editUser
+      ? {
+          name: editUser.name,
+          email: editUser.email,
+          role: editUser.role,
+          position: editUser.position,
+          department: editUser.department,
+        }
+      : {
+          name: "",
+          email: "",
+          role: "DEVELOPER",
+          position: "",
+          department: "",
+        },
   });
-
-  useEffect(() => {
-    if (editUser) {
-      form.reset({
-        name: editUser.name,
-        email: editUser.email,
-        role: editUser.role,
-        position: editUser.position,
-        department: editUser.department,
-      });
-      setSelectedProjects(editUser.projectIds ?? []);
-    } else {
-      form.reset({ name: "", email: "", role: "DEVELOPER", position: "", department: "" });
-      setSelectedProjects([]);
-      setSelectedTaskId("");
-    }
-  }, [editUser, open]);
 
   const availableTasks = tasks.filter((t) =>
     selectedProjects.includes(t.projectId) && !t.assigneeId
@@ -251,7 +247,7 @@ export function UserDialog({ open, onOpenChange, editUser }: UserDialogProps) {
                     : "Sem tarefas sem responsável nos projetos selecionados"}
                 </p>
               ) : (
-                <Select value={selectedTaskId} onValueChange={setSelectedTaskId}>
+                <Select value={selectedTaskId} onValueChange={(value) => setSelectedTaskId(value ?? "")}>
                   <SelectTrigger className="bg-zinc-900 border-zinc-700 text-zinc-300 text-sm">
                     <SelectValue placeholder="Selecionar tarefa..." />
                   </SelectTrigger>

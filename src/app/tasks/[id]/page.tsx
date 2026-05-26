@@ -77,7 +77,8 @@ export default function TaskDetailPage({ params }: { params: Promise<{ id: strin
 
   const BLOCKED_STATUSES: TaskStatus[] = ["EM_DESENVOLVIMENTO", "EM_REVISAO", "HOMOLOGACAO", "CONCLUIDA"];
 
-  const handleStatusChange = async (status: TaskStatus) => {
+  const handleStatusChange = async (status: TaskStatus | null) => {
+    if (!status) return;
     try {
       await updateStatus.mutateAsync({ taskId: id, status, userId: user?.id ?? "" });
     } catch (err: unknown) {
@@ -111,7 +112,8 @@ export default function TaskDetailPage({ params }: { params: Promise<{ id: strin
       const t = tasks.find((tt) => tt.id === d.dependsOnTaskId);
       return t && t.status !== "CONCLUIDA" && t.status !== "CANCELADA";
     });
-    if (!stillBlocked && task.status === "BLOQUEADA") {
+    const currentTask = getTaskById(id);
+    if (!stillBlocked && currentTask?.status === "BLOQUEADA") {
       await updateTask(id, { status: "PLANEJADA", blockedReason: undefined });
       toast.success("Dependência removida — tarefa desbloqueada");
     } else {

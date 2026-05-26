@@ -13,19 +13,22 @@ import {
   BarChart, Bar, PieChart, Pie, Cell, Legend, RadarChart, Radar, PolarGrid,
   PolarAngleAxis, LineChart, Line,
 } from "recharts";
+import type { PieLabelRenderProps } from "recharts";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState } from "react";
 import { useProjectStore } from "@/stores";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const RADIAN = Math.PI / 180;
-const renderCustomLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent }: Record<string, number>) => {
+const renderCustomLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent }: PieLabelRenderProps) => {
+  const angle = midAngle ?? 0;
+  const ratio = percent ?? 0;
   const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
-  const x = cx + radius * Math.cos(-midAngle * RADIAN);
-  const y = cy + radius * Math.sin(-midAngle * RADIAN);
-  return percent > 0.05 ? (
+  const x = cx + radius * Math.cos(-angle * RADIAN);
+  const y = cy + radius * Math.sin(-angle * RADIAN);
+  return ratio > 0.05 ? (
     <text x={x} y={y} fill="white" textAnchor="middle" dominantBaseline="central" fontSize={11}>
-      {`${(percent * 100).toFixed(0)}%`}
+      {`${(ratio * 100).toFixed(0)}%`}
     </text>
   ) : null;
 };
@@ -56,7 +59,7 @@ export default function MetricsPage() {
             <h1 className="text-xl font-bold text-zinc-100">Dashboard de Métricas</h1>
             <p className="text-sm text-zinc-500">Análise de produtividade e desempenho</p>
           </div>
-          <Select value={projectFilter} onValueChange={setProjectFilter}>
+          <Select value={projectFilter} onValueChange={(value) => setProjectFilter(value ?? "all")}>
             <SelectTrigger className="w-48 bg-zinc-800/50 border-zinc-700/50 text-zinc-300 h-9">
               <SelectValue />
             </SelectTrigger>

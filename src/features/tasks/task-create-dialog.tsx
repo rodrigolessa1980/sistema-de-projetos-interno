@@ -306,7 +306,7 @@ export function TaskCreateDialog({ open, onOpenChange }: Props) {
                   {existingUrgent ? (
                     <div className="flex items-start gap-1.5 text-[11px] text-amber-300">
                       <AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
-                      <span>Este dev já tem a tarefa urgente <strong>"{existingUrgent.title}"</strong> em andamento</span>
+                      <span>Este dev já tem a tarefa urgente <strong>&quot;{existingUrgent.title}&quot;</strong> em andamento</span>
                     </div>
                   ) : willBlockCount > 0 ? (
                     <div className="flex items-start gap-1.5 text-[11px] text-red-300">

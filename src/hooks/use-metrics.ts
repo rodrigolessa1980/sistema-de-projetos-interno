@@ -5,8 +5,14 @@ import { useTaskStore } from "@/stores";
 import { useProjectStore } from "@/stores";
 import type { MetricSummary } from "@/types";
 
+const SPRINT_VELOCITY = [28, 31, 35, 33, 38, 34, 39, 36].map((points, index) => ({
+  sprint: `S${index + 1}`,
+  pontos: points,
+  meta: 35,
+}));
+
 export function useMetrics(projectId?: string) {
-  const { tasks, timeLogs, statusHistory } = useTaskStore();
+  const { tasks, timeLogs } = useTaskStore();
   const { projects } = useProjectStore();
 
   const filteredTasks = useMemo(
@@ -45,7 +51,9 @@ export function useMetrics(projectId?: string) {
       totalHoursActual: totalActual,
       averageLeadTime: Math.round(avgLeadTime),
       averageCycleTime: Math.round(avgLeadTime * 0.7),
-      reworkRate: Math.round(Math.random() * 15 + 5),
+      reworkRate: filteredTasks.length > 0
+        ? Math.round((blocked.length / filteredTasks.length) * 100)
+        : 0,
       estimationAccuracy: accuracy,
       throughput: Math.round(completed.length / Math.max(1, activeProjects)),
     };
@@ -75,13 +83,7 @@ export function useMetrics(projectId?: string) {
     return data;
   }, [filteredTasks]);
 
-  const velocityData = useMemo(() => {
-    return Array.from({ length: 8 }, (_, i) => ({
-      sprint: `S${i + 1}`,
-      pontos: Math.round(Math.random() * 30 + 20),
-      meta: 35,
-    }));
-  }, []);
+  const velocityData = SPRINT_VELOCITY;
 
   const complexityDistribution = useMemo(() => {
     const dist: Record<number, number> = { 1: 0, 2: 0, 3: 0, 5: 0, 8: 0 };

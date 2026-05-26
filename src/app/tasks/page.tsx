@@ -61,7 +61,7 @@ export default function TasksPage() {
               className="pl-9 bg-zinc-800/50 border-zinc-700/50 text-zinc-100 h-9"
             />
           </div>
-          <Select value={statusFilter} onValueChange={setStatusFilter}>
+          <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value ?? "all")}>
             <SelectTrigger className="w-44 bg-zinc-800/50 border-zinc-700/50 text-zinc-300 h-9">
               <SelectValue placeholder="Status" />
             </SelectTrigger>
@@ -72,7 +72,7 @@ export default function TasksPage() {
               ))}
             </SelectContent>
           </Select>
-          <Select value={projectFilter} onValueChange={setProjectFilter}>
+          <Select value={projectFilter} onValueChange={(value) => setProjectFilter(value ?? "all")}>
             <SelectTrigger className="w-48 bg-zinc-800/50 border-zinc-700/50 text-zinc-300 h-9">
               <SelectValue placeholder="Projeto" />
             </SelectTrigger>

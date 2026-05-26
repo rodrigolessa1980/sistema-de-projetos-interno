@@ -148,8 +148,8 @@ export function Sidebar() {
                       if (sidebarCollapsed) {
                         return (
                           <Tooltip key={item.href}>
-                            <TooltipTrigger asChild>
-                              <Link
+                            <TooltipTrigger
+                              render={<Link
                                 href={item.href}
                                 className={cn(
                                   "flex items-center justify-center w-10 h-10 mx-auto rounded-lg mb-0.5 transition-all",
@@ -159,8 +159,8 @@ export function Sidebar() {
                                 )}
                               >
                                 <Icon className="w-4.5 h-4.5" />
-                              </Link>
-                            </TooltipTrigger>
+                              </Link>}
+                            />
                             <TooltipContent side="right">{item.label}</TooltipContent>
                           </Tooltip>
                         );
@@ -222,22 +222,22 @@ export function Sidebar() {
             </div>
             <div className="flex items-center gap-1">
               <Tooltip>
-                <TooltipTrigger asChild>
-                  <Link href="/profile" className="p-1.5 rounded-md text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800 transition-colors">
+                <TooltipTrigger
+                  render={<Link href="/profile" className="p-1.5 rounded-md text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800 transition-colors">
                     <Settings className="w-3.5 h-3.5" />
-                  </Link>
-                </TooltipTrigger>
+                  </Link>}
+                />
                 <TooltipContent>Perfil</TooltipContent>
               </Tooltip>
               <Tooltip>
-                <TooltipTrigger asChild>
-                  <button
+                <TooltipTrigger
+                  render={<button
                     onClick={handleLogout}
                     className="p-1.5 rounded-md text-zinc-400 hover:text-red-400 hover:bg-red-500/10 transition-colors"
                   >
                     <LogOut className="w-3.5 h-3.5" />
-                  </button>
-                </TooltipTrigger>
+                  </button>}
+                />
                 <TooltipContent>Sair</TooltipContent>
               </Tooltip>
             </div>

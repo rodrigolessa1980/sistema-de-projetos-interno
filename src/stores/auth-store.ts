@@ -22,7 +22,7 @@ export const useAuthStore = create<AuthStore>()(
   persist(
     (set, get) => ({
       session: null,
-      isLoading: false,
+      isLoading: true,
       error: null,
 
       get user() {
@@ -37,7 +37,7 @@ export const useAuthStore = create<AuthStore>()(
 
       initSession: () => {
         const session = getStoredSession();
-        set({ session });
+        set({ session, isLoading: false });
       },
 
       login: async (credentials) => {

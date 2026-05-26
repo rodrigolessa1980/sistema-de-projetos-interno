@@ -2,8 +2,9 @@
 
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type { Notification } from "@/types";
+import type { Notification, User } from "@/types";
 import { mockNotifications } from "@/mocks";
+import { mockUsers } from "@/mocks/users";
 
 interface UIStore {
   sidebarCollapsed: boolean;
@@ -15,7 +16,7 @@ interface UIStore {
   toggleSidebar: () => void;
   setSidebarCollapsed: (collapsed: boolean) => void;
   markNotificationRead: (id: string) => void;
-  markAllRead: () => void;
+  markAllRead: (userId?: string) => void;
   addNotification: (notif: Omit<Notification, "id" | "createdAt">) => void;
   setSearchQuery: (query: string) => void;
   setSearchOpen: (open: boolean) => void;
@@ -23,7 +24,7 @@ interface UIStore {
 
 export const useUIStore = create<UIStore>()(
   persist(
-    (set, get) => ({
+    (set) => ({
       sidebarCollapsed: false,
       notifications: [...mockNotifications],
       unreadCount: mockNotifications.filter((n) => !n.read).length,
@@ -41,10 +42,12 @@ export const useUIStore = create<UIStore>()(
           return { notifications: updated, unreadCount: updated.filter((n) => !n.read).length };
         }),
 
-      markAllRead: () =>
+      markAllRead: (userId) =>
         set((state) => ({
-          notifications: state.notifications.map((n) => ({ ...n, read: true })),
-          unreadCount: 0,
+          notifications: state.notifications.map((n) =>
+            !userId || n.userId === userId ? { ...n, read: true } : n
+          ),
+          unreadCount: state.notifications.filter((n) => !n.read && (!userId || n.userId !== userId)).length,
         })),
 
       addNotification: (notif) => {
@@ -71,52 +74,49 @@ export const useUIStore = create<UIStore>()(
 );
 
 interface UserStore {
-  users: import("@/types").User[];
-  getUserById: (id: string) => import("@/types").User | undefined;
-  createUser: (data: Omit<import("@/types").User, "id" | "createdAt" | "updatedAt">) => import("@/types").User;
-  updateUser: (id: string, data: Partial<import("@/types").User>) => void;
+  users: User[];
+  getUserById: (id: string) => User | undefined;
+  createUser: (data: Omit<User, "id" | "createdAt" | "updatedAt">) => User;
+  updateUser: (id: string, data: Partial<User>) => void;
   deleteUser: (id: string) => void;
 }
 
 export const useUserStore = create<UserStore>()(
-  (persist as any)(
-    (set: any, get: any) => {
-      const { mockUsers } = require("@/mocks/users");
-      return {
-        users: [...mockUsers],
-        getUserById: (id: string) => get().users.find((u: import("@/types").User) => u.id === id),
+  persist(
+    (set, get) => ({
+      users: [...mockUsers],
+      getUserById: (id) => get().users.find((user) => user.id === id),
 
-        createUser: (data: Omit<import("@/types").User, "id" | "createdAt" | "updatedAt">) => {
-          const now = new Date().toISOString();
-          const user: import("@/types").User = {
-            ...data,
-            id: `user-${Date.now()}`,
-            createdAt: now,
-            updatedAt: now,
-          };
-          set((state: UserStore) => ({ users: [...state.users, user] }));
-          return user;
-        },
+      createUser: (data) => {
+        const now = new Date().toISOString();
+        const user: User = {
+          ...data,
+          id: `user-${Date.now()}`,
+          createdAt: now,
+          updatedAt: now,
+        };
+        set((state) => ({ users: [...state.users, user] }));
+        return user;
+      },
 
-        updateUser: (id: string, data: Partial<import("@/types").User>) => {
-          const now = new Date().toISOString();
-          set((state: UserStore) => ({
-            users: state.users.map((u) =>
-              u.id === id ? { ...u, ...data, updatedAt: now } : u
-            ),
-          }));
-        },
+      updateUser: (id, data) => {
+        const now = new Date().toISOString();
+        set((state) => ({
+          users: state.users.map((user) =>
+            user.id === id ? { ...user, ...data, updatedAt: now } : user
+          ),
+        }));
+      },
 
-        deleteUser: (id: string) => {
-          set((state: UserStore) => ({
-            users: state.users.filter((u) => u.id !== id),
-          }));
-        },
-      };
-    },
+      deleteUser: (id) => {
+        set((state) => ({
+          users: state.users.filter((user) => user.id !== id),
+        }));
+      },
+    }),
     {
       name: "devflow-users-v3",
-      partialize: (state: UserStore) => ({ users: state.users }),
+      partialize: (state) => ({ users: state.users }),
     }
   )
 );

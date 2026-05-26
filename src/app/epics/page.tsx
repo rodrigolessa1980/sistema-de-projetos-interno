@@ -1,15 +1,27 @@
 "use client";
 
+import { useState } from "react";
 import { AppLayout } from "@/components/layout/app-layout";
 import { PageHeader } from "@/components/shared/page-header";
 import { useProjectStore, useTaskStore } from "@/stores";
+import { useAuth } from "@/hooks/use-auth";
 import { formatDate } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { Layers } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { EmptyState } from "@/components/shared/empty-state";
-import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm, useWatch } from "react-hook-form";
+import { toast } from "sonner";
 import type { ProjectStatus } from "@/types";
+import { z } from "zod";
 
 const statusColors: Record<ProjectStatus, string> = {
   ATIVO: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30",
@@ -19,13 +31,62 @@ const statusColors: Record<ProjectStatus, string> = {
   NA_FILA: "bg-violet-500/20 text-violet-400 border-violet-500/30",
 };
 
+const epicSchema = z.object({
+  projectId: z.string().min(1, "Selecione um projeto"),
+  moduleId: z.string().min(1, "Selecione um modulo"),
+  name: z.string().min(3, "Minimo 3 caracteres"),
+  description: z.string().min(10, "Minimo 10 caracteres"),
+  startDate: z.string().min(1, "Data obrigatoria"),
+  endDate: z.string().min(1, "Prazo obrigatorio"),
+});
+
+type EpicForm = z.infer<typeof epicSchema>;
+
 export default function EpicsPage() {
-  const { epics, projects, modules } = useProjectStore();
+  const { epics, projects, modules, createEpic } = useProjectStore();
   const { tasks } = useTaskStore();
+  const { isAdmin } = useAuth();
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const form = useForm<EpicForm>({
+    resolver: zodResolver(epicSchema),
+    defaultValues: {
+      projectId: "",
+      moduleId: "",
+      name: "",
+      description: "",
+      startDate: new Date().toISOString().split("T")[0],
+      endDate: "",
+    },
+  });
+  const projectId = useWatch({ control: form.control, name: "projectId" });
+  const filteredModules = modules.filter((module) => module.projectId === projectId);
+
+  const openCreateDialog = () => {
+    form.reset({
+      projectId: "",
+      moduleId: "",
+      name: "",
+      description: "",
+      startDate: new Date().toISOString().split("T")[0],
+      endDate: "",
+    });
+    setIsCreateOpen(true);
+  };
+
+  const handleCreate = async (data: EpicForm) => {
+    await createEpic({ ...data, status: "ATIVO", progress: 0 });
+    toast.success("Epic criado com sucesso");
+    setIsCreateOpen(false);
+    form.reset();
+  };
 
   return (
     <AppLayout>
-      <PageHeader title="Epics" description={`${epics.length} epics em andamento`} />
+      <PageHeader
+        title="Epics"
+        description={`${epics.length} epics em andamento`}
+        actions={isAdmin ? [{ label: "Novo Epic", onClick: openCreateDialog }] : undefined}
+      />
       <div className="p-6">
         {epics.length === 0 ? (
           <EmptyState icon={Layers} title="Nenhum epic" description="Os epics serão exibidos aqui." />
@@ -42,7 +103,7 @@ export default function EpicsPage() {
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     {projectEpics.map((epic, i) => {
-                      const module = modules.find((m) => m.id === epic.moduleId);
+                      const projectModule = modules.find((m) => m.id === epic.moduleId);
                       const epicTasks = tasks.filter((t) => t.epicId === epic.id);
                       return (
                         <motion.div
@@ -59,8 +120,8 @@ export default function EpicsPage() {
                             </span>
                           </div>
                           <p className="text-xs text-zinc-500 mb-3 line-clamp-2">{epic.description}</p>
-                          {module && (
-                            <span className="text-[10px] px-2 py-0.5 bg-zinc-800 text-zinc-400 rounded mb-3 inline-block">{module.name}</span>
+                            {projectModule && (
+                              <span className="text-[10px] px-2 py-0.5 bg-zinc-800 text-zinc-400 rounded mb-3 inline-block">{projectModule.name}</span>
                           )}
                           <Progress value={epic.progress} className="h-1.5 bg-zinc-800 mb-2" />
                           <div className="flex items-center justify-between text-xs text-zinc-500">
@@ -77,6 +138,108 @@ export default function EpicsPage() {
           </div>
         )}
       </div>
+
+      <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
+        <DialogContent className="bg-zinc-900 border-zinc-700/50 max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="text-zinc-100">Novo Epic</DialogTitle>
+          </DialogHeader>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(handleCreate)} className="space-y-4">
+              <div className="grid grid-cols-2 gap-3">
+                <FormField control={form.control} name="projectId" render={({ field }) => (
+                  <FormItem>
+                    <Label className="text-zinc-300 text-sm">Projeto</Label>
+                    <Select
+                      value={field.value}
+                      onValueChange={(value) => {
+                        field.onChange(value ?? "");
+                        form.setValue("moduleId", "");
+                      }}
+                    >
+                      <FormControl>
+                        <SelectTrigger className="w-full bg-zinc-800 border-zinc-700 text-zinc-300">
+                          <SelectValue placeholder="Selecionar..." />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent className="bg-zinc-900 border-zinc-700/50">
+                        {projects.map((project) => (
+                          <SelectItem key={project.id} value={project.id}>{project.name}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+                <FormField control={form.control} name="moduleId" render={({ field }) => (
+                  <FormItem>
+                    <Label className="text-zinc-300 text-sm">Modulo</Label>
+                    <Select value={field.value} onValueChange={(value) => field.onChange(value ?? "")} disabled={!projectId}>
+                      <FormControl>
+                        <SelectTrigger className="w-full bg-zinc-800 border-zinc-700 text-zinc-300">
+                          <SelectValue placeholder="Selecionar..." />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent className="bg-zinc-900 border-zinc-700/50">
+                        {filteredModules.map((module) => (
+                          <SelectItem key={module.id} value={module.id}>{module.name}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+              </div>
+              <FormField control={form.control} name="name" render={({ field }) => (
+                <FormItem>
+                  <Label className="text-zinc-300 text-sm">Nome</Label>
+                  <FormControl>
+                    <Input {...field} placeholder="Nome do epic" className="bg-zinc-800 border-zinc-700 text-zinc-100" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+              <FormField control={form.control} name="description" render={({ field }) => (
+                <FormItem>
+                  <Label className="text-zinc-300 text-sm">Descricao</Label>
+                  <FormControl>
+                    <Textarea {...field} rows={3} placeholder="Objetivo e escopo do epic" className="bg-zinc-800 border-zinc-700 text-zinc-100 resize-none" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+              <div className="grid grid-cols-2 gap-3">
+                <FormField control={form.control} name="startDate" render={({ field }) => (
+                  <FormItem>
+                    <Label className="text-zinc-300 text-sm">Inicio</Label>
+                    <FormControl>
+                      <Input {...field} type="date" className="bg-zinc-800 border-zinc-700 text-zinc-100" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+                <FormField control={form.control} name="endDate" render={({ field }) => (
+                  <FormItem>
+                    <Label className="text-zinc-300 text-sm">Prazo</Label>
+                    <FormControl>
+                      <Input {...field} type="date" className="bg-zinc-800 border-zinc-700 text-zinc-100" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+              </div>
+              <div className="flex justify-end gap-2 pt-2">
+                <Button type="button" variant="ghost" onClick={() => setIsCreateOpen(false)} className="text-zinc-400">
+                  Cancelar
+                </Button>
+                <Button type="submit" className="bg-violet-600 hover:bg-violet-700">
+                  Criar Epic
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
     </AppLayout>
   );
 }
