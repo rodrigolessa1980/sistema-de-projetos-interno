@@ -1660,11 +1660,16 @@ export type TaskDependencyScalarFieldEnum = (typeof TaskDependencyScalarFieldEnu
 
 export const TimeLogScalarFieldEnum = {
   id: 'id',
+  projectId: 'projectId',
   taskId: 'taskId',
   userId: 'userId',
   hours: 'hours',
+  durationSeconds: 'durationSeconds',
   description: 'description',
   date: 'date',
+  startedAt: 'startedAt',
+  endedAt: 'endedAt',
+  source: 'source',
   status: 'status',
   createdAt: 'createdAt'
 } as const
@@ -1891,6 +1896,7 @@ export type TaskDependencyOrderByRelevanceFieldEnum = (typeof TaskDependencyOrde
 
 export const TimeLogOrderByRelevanceFieldEnum = {
   id: 'id',
+  projectId: 'projectId',
   taskId: 'taskId',
   userId: 'userId',
   description: 'description'
@@ -2045,6 +2051,13 @@ export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel,
  * Reference to a field of type 'DependencyType'
  */
 export type EnumDependencyTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DependencyType'>
+    
+
+
+/**
+ * Reference to a field of type 'TimeLogSource'
+ */
+export type EnumTimeLogSourceFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TimeLogSource'>
     
 
 

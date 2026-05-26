@@ -57,3 +57,8 @@ export declare const NotificationType: {
     readonly PROJECT_UPDATED: "PROJECT_UPDATED";
 };
 export type NotificationType = (typeof NotificationType)[keyof typeof NotificationType];
+export declare const TimeLogSource: {
+    readonly TIMER: "TIMER";
+    readonly MANUAL: "MANUAL";
+};
+export type TimeLogSource = (typeof TimeLogSource)[keyof typeof TimeLogSource];

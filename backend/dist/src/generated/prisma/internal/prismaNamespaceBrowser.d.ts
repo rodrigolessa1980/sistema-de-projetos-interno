@@ -155,11 +155,16 @@ export declare const TaskDependencyScalarFieldEnum: {
 export type TaskDependencyScalarFieldEnum = (typeof TaskDependencyScalarFieldEnum)[keyof typeof TaskDependencyScalarFieldEnum];
 export declare const TimeLogScalarFieldEnum: {
     readonly id: "id";
+    readonly projectId: "projectId";
     readonly taskId: "taskId";
     readonly userId: "userId";
     readonly hours: "hours";
+    readonly durationSeconds: "durationSeconds";
     readonly description: "description";
     readonly date: "date";
+    readonly startedAt: "startedAt";
+    readonly endedAt: "endedAt";
+    readonly source: "source";
     readonly status: "status";
     readonly createdAt: "createdAt";
 };
@@ -326,6 +331,7 @@ export declare const TaskDependencyOrderByRelevanceFieldEnum: {
 export type TaskDependencyOrderByRelevanceFieldEnum = (typeof TaskDependencyOrderByRelevanceFieldEnum)[keyof typeof TaskDependencyOrderByRelevanceFieldEnum];
 export declare const TimeLogOrderByRelevanceFieldEnum: {
     readonly id: "id";
+    readonly projectId: "projectId";
     readonly taskId: "taskId";
     readonly userId: "userId";
     readonly description: "description";

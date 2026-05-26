@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { ITimeLogRepository } from '../../../core/domain/repositories/time-log-repository.interface';
 import { TimeLog } from '../../../core/domain/entities/time-log.entity';
-import { TaskStatus } from '../../../core/domain/entities/enums';
+import { TaskStatus, TimeLogSource } from '../../../core/domain/entities/enums';
 
 @Injectable()
 export class PrismaTimeLogRepository implements ITimeLogRepository {
@@ -11,11 +11,16 @@ export class PrismaTimeLogRepository implements ITimeLogRepository {
   private mapToDomain(raw: any): TimeLog {
     return new TimeLog({
       id: raw.id,
+      projectId: raw.projectId,
       taskId: raw.taskId,
       userId: raw.userId,
       hours: Number(raw.hours),
+      durationSeconds: raw.durationSeconds,
       description: raw.description,
       date: raw.date,
+      startedAt: raw.startedAt,
+      endedAt: raw.endedAt,
+      source: raw.source as TimeLogSource,
       status: raw.status as TaskStatus,
       createdAt: raw.createdAt,
     });
@@ -30,11 +35,16 @@ export class PrismaTimeLogRepository implements ITimeLogRepository {
     const raw = await this.prisma.timeLog.create({
       data: {
         id: timeLog.id || undefined,
+        projectId: timeLog.projectId,
         taskId: timeLog.taskId,
         userId: timeLog.userId,
         hours: timeLog.hours,
+        durationSeconds: timeLog.durationSeconds,
         description: timeLog.description,
         date: timeLog.date,
+        startedAt: timeLog.startedAt,
+        endedAt: timeLog.endedAt,
+        source: timeLog.source,
         status: timeLog.status,
       },
     });

@@ -24,3 +24,7 @@ export declare enum DependencyType {
     BLOCKED_BY = "BLOCKED_BY",
     RELATED = "RELATED"
 }
+export declare enum TimeLogSource {
+    TIMER = "TIMER",
+    MANUAL = "MANUAL"
+}

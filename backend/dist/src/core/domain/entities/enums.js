@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DependencyType = exports.TaskStatus = exports.ProjectStatus = exports.UserRole = void 0;
+exports.TimeLogSource = exports.DependencyType = exports.TaskStatus = exports.ProjectStatus = exports.UserRole = void 0;
 var UserRole;
 (function (UserRole) {
     UserRole["ADMIN"] = "ADMIN";
@@ -31,4 +31,9 @@ var DependencyType;
     DependencyType["BLOCKED_BY"] = "BLOCKED_BY";
     DependencyType["RELATED"] = "RELATED";
 })(DependencyType || (exports.DependencyType = DependencyType = {}));
+var TimeLogSource;
+(function (TimeLogSource) {
+    TimeLogSource["TIMER"] = "TIMER";
+    TimeLogSource["MANUAL"] = "MANUAL";
+})(TimeLogSource || (exports.TimeLogSource = TimeLogSource = {}));
 //# sourceMappingURL=enums.js.map

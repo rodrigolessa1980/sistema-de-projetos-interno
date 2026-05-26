@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.NotificationType = exports.AuditAction = exports.AuditEntityType = exports.DependencyType = exports.TaskStatus = exports.ProjectStatus = exports.UserRole = void 0;
+exports.TimeLogSource = exports.NotificationType = exports.AuditAction = exports.AuditEntityType = exports.DependencyType = exports.TaskStatus = exports.ProjectStatus = exports.UserRole = void 0;
 exports.UserRole = {
     ADMIN: 'ADMIN',
     DEVELOPER: 'DEVELOPER'
@@ -52,5 +52,9 @@ exports.NotificationType = {
     COMMENT_ADDED: 'COMMENT_ADDED',
     DEPENDENCY_RESOLVED: 'DEPENDENCY_RESOLVED',
     PROJECT_UPDATED: 'PROJECT_UPDATED'
+};
+exports.TimeLogSource = {
+    TIMER: 'TIMER',
+    MANUAL: 'MANUAL'
 };
 //# sourceMappingURL=enums.js.map

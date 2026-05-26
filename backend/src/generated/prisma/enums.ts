@@ -87,3 +87,11 @@ export const NotificationType = {
 } as const
 
 export type NotificationType = (typeof NotificationType)[keyof typeof NotificationType]
+
+
+export const TimeLogSource = {
+  TIMER: 'TIMER',
+  MANUAL: 'MANUAL'
+} as const
+
+export type TimeLogSource = (typeof TimeLogSource)[keyof typeof TimeLogSource]

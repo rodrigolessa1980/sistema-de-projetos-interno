@@ -67,6 +67,11 @@ enum NotificationType {
   PROJECT_UPDATED
 }
 
+enum TimeLogSource {
+  TIMER
+  MANUAL
+}
+
 model Company {
   id        String    @id @default(uuid())
   name      String    @db.VarChar(100)
@@ -81,21 +86,21 @@ model Company {
 }
 
 model User {
-  id           String             @id @default(uuid())
-  name         String             @db.VarChar(100)
-  email        String             @unique @db.VarChar(150)
-  passwordHash String             @db.VarChar(255)
-  role         UserRole           @default(DEVELOPER)
-  avatar       String?            @db.VarChar(255)
-  position     String             @db.VarChar(100)
-  department   String             @db.VarChar(100)
-  createdAt    DateTime           @default(now())
-  updatedAt    DateTime           @updatedAt
-  
-  managedProjects Project[]       @relation("ProjectOwner")
+  id           String   @id @default(uuid())
+  name         String   @db.VarChar(100)
+  email        String   @unique @db.VarChar(150)
+  passwordHash String   @db.VarChar(255)
+  role         UserRole @default(DEVELOPER)
+  avatar       String?  @db.VarChar(255)
+  position     String   @db.VarChar(100)
+  department   String   @db.VarChar(100)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  managedProjects Project[]          @relation("ProjectOwner")
   projects        ProjectDeveloper[]
-  assignedTasks   Task[]          @relation("TaskAssignee")
-  reportedTasks   Task[]          @relation("TaskReporter")
+  assignedTasks   Task[]             @relation("TaskAssignee")
+  reportedTasks   Task[]             @relation("TaskReporter")
   subtasks        Subtask[]
   timeLogs        TimeLog[]
   comments        Comment[]
@@ -110,31 +115,32 @@ model User {
 }
 
 model Project {
-  id             String             @id @default(uuid())
+  id             String        @id @default(uuid())
   companyId      String
-  company        Company            @relation(fields: [companyId], references: [id], onDelete: Restrict)
-  name           String             @db.VarChar(150)
-  description    String             @db.Text
-  status         ProjectStatus      @default(NA_FILA)
+  company        Company       @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  name           String        @db.VarChar(150)
+  description    String        @db.Text
+  status         ProjectStatus @default(NA_FILA)
   ownerId        String
-  owner          User               @relation("ProjectOwner", fields: [ownerId], references: [id], onDelete: Restrict)
-  startDate      DateTime           @db.Date
-  endDate        DateTime?          @db.Date
-  estimatedHours Int                @default(0)
-  actualHours    Float              @default(0.0)
-  progress       Int                @default(0)
-  color          String             @db.VarChar(7)
-  avatar         String?            @db.VarChar(255)
-  testUrl        String?            @db.VarChar(255)
+  owner          User          @relation("ProjectOwner", fields: [ownerId], references: [id], onDelete: Restrict)
+  startDate      DateTime      @db.Date
+  endDate        DateTime?     @db.Date
+  estimatedHours Int           @default(0)
+  actualHours    Float         @default(0.0)
+  progress       Int           @default(0)
+  color          String        @db.VarChar(7)
+  avatar         String?       @db.VarChar(255)
+  testUrl        String?       @db.VarChar(255)
   queueOrder     Int?
-  createdAt      DateTime           @default(now())
-  updatedAt      DateTime           @updatedAt
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
 
-  developers     ProjectDeveloper[]
-  modules        Module[]
-  epics          Epic[]
-  tasks          Task[]
-  notifications  Notification[]
+  developers    ProjectDeveloper[]
+  modules       Module[]
+  epics         Epic[]
+  tasks         Task[]
+  timeLogs      TimeLog[]
+  notifications Notification[]
 
   @@index([companyId])
   @@index([ownerId])
@@ -191,46 +197,46 @@ model Epic {
 }
 
 model Task {
-  id                    String      @id @default(uuid())
-  projectId             String
-  project               Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  moduleId              String
-  module                Module      @relation(fields: [moduleId], references: [id], onDelete: Cascade)
-  epicId                String
-  epic                  Epic        @relation(fields: [epicId], references: [id], onDelete: Cascade)
-  parentTaskId          String?
-  parentTask            Task?       @relation("TaskSubtask", fields: [parentTaskId], references: [id], onDelete: SetNull)
-  title                 String      @db.VarChar(200)
-  description           String      @db.Text
-  status                TaskStatus  @default(BACKLOG)
-  complexity            Int         @default(1)
-  assigneeId            String
-  assignee              User        @relation("TaskAssignee", fields: [assigneeId], references: [id], onDelete: Restrict)
-  reporterId            String
-  reporter              User        @relation("TaskReporter", fields: [reporterId], references: [id], onDelete: Restrict)
-  estimatedHours        Int         @default(0)
-  actualHours           Float       @default(0.0)
-  startDate             DateTime?   @db.Date
-  dueDate               DateTime?   @db.Date
-  completedAt           DateTime?
-  blockedReason         String?     @db.Text
-  isUrgent              Boolean     @default(false)
-  urgentBlockedById     String?
-  urgentPreviousStatus  TaskStatus?
-  order                 Int         @default(0)
-  createdAt             DateTime    @default(now())
-  updatedAt             DateTime    @updatedAt
+  id                   String      @id @default(uuid())
+  projectId            String
+  project              Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  moduleId             String
+  module               Module      @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  epicId               String
+  epic                 Epic        @relation(fields: [epicId], references: [id], onDelete: Cascade)
+  parentTaskId         String?
+  parentTask           Task?       @relation("TaskSubtask", fields: [parentTaskId], references: [id], onDelete: SetNull)
+  title                String      @db.VarChar(200)
+  description          String      @db.Text
+  status               TaskStatus  @default(BACKLOG)
+  complexity           Int         @default(1)
+  assigneeId           String
+  assignee             User        @relation("TaskAssignee", fields: [assigneeId], references: [id], onDelete: Restrict)
+  reporterId           String
+  reporter             User        @relation("TaskReporter", fields: [reporterId], references: [id], onDelete: Restrict)
+  estimatedHours       Int         @default(0)
+  actualHours          Float       @default(0.0)
+  startDate            DateTime?   @db.Date
+  dueDate              DateTime?   @db.Date
+  completedAt          DateTime?
+  blockedReason        String?     @db.Text
+  isUrgent             Boolean     @default(false)
+  urgentBlockedById    String?
+  urgentPreviousStatus TaskStatus?
+  order                Int         @default(0)
+  createdAt            DateTime    @default(now())
+  updatedAt            DateTime    @updatedAt
 
-  subtasks              Subtask[]
-  childTasks            Task[]            @relation("TaskSubtask")
-  dependencies          TaskDependency[]  @relation("TaskPrimary")
-  dependencyOf          TaskDependency[]  @relation("TaskDependent")
-  timeLogs              TimeLog[]
-  comments              Comment[]
-  statusHistories       StatusHistory[]
-  notes                 TaskNote[]
-  attachments           TaskAttachment[]
-  notifications         Notification[]
+  subtasks        Subtask[]
+  childTasks      Task[]           @relation("TaskSubtask")
+  dependencies    TaskDependency[] @relation("TaskPrimary")
+  dependencyOf    TaskDependency[] @relation("TaskDependent")
+  timeLogs        TimeLog[]
+  comments        Comment[]
+  statusHistories StatusHistory[]
+  notes           TaskNote[]
+  attachments     TaskAttachment[]
+  notifications   Notification[]
 
   @@index([projectId])
   @@index([moduleId])
@@ -269,20 +275,30 @@ model TaskDependency {
 }
 
 model TimeLog {
-  id          String     @id @default(uuid())
-  taskId      String
-  task        Task       @relation(fields: [taskId], references: [id], onDelete: Cascade)
-  userId      String
-  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  hours       Float
-  description String     @db.Text
-  date        DateTime   @db.Date
-  status      TaskStatus
-  createdAt   DateTime   @default(now())
+  id              String        @id @default(uuid())
+  projectId       String
+  project         Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  taskId          String
+  task            Task          @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  userId          String
+  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  hours           Float
+  durationSeconds Int?
+  description     String        @db.Text
+  date            DateTime      @db.Date
+  startedAt       DateTime?
+  endedAt         DateTime?
+  source          TimeLogSource @default(MANUAL)
+  status          TaskStatus
+  createdAt       DateTime      @default(now())
 
   @@index([taskId])
   @@index([userId])
+  @@index([projectId])
   @@index([date])
+  @@index([projectId, date])
+  @@index([userId, date])
+  @@index([projectId, userId, date])
   @@map("time_logs")
 }
 

@@ -21,11 +21,16 @@ let PrismaTimeLogRepository = class PrismaTimeLogRepository {
     mapToDomain(raw) {
         return new time_log_entity_1.TimeLog({
             id: raw.id,
+            projectId: raw.projectId,
             taskId: raw.taskId,
             userId: raw.userId,
             hours: Number(raw.hours),
+            durationSeconds: raw.durationSeconds,
             description: raw.description,
             date: raw.date,
+            startedAt: raw.startedAt,
+            endedAt: raw.endedAt,
+            source: raw.source,
             status: raw.status,
             createdAt: raw.createdAt,
         });
@@ -38,11 +43,16 @@ let PrismaTimeLogRepository = class PrismaTimeLogRepository {
         const raw = await this.prisma.timeLog.create({
             data: {
                 id: timeLog.id || undefined,
+                projectId: timeLog.projectId,
                 taskId: timeLog.taskId,
                 userId: timeLog.userId,
                 hours: timeLog.hours,
+                durationSeconds: timeLog.durationSeconds,
                 description: timeLog.description,
                 date: timeLog.date,
+                startedAt: timeLog.startedAt,
+                endedAt: timeLog.endedAt,
+                source: timeLog.source,
                 status: timeLog.status,
             },
         });

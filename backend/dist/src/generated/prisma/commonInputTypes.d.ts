@@ -274,6 +274,21 @@ export type EnumDependencyTypeWithAggregatesFilter<$PrismaModel = never> = {
     _min?: Prisma.NestedEnumDependencyTypeFilter<$PrismaModel>;
     _max?: Prisma.NestedEnumDependencyTypeFilter<$PrismaModel>;
 };
+export type EnumTimeLogSourceFilter<$PrismaModel = never> = {
+    equals?: $Enums.TimeLogSource | Prisma.EnumTimeLogSourceFieldRefInput<$PrismaModel>;
+    in?: $Enums.TimeLogSource[];
+    notIn?: $Enums.TimeLogSource[];
+    not?: Prisma.NestedEnumTimeLogSourceFilter<$PrismaModel> | $Enums.TimeLogSource;
+};
+export type EnumTimeLogSourceWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.TimeLogSource | Prisma.EnumTimeLogSourceFieldRefInput<$PrismaModel>;
+    in?: $Enums.TimeLogSource[];
+    notIn?: $Enums.TimeLogSource[];
+    not?: Prisma.NestedEnumTimeLogSourceWithAggregatesFilter<$PrismaModel> | $Enums.TimeLogSource;
+    _count?: Prisma.NestedIntFilter<$PrismaModel>;
+    _min?: Prisma.NestedEnumTimeLogSourceFilter<$PrismaModel>;
+    _max?: Prisma.NestedEnumTimeLogSourceFilter<$PrismaModel>;
+};
 export type JsonFilter<$PrismaModel = never> = Prisma.PatchUndefined<Prisma.Either<Required<JsonFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonFilterBase<$PrismaModel>>, 'path'>>, Required<JsonFilterBase<$PrismaModel>>> | Prisma.OptionalFlat<Omit<Required<JsonFilterBase<$PrismaModel>>, 'path'>>;
 export type JsonFilterBase<$PrismaModel = never> = {
     equals?: runtime.InputJsonValue | Prisma.JsonFieldRefInput<$PrismaModel> | Prisma.JsonNullValueFilter;
@@ -671,6 +686,21 @@ export type NestedEnumDependencyTypeWithAggregatesFilter<$PrismaModel = never> =
     _count?: Prisma.NestedIntFilter<$PrismaModel>;
     _min?: Prisma.NestedEnumDependencyTypeFilter<$PrismaModel>;
     _max?: Prisma.NestedEnumDependencyTypeFilter<$PrismaModel>;
+};
+export type NestedEnumTimeLogSourceFilter<$PrismaModel = never> = {
+    equals?: $Enums.TimeLogSource | Prisma.EnumTimeLogSourceFieldRefInput<$PrismaModel>;
+    in?: $Enums.TimeLogSource[];
+    notIn?: $Enums.TimeLogSource[];
+    not?: Prisma.NestedEnumTimeLogSourceFilter<$PrismaModel> | $Enums.TimeLogSource;
+};
+export type NestedEnumTimeLogSourceWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.TimeLogSource | Prisma.EnumTimeLogSourceFieldRefInput<$PrismaModel>;
+    in?: $Enums.TimeLogSource[];
+    notIn?: $Enums.TimeLogSource[];
+    not?: Prisma.NestedEnumTimeLogSourceWithAggregatesFilter<$PrismaModel> | $Enums.TimeLogSource;
+    _count?: Prisma.NestedIntFilter<$PrismaModel>;
+    _min?: Prisma.NestedEnumTimeLogSourceFilter<$PrismaModel>;
+    _max?: Prisma.NestedEnumTimeLogSourceFilter<$PrismaModel>;
 };
 export type NestedJsonFilter<$PrismaModel = never> = Prisma.PatchUndefined<Prisma.Either<Required<NestedJsonFilterBase<$PrismaModel>>, Exclude<keyof Required<NestedJsonFilterBase<$PrismaModel>>, 'path'>>, Required<NestedJsonFilterBase<$PrismaModel>>> | Prisma.OptionalFlat<Omit<Required<NestedJsonFilterBase<$PrismaModel>>, 'path'>>;
 export type NestedJsonFilterBase<$PrismaModel = never> = {

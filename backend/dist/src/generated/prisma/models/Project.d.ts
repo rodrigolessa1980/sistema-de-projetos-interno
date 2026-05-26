@@ -231,6 +231,7 @@ export type ProjectWhereInput = {
     modules?: Prisma.ModuleListRelationFilter;
     epics?: Prisma.EpicListRelationFilter;
     tasks?: Prisma.TaskListRelationFilter;
+    timeLogs?: Prisma.TimeLogListRelationFilter;
     notifications?: Prisma.NotificationListRelationFilter;
 };
 export type ProjectOrderByWithRelationInput = {
@@ -257,6 +258,7 @@ export type ProjectOrderByWithRelationInput = {
     modules?: Prisma.ModuleOrderByRelationAggregateInput;
     epics?: Prisma.EpicOrderByRelationAggregateInput;
     tasks?: Prisma.TaskOrderByRelationAggregateInput;
+    timeLogs?: Prisma.TimeLogOrderByRelationAggregateInput;
     notifications?: Prisma.NotificationOrderByRelationAggregateInput;
     _relevance?: Prisma.ProjectOrderByRelevanceInput;
 };
@@ -287,6 +289,7 @@ export type ProjectWhereUniqueInput = Prisma.AtLeast<{
     modules?: Prisma.ModuleListRelationFilter;
     epics?: Prisma.EpicListRelationFilter;
     tasks?: Prisma.TaskListRelationFilter;
+    timeLogs?: Prisma.TimeLogListRelationFilter;
     notifications?: Prisma.NotificationListRelationFilter;
 }, "id">;
 export type ProjectOrderByWithAggregationInput = {
@@ -357,6 +360,7 @@ export type ProjectCreateInput = {
     modules?: Prisma.ModuleCreateNestedManyWithoutProjectInput;
     epics?: Prisma.EpicCreateNestedManyWithoutProjectInput;
     tasks?: Prisma.TaskCreateNestedManyWithoutProjectInput;
+    timeLogs?: Prisma.TimeLogCreateNestedManyWithoutProjectInput;
     notifications?: Prisma.NotificationCreateNestedManyWithoutRelatedProjectInput;
 };
 export type ProjectUncheckedCreateInput = {
@@ -381,6 +385,7 @@ export type ProjectUncheckedCreateInput = {
     modules?: Prisma.ModuleUncheckedCreateNestedManyWithoutProjectInput;
     epics?: Prisma.EpicUncheckedCreateNestedManyWithoutProjectInput;
     tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutProjectInput;
+    timeLogs?: Prisma.TimeLogUncheckedCreateNestedManyWithoutProjectInput;
     notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRelatedProjectInput;
 };
 export type ProjectUpdateInput = {
@@ -405,6 +410,7 @@ export type ProjectUpdateInput = {
     modules?: Prisma.ModuleUpdateManyWithoutProjectNestedInput;
     epics?: Prisma.EpicUpdateManyWithoutProjectNestedInput;
     tasks?: Prisma.TaskUpdateManyWithoutProjectNestedInput;
+    timeLogs?: Prisma.TimeLogUpdateManyWithoutProjectNestedInput;
     notifications?: Prisma.NotificationUpdateManyWithoutRelatedProjectNestedInput;
 };
 export type ProjectUncheckedUpdateInput = {
@@ -429,6 +435,7 @@ export type ProjectUncheckedUpdateInput = {
     modules?: Prisma.ModuleUncheckedUpdateManyWithoutProjectNestedInput;
     epics?: Prisma.EpicUncheckedUpdateManyWithoutProjectNestedInput;
     tasks?: Prisma.TaskUncheckedUpdateManyWithoutProjectNestedInput;
+    timeLogs?: Prisma.TimeLogUncheckedUpdateManyWithoutProjectNestedInput;
     notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRelatedProjectNestedInput;
 };
 export type ProjectCreateManyInput = {
@@ -727,6 +734,18 @@ export type ProjectUpdateOneRequiredWithoutTasksNestedInput = {
     connect?: Prisma.ProjectWhereUniqueInput;
     update?: Prisma.XOR<Prisma.XOR<Prisma.ProjectUpdateToOneWithWhereWithoutTasksInput, Prisma.ProjectUpdateWithoutTasksInput>, Prisma.ProjectUncheckedUpdateWithoutTasksInput>;
 };
+export type ProjectCreateNestedOneWithoutTimeLogsInput = {
+    create?: Prisma.XOR<Prisma.ProjectCreateWithoutTimeLogsInput, Prisma.ProjectUncheckedCreateWithoutTimeLogsInput>;
+    connectOrCreate?: Prisma.ProjectCreateOrConnectWithoutTimeLogsInput;
+    connect?: Prisma.ProjectWhereUniqueInput;
+};
+export type ProjectUpdateOneRequiredWithoutTimeLogsNestedInput = {
+    create?: Prisma.XOR<Prisma.ProjectCreateWithoutTimeLogsInput, Prisma.ProjectUncheckedCreateWithoutTimeLogsInput>;
+    connectOrCreate?: Prisma.ProjectCreateOrConnectWithoutTimeLogsInput;
+    upsert?: Prisma.ProjectUpsertWithoutTimeLogsInput;
+    connect?: Prisma.ProjectWhereUniqueInput;
+    update?: Prisma.XOR<Prisma.XOR<Prisma.ProjectUpdateToOneWithWhereWithoutTimeLogsInput, Prisma.ProjectUpdateWithoutTimeLogsInput>, Prisma.ProjectUncheckedUpdateWithoutTimeLogsInput>;
+};
 export type ProjectCreateNestedOneWithoutNotificationsInput = {
     create?: Prisma.XOR<Prisma.ProjectCreateWithoutNotificationsInput, Prisma.ProjectUncheckedCreateWithoutNotificationsInput>;
     connectOrCreate?: Prisma.ProjectCreateOrConnectWithoutNotificationsInput;
@@ -762,6 +781,7 @@ export type ProjectCreateWithoutCompanyInput = {
     modules?: Prisma.ModuleCreateNestedManyWithoutProjectInput;
     epics?: Prisma.EpicCreateNestedManyWithoutProjectInput;
     tasks?: Prisma.TaskCreateNestedManyWithoutProjectInput;
+    timeLogs?: Prisma.TimeLogCreateNestedManyWithoutProjectInput;
     notifications?: Prisma.NotificationCreateNestedManyWithoutRelatedProjectInput;
 };
 export type ProjectUncheckedCreateWithoutCompanyInput = {
@@ -785,6 +805,7 @@ export type ProjectUncheckedCreateWithoutCompanyInput = {
     modules?: Prisma.ModuleUncheckedCreateNestedManyWithoutProjectInput;
     epics?: Prisma.EpicUncheckedCreateNestedManyWithoutProjectInput;
     tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutProjectInput;
+    timeLogs?: Prisma.TimeLogUncheckedCreateNestedManyWithoutProjectInput;
     notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRelatedProjectInput;
 };
 export type ProjectCreateOrConnectWithoutCompanyInput = {
@@ -851,6 +872,7 @@ export type ProjectCreateWithoutOwnerInput = {
     modules?: Prisma.ModuleCreateNestedManyWithoutProjectInput;
     epics?: Prisma.EpicCreateNestedManyWithoutProjectInput;
     tasks?: Prisma.TaskCreateNestedManyWithoutProjectInput;
+    timeLogs?: Prisma.TimeLogCreateNestedManyWithoutProjectInput;
     notifications?: Prisma.NotificationCreateNestedManyWithoutRelatedProjectInput;
 };
 export type ProjectUncheckedCreateWithoutOwnerInput = {
@@ -874,6 +896,7 @@ export type ProjectUncheckedCreateWithoutOwnerInput = {
     modules?: Prisma.ModuleUncheckedCreateNestedManyWithoutProjectInput;
     epics?: Prisma.EpicUncheckedCreateNestedManyWithoutProjectInput;
     tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutProjectInput;
+    timeLogs?: Prisma.TimeLogUncheckedCreateNestedManyWithoutProjectInput;
     notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRelatedProjectInput;
 };
 export type ProjectCreateOrConnectWithoutOwnerInput = {
@@ -918,6 +941,7 @@ export type ProjectCreateWithoutDevelopersInput = {
     modules?: Prisma.ModuleCreateNestedManyWithoutProjectInput;
     epics?: Prisma.EpicCreateNestedManyWithoutProjectInput;
     tasks?: Prisma.TaskCreateNestedManyWithoutProjectInput;
+    timeLogs?: Prisma.TimeLogCreateNestedManyWithoutProjectInput;
     notifications?: Prisma.NotificationCreateNestedManyWithoutRelatedProjectInput;
 };
 export type ProjectUncheckedCreateWithoutDevelopersInput = {
@@ -941,6 +965,7 @@ export type ProjectUncheckedCreateWithoutDevelopersInput = {
     modules?: Prisma.ModuleUncheckedCreateNestedManyWithoutProjectInput;
     epics?: Prisma.EpicUncheckedCreateNestedManyWithoutProjectInput;
     tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutProjectInput;
+    timeLogs?: Prisma.TimeLogUncheckedCreateNestedManyWithoutProjectInput;
     notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRelatedProjectInput;
 };
 export type ProjectCreateOrConnectWithoutDevelopersInput = {
@@ -977,6 +1002,7 @@ export type ProjectUpdateWithoutDevelopersInput = {
     modules?: Prisma.ModuleUpdateManyWithoutProjectNestedInput;
     epics?: Prisma.EpicUpdateManyWithoutProjectNestedInput;
     tasks?: Prisma.TaskUpdateManyWithoutProjectNestedInput;
+    timeLogs?: Prisma.TimeLogUpdateManyWithoutProjectNestedInput;
     notifications?: Prisma.NotificationUpdateManyWithoutRelatedProjectNestedInput;
 };
 export type ProjectUncheckedUpdateWithoutDevelopersInput = {
@@ -1000,6 +1026,7 @@ export type ProjectUncheckedUpdateWithoutDevelopersInput = {
     modules?: Prisma.ModuleUncheckedUpdateManyWithoutProjectNestedInput;
     epics?: Prisma.EpicUncheckedUpdateManyWithoutProjectNestedInput;
     tasks?: Prisma.TaskUncheckedUpdateManyWithoutProjectNestedInput;
+    timeLogs?: Prisma.TimeLogUncheckedUpdateManyWithoutProjectNestedInput;
     notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRelatedProjectNestedInput;
 };
 export type ProjectCreateWithoutModulesInput = {
@@ -1023,6 +1050,7 @@ export type ProjectCreateWithoutModulesInput = {
     developers?: Prisma.ProjectDeveloperCreateNestedManyWithoutProjectInput;
     epics?: Prisma.EpicCreateNestedManyWithoutProjectInput;
     tasks?: Prisma.TaskCreateNestedManyWithoutProjectInput;
+    timeLogs?: Prisma.TimeLogCreateNestedManyWithoutProjectInput;
     notifications?: Prisma.NotificationCreateNestedManyWithoutRelatedProjectInput;
 };
 export type ProjectUncheckedCreateWithoutModulesInput = {
@@ -1046,6 +1074,7 @@ export type ProjectUncheckedCreateWithoutModulesInput = {
     developers?: Prisma.ProjectDeveloperUncheckedCreateNestedManyWithoutProjectInput;
     epics?: Prisma.EpicUncheckedCreateNestedManyWithoutProjectInput;
     tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutProjectInput;
+    timeLogs?: Prisma.TimeLogUncheckedCreateNestedManyWithoutProjectInput;
     notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRelatedProjectInput;
 };
 export type ProjectCreateOrConnectWithoutModulesInput = {
@@ -1082,6 +1111,7 @@ export type ProjectUpdateWithoutModulesInput = {
     developers?: Prisma.ProjectDeveloperUpdateManyWithoutProjectNestedInput;
     epics?: Prisma.EpicUpdateManyWithoutProjectNestedInput;
     tasks?: Prisma.TaskUpdateManyWithoutProjectNestedInput;
+    timeLogs?: Prisma.TimeLogUpdateManyWithoutProjectNestedInput;
     notifications?: Prisma.NotificationUpdateManyWithoutRelatedProjectNestedInput;
 };
 export type ProjectUncheckedUpdateWithoutModulesInput = {
@@ -1105,6 +1135,7 @@ export type ProjectUncheckedUpdateWithoutModulesInput = {
     developers?: Prisma.ProjectDeveloperUncheckedUpdateManyWithoutProjectNestedInput;
     epics?: Prisma.EpicUncheckedUpdateManyWithoutProjectNestedInput;
     tasks?: Prisma.TaskUncheckedUpdateManyWithoutProjectNestedInput;
+    timeLogs?: Prisma.TimeLogUncheckedUpdateManyWithoutProjectNestedInput;
     notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRelatedProjectNestedInput;
 };
 export type ProjectCreateWithoutEpicsInput = {
@@ -1128,6 +1159,7 @@ export type ProjectCreateWithoutEpicsInput = {
     developers?: Prisma.ProjectDeveloperCreateNestedManyWithoutProjectInput;
     modules?: Prisma.ModuleCreateNestedManyWithoutProjectInput;
     tasks?: Prisma.TaskCreateNestedManyWithoutProjectInput;
+    timeLogs?: Prisma.TimeLogCreateNestedManyWithoutProjectInput;
     notifications?: Prisma.NotificationCreateNestedManyWithoutRelatedProjectInput;
 };
 export type ProjectUncheckedCreateWithoutEpicsInput = {
@@ -1151,6 +1183,7 @@ export type ProjectUncheckedCreateWithoutEpicsInput = {
     developers?: Prisma.ProjectDeveloperUncheckedCreateNestedManyWithoutProjectInput;
     modules?: Prisma.ModuleUncheckedCreateNestedManyWithoutProjectInput;
     tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutProjectInput;
+    timeLogs?: Prisma.TimeLogUncheckedCreateNestedManyWithoutProjectInput;
     notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRelatedProjectInput;
 };
 export type ProjectCreateOrConnectWithoutEpicsInput = {
@@ -1187,6 +1220,7 @@ export type ProjectUpdateWithoutEpicsInput = {
     developers?: Prisma.ProjectDeveloperUpdateManyWithoutProjectNestedInput;
     modules?: Prisma.ModuleUpdateManyWithoutProjectNestedInput;
     tasks?: Prisma.TaskUpdateManyWithoutProjectNestedInput;
+    timeLogs?: Prisma.TimeLogUpdateManyWithoutProjectNestedInput;
     notifications?: Prisma.NotificationUpdateManyWithoutRelatedProjectNestedInput;
 };
 export type ProjectUncheckedUpdateWithoutEpicsInput = {
@@ -1210,6 +1244,7 @@ export type ProjectUncheckedUpdateWithoutEpicsInput = {
     developers?: Prisma.ProjectDeveloperUncheckedUpdateManyWithoutProjectNestedInput;
     modules?: Prisma.ModuleUncheckedUpdateManyWithoutProjectNestedInput;
     tasks?: Prisma.TaskUncheckedUpdateManyWithoutProjectNestedInput;
+    timeLogs?: Prisma.TimeLogUncheckedUpdateManyWithoutProjectNestedInput;
     notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRelatedProjectNestedInput;
 };
 export type ProjectCreateWithoutTasksInput = {
@@ -1233,6 +1268,7 @@ export type ProjectCreateWithoutTasksInput = {
     developers?: Prisma.ProjectDeveloperCreateNestedManyWithoutProjectInput;
     modules?: Prisma.ModuleCreateNestedManyWithoutProjectInput;
     epics?: Prisma.EpicCreateNestedManyWithoutProjectInput;
+    timeLogs?: Prisma.TimeLogCreateNestedManyWithoutProjectInput;
     notifications?: Prisma.NotificationCreateNestedManyWithoutRelatedProjectInput;
 };
 export type ProjectUncheckedCreateWithoutTasksInput = {
@@ -1256,6 +1292,7 @@ export type ProjectUncheckedCreateWithoutTasksInput = {
     developers?: Prisma.ProjectDeveloperUncheckedCreateNestedManyWithoutProjectInput;
     modules?: Prisma.ModuleUncheckedCreateNestedManyWithoutProjectInput;
     epics?: Prisma.EpicUncheckedCreateNestedManyWithoutProjectInput;
+    timeLogs?: Prisma.TimeLogUncheckedCreateNestedManyWithoutProjectInput;
     notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRelatedProjectInput;
 };
 export type ProjectCreateOrConnectWithoutTasksInput = {
@@ -1292,6 +1329,7 @@ export type ProjectUpdateWithoutTasksInput = {
     developers?: Prisma.ProjectDeveloperUpdateManyWithoutProjectNestedInput;
     modules?: Prisma.ModuleUpdateManyWithoutProjectNestedInput;
     epics?: Prisma.EpicUpdateManyWithoutProjectNestedInput;
+    timeLogs?: Prisma.TimeLogUpdateManyWithoutProjectNestedInput;
     notifications?: Prisma.NotificationUpdateManyWithoutRelatedProjectNestedInput;
 };
 export type ProjectUncheckedUpdateWithoutTasksInput = {
@@ -1315,6 +1353,116 @@ export type ProjectUncheckedUpdateWithoutTasksInput = {
     developers?: Prisma.ProjectDeveloperUncheckedUpdateManyWithoutProjectNestedInput;
     modules?: Prisma.ModuleUncheckedUpdateManyWithoutProjectNestedInput;
     epics?: Prisma.EpicUncheckedUpdateManyWithoutProjectNestedInput;
+    timeLogs?: Prisma.TimeLogUncheckedUpdateManyWithoutProjectNestedInput;
+    notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRelatedProjectNestedInput;
+};
+export type ProjectCreateWithoutTimeLogsInput = {
+    id?: string;
+    name: string;
+    description: string;
+    status?: $Enums.ProjectStatus;
+    startDate: Date | string;
+    endDate?: Date | string | null;
+    estimatedHours?: number;
+    actualHours?: number;
+    progress?: number;
+    color: string;
+    avatar?: string | null;
+    testUrl?: string | null;
+    queueOrder?: number | null;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+    company: Prisma.CompanyCreateNestedOneWithoutProjectsInput;
+    owner: Prisma.UserCreateNestedOneWithoutManagedProjectsInput;
+    developers?: Prisma.ProjectDeveloperCreateNestedManyWithoutProjectInput;
+    modules?: Prisma.ModuleCreateNestedManyWithoutProjectInput;
+    epics?: Prisma.EpicCreateNestedManyWithoutProjectInput;
+    tasks?: Prisma.TaskCreateNestedManyWithoutProjectInput;
+    notifications?: Prisma.NotificationCreateNestedManyWithoutRelatedProjectInput;
+};
+export type ProjectUncheckedCreateWithoutTimeLogsInput = {
+    id?: string;
+    companyId: string;
+    name: string;
+    description: string;
+    status?: $Enums.ProjectStatus;
+    ownerId: string;
+    startDate: Date | string;
+    endDate?: Date | string | null;
+    estimatedHours?: number;
+    actualHours?: number;
+    progress?: number;
+    color: string;
+    avatar?: string | null;
+    testUrl?: string | null;
+    queueOrder?: number | null;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+    developers?: Prisma.ProjectDeveloperUncheckedCreateNestedManyWithoutProjectInput;
+    modules?: Prisma.ModuleUncheckedCreateNestedManyWithoutProjectInput;
+    epics?: Prisma.EpicUncheckedCreateNestedManyWithoutProjectInput;
+    tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutProjectInput;
+    notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRelatedProjectInput;
+};
+export type ProjectCreateOrConnectWithoutTimeLogsInput = {
+    where: Prisma.ProjectWhereUniqueInput;
+    create: Prisma.XOR<Prisma.ProjectCreateWithoutTimeLogsInput, Prisma.ProjectUncheckedCreateWithoutTimeLogsInput>;
+};
+export type ProjectUpsertWithoutTimeLogsInput = {
+    update: Prisma.XOR<Prisma.ProjectUpdateWithoutTimeLogsInput, Prisma.ProjectUncheckedUpdateWithoutTimeLogsInput>;
+    create: Prisma.XOR<Prisma.ProjectCreateWithoutTimeLogsInput, Prisma.ProjectUncheckedCreateWithoutTimeLogsInput>;
+    where?: Prisma.ProjectWhereInput;
+};
+export type ProjectUpdateToOneWithWhereWithoutTimeLogsInput = {
+    where?: Prisma.ProjectWhereInput;
+    data: Prisma.XOR<Prisma.ProjectUpdateWithoutTimeLogsInput, Prisma.ProjectUncheckedUpdateWithoutTimeLogsInput>;
+};
+export type ProjectUpdateWithoutTimeLogsInput = {
+    id?: Prisma.StringFieldUpdateOperationsInput | string;
+    name?: Prisma.StringFieldUpdateOperationsInput | string;
+    description?: Prisma.StringFieldUpdateOperationsInput | string;
+    status?: Prisma.EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus;
+    startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    estimatedHours?: Prisma.IntFieldUpdateOperationsInput | number;
+    actualHours?: Prisma.FloatFieldUpdateOperationsInput | number;
+    progress?: Prisma.IntFieldUpdateOperationsInput | number;
+    color?: Prisma.StringFieldUpdateOperationsInput | string;
+    avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    testUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    queueOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    company?: Prisma.CompanyUpdateOneRequiredWithoutProjectsNestedInput;
+    owner?: Prisma.UserUpdateOneRequiredWithoutManagedProjectsNestedInput;
+    developers?: Prisma.ProjectDeveloperUpdateManyWithoutProjectNestedInput;
+    modules?: Prisma.ModuleUpdateManyWithoutProjectNestedInput;
+    epics?: Prisma.EpicUpdateManyWithoutProjectNestedInput;
+    tasks?: Prisma.TaskUpdateManyWithoutProjectNestedInput;
+    notifications?: Prisma.NotificationUpdateManyWithoutRelatedProjectNestedInput;
+};
+export type ProjectUncheckedUpdateWithoutTimeLogsInput = {
+    id?: Prisma.StringFieldUpdateOperationsInput | string;
+    companyId?: Prisma.StringFieldUpdateOperationsInput | string;
+    name?: Prisma.StringFieldUpdateOperationsInput | string;
+    description?: Prisma.StringFieldUpdateOperationsInput | string;
+    status?: Prisma.EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus;
+    ownerId?: Prisma.StringFieldUpdateOperationsInput | string;
+    startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    estimatedHours?: Prisma.IntFieldUpdateOperationsInput | number;
+    actualHours?: Prisma.FloatFieldUpdateOperationsInput | number;
+    progress?: Prisma.IntFieldUpdateOperationsInput | number;
+    color?: Prisma.StringFieldUpdateOperationsInput | string;
+    avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    testUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    queueOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    developers?: Prisma.ProjectDeveloperUncheckedUpdateManyWithoutProjectNestedInput;
+    modules?: Prisma.ModuleUncheckedUpdateManyWithoutProjectNestedInput;
+    epics?: Prisma.EpicUncheckedUpdateManyWithoutProjectNestedInput;
+    tasks?: Prisma.TaskUncheckedUpdateManyWithoutProjectNestedInput;
     notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRelatedProjectNestedInput;
 };
 export type ProjectCreateWithoutNotificationsInput = {
@@ -1339,6 +1487,7 @@ export type ProjectCreateWithoutNotificationsInput = {
     modules?: Prisma.ModuleCreateNestedManyWithoutProjectInput;
     epics?: Prisma.EpicCreateNestedManyWithoutProjectInput;
     tasks?: Prisma.TaskCreateNestedManyWithoutProjectInput;
+    timeLogs?: Prisma.TimeLogCreateNestedManyWithoutProjectInput;
 };
 export type ProjectUncheckedCreateWithoutNotificationsInput = {
     id?: string;
@@ -1362,6 +1511,7 @@ export type ProjectUncheckedCreateWithoutNotificationsInput = {
     modules?: Prisma.ModuleUncheckedCreateNestedManyWithoutProjectInput;
     epics?: Prisma.EpicUncheckedCreateNestedManyWithoutProjectInput;
     tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutProjectInput;
+    timeLogs?: Prisma.TimeLogUncheckedCreateNestedManyWithoutProjectInput;
 };
 export type ProjectCreateOrConnectWithoutNotificationsInput = {
     where: Prisma.ProjectWhereUniqueInput;
@@ -1398,6 +1548,7 @@ export type ProjectUpdateWithoutNotificationsInput = {
     modules?: Prisma.ModuleUpdateManyWithoutProjectNestedInput;
     epics?: Prisma.EpicUpdateManyWithoutProjectNestedInput;
     tasks?: Prisma.TaskUpdateManyWithoutProjectNestedInput;
+    timeLogs?: Prisma.TimeLogUpdateManyWithoutProjectNestedInput;
 };
 export type ProjectUncheckedUpdateWithoutNotificationsInput = {
     id?: Prisma.StringFieldUpdateOperationsInput | string;
@@ -1421,6 +1572,7 @@ export type ProjectUncheckedUpdateWithoutNotificationsInput = {
     modules?: Prisma.ModuleUncheckedUpdateManyWithoutProjectNestedInput;
     epics?: Prisma.EpicUncheckedUpdateManyWithoutProjectNestedInput;
     tasks?: Prisma.TaskUncheckedUpdateManyWithoutProjectNestedInput;
+    timeLogs?: Prisma.TimeLogUncheckedUpdateManyWithoutProjectNestedInput;
 };
 export type ProjectCreateManyCompanyInput = {
     id?: string;
@@ -1461,6 +1613,7 @@ export type ProjectUpdateWithoutCompanyInput = {
     modules?: Prisma.ModuleUpdateManyWithoutProjectNestedInput;
     epics?: Prisma.EpicUpdateManyWithoutProjectNestedInput;
     tasks?: Prisma.TaskUpdateManyWithoutProjectNestedInput;
+    timeLogs?: Prisma.TimeLogUpdateManyWithoutProjectNestedInput;
     notifications?: Prisma.NotificationUpdateManyWithoutRelatedProjectNestedInput;
 };
 export type ProjectUncheckedUpdateWithoutCompanyInput = {
@@ -1484,6 +1637,7 @@ export type ProjectUncheckedUpdateWithoutCompanyInput = {
     modules?: Prisma.ModuleUncheckedUpdateManyWithoutProjectNestedInput;
     epics?: Prisma.EpicUncheckedUpdateManyWithoutProjectNestedInput;
     tasks?: Prisma.TaskUncheckedUpdateManyWithoutProjectNestedInput;
+    timeLogs?: Prisma.TimeLogUncheckedUpdateManyWithoutProjectNestedInput;
     notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRelatedProjectNestedInput;
 };
 export type ProjectUncheckedUpdateManyWithoutCompanyInput = {
@@ -1543,6 +1697,7 @@ export type ProjectUpdateWithoutOwnerInput = {
     modules?: Prisma.ModuleUpdateManyWithoutProjectNestedInput;
     epics?: Prisma.EpicUpdateManyWithoutProjectNestedInput;
     tasks?: Prisma.TaskUpdateManyWithoutProjectNestedInput;
+    timeLogs?: Prisma.TimeLogUpdateManyWithoutProjectNestedInput;
     notifications?: Prisma.NotificationUpdateManyWithoutRelatedProjectNestedInput;
 };
 export type ProjectUncheckedUpdateWithoutOwnerInput = {
@@ -1566,6 +1721,7 @@ export type ProjectUncheckedUpdateWithoutOwnerInput = {
     modules?: Prisma.ModuleUncheckedUpdateManyWithoutProjectNestedInput;
     epics?: Prisma.EpicUncheckedUpdateManyWithoutProjectNestedInput;
     tasks?: Prisma.TaskUncheckedUpdateManyWithoutProjectNestedInput;
+    timeLogs?: Prisma.TimeLogUncheckedUpdateManyWithoutProjectNestedInput;
     notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRelatedProjectNestedInput;
 };
 export type ProjectUncheckedUpdateManyWithoutOwnerInput = {
@@ -1591,6 +1747,7 @@ export type ProjectCountOutputType = {
     modules: number;
     epics: number;
     tasks: number;
+    timeLogs: number;
     notifications: number;
 };
 export type ProjectCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1598,6 +1755,7 @@ export type ProjectCountOutputTypeSelect<ExtArgs extends runtime.Types.Extension
     modules?: boolean | ProjectCountOutputTypeCountModulesArgs;
     epics?: boolean | ProjectCountOutputTypeCountEpicsArgs;
     tasks?: boolean | ProjectCountOutputTypeCountTasksArgs;
+    timeLogs?: boolean | ProjectCountOutputTypeCountTimeLogsArgs;
     notifications?: boolean | ProjectCountOutputTypeCountNotificationsArgs;
 };
 export type ProjectCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1614,6 +1772,9 @@ export type ProjectCountOutputTypeCountEpicsArgs<ExtArgs extends runtime.Types.E
 };
 export type ProjectCountOutputTypeCountTasksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     where?: Prisma.TaskWhereInput;
+};
+export type ProjectCountOutputTypeCountTimeLogsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    where?: Prisma.TimeLogWhereInput;
 };
 export type ProjectCountOutputTypeCountNotificationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     where?: Prisma.NotificationWhereInput;
@@ -1642,6 +1803,7 @@ export type ProjectSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     modules?: boolean | Prisma.Project$modulesArgs<ExtArgs>;
     epics?: boolean | Prisma.Project$epicsArgs<ExtArgs>;
     tasks?: boolean | Prisma.Project$tasksArgs<ExtArgs>;
+    timeLogs?: boolean | Prisma.Project$timeLogsArgs<ExtArgs>;
     notifications?: boolean | Prisma.Project$notificationsArgs<ExtArgs>;
     _count?: boolean | Prisma.ProjectCountOutputTypeDefaultArgs<ExtArgs>;
 }, ExtArgs["result"]["project"]>;
@@ -1672,6 +1834,7 @@ export type ProjectInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs
     modules?: boolean | Prisma.Project$modulesArgs<ExtArgs>;
     epics?: boolean | Prisma.Project$epicsArgs<ExtArgs>;
     tasks?: boolean | Prisma.Project$tasksArgs<ExtArgs>;
+    timeLogs?: boolean | Prisma.Project$timeLogsArgs<ExtArgs>;
     notifications?: boolean | Prisma.Project$notificationsArgs<ExtArgs>;
     _count?: boolean | Prisma.ProjectCountOutputTypeDefaultArgs<ExtArgs>;
 };
@@ -1684,6 +1847,7 @@ export type $ProjectPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
         modules: Prisma.$ModulePayload<ExtArgs>[];
         epics: Prisma.$EpicPayload<ExtArgs>[];
         tasks: Prisma.$TaskPayload<ExtArgs>[];
+        timeLogs: Prisma.$TimeLogPayload<ExtArgs>[];
         notifications: Prisma.$NotificationPayload<ExtArgs>[];
     };
     scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -1760,6 +1924,7 @@ export interface Prisma__ProjectClient<T, Null = never, ExtArgs extends runtime.
     modules<T extends Prisma.Project$modulesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Project$modulesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ModulePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>;
     epics<T extends Prisma.Project$epicsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Project$epicsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EpicPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>;
     tasks<T extends Prisma.Project$tasksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Project$tasksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>;
+    timeLogs<T extends Prisma.Project$timeLogsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Project$timeLogsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TimeLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>;
     notifications<T extends Prisma.Project$notificationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Project$notificationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>;
     then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): runtime.Types.Utils.JsPromise<TResult1 | TResult2>;
     catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): runtime.Types.Utils.JsPromise<T | TResult>;
@@ -1912,6 +2077,17 @@ export type Project$tasksArgs<ExtArgs extends runtime.Types.Extensions.InternalA
     take?: number;
     skip?: number;
     distinct?: Prisma.TaskScalarFieldEnum | Prisma.TaskScalarFieldEnum[];
+};
+export type Project$timeLogsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    select?: Prisma.TimeLogSelect<ExtArgs> | null;
+    omit?: Prisma.TimeLogOmit<ExtArgs> | null;
+    include?: Prisma.TimeLogInclude<ExtArgs> | null;
+    where?: Prisma.TimeLogWhereInput;
+    orderBy?: Prisma.TimeLogOrderByWithRelationInput | Prisma.TimeLogOrderByWithRelationInput[];
+    cursor?: Prisma.TimeLogWhereUniqueInput;
+    take?: number;
+    skip?: number;
+    distinct?: Prisma.TimeLogScalarFieldEnum | Prisma.TimeLogScalarFieldEnum[];
 };
 export type Project$notificationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     select?: Prisma.NotificationSelect<ExtArgs> | null;

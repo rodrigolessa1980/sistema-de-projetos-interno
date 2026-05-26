@@ -178,11 +178,16 @@ exports.TaskDependencyScalarFieldEnum = {
 };
 exports.TimeLogScalarFieldEnum = {
     id: 'id',
+    projectId: 'projectId',
     taskId: 'taskId',
     userId: 'userId',
     hours: 'hours',
+    durationSeconds: 'durationSeconds',
     description: 'description',
     date: 'date',
+    startedAt: 'startedAt',
+    endedAt: 'endedAt',
+    source: 'source',
     status: 'status',
     createdAt: 'createdAt'
 };
@@ -329,6 +334,7 @@ exports.TaskDependencyOrderByRelevanceFieldEnum = {
 };
 exports.TimeLogOrderByRelevanceFieldEnum = {
     id: 'id',
+    projectId: 'projectId',
     taskId: 'taskId',
     userId: 'userId',
     description: 'description'
