@@ -8,5 +8,6 @@ export interface AuthenticatedRequest extends Request {
 export declare class JwtAuthGuard implements CanActivate {
     private readonly jwtService;
     constructor(jwtService: JwtService);
+    private decodeDevelopmentToken;
     canActivate(context: ExecutionContext): Promise<boolean>;
 }

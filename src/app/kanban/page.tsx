@@ -4,7 +4,7 @@ import { useState, useMemo, useEffect } from "react";
 import { AppLayout } from "@/components/layout/app-layout";
 import { useTaskStore, useProjectStore, useUserStore } from "@/stores";
 import { useAuth } from "@/hooks/use-auth";
-import { useUpdateTaskStatus } from "@/hooks/use-tasks";
+import { useUpdateKanbanOrder } from "@/hooks/use-tasks";
 import { ComplexityBadge } from "@/components/shared/task-badge";
 import { formatDate, getStatusLabel, getStatusDotColor } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
@@ -20,7 +20,6 @@ import {
 } from "@dnd-kit/core";
 import {
   SortableContext, useSortable, verticalListSortingStrategy,
-  arrayMove,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { cn } from "@/lib/utils";
@@ -70,6 +69,7 @@ function KanbanCard({ task, isDragging }: { task: Task; isDragging?: boolean }) 
     <div
       ref={setNodeRef}
       style={style}
+      data-task-id={task.id}
       className={cn(
         "border rounded-xl p-3 group cursor-grab active:cursor-grabbing transition-all",
         task.isUrgent
@@ -160,6 +160,7 @@ function KanbanColumn({ status, tasks }: { status: TaskStatus; tasks: Task[] }) 
   return (
     <div
       ref={setNodeRef}
+      data-kanban-status={status}
       className={cn(
         "flex flex-col h-full min-w-0 bg-zinc-900/30 rounded-xl border overflow-hidden transition-colors",
         isOver ? "border-violet-500/60 bg-violet-500/5" : "border-zinc-800/40"
@@ -203,11 +204,40 @@ function KanbanColumn({ status, tasks }: { status: TaskStatus; tasks: Task[] }) 
 
 const BLOCKED_TRANSITIONS: TaskStatus[] = ["EM_DESENVOLVIMENTO", "EM_REVISAO", "HOMOLOGACAO", "CONCLUIDA"];
 
+function insertAt<T>(items: T[], item: T, index: number) {
+  const next = [...items];
+  next.splice(Math.max(0, Math.min(index, next.length)), 0, item);
+  return next;
+}
+
+function areSameOrder(a: string[], b: string[]) {
+  return a.length === b.length && a.every((id, index) => id === b[index]);
+}
+
+function getDropIndex(event: DragEndEvent, orderedIds: string[]) {
+  const { active, over } = event;
+  if (!over) return orderedIds.length;
+
+  const overId = String(over.id);
+  if (KANBAN_STATUSES.includes(overId as TaskStatus)) return orderedIds.length;
+
+  const overIndex = orderedIds.indexOf(overId);
+  if (overIndex === -1) return orderedIds.length;
+
+  const activeRect = active.rect.current.translated ?? active.rect.current.initial;
+  if (!activeRect) return overIndex;
+
+  const overMiddle = over.rect.top + over.rect.height / 2;
+  const shouldInsertAfter = activeRect.top > overMiddle;
+
+  return overIndex + (shouldInsertAfter ? 1 : 0);
+}
+
 export default function KanbanPage() {
-  const { tasks, reorderTasks, getBlockersForTask } = useTaskStore();
+  const { tasks, getBlockersForTask } = useTaskStore();
   const { projects } = useProjectStore();
-  const { user, isAdmin } = useAuth();
-  const updateStatusMutation = useUpdateTaskStatus();
+  const { isAdmin } = useAuth();
+  const updateKanbanOrder = useUpdateKanbanOrder();
   const [projectFilter, setProjectFilter] = useState("all");
   const [activeTask, setActiveTask] = useState<Task | null>(null);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -217,15 +247,17 @@ export default function KanbanPage() {
   );
 
   const visibleTasks = useMemo(() => {
-    const base = isAdmin ? tasks : tasks.filter((t) => t.assigneeId === user?.id);
+    const base = tasks;
     if (projectFilter !== "all") return base.filter((t) => t.projectId === projectFilter);
     return base;
-  }, [tasks, projectFilter, isAdmin, user]);
+  }, [tasks, projectFilter]);
 
   const tasksByStatus = useMemo(() => {
     const groups: Record<TaskStatus, Task[]> = {} as Record<TaskStatus, Task[]>;
     for (const status of KANBAN_STATUSES) {
-      groups[status] = visibleTasks.filter((t) => t.status === status).sort((a, b) => a.order - b.order);
+      groups[status] = visibleTasks
+        .filter((t) => t.status === status)
+        .sort((a, b) => a.order - b.order || new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
     }
     return groups;
   }, [visibleTasks]);
@@ -238,28 +270,16 @@ export default function KanbanPage() {
   const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
     setActiveTask(null);
-    if (!over || active.id === over.id) return;
+    if (!over) return;
 
-    const activeTask = tasks.find((t) => t.id === active.id);
+    const activeId = String(active.id);
+    const activeTask = tasks.find((t) => t.id === activeId);
     if (!activeTask) return;
 
-    const overTask = tasks.find((t) => t.id === over.id);
-    const overColumn = KANBAN_STATUSES.includes(over.id as TaskStatus) ? over.id as TaskStatus : null;
+    const overId = String(over.id);
+    const overTask = tasks.find((t) => t.id === overId);
+    const overColumn = KANBAN_STATUSES.includes(overId as TaskStatus) ? overId as TaskStatus : null;
     const targetStatus = overColumn ?? overTask?.status ?? activeTask.status;
-
-    if (activeTask.status === targetStatus) {
-      if (!overTask || overTask.projectId !== activeTask.projectId) return;
-      const ids = (tasksByStatus[targetStatus] ?? [])
-        .filter((task) => task.projectId === activeTask.projectId)
-        .map((task) => task.id);
-      const oldIndex = ids.indexOf(activeTask.id);
-      const newIndex = ids.indexOf(overTask.id);
-      if (oldIndex !== -1 && newIndex !== -1 && oldIndex !== newIndex) {
-        reorderTasks(activeTask.projectId, targetStatus, arrayMove(ids, oldIndex, newIndex));
-        toast.success("Ordem das tarefas atualizada");
-      }
-      return;
-    }
 
     if (activeTask.status !== targetStatus) {
       if (BLOCKED_TRANSITIONS.includes(targetStatus)) {
@@ -270,16 +290,30 @@ export default function KanbanPage() {
           return;
         }
       }
-      try {
-        await updateStatusMutation.mutateAsync({
-          taskId: activeTask.id,
-          status: targetStatus,
-          userId: user?.id ?? "",
-        });
-      } catch (err: unknown) {
-        const message = err instanceof Error ? err.message : "Erro ao mover tarefa";
-        toast.error(message);
-      }
+    }
+
+    const currentSourceIds = (tasksByStatus[activeTask.status] ?? []).map((task) => task.id);
+    const sourceTaskIds = currentSourceIds.filter((id) => id !== activeId);
+    const currentTargetIds = (tasksByStatus[targetStatus] ?? []).map((task) => task.id);
+    const targetIdsWithoutActive = currentTargetIds.filter((id) => id !== activeId);
+    const dropIndex = overId === activeId ? currentSourceIds.indexOf(activeId) : getDropIndex(event, targetIdsWithoutActive);
+    const targetTaskIds = insertAt(targetIdsWithoutActive, activeId, dropIndex);
+
+    if (activeTask.status === targetStatus && areSameOrder(currentSourceIds, targetTaskIds)) {
+      return;
+    }
+
+    const result = await updateKanbanOrder.mutateAsync({
+      taskId: activeId,
+      targetStatus,
+      targetTaskIds,
+      sourceStatus: activeTask.status !== targetStatus ? activeTask.status : undefined,
+      sourceTaskIds: activeTask.status !== targetStatus ? sourceTaskIds : undefined,
+    });
+
+    toast.success("Posição da tarefa atualizada");
+    if (!result.persisted) {
+      toast.warning(result.message ?? "Movimento salvo localmente; backend indisponível");
     }
   };
 

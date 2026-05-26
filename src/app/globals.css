@@ -117,6 +117,15 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
+.light {
+  --devflow-canvas: #fafafa;
+  --devflow-surface: #ffffff;
+  --devflow-muted-surface: #f4f4f5;
+  --devflow-strong-surface: #e4e4e7;
+  --devflow-border: #e4e4e7;
+  --devflow-strong-border: #d4d4d8;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -128,6 +137,100 @@
     @apply font-sans;
   }
 }
+
+/*
+ * Existing application screens were authored in the zinc dark palette.
+ * Map those shared surface utilities when the ThemeProvider selects light.
+ */
+  .light .bg-zinc-950,
+  .light .bg-zinc-950\/80,
+  .light .bg-zinc-950\/95 {
+    background-color: var(--devflow-canvas);
+  }
+  .light .bg-zinc-900,
+  .light .bg-zinc-900\/30,
+  .light .bg-zinc-900\/40,
+  .light .bg-zinc-900\/60,
+  .light .bg-zinc-900\/80 {
+    background-color: var(--devflow-surface);
+  }
+  .light .bg-zinc-800,
+  .light .bg-zinc-800\/20,
+  .light .bg-zinc-800\/30,
+  .light .bg-zinc-800\/40,
+  .light .bg-zinc-800\/50,
+  .light .bg-zinc-800\/60,
+  .light .bg-zinc-800\/80 {
+    background-color: var(--devflow-muted-surface);
+  }
+  .light .bg-zinc-700,
+  .light .bg-zinc-700\/20,
+  .light .bg-zinc-700\/40,
+  .light .bg-zinc-700\/50,
+  .light .bg-zinc-700\/60 {
+    background-color: var(--devflow-strong-surface);
+  }
+  .light .text-zinc-100 {
+    color: #18181b;
+  }
+  .light .text-zinc-200 {
+    color: #27272a;
+  }
+  .light .text-zinc-300 {
+    color: #3f3f46;
+  }
+  .light .text-zinc-400 {
+    color: #52525b;
+  }
+  .light .text-zinc-500 {
+    color: #71717a;
+  }
+  .light .text-zinc-600,
+  .light .text-zinc-700 {
+    color: #a1a1aa;
+  }
+  .light .border-zinc-900,
+  .light .border-zinc-800,
+  .light .border-zinc-800\/20,
+  .light .border-zinc-800\/30,
+  .light .border-zinc-800\/40,
+  .light .border-zinc-800\/50,
+  .light .border-zinc-800\/60 {
+    border-color: var(--devflow-border);
+  }
+  .light .border-zinc-700,
+  .light .border-zinc-700\/30,
+  .light .border-zinc-700\/40,
+  .light .border-zinc-700\/50,
+  .light .border-zinc-600,
+  .light .border-zinc-600\/50 {
+    border-color: var(--devflow-strong-border);
+  }
+  .light .divide-zinc-800\/30 > :not(:last-child),
+  .light .divide-zinc-800\/50 > :not(:last-child) {
+    border-color: var(--devflow-border);
+  }
+  .light .placeholder-zinc-500::placeholder,
+  .light .placeholder-zinc-600::placeholder {
+    color: #71717a;
+  }
+  .light .hover\:bg-zinc-900\/40:hover,
+  .light .hover\:bg-zinc-800:hover,
+  .light .hover\:bg-zinc-800\/20:hover,
+  .light .hover\:bg-zinc-800\/30:hover,
+  .light .hover\:bg-zinc-800\/40:hover,
+  .light .hover\:bg-zinc-800\/60:hover,
+  .light .hover\:bg-zinc-800\/80:hover,
+  .light .hover\:bg-zinc-700:hover,
+  .light .hover\:bg-zinc-700\/50:hover {
+    background-color: #e4e4e7;
+  }
+  .light .hover\:text-zinc-100:hover,
+  .light .hover\:text-zinc-200:hover,
+  .light .hover\:text-zinc-300:hover,
+  .light .hover\:text-zinc-400:hover {
+    color: #18181b;
+  }
 
 @layer utilities {
   .scrollbar-thin {

@@ -8,6 +8,7 @@ import { GetCompanyByIdUseCase } from './companies/get-company-by-id.use-case';
 import { CreateCompanyUseCase } from './companies/create-company.use-case';
 import { UpdateCompanyUseCase } from './companies/update-company.use-case';
 import { DeleteCompanyUseCase } from './companies/delete-company.use-case';
+import { ReorderKanbanTasksUseCase } from './tasks/reorder-kanban-tasks.use-case';
 
 const useCases = [
   LoginUseCase,
@@ -17,6 +18,7 @@ const useCases = [
   CreateCompanyUseCase,
   UpdateCompanyUseCase,
   DeleteCompanyUseCase,
+  ReorderKanbanTasksUseCase,
 ];
 
 @Module({

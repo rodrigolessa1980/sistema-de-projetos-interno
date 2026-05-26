@@ -17,6 +17,7 @@ const get_company_by_id_use_case_1 = require("./companies/get-company-by-id.use-
 const create_company_use_case_1 = require("./companies/create-company.use-case");
 const update_company_use_case_1 = require("./companies/update-company.use-case");
 const delete_company_use_case_1 = require("./companies/delete-company.use-case");
+const reorder_kanban_tasks_use_case_1 = require("./tasks/reorder-kanban-tasks.use-case");
 const useCases = [
     login_use_case_1.LoginUseCase,
     get_current_user_use_case_1.GetCurrentUserUseCase,
@@ -25,6 +26,7 @@ const useCases = [
     create_company_use_case_1.CreateCompanyUseCase,
     update_company_use_case_1.UpdateCompanyUseCase,
     delete_company_use_case_1.DeleteCompanyUseCase,
+    reorder_kanban_tasks_use_case_1.ReorderKanbanTasksUseCase,
 ];
 let UseCasesModule = class UseCasesModule {
 };

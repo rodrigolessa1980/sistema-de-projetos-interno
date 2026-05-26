@@ -1,5 +1,5 @@
 import { PrismaService } from '../prisma/prisma.service';
-import { ITaskRepository } from '../../../core/domain/repositories/task-repository.interface';
+import { ITaskRepository, KanbanOrderUpdate } from '../../../core/domain/repositories/task-repository.interface';
 import { Task } from '../../../core/domain/entities/task.entity';
 export declare class PrismaTaskRepository implements ITaskRepository {
     private prisma;
@@ -12,4 +12,5 @@ export declare class PrismaTaskRepository implements ITaskRepository {
     findByAssignee(assigneeId: string): Promise<Task[]>;
     findByProjectId(projectId: string): Promise<Task[]>;
     setTaskUrgent(id: string, isUrgent: boolean): Promise<void>;
+    updateKanbanOrder(input: KanbanOrderUpdate): Promise<void>;
 }

@@ -1,4 +1,13 @@
 import { Task } from '../entities/task.entity';
+import { TaskStatus } from '../entities/enums';
+
+export interface KanbanOrderUpdate {
+  taskId: string;
+  targetStatus: TaskStatus;
+  targetTaskIds: string[];
+  sourceStatus?: TaskStatus;
+  sourceTaskIds?: string[];
+}
 
 export interface ITaskRepository {
   findById(id: string): Promise<Task | null>;
@@ -8,5 +17,6 @@ export interface ITaskRepository {
   findByAssignee(assigneeId: string): Promise<Task[]>;
   findByProjectId(projectId: string): Promise<Task[]>;
   setTaskUrgent(id: string, isUrgent: boolean): Promise<void>;
+  updateKanbanOrder(input: KanbanOrderUpdate): Promise<void>;
 }
 export const ITaskRepositoryToken = Symbol('ITaskRepository');

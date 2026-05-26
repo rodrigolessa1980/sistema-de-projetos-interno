@@ -87,7 +87,7 @@ export function Sidebar() {
               <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center shrink-0">
                 <Zap className="w-4 h-4 text-white" />
               </div>
-              <span className="font-semibold text-white text-sm tracking-tight whitespace-nowrap">DevFlow</span>
+              <span className="font-semibold text-zinc-900 dark:text-white text-sm tracking-tight whitespace-nowrap">DevFlow</span>
               <Badge variant="secondary" className="text-[9px] px-1.5 py-0 bg-violet-500/20 text-violet-400 border-violet-500/30">
                 BETA
               </Badge>

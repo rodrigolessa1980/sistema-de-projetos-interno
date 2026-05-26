@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { ITaskRepository } from '../../../core/domain/repositories/task-repository.interface';
+import {
+  ITaskRepository,
+  KanbanOrderUpdate,
+} from '../../../core/domain/repositories/task-repository.interface';
 import { Task } from '../../../core/domain/entities/task.entity';
 import { TaskStatus } from '../../../core/domain/entities/enums';
 
@@ -118,5 +121,39 @@ export class PrismaTaskRepository implements ITaskRepository {
       where: { id },
       data: { isUrgent },
     });
+  }
+
+  async updateKanbanOrder(input: KanbanOrderUpdate): Promise<void> {
+    const completedAt = input.targetStatus === TaskStatus.CONCLUIDA ? new Date() : null;
+    const sourceTaskIds =
+      input.sourceStatus && input.sourceStatus !== input.targetStatus
+        ? input.sourceTaskIds ?? []
+        : [];
+
+    const targetUpdates = input.targetTaskIds.map((id, index) =>
+      this.prisma.task.update({
+        where: { id },
+        data: {
+          status: input.targetStatus,
+          order: index,
+          ...(id === input.taskId ? { completedAt } : {}),
+        },
+      }),
+    );
+
+    const sourceUpdates = sourceTaskIds.map((id, index) =>
+      this.prisma.task.update({
+        where: { id },
+        data: {
+          status: input.sourceStatus,
+          order: index,
+        },
+      }),
+    );
+
+    const operations = [...targetUpdates, ...sourceUpdates];
+    if (operations.length === 0) return;
+
+    await this.prisma.$transaction(operations);
   }
 }

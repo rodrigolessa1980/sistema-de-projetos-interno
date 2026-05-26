@@ -13,6 +13,7 @@ exports.PrismaTaskRepository = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../prisma/prisma.service");
 const task_entity_1 = require("../../../core/domain/entities/task.entity");
+const enums_1 = require("../../../core/domain/entities/enums");
 let PrismaTaskRepository = class PrismaTaskRepository {
     prisma;
     constructor(prisma) {
@@ -121,6 +122,31 @@ let PrismaTaskRepository = class PrismaTaskRepository {
             where: { id },
             data: { isUrgent },
         });
+    }
+    async updateKanbanOrder(input) {
+        const completedAt = input.targetStatus === enums_1.TaskStatus.CONCLUIDA ? new Date() : null;
+        const sourceTaskIds = input.sourceStatus && input.sourceStatus !== input.targetStatus
+            ? input.sourceTaskIds ?? []
+            : [];
+        const targetUpdates = input.targetTaskIds.map((id, index) => this.prisma.task.update({
+            where: { id },
+            data: {
+                status: input.targetStatus,
+                order: index,
+                ...(id === input.taskId ? { completedAt } : {}),
+            },
+        }));
+        const sourceUpdates = sourceTaskIds.map((id, index) => this.prisma.task.update({
+            where: { id },
+            data: {
+                status: input.sourceStatus,
+                order: index,
+            },
+        }));
+        const operations = [...targetUpdates, ...sourceUpdates];
+        if (operations.length === 0)
+            return;
+        await this.prisma.$transaction(operations);
     }
 };
 exports.PrismaTaskRepository = PrismaTaskRepository;

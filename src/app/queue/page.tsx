@@ -116,14 +116,20 @@ function QueueCard({
     <div
       ref={setNodeRef}
       style={style}
-      className="group flex items-center gap-3 bg-zinc-900/60 border border-zinc-800/50 rounded-xl px-4 py-3 hover:border-zinc-700/50 transition-all hover:shadow-lg hover:shadow-black/20"
+      className="group relative flex items-center gap-3 bg-zinc-900/60 border border-zinc-800/50 rounded-xl px-4 py-3 hover:border-zinc-700/50 transition-all hover:shadow-lg hover:shadow-black/20"
     >
+      <Link
+        href={`/projects/${project.id}`}
+        aria-label={`Ver projeto ${project.name}`}
+        className="absolute inset-0 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/60"
+      />
+
       {/* Drag handle */}
       {isAdmin && (
         <button
           {...attributes}
           {...listeners}
-          className="cursor-grab active:cursor-grabbing text-zinc-700 hover:text-zinc-400 transition-colors shrink-0 touch-none"
+          className="relative z-10 cursor-grab active:cursor-grabbing text-zinc-700 hover:text-zinc-400 transition-colors shrink-0 touch-none"
         >
           <GripVertical className="w-4 h-4" />
         </button>
@@ -186,7 +192,7 @@ function QueueCard({
       </div>
 
       {/* Actions */}
-      <div className="flex items-center gap-1 shrink-0 ml-1">
+      <div className="relative z-10 flex items-center gap-1 shrink-0 ml-1">
         {isAdmin && position > 1 && (
           <Button
             size="sm"
@@ -291,40 +297,41 @@ export default function QueuePage() {
               <motion.div
                 initial={{ opacity: 0, y: -8 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="flex items-center gap-4 bg-gradient-to-r from-amber-500/5 via-zinc-900/60 to-transparent border border-amber-500/20 rounded-xl p-4"
               >
-                <div className="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-500/30 flex items-center justify-center shrink-0">
-                  <span className="text-lg font-bold text-amber-400">1</span>
-                </div>
-                <ProjectAvatar
-                  name={firstProject.name}
-                  color={firstProject.color}
-                  avatar={firstProject.avatar}
-                  size="md"
-                />
-                <div className="flex-1 min-w-0">
-                  <p className="text-[10px] text-amber-400 font-semibold uppercase tracking-wider mb-0.5">
-                    Maior prioridade
-                  </p>
-                  <h2 className="text-base font-semibold text-zinc-100 truncate">{firstProject.name}</h2>
-                  <div className="flex items-center gap-2 mt-0.5">
-                    <span
-                      className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium border ${statusColors[firstProject.status]}`}
-                    >
-                      {statusLabels[firstProject.status]}
-                    </span>
-                    {firstProject.endDate && (
-                      <span className="flex items-center gap-1 text-xs text-zinc-500">
-                        <Calendar className="w-3 h-3" /> Entrega: {formatDate(firstProject.endDate)}
-                      </span>
-                    )}
-                  </div>
-                </div>
                 <Link
                   href={`/projects/${firstProject.id}`}
-                  className="hidden sm:flex items-center gap-1.5 text-xs text-amber-400 hover:text-amber-300 shrink-0 transition-colors"
+                  className="group flex items-center gap-4 bg-gradient-to-r from-amber-500/5 via-zinc-900/60 to-transparent border border-amber-500/20 rounded-xl p-4 transition-colors hover:border-amber-500/35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/60"
                 >
-                  Ver projeto <ArrowRight className="w-3 h-3" />
+                  <div className="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-500/30 flex items-center justify-center shrink-0">
+                    <span className="text-lg font-bold text-amber-400">1</span>
+                  </div>
+                  <ProjectAvatar
+                    name={firstProject.name}
+                    color={firstProject.color}
+                    avatar={firstProject.avatar}
+                    size="md"
+                  />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[10px] text-amber-400 font-semibold uppercase tracking-wider mb-0.5">
+                      Maior prioridade
+                    </p>
+                    <h2 className="text-base font-semibold text-zinc-100 truncate">{firstProject.name}</h2>
+                    <div className="flex items-center gap-2 mt-0.5">
+                      <span
+                        className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium border ${statusColors[firstProject.status]}`}
+                      >
+                        {statusLabels[firstProject.status]}
+                      </span>
+                      {firstProject.endDate && (
+                        <span className="flex items-center gap-1 text-xs text-zinc-500">
+                          <Calendar className="w-3 h-3" /> Entrega: {formatDate(firstProject.endDate)}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <span className="hidden sm:flex items-center gap-1.5 text-xs text-amber-400 group-hover:text-amber-300 shrink-0 transition-colors">
+                    Ver projeto <ArrowRight className="w-3 h-3" />
+                  </span>
                 </Link>
               </motion.div>
             )}

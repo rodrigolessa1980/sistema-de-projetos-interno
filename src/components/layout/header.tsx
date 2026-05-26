@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
+import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
-import { Bell, Search, Moon, Sun, Command, X, Timer, AlertTriangle, Clock, CheckCheck } from "lucide-react";
-import { useTheme } from "next-themes";
+import { Bell, Search, Sun, Command, X, Timer, AlertTriangle, Clock, CheckCheck } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -20,8 +20,25 @@ import { useActiveWorkSession } from "@/hooks/use-work-session";
 import Link from "next/link";
 import type { Notification } from "@/types";
 
+const ThemeToggle = dynamic(
+  () => import("./theme-toggle").then((module) => module.ThemeToggle),
+  {
+    ssr: false,
+    loading: () => (
+      <Button
+        aria-label="Alterar ambiente"
+        variant="ghost"
+        size="icon"
+        className="w-8 h-8 text-zinc-400"
+        disabled
+      >
+        <Sun className="w-4 h-4" />
+      </Button>
+    ),
+  }
+);
+
 export function Header({ title }: { title?: string }) {
-  const { theme, setTheme } = useTheme();
   const { notifications, markNotificationRead, markAllRead } = useUIStore();
   const { user, isAdmin } = useAuth();
   const router = useRouter();
@@ -209,14 +226,7 @@ export function Header({ title }: { title?: string }) {
           </AnimatePresence>
         </div>
 
-        <Button
-          variant="ghost"
-          size="icon"
-          className="w-8 h-8 text-zinc-400 hover:text-zinc-100"
-          onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-        >
-          {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-        </Button>
+        <ThemeToggle />
 
         <DropdownMenu>
           <DropdownMenuTrigger

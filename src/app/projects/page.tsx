@@ -184,8 +184,13 @@ export default function ProjectsPage() {
                   initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.05 }}
-                  className="group bg-zinc-900/60 border border-zinc-800/50 rounded-xl p-5 hover:border-zinc-700/50 transition-all hover:shadow-lg hover:shadow-black/20"
+                  className="group relative bg-zinc-900/60 border border-zinc-800/50 rounded-xl p-5 cursor-pointer hover:border-zinc-700/50 transition-all hover:shadow-lg hover:shadow-black/20"
                 >
+                  <Link
+                    href={`/projects/${project.id}`}
+                    aria-label={`Abrir detalhes do projeto ${project.name}`}
+                    className="absolute inset-0 z-[1] rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-violet-500/60"
+                  />
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center gap-3">
                       <ProjectAvatar name={project.name} color={project.color} avatar={project.avatar} size="md" />
@@ -220,7 +225,7 @@ export default function ProjectsPage() {
                     </div>
                     <DropdownMenu>
                       <DropdownMenuTrigger
-                        render={<button className="p-1.5 rounded-lg opacity-0 group-hover:opacity-100 hover:bg-zinc-700 text-zinc-400 transition-all">
+                        render={<button className="relative z-10 p-1.5 rounded-lg opacity-0 group-hover:opacity-100 focus:opacity-100 hover:bg-zinc-700 text-zinc-400 transition-all">
                           <MoreVertical className="w-3.5 h-3.5" />
                         </button>}
                       />
@@ -314,7 +319,7 @@ export default function ProjectsPage() {
                         target="_blank"
                         rel="noopener noreferrer"
                         onClick={(e) => e.stopPropagation()}
-                        className="flex items-center gap-1.5 text-xs text-cyan-400 hover:text-cyan-300 transition-colors truncate group"
+                        className="relative z-10 flex items-center gap-1.5 text-xs text-cyan-400 hover:text-cyan-300 transition-colors truncate group"
                       >
                         <ExternalLink className="w-3 h-3 shrink-0" />
                         <span className="truncate">{project.testUrl.replace(/^https?:\/\//, "")}</span>
@@ -327,7 +332,7 @@ export default function ProjectsPage() {
                       <Crown className="w-3 h-3 text-amber-400/70" />
                       <span className="truncate max-w-[100px]">{owner?.name ?? "—"}</span>
                     </div>
-                    <Link href={`/projects/${project.id}`} className="text-violet-400 hover:text-violet-300 flex items-center gap-1">
+                    <Link href={`/projects/${project.id}`} className="relative z-10 text-violet-400 hover:text-violet-300 flex items-center gap-1">
                       Abrir <TrendingUp className="w-3 h-3" />
                     </Link>
                   </div>

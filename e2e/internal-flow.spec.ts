@@ -38,6 +38,41 @@ test.describe("fluxo interno administrativo", () => {
     await expect(page.getByText("Cancelada", { exact: true })).toBeVisible();
   });
 
+  test("kanban fixa tarefa movida de bloqueada para planejada apos reload", async ({ page }) => {
+    await page.goto("/kanban");
+
+    const blockedCard = page.locator('[data-task-id="task-2"]');
+    const plannedColumn = page.locator('[data-kanban-status="PLANEJADA"]');
+    const source = await blockedCard.boundingBox();
+    const target = await plannedColumn.boundingBox();
+    if (!source || !target) throw new Error("Nao foi possivel localizar cartao ou coluna no Kanban");
+
+    await page.mouse.move(source.x + source.width / 2, source.y + source.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(source.x + source.width / 2 + 12, source.y + source.height / 2, { steps: 3 });
+    await page.mouse.move(target.x + target.width / 2, target.y + 80, { steps: 20 });
+    await page.mouse.up();
+
+    await expect(plannedColumn.locator('[data-task-id="task-2"]')).toBeVisible();
+    await page.reload();
+    await expect(plannedColumn.locator('[data-task-id="task-2"]')).toBeVisible();
+  });
+
+  test("alternador de ambiente troca a interface para o modo claro", async ({ page }) => {
+    const documentRoot = page.locator("html");
+    const canvas = page.locator("main");
+
+    await expect(documentRoot).toHaveClass(/dark/);
+    const darkBackground = await canvas.evaluate((element) => getComputedStyle(element).backgroundColor);
+
+    await page.getByRole("button", { name: "Ativar modo claro" }).click();
+
+    await expect(documentRoot).toHaveClass(/light/);
+    await expect(page.getByRole("button", { name: "Ativar modo escuro" })).toBeVisible();
+    const lightBackground = await canvas.evaluate((element) => getComputedStyle(element).backgroundColor);
+    expect(lightBackground).not.toBe(darkBackground);
+  });
+
   test("administrador cria epic para habilitar novas tarefas", async ({ page }) => {
     await page.goto("/epics");
     await page.getByRole("button", { name: "Novo Epic" }).click();

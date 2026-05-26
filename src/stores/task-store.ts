@@ -50,6 +50,13 @@ interface TaskStore {
   removeDependency: (id: string) => Promise<void>;
   setSelectedTask: (id: string | null) => void;
   reorderTasks: (projectId: string, status: TaskStatus, taskIds: string[]) => void;
+  applyKanbanOrder: (data: {
+    taskId: string;
+    targetStatus: TaskStatus;
+    targetTaskIds: string[];
+    sourceStatus?: TaskStatus;
+    sourceTaskIds?: string[];
+  }) => void;
 
   // Notes
   getNotesByTask: (taskId: string) => TaskNote[];
@@ -336,6 +343,44 @@ export const useTaskStore = create<TaskStore>()(
     }));
   },
 
+  applyKanbanOrder: ({ taskId, targetStatus, targetTaskIds, sourceStatus, sourceTaskIds = [] }) => {
+    const now = new Date().toISOString();
+    const targetOrder = new Map(targetTaskIds.map((id, index) => [id, index]));
+    const sourceOrder = new Map(sourceTaskIds.map((id, index) => [id, index]));
+
+    set((state) => ({
+      tasks: state.tasks.map((task) => {
+        const targetIndex = targetOrder.get(task.id);
+        if (targetIndex !== undefined) {
+          return {
+            ...task,
+            status: targetStatus,
+            order: targetIndex,
+            updatedAt: now,
+            completedAt:
+              task.id === taskId
+                ? targetStatus === "CONCLUIDA"
+                  ? now
+                  : undefined
+                : task.completedAt,
+          };
+        }
+
+        const sourceIndex = sourceOrder.get(task.id);
+        if (sourceStatus && sourceIndex !== undefined) {
+          return {
+            ...task,
+            status: sourceStatus,
+            order: sourceIndex,
+            updatedAt: now,
+          };
+        }
+
+        return task;
+      }),
+    }));
+  },
+
   // ── Notes ─────────────────────────────────────────────────────────────────
   getNotesByTask: (taskId) =>
     get().notes
@@ -403,8 +448,11 @@ export const useTaskStore = create<TaskStore>()(
   }),
   {
     name: "devflow-tasks",
-    // Persiste apenas notas e anexos (dados mutáveis pelo usuário)
+    // Persist local workflow edits until task endpoints replace the mock-backed store.
     partialize: (state) => ({
+      tasks: state.tasks,
+      statusHistory: state.statusHistory,
+      auditLogs: state.auditLogs,
       notes: state.notes,
       attachments: state.attachments,
       timeLogs: state.timeLogs,

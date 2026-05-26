@@ -12,13 +12,14 @@ const use_cases_module_1 = require("../../core/use-cases/use-cases.module");
 const auth_controller_1 = require("./controllers/auth.controller");
 const companies_controller_1 = require("./controllers/companies.controller");
 const health_controller_1 = require("./controllers/health.controller");
+const tasks_controller_1 = require("./controllers/tasks.controller");
 let HttpModule = class HttpModule {
 };
 exports.HttpModule = HttpModule;
 exports.HttpModule = HttpModule = __decorate([
     (0, common_1.Module)({
         imports: [use_cases_module_1.UseCasesModule],
-        controllers: [health_controller_1.HealthController, auth_controller_1.AuthController, companies_controller_1.CompaniesController],
+        controllers: [health_controller_1.HealthController, auth_controller_1.AuthController, companies_controller_1.CompaniesController, tasks_controller_1.TasksController],
     })
 ], HttpModule);
 //# sourceMappingURL=http.module.js.map

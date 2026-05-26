@@ -2,9 +2,43 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTaskStore } from "@/stores";
+import { useAuthStore } from "@/stores/auth-store";
 import { delay } from "@/lib/utils";
 import type { Task, TaskStatus, TimeLog } from "@/types";
 import { toast } from "sonner";
+
+export interface KanbanOrderPayload {
+  taskId: string;
+  targetStatus: TaskStatus;
+  targetTaskIds: string[];
+  sourceStatus?: TaskStatus;
+  sourceTaskIds?: string[];
+}
+
+async function persistKanbanOrder(payload: KanbanOrderPayload, token?: string) {
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001/api";
+  const controller = new AbortController();
+  const timeout = window.setTimeout(() => controller.abort(), 2000);
+
+  try {
+    const response = await fetch(`${apiUrl}/tasks/kanban/order`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: JSON.stringify(payload),
+      signal: controller.signal,
+    });
+
+    if (!response.ok) {
+      const body = await response.json().catch(() => null);
+      throw new Error(body?.message ?? "Backend não confirmou a nova ordem");
+    }
+  } finally {
+    window.clearTimeout(timeout);
+  }
+}
 
 export function useTasks(projectId?: string) {
   const store = useTaskStore();
@@ -47,6 +81,31 @@ export function useUpdateTaskStatus() {
     },
     onError: (err) => {
       toast.error(err instanceof Error ? err.message : "Erro ao atualizar status");
+    },
+  });
+}
+
+export function useUpdateKanbanOrder() {
+  const store = useTaskStore();
+  const token = useAuthStore((state) => state.session?.token);
+  const qc = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (payload: KanbanOrderPayload) => {
+      store.applyKanbanOrder(payload);
+
+      try {
+        await persistKanbanOrder(payload, token);
+        return { persisted: true };
+      } catch (error) {
+        return {
+          persisted: false,
+          message: error instanceof Error ? error.message : "Backend indisponível",
+        };
+      }
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["tasks"] });
     },
   });
 }
