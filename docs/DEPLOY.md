@@ -56,7 +56,7 @@ Passos executados no servidor (`/opt/devflow`):
 2. **Deploys seguintes:** `git reset --hard origin/main` + `git pull` (descarta alterações locais)
 3. Grava `ENV_BACKEND` em `backend/.env` e `ENV_FRONTEND` em `.env.production`
 4. `docker compose down` nos containers atuais
-5. `docker compose up -d --build` com `docker-compose.prod.yml`
+5. `docker compose up -d --build` com `docker-compose.prod.yml` — o `backend/.env` real é injetado no build via Docker secret (Prisma generate/migrate) e no runtime via `env_file`
 
 ## Repositório privado
 
