@@ -13,6 +13,7 @@
     "prisma:seed": "prisma db seed",
     "prisma:seed:run": "npm run build --silent && node dist/prisma/seed.js",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+    "dev": "nest start --watch",
     "start": "nest start",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",

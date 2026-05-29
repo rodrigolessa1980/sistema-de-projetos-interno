@@ -1,0 +1,37 @@
+name: devflow
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: devflow_backend
+    restart: unless-stopped
+    env_file:
+      - ./backend/.env
+    ports:
+      - "4011:4011"
+    networks:
+      - devflow
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
+    container_name: devflow_frontend
+    restart: unless-stopped
+    environment:
+      PORT: 8022
+      HOSTNAME: 0.0.0.0
+    ports:
+      - "8022:8022"
+    depends_on:
+      - backend
+    networks:
+      - devflow
+
+networks:
+  devflow:
+    driver: bridge

@@ -9,12 +9,12 @@ export default defineConfig({
     timeout: 15_000,
   },
   use: {
-    baseURL: "http://localhost:3000",
+    baseURL: "http://localhost:8022",
     trace: "retain-on-failure",
   },
   webServer: {
     command: "npm run dev",
-    url: "http://localhost:3000/login",
+    url: "http://localhost:8022/login",
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
   },

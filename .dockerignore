@@ -1,0 +1,17 @@
+node_modules
+.next
+out
+.git
+.github
+.env*
+!.env.example
+coverage
+*.md
+e2e
+playwright-report
+test-results
+.vscode
+.cursor
+backend/dist
+backend/node_modules
+backend/coverage

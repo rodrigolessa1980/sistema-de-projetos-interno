@@ -9,7 +9,7 @@ async function bootstrap() {
 
   app.setGlobalPrefix('api');
   app.enableCors({
-    origin: process.env.CORS_ORIGIN?.split(',') ?? ['http://localhost:3000'],
+    origin: process.env.CORS_ORIGIN?.split(',') ?? ['http://localhost:8022'],
     credentials: true,
   });
   app.useGlobalPipes(
@@ -21,7 +21,7 @@ async function bootstrap() {
   );
   app.useGlobalFilters(new DomainExceptionFilter());
 
-  const port = process.env.PORT ?? 3001;
+  const port = process.env.PORT ?? 4011;
   await app.listen(port);
   console.log(`DevFlow API rodando em http://localhost:${port}/api`);
 }

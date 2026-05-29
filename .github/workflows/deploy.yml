@@ -1,0 +1,89 @@
+name: Deploy Produção
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: Deploy via SSH
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Enviar script de deploy (senha SSH)
+        id: scp-password
+        continue-on-error: true
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          password: ${{ secrets.SERVER_PASSWORD }}
+          source: scripts/deploy-remote.sh
+          target: /tmp
+
+      - name: Executar deploy (senha SSH)
+        id: deploy-password
+        if: steps.scp-password.outcome == 'success'
+        continue-on-error: true
+        uses: appleboy/ssh-action@v1.2.0
+        env:
+          ENV_BACKEND: ${{ secrets.ENV_BACKEND }}
+          ENV_FRONTEND: ${{ secrets.ENV_FRONTEND }}
+          DEPLOY_PATH: /opt/devflow
+          REPO_URL: https://github.com/${{ github.repository }}.git
+          BRANCH: main
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          password: ${{ secrets.SERVER_PASSWORD }}
+          envs: ENV_BACKEND,ENV_FRONTEND,DEPLOY_PATH,REPO_URL,BRANCH
+          script_stop: true
+          script: |
+            if [ -f /tmp/scripts/deploy-remote.sh ]; then
+              mv /tmp/scripts/deploy-remote.sh /tmp/deploy-remote.sh
+            fi
+            chmod +x /tmp/deploy-remote.sh
+            bash /tmp/deploy-remote.sh
+
+      - name: Enviar script de deploy (chave SSH — fallback)
+        id: scp-key
+        if: steps.deploy-password.outcome != 'success'
+        continue-on-error: true
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH }}
+          source: scripts/deploy-remote.sh
+          target: /tmp
+
+      - name: Executar deploy (chave SSH — fallback)
+        if: steps.deploy-password.outcome != 'success'
+        uses: appleboy/ssh-action@v1.2.0
+        env:
+          ENV_BACKEND: ${{ secrets.ENV_BACKEND }}
+          ENV_FRONTEND: ${{ secrets.ENV_FRONTEND }}
+          DEPLOY_PATH: /opt/devflow
+          REPO_URL: https://github.com/${{ github.repository }}.git
+          BRANCH: main
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH }}
+          envs: ENV_BACKEND,ENV_FRONTEND,DEPLOY_PATH,REPO_URL,BRANCH
+          script_stop: true
+          script: |
+            if [ -f /tmp/scripts/deploy-remote.sh ]; then
+              mv /tmp/scripts/deploy-remote.sh /tmp/deploy-remote.sh
+            fi
+            chmod +x /tmp/deploy-remote.sh
+            bash /tmp/deploy-remote.sh
