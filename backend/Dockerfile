@@ -8,6 +8,14 @@ RUN npm install --no-audit --no-fund
 FROM base AS builder
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+
+# prisma generate não conecta ao banco; valores dummy só para carregar prisma.config.ts
+ENV MYSQL_HOST=build \
+    MYSQL_PORT=3306 \
+    MYSQL_USER=build \
+    MYSQL_PASSWORD=build \
+    MYSQL_DATABASE=build
+
 RUN npx prisma generate
 RUN npm run build
 
