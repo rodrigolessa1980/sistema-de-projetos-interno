@@ -5,6 +5,8 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
+      secrets:
+        - backend_env
     container_name: devflow_backend
     restart: unless-stopped
     env_file:
@@ -31,6 +33,10 @@ services:
       - backend
     networks:
       - devflow
+
+secrets:
+  backend_env:
+    file: ./backend/.env
 
 networks:
   devflow:

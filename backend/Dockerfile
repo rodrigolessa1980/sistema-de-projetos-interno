@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile:1.4
 FROM node:22-alpine AS base
 WORKDIR /app
 
@@ -9,15 +10,12 @@ FROM base AS builder
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# prisma generate não conecta ao banco; valores dummy só para carregar prisma.config.ts
-ENV MYSQL_HOST=build \
-    MYSQL_PORT=3306 \
-    MYSQL_USER=build \
-    MYSQL_PASSWORD=build \
-    MYSQL_DATABASE=build
+# Credenciais reais de backend/.env (injetadas via compose secret no build)
+RUN --mount=type=secret,id=backend_env,target=/app/.env,required \
+    npx prisma generate
 
-RUN npx prisma generate
-RUN npm run build
+RUN --mount=type=secret,id=backend_env,target=/app/.env,required \
+    npm run build
 
 FROM base AS runner
 ENV NODE_ENV=production
