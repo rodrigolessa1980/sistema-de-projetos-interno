@@ -176,6 +176,7 @@ export const useTaskStore = create<TaskStore>()(
       source: "MANUAL",
     });
     set((state) => {
+      const now = new Date().toISOString();
       const taskLogs = state.timeLogs.filter((tl) => tl.taskId === data.taskId);
       const totalHours = taskLogs.reduce((acc, tl) => acc + tl.hours, 0) + data.hours;
       return {
