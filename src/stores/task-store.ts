@@ -3,13 +3,32 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { Task, Subtask, TimeLog, Comment, TaskDependency, StatusHistory, TaskStatus, TaskNote, TaskAttachment } from "@/types";
-import {
-  mockTasks, mockSubtasks, mockTimeLogs, mockComments,
-  mockDependencies, mockStatusHistory, mockTaskNotes, mockTaskAttachments,
-} from "@/mocks";
 import { generateId, delay } from "@/lib/utils";
-import { mockAuditLogs } from "@/mocks/notifications";
 import type { AuditLog } from "@/types";
+import { api } from "@/lib/api";
+
+type ApiTask = Omit<Task, "parentTaskId" | "startDate" | "dueDate" | "completedAt" | "blockedReason" | "urgentBlockedById" | "urgentPreviousStatus"> & {
+  parentTaskId?: string | null;
+  startDate?: string | null;
+  dueDate?: string | null;
+  completedAt?: string | null;
+  blockedReason?: string | null;
+  urgentBlockedById?: string | null;
+  urgentPreviousStatus?: TaskStatus | null;
+};
+
+const normalizeTask = (task: ApiTask): Task => ({
+  ...task,
+  parentTaskId: task.parentTaskId ?? undefined,
+  startDate: task.startDate ?? undefined,
+  dueDate: task.dueDate ?? undefined,
+  completedAt: task.completedAt ?? undefined,
+  blockedReason: task.blockedReason ?? undefined,
+  urgentBlockedById: task.urgentBlockedById ?? undefined,
+  urgentPreviousStatus: task.urgentPreviousStatus ?? undefined,
+  dependencyIds: task.dependencyIds ?? [],
+  tags: task.tags ?? [],
+});
 
 interface TaskStore {
   tasks: Task[];
@@ -74,15 +93,15 @@ interface TaskStore {
 export const useTaskStore = create<TaskStore>()(
   persist(
   (set, get) => ({
-  tasks: [...mockTasks],
-  subtasks: [...mockSubtasks],
-  timeLogs: [...mockTimeLogs],
-  comments: [...mockComments],
-  dependencies: [...mockDependencies],
-  statusHistory: [...mockStatusHistory],
-  auditLogs: [...mockAuditLogs],
-  notes: [...mockTaskNotes],
-  attachments: [...mockTaskAttachments],
+  tasks: [],
+  subtasks: [],
+  timeLogs: [],
+  comments: [],
+  dependencies: [],
+  statusHistory: [],
+  auditLogs: [],
+  notes: [],
+  attachments: [],
   isLoading: false,
   selectedTaskId: null,
 
@@ -111,176 +130,51 @@ export const useTaskStore = create<TaskStore>()(
     get().tasks.find((t) => t.assigneeId === assigneeId && t.isUrgent && !["CONCLUIDA", "CANCELADA"].includes(t.status)),
 
   setTaskUrgent: (taskId, urgent) => {
-    const now = new Date().toISOString();
-    const task = get().tasks.find((t) => t.id === taskId);
-    if (!task) return;
-
-    if (urgent) {
-      // Bloqueia todas as outras tarefas do mesmo dev que não estão concluídas/canceladas
+    void api.patch<ApiTask>(`tasks/${taskId}/urgent`, { isUrgent: urgent }).then((updated) => {
+      const normalized = normalizeTask(updated);
       set((state) => ({
-        tasks: state.tasks.map((t) => {
-          if (t.id === taskId) return { ...t, isUrgent: true, updatedAt: now };
-          if (
-            t.assigneeId === task.assigneeId &&
-            !["CONCLUIDA", "CANCELADA"].includes(t.status) &&
-            !t.urgentBlockedById // não sobrescreve bloqueio urgente existente
-          ) {
-            return {
-              ...t,
-              status: "BLOQUEADA" as TaskStatus,
-              urgentBlockedById: taskId,
-              urgentPreviousStatus: t.status,
-              blockedReason: `Tarefa urgente em andamento: "${task.title}"`,
-              updatedAt: now,
-            };
-          }
-          return t;
-        }),
+        tasks: state.tasks.map((task) => (task.id === taskId ? normalized : task)),
       }));
-    } else {
-      // Remove urgência e restaura as tarefas bloqueadas por ela
-      set((state) => ({
-        tasks: state.tasks.map((t) => {
-          if (t.id === taskId) return { ...t, isUrgent: false, updatedAt: now };
-          if (t.urgentBlockedById === taskId) {
-            return {
-              ...t,
-              status: t.urgentPreviousStatus ?? ("PLANEJADA" as TaskStatus),
-              urgentBlockedById: undefined,
-              urgentPreviousStatus: undefined,
-              blockedReason: undefined,
-              updatedAt: now,
-            };
-          }
-          return t;
-        }),
-      }));
-    }
+    });
   },
 
   createTask: async (data) => {
-    await delay(500);
-    const now = new Date().toISOString();
-    const task: Task = { ...data, id: generateId("task"), createdAt: now, updatedAt: now };
+    const task = normalizeTask(await api.post<ApiTask>("tasks", data));
     set((state) => ({ tasks: [...state.tasks, task] }));
-
-    // Se a tarefa criada é urgente, bloqueia as demais do mesmo dev
-    if (task.isUrgent && task.assigneeId) {
-      get().setTaskUrgent(task.id, true);
-    }
-
     return task;
   },
 
   updateTask: async (id, data) => {
-    await delay(300);
-    const now = new Date().toISOString();
-    let updated!: Task;
+    const updated = normalizeTask(await api.put<ApiTask>(`tasks/${id}`, data));
     set((state) => ({
-      tasks: state.tasks.map((t) => {
-        if (t.id === id) { updated = { ...t, ...data, updatedAt: now }; return updated; }
-        return t;
-      }),
+      tasks: state.tasks.map((task) => task.id === id ? updated : task),
     }));
     return updated;
   },
 
   updateTaskStatus: async (id, newStatus, userId) => {
-    await delay(300);
-    const now = new Date().toISOString();
-    const task = get().tasks.find((t) => t.id === id);
-    if (!task) return;
-
-    const REQUIRES_UNBLOCKED: TaskStatus[] = ["EM_DESENVOLVIMENTO", "EM_REVISAO", "HOMOLOGACAO", "CONCLUIDA"];
-    if (REQUIRES_UNBLOCKED.includes(newStatus)) {
-      const blockers = get().getBlockersForTask(id);
-      if (blockers.length > 0) {
-        const names = blockers.map((b) => `"${b.title}"`).join(", ");
-        throw new Error(`Esta tarefa está bloqueada. Conclua primeiro: ${names}`);
-      }
-    }
-
-    const historyEntry: StatusHistory = {
-      id: generateId("sh"),
-      taskId: id,
-      fromStatus: task.status,
-      toStatus: newStatus,
-      userId,
-      duration: 0,
-      createdAt: now,
-    };
-
-    const auditEntry: AuditLog = {
-      id: generateId("audit"),
-      entityType: "TASK",
-      entityId: id,
-      action: "STATUS_CHANGED",
-      userId,
-      previousValue: { status: task.status },
-      newValue: { status: newStatus },
-      description: `Status alterado de ${task.status} para ${newStatus}`,
-      createdAt: now,
-    };
-
+    void userId;
+    const updated = normalizeTask(await api.put<ApiTask>(`tasks/${id}`, { status: newStatus }));
     set((state) => ({
-      tasks: state.tasks.map((t) =>
-        t.id === id ? { ...t, status: newStatus, updatedAt: now, completedAt: newStatus === "CONCLUIDA" ? now : t.completedAt } : t
-      ),
-      statusHistory: [...state.statusHistory, historyEntry],
-      auditLogs: [...state.auditLogs, auditEntry],
+      tasks: state.tasks.map((task) => (task.id === id ? updated : task)),
     }));
-
-    if (newStatus === "CONCLUIDA") {
-      // Desbloqueia tarefas dependentes (dependências normais)
-      const dependentTasks = get().dependencies
-        .filter((d) => d.dependsOnTaskId === id && d.type === "BLOCKED_BY")
-        .map((d) => d.taskId);
-
-      for (const depTaskId of dependentTasks) {
-        const isStillBlocked = get().isTaskBlocked(depTaskId);
-        if (!isStillBlocked) {
-          set((state) => ({
-            tasks: state.tasks.map((t) =>
-              t.id === depTaskId && t.status === "BLOQUEADA" && !t.urgentBlockedById
-                ? { ...t, status: "PLANEJADA", blockedReason: undefined, updatedAt: now }
-                : t
-            ),
-          }));
-        }
-      }
-
-      // Se era tarefa urgente, restaura todas as tarefas bloqueadas por ela
-      const completedTask = get().tasks.find((t) => t.id === id);
-      if (completedTask?.isUrgent) {
-        set((state) => ({
-          tasks: state.tasks.map((t) => {
-            if (t.id === id) return { ...t, isUrgent: false };
-            if (t.urgentBlockedById === id) {
-              return {
-                ...t,
-                status: t.urgentPreviousStatus ?? ("PLANEJADA" as TaskStatus),
-                urgentBlockedById: undefined,
-                urgentPreviousStatus: undefined,
-                blockedReason: undefined,
-                updatedAt: now,
-              };
-            }
-            return t;
-          }),
-        }));
-      }
-    }
   },
 
   deleteTask: async (id) => {
-    await delay(300);
+    await api.delete(`tasks/${id}`);
     set((state) => ({ tasks: state.tasks.filter((t) => t.id !== id) }));
   },
 
   logTime: async (data) => {
-    await delay(300);
-    const now = new Date().toISOString();
-    const log: TimeLog = { ...data, id: generateId("tl"), createdAt: now };
+    const task = get().tasks.find((item) => item.id === data.taskId);
+    if (!task) {
+      throw new Error("Task não encontrada para registrar tempo");
+    }
+    const log = await api.post<TimeLog>("time-logs", {
+      ...data,
+      projectId: task.projectId,
+      source: "MANUAL",
+    });
     set((state) => {
       const taskLogs = state.timeLogs.filter((tl) => tl.taskId === data.taskId);
       const totalHours = taskLogs.reduce((acc, tl) => acc + tl.hours, 0) + data.hours;
@@ -341,6 +235,16 @@ export const useTaskStore = create<TaskStore>()(
         return newOrder !== -1 ? { ...task, order: newOrder } : task;
       }),
     }));
+    const movedTaskId = taskIds[0];
+    if (movedTaskId) {
+      void api.patch("tasks/kanban/order", {
+        taskId: movedTaskId,
+        targetStatus: status,
+        targetTaskIds: taskIds,
+      }).catch(() => {
+        // fallback local otimista
+      });
+    }
   },
 
   applyKanbanOrder: ({ taskId, targetStatus, targetTaskIds, sourceStatus, sourceTaskIds = [] }) => {

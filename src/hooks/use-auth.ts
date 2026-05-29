@@ -18,6 +18,7 @@ export function useAuth() {
     error: store.error,
     isAuthenticated: store.session ? new Date(store.session.expiresAt) > new Date() : false,
     login: store.login,
+    register: store.register,
     logout: store.logout,
     clearError: store.clearError,
     can: (permission: string) => hasPermission(store.session?.user ?? null, permission),

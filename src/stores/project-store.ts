@@ -2,8 +2,8 @@
 
 import { create } from "zustand";
 import type { Project, Module, Epic, Company } from "@/types";
-import { mockProjects, mockModules, mockEpics, mockCompanies } from "@/mocks";
 import { generateId, delay } from "@/lib/utils";
+import { api } from "@/lib/api";
 
 interface ProjectStore {
   projects: Project[];
@@ -42,10 +42,10 @@ interface ProjectStore {
 }
 
 export const useProjectStore = create<ProjectStore>((set, get) => ({
-  projects: [...mockProjects],
-  modules: [...mockModules],
-  epics: [...mockEpics],
-  companies: [...mockCompanies],
+  projects: [],
+  modules: [],
+  epics: [],
+  companies: [],
   selectedProjectId: null,
   isLoading: false,
 
@@ -54,6 +54,13 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
   createCompany: (data) => {
     const now = new Date().toISOString();
     const company: Company = { ...data, id: generateId("company"), createdAt: now, updatedAt: now };
+    void api.post<{ company: Company }>("companies", data).then((response) => {
+      set((state) => ({
+        companies: state.companies.map((item) => (item.id === company.id ? response.company : item)),
+      }));
+    }).catch(() => {
+      set((state) => ({ companies: state.companies.filter((item) => item.id !== company.id) }));
+    });
     set((state) => ({ companies: [...state.companies, company] }));
     return company;
   },
@@ -63,16 +70,46 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
     set((state) => ({
       companies: state.companies.map((c) => c.id === id ? { ...c, ...data, updatedAt: now } : c),
     }));
+    void api.patch<{ company: Company }>(`companies/${id}`, data).then((response) => {
+      set((state) => ({
+        companies: state.companies.map((c) => (c.id === id ? response.company : c)),
+      }));
+    }).catch(() => {
+      // mantém atualização local otimista
+    });
   },
 
   deleteCompany: (id) => {
+    const previous = get().companies;
     set((state) => ({ companies: state.companies.filter((c) => c.id !== id) }));
+    void api.delete(`companies/${id}`).catch(() => {
+      set({ companies: previous });
+    });
   },
 
   fetchProjects: async () => {
     set({ isLoading: true });
-    await delay(400);
-    set({ projects: [...mockProjects], modules: [...mockModules], epics: [...mockEpics], companies: [...mockCompanies], isLoading: false });
+    try {
+      const [projects, companiesResponse] = await Promise.all([
+        api.get<Project[]>("projects"),
+        api.get<{ companies: Company[] }>("companies"),
+      ]);
+      set({
+        projects: projects.map((project) => ({
+          ...project,
+          endDate: project.endDate ?? undefined,
+          queueOrder: project.queueOrder ?? undefined,
+          avatar: project.avatar ?? undefined,
+          testUrl: project.testUrl ?? undefined,
+          developerIds: project.developerIds ?? [],
+        })),
+        companies: companiesResponse.companies,
+        isLoading: false,
+      });
+    } catch (error) {
+      set({ isLoading: false });
+      throw error;
+    }
   },
 
   getProjectById: (id) => get().projects.find((p) => p.id === id),
@@ -81,50 +118,37 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
   getEpicsByProject: (projectId) => get().epics.filter((e) => e.projectId === projectId),
 
   createProject: async (data) => {
-    await delay(600);
-    const now = new Date().toISOString();
-
-    // Calcula posição na fila pela data de entrega (endDate)
-    const state = get();
-    const queued = state.projects
-      .filter((p) => p.status !== "CONCLUIDO" && p.status !== "CANCELADO" && p.queueOrder != null)
-      .sort((a, b) => (a.queueOrder ?? 0) - (b.queueOrder ?? 0));
-
-    let insertAt: number;
-    if (!data.endDate) {
-      insertAt = queued.length + 1;
-    } else {
-      const idx = queued.findIndex((p) => p.endDate && p.endDate > data.endDate!);
-      insertAt = idx === -1 ? queued.length + 1 : (queued[idx].queueOrder ?? idx + 1);
-    }
-
-    // Empurra para baixo quem está na posição >= insertAt
-    const shifted = state.projects.map((p) =>
-      p.queueOrder != null && p.queueOrder >= insertAt
-        ? { ...p, queueOrder: p.queueOrder + 1 }
-        : p
-    );
-
-    const project: Project = { ...data, id: generateId("proj"), queueOrder: insertAt, createdAt: now, updatedAt: now };
-    set({ projects: [...shifted, project] });
-    return project;
+    const project = await api.post<Project>("projects", data);
+    const normalized: Project = {
+      ...project,
+      endDate: project.endDate ?? undefined,
+      queueOrder: project.queueOrder ?? undefined,
+      avatar: project.avatar ?? undefined,
+      testUrl: project.testUrl ?? undefined,
+      developerIds: project.developerIds ?? [],
+    };
+    set((state) => ({ projects: [...state.projects, normalized] }));
+    return normalized;
   },
 
   updateProject: async (id, data) => {
-    await delay(400);
-    const now = new Date().toISOString();
-    let updated!: Project;
+    const project = await api.put<Project>(`projects/${id}`, data);
+    const normalized: Project = {
+      ...project,
+      endDate: project.endDate ?? undefined,
+      queueOrder: project.queueOrder ?? undefined,
+      avatar: project.avatar ?? undefined,
+      testUrl: project.testUrl ?? undefined,
+      developerIds: project.developerIds ?? [],
+    };
     set((state) => ({
-      projects: state.projects.map((p) => {
-        if (p.id === id) { updated = { ...p, ...data, updatedAt: now }; return updated; }
-        return p;
-      }),
+      projects: state.projects.map((p) => (p.id === id ? normalized : p)),
     }));
-    return updated;
+    return normalized;
   },
 
   deleteProject: async (id) => {
-    await delay(400);
+    await api.delete(`projects/${id}`);
     set((state) => ({ projects: state.projects.filter((p) => p.id !== id) }));
   },
 
@@ -228,5 +252,8 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
         return { ...p, queueOrder: pos + 1, updatedAt: new Date().toISOString() };
       }),
     }));
+    void api.post("projects/queue/reorder", { orderedIds }).catch(() => {
+      // mantém atualização otimista local; tela pode recarregar da API depois
+    });
   },
 }));

@@ -3,8 +3,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { Notification, User } from "@/types";
-import { mockNotifications } from "@/mocks";
-import { mockUsers } from "@/mocks/users";
 
 interface UIStore {
   sidebarCollapsed: boolean;
@@ -26,8 +24,8 @@ export const useUIStore = create<UIStore>()(
   persist(
     (set) => ({
       sidebarCollapsed: false,
-      notifications: [...mockNotifications],
-      unreadCount: mockNotifications.filter((n) => !n.read).length,
+      notifications: [],
+      unreadCount: 0,
       searchQuery: "",
       isSearchOpen: false,
 
@@ -84,7 +82,7 @@ interface UserStore {
 export const useUserStore = create<UserStore>()(
   persist(
     (set, get) => ({
-      users: [...mockUsers],
+      users: [],
       getUserById: (id) => get().users.find((user) => user.id === id),
 
       createUser: (data) => {

@@ -2,17 +2,18 @@
 
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type { User, AuthSession } from "@/types";
-import { fakeLogin, fakeLogout, getStoredSession } from "@/lib/auth";
-import type { LoginCredentials } from "@/types";
+import type { User, AuthSession, LoginCredentials, RegisterCredentials } from "@/types";
+import { login as apiLogin, logout as apiLogout, register as apiRegister, getStoredSession } from "@/lib/auth";
+import { api } from "@/lib/api";
 
 interface AuthStore {
   session: AuthSession | null;
   isLoading: boolean;
   error: string | null;
   login: (credentials: LoginCredentials) => Promise<void>;
+  register: (credentials: RegisterCredentials) => Promise<void>;
   logout: () => void;
-  initSession: () => void;
+  initSession: () => Promise<void>;
   clearError: () => void;
   get user(): User | null;
   get isAuthenticated(): boolean;
@@ -35,15 +36,32 @@ export const useAuthStore = create<AuthStore>()(
         return new Date(session.expiresAt) > new Date();
       },
 
-      initSession: () => {
+      initSession: async () => {
         const session = getStoredSession();
-        set({ session, isLoading: false });
+        if (session) {
+          set({ session, isLoading: false });
+          // Sincroniza os dados do usuário em segundo plano
+          try {
+            const data = await api.get<{ user: User }>("auth/me");
+            const updatedSession = { ...session, user: data.user };
+            if (typeof window !== "undefined") {
+              localStorage.setItem("devflow_session", JSON.stringify(updatedSession));
+            }
+            set({ session: updatedSession });
+          } catch (err) {
+            console.error("Falha ao sincronizar sessão:", err);
+            // Se o token falhar (ex: expirado no backend), limpa a sessão
+            get().logout();
+          }
+        } else {
+          set({ session: null, isLoading: false });
+        }
       },
 
       login: async (credentials) => {
         set({ isLoading: true, error: null });
         try {
-          const session = await fakeLogin(credentials);
+          const session = await apiLogin(credentials);
           set({ session, isLoading: false });
         } catch (err) {
           set({
@@ -53,8 +71,21 @@ export const useAuthStore = create<AuthStore>()(
         }
       },
 
+      register: async (credentials) => {
+        set({ isLoading: true, error: null });
+        try {
+          const session = await apiRegister(credentials);
+          set({ session, isLoading: false });
+        } catch (err) {
+          set({
+            error: err instanceof Error ? err.message : "Erro ao cadastrar conta",
+            isLoading: false,
+          });
+        }
+      },
+
       logout: () => {
-        fakeLogout();
+        apiLogout();
         set({ session: null });
       },
 

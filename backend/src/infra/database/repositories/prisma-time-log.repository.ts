@@ -66,7 +66,12 @@ export class PrismaTimeLogRepository implements ITimeLogRepository {
   }
 
   async findActiveSessionByUserId(userId: string): Promise<TimeLog | null> {
-    // Retorna null por padrão na inicialização do tracker
-    return null;
+    const raw = await this.prisma.timeLog.findFirst({
+      where: {
+        userId,
+        endedAt: null,
+      },
+    });
+    return raw ? this.mapToDomain(raw) : null;
   }
 }

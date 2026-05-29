@@ -13,17 +13,20 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { useAuth } from "@/hooks/use-auth";
-import { cn } from "@/lib/utils";
 
-const loginSchema = z.object({
+const registerSchema = z.object({
+  name: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
   email: z.string().email("Email inválido"),
-  password: z.string().min(1, "Senha obrigatória"),
+  password: z.string().min(6, "A senha deve ter pelo menos 6 caracteres"),
+  position: z.string().min(2, "Cargo deve ter pelo menos 2 caracteres"),
+  department: z.string().min(2, "Departamento deve ter pelo menos 2 caracteres"),
+  role: z.enum(["ADMIN", "DEVELOPER"]),
 });
 
-type LoginForm = z.infer<typeof loginSchema>;
+type RegisterForm = z.infer<typeof registerSchema>;
 
-export default function LoginPage() {
-  const { login, isLoading, error, isAuthenticated, clearError } = useAuth();
+export default function RegisterPage() {
+  const { register, isLoading, error, isAuthenticated, clearError } = useAuth();
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
 
@@ -31,18 +34,26 @@ export default function LoginPage() {
     if (isAuthenticated) router.push("/dashboard");
   }, [isAuthenticated, router]);
 
-  const form = useForm<LoginForm>({
-    resolver: zodResolver(loginSchema),
-    defaultValues: { email: "", password: "" },
+  const form = useForm<RegisterForm>({
+    resolver: zodResolver(registerSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      password: "",
+      position: "",
+      department: "",
+      role: "DEVELOPER",
+    },
   });
 
-  const onSubmit = async (data: LoginForm) => {
+  const onSubmit = async (data: RegisterForm) => {
     clearError();
-    await login(data);
+    await register(data);
   };
 
   return (
     <div className="min-h-screen bg-zinc-950 flex">
+      {/* Painel Esquerdo com Gradiente */}
       <div className="hidden lg:flex flex-1 flex-col justify-between p-12 bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 border-r border-zinc-800/50 relative overflow-hidden">
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-violet-600/10 rounded-full blur-3xl" />
@@ -59,14 +70,14 @@ export default function LoginPage() {
         <div className="relative">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
             <h2 className="text-4xl font-bold text-white mb-4 leading-tight">
-              Gerencie seu desenvolvimento
+              Comece a gerenciar seu time
               <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-indigo-400">
-                com precisão total
+                de forma inteligente
               </span>
             </h2>
             <p className="text-zinc-400 text-lg leading-relaxed max-w-md">
-              Kanban, Gantt, métricas de produtividade e muito mais. Tudo que sua equipe precisa em um só lugar.
+              Crie sua conta agora para gerenciar tarefas, cronogramas e métricas avançadas em tempo real.
             </p>
           </motion.div>
 
@@ -93,12 +104,13 @@ export default function LoginPage() {
         <p className="relative text-xs text-zinc-600">© 2026 DevFlow. Todos os direitos reservados.</p>
       </div>
 
-      <div className="flex-1 flex items-center justify-center p-8">
+      {/* Painel Direito com Formulário */}
+      <div className="flex-1 flex items-center justify-center p-8 overflow-y-auto">
         <motion.div
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.4 }}
-          className="w-full max-w-md"
+          className="w-full max-w-md py-8"
         >
           <div className="lg:hidden flex items-center gap-2 mb-8">
             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center">
@@ -107,17 +119,36 @@ export default function LoginPage() {
             <span className="text-lg font-bold text-white">DevFlow</span>
           </div>
 
-          <h1 className="text-2xl font-bold text-zinc-100 mb-1">Bem-vindo de volta</h1>
-          <p className="text-sm text-zinc-500 mb-8">Entre com sua conta para continuar</p>
+          <h1 className="text-2xl font-bold text-zinc-100 mb-1">Criar sua conta</h1>
+          <p className="text-sm text-zinc-500 mb-8">Preencha os dados abaixo para se cadastrar</p>
 
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <FormField
                 control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <Label className="text-zinc-300 text-sm">Nome Completo</Label>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        type="text"
+                        placeholder="Seu nome"
+                        className="bg-zinc-800/50 border-zinc-700/50 text-zinc-100 placeholder-zinc-500 focus:border-violet-500/50"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <Label className="text-zinc-300 text-sm">Email</Label>
+                    <Label className="text-zinc-300 text-sm">E-mail</Label>
                     <FormControl>
                       <Input
                         {...field}
@@ -130,6 +161,7 @@ export default function LoginPage() {
                   </FormItem>
                 )}
               />
+
               <FormField
                 control={form.control}
                 name="password"
@@ -141,7 +173,7 @@ export default function LoginPage() {
                         <Input
                           {...field}
                           type={showPassword ? "text" : "password"}
-                          placeholder="••••••••"
+                          placeholder="Mínimo 6 caracteres"
                           className="bg-zinc-800/50 border-zinc-700/50 text-zinc-100 placeholder-zinc-500 focus:border-violet-500/50 pr-10"
                         />
                         <button
@@ -152,6 +184,66 @@ export default function LoginPage() {
                           {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                         </button>
                       </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="position"
+                  render={({ field }) => (
+                    <FormItem>
+                      <Label className="text-zinc-300 text-sm">Cargo</Label>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          type="text"
+                          placeholder="Ex: Dev Frontend"
+                          className="bg-zinc-800/50 border-zinc-700/50 text-zinc-100 placeholder-zinc-500 focus:border-violet-500/50"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="department"
+                  render={({ field }) => (
+                    <FormItem>
+                      <Label className="text-zinc-300 text-sm">Departamento</Label>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          type="text"
+                          placeholder="Ex: Engenharia"
+                          className="bg-zinc-800/50 border-zinc-700/50 text-zinc-100 placeholder-zinc-500 focus:border-violet-500/50"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <FormField
+                control={form.control}
+                name="role"
+                render={({ field }) => (
+                  <FormItem>
+                    <Label className="text-zinc-300 text-sm">Nível de Permissão</Label>
+                    <FormControl>
+                      <select
+                        {...field}
+                        className="h-9 w-full rounded-lg border border-zinc-700/50 bg-zinc-800/50 px-2.5 py-1 text-sm text-zinc-100 placeholder-zinc-500 focus:border-violet-500/50 focus:outline-none"
+                      >
+                        <option value="DEVELOPER" className="bg-zinc-900 text-zinc-100">Desenvolvedor (Developer)</option>
+                        <option value="ADMIN" className="bg-zinc-900 text-zinc-100">Administrador (Admin)</option>
+                      </select>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -176,11 +268,11 @@ export default function LoginPage() {
                 {isLoading ? (
                   <span className="flex items-center gap-2">
                     <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                    Entrando...
+                    Registrando...
                   </span>
                 ) : (
                   <span className="flex items-center gap-2">
-                    Entrar
+                    Cadastrar
                     <ArrowRight className="w-4 h-4" />
                   </span>
                 )}
@@ -189,12 +281,12 @@ export default function LoginPage() {
           </Form>
 
           <p className="text-sm text-zinc-400 text-center mt-6">
-            Não tem uma conta?{" "}
+            Já tem uma conta?{" "}
             <Link
-              href="/register"
+              href="/login"
               className="text-violet-400 hover:text-violet-300 font-semibold underline underline-offset-4"
             >
-              Crie uma conta
+              Fazer login
             </Link>
           </p>
         </motion.div>

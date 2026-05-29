@@ -4,9 +4,18 @@ import { AuthController } from './controllers/auth.controller';
 import { CompaniesController } from './controllers/companies.controller';
 import { HealthController } from './controllers/health.controller';
 import { TasksController } from './controllers/tasks.controller';
+import { ProjectsController } from './controllers/projects.controller';
+import { TimeLogsController } from './controllers/time-logs.controller';
 
 @Module({
   imports: [UseCasesModule],
-  controllers: [HealthController, AuthController, CompaniesController, TasksController],
+  controllers: [
+    HealthController,
+    AuthController,
+    CompaniesController,
+    TasksController,
+    ProjectsController,
+    TimeLogsController,
+  ],
 })
 export class HttpModule {}

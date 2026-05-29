@@ -2,10 +2,9 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTaskStore } from "@/stores";
-import { useAuthStore } from "@/stores/auth-store";
-import { delay } from "@/lib/utils";
 import type { Task, TaskStatus, TimeLog } from "@/types";
 import { toast } from "sonner";
+import { api } from "@/lib/api";
 
 export interface KanbanOrderPayload {
   taskId: string;
@@ -15,29 +14,8 @@ export interface KanbanOrderPayload {
   sourceTaskIds?: string[];
 }
 
-async function persistKanbanOrder(payload: KanbanOrderPayload, token?: string) {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001/api";
-  const controller = new AbortController();
-  const timeout = window.setTimeout(() => controller.abort(), 2000);
-
-  try {
-    const response = await fetch(`${apiUrl}/tasks/kanban/order`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      },
-      body: JSON.stringify(payload),
-      signal: controller.signal,
-    });
-
-    if (!response.ok) {
-      const body = await response.json().catch(() => null);
-      throw new Error(body?.message ?? "Backend não confirmou a nova ordem");
-    }
-  } finally {
-    window.clearTimeout(timeout);
-  }
+async function persistKanbanOrder(payload: KanbanOrderPayload) {
+  await api.patch("tasks/kanban/order", payload);
 }
 
 export function useTasks(projectId?: string) {
@@ -46,8 +24,12 @@ export function useTasks(projectId?: string) {
   const tasksQuery = useQuery({
     queryKey: ["tasks", projectId],
     queryFn: async () => {
-      await delay(300);
-      return projectId ? store.getTasksByProject(projectId) : store.tasks;
+      if (!projectId) {
+        return store.tasks;
+      }
+      const tasks = await api.get<Task[]>(`tasks/project/${projectId}`);
+      useTaskStore.setState({ tasks });
+      return tasks;
     },
   });
 
@@ -55,13 +37,19 @@ export function useTasks(projectId?: string) {
 }
 
 export function useTask(taskId: string) {
-  const store = useTaskStore();
-
   return useQuery({
     queryKey: ["task", taskId],
     queryFn: async () => {
-      await delay(200);
-      return store.getTaskById(taskId) ?? null;
+      const task = await api.get<Task>(`tasks/${taskId}`);
+      useTaskStore.setState((state) => {
+        const exists = state.tasks.some((item) => item.id === task.id);
+        return {
+          tasks: exists
+            ? state.tasks.map((item) => (item.id === task.id ? task : item))
+            : [...state.tasks, task],
+        };
+      });
+      return task;
     },
     enabled: !!taskId,
   });
@@ -87,7 +75,6 @@ export function useUpdateTaskStatus() {
 
 export function useUpdateKanbanOrder() {
   const store = useTaskStore();
-  const token = useAuthStore((state) => state.session?.token);
   const qc = useQueryClient();
 
   return useMutation({
@@ -95,7 +82,7 @@ export function useUpdateKanbanOrder() {
       store.applyKanbanOrder(payload);
 
       try {
-        await persistKanbanOrder(payload, token);
+        await persistKanbanOrder(payload);
         return { persisted: true };
       } catch (error) {
         return {

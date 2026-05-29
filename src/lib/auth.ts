@@ -1,50 +1,11 @@
-import type { User, AuthSession, LoginCredentials } from "@/types";
-import { mockUsers, mockLoginUsers } from "@/mocks/users";
+import type { User, AuthSession, LoginCredentials, RegisterCredentials } from "@/types";
+import { api } from "./api";
 
 const SESSION_KEY = "devflow_session";
-const TOKEN_PREFIX = "devflow_fake_jwt_";
 
-function generateFakeJWT(userId: string, role: string): string {
-  const payload = {
-    sub: userId,
-    role,
-    iat: Date.now(),
-    exp: Date.now() + 24 * 60 * 60 * 1000,
-  };
-  return TOKEN_PREFIX + btoa(JSON.stringify(payload));
-}
-
-export function decodeFakeJWT(token: string): { sub: string; role: string; exp: number } | null {
-  try {
-    if (!token.startsWith(TOKEN_PREFIX)) return null;
-    const encoded = token.replace(TOKEN_PREFIX, "");
-    return JSON.parse(atob(encoded));
-  } catch {
-    return null;
-  }
-}
-
-export async function fakeLogin(credentials: LoginCredentials): Promise<AuthSession> {
-  await new Promise((resolve) => setTimeout(resolve, 800));
-
-  const loginUser = mockLoginUsers.find(
-    (u) => u.email === credentials.email && u.password === credentials.password
-  );
-
-  if (!loginUser) {
-    throw new Error("Credenciais inválidas. Verifique seu email e senha.");
-  }
-
-  const user = mockUsers.find((u) => u.id === loginUser.userId);
-  if (!user) throw new Error("Usuário não encontrado.");
-
-  const token = generateFakeJWT(user.id, user.role);
-  const session: AuthSession = {
-    user,
-    token,
-    expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
-  };
-
+export async function login(credentials: LoginCredentials): Promise<AuthSession> {
+  const session = await api.post<AuthSession>("auth/login", credentials);
+  
   if (typeof window !== "undefined") {
     localStorage.setItem(SESSION_KEY, JSON.stringify(session));
   }
@@ -52,7 +13,17 @@ export async function fakeLogin(credentials: LoginCredentials): Promise<AuthSess
   return session;
 }
 
-export function fakeLogout(): void {
+export async function register(credentials: RegisterCredentials): Promise<AuthSession> {
+  const session = await api.post<AuthSession>("auth/register", credentials);
+  
+  if (typeof window !== "undefined") {
+    localStorage.setItem(SESSION_KEY, JSON.stringify(session));
+  }
+
+  return session;
+}
+
+export function logout(): void {
   if (typeof window !== "undefined") {
     localStorage.removeItem(SESSION_KEY);
   }
@@ -67,12 +38,6 @@ export function getStoredSession(): AuthSession | null {
     if (new Date(session.expiresAt) < new Date()) {
       localStorage.removeItem(SESSION_KEY);
       return null;
-    }
-    // Sempre sincroniza o objeto user com os dados mais recentes dos mocks
-    const freshUser = mockUsers.find((u) => u.id === session.user.id);
-    if (freshUser) {
-      session.user = freshUser;
-      localStorage.setItem(SESSION_KEY, JSON.stringify(session));
     }
     return session;
   } catch {

@@ -261,6 +261,15 @@ export interface LoginCredentials {
   password: string;
 }
 
+export interface RegisterCredentials {
+  name: string;
+  email: string;
+  password: string;
+  position: string;
+  department: string;
+  role?: UserRole;
+}
+
 export type ViewMode = "table" | "kanban" | "gantt" | "calendar";
 
 export interface FilterState {
