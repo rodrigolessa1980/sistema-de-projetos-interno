@@ -386,6 +386,7 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 export const ModelName = {
   Company: 'Company',
   User: 'User',
+  UserPermission: 'UserPermission',
   Project: 'Project',
   ProjectDeveloper: 'ProjectDeveloper',
   Module: 'Module',
@@ -415,7 +416,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "company" | "user" | "project" | "projectDeveloper" | "module" | "epic" | "task" | "subtask" | "taskDependency" | "timeLog" | "comment" | "notification" | "auditLog" | "statusHistory" | "taskNote" | "taskAttachment"
+    modelProps: "company" | "user" | "userPermission" | "project" | "projectDeveloper" | "module" | "epic" | "task" | "subtask" | "taskDependency" | "timeLog" | "comment" | "notification" | "auditLog" | "statusHistory" | "taskNote" | "taskAttachment"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -548,6 +549,72 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.UserCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.UserCountAggregateOutputType> | number
+        }
+      }
+    }
+    UserPermission: {
+      payload: Prisma.$UserPermissionPayload<ExtArgs>
+      fields: Prisma.UserPermissionFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.UserPermissionFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserPermissionPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.UserPermissionFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserPermissionPayload>
+        }
+        findFirst: {
+          args: Prisma.UserPermissionFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserPermissionPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.UserPermissionFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserPermissionPayload>
+        }
+        findMany: {
+          args: Prisma.UserPermissionFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserPermissionPayload>[]
+        }
+        create: {
+          args: Prisma.UserPermissionCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserPermissionPayload>
+        }
+        createMany: {
+          args: Prisma.UserPermissionCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        delete: {
+          args: Prisma.UserPermissionDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserPermissionPayload>
+        }
+        update: {
+          args: Prisma.UserPermissionUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserPermissionPayload>
+        }
+        deleteMany: {
+          args: Prisma.UserPermissionDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.UserPermissionUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        upsert: {
+          args: Prisma.UserPermissionUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserPermissionPayload>
+        }
+        aggregate: {
+          args: Prisma.UserPermissionAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateUserPermission>
+        }
+        groupBy: {
+          args: Prisma.UserPermissionGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.UserPermissionGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.UserPermissionCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.UserPermissionCountAggregateOutputType> | number
         }
       }
     }
@@ -1536,11 +1603,26 @@ export const UserScalarFieldEnum = {
   avatar: 'avatar',
   position: 'position',
   department: 'department',
+  isActive: 'isActive',
+  lastLoginAt: 'lastLoginAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
+
+
+export const UserPermissionScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  module: 'module',
+  action: 'action',
+  granted: 'granted',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type UserPermissionScalarFieldEnum = (typeof UserPermissionScalarFieldEnum)[keyof typeof UserPermissionScalarFieldEnum]
 
 
 export const ProjectScalarFieldEnum = {
@@ -1815,6 +1897,16 @@ export const UserOrderByRelevanceFieldEnum = {
 export type UserOrderByRelevanceFieldEnum = (typeof UserOrderByRelevanceFieldEnum)[keyof typeof UserOrderByRelevanceFieldEnum]
 
 
+export const UserPermissionOrderByRelevanceFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  module: 'module',
+  action: 'action'
+} as const
+
+export type UserPermissionOrderByRelevanceFieldEnum = (typeof UserPermissionOrderByRelevanceFieldEnum)[keyof typeof UserPermissionOrderByRelevanceFieldEnum]
+
+
 export const ProjectOrderByRelevanceFieldEnum = {
   id: 'id',
   companyId: 'companyId',
@@ -2013,6 +2105,13 @@ export type EnumUserRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaM
 
 
 /**
+ * Reference to a field of type 'Boolean'
+ */
+export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
+    
+
+
+/**
  * Reference to a field of type 'ProjectStatus'
  */
 export type EnumProjectStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ProjectStatus'>
@@ -2037,13 +2136,6 @@ export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, '
  * Reference to a field of type 'TaskStatus'
  */
 export type EnumTaskStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TaskStatus'>
-    
-
-
-/**
- * Reference to a field of type 'Boolean'
- */
-export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
     
 
 
@@ -2207,6 +2299,7 @@ export type PrismaClientOptions = ({
 export type GlobalOmitConfig = {
   company?: Prisma.CompanyOmit
   user?: Prisma.UserOmit
+  userPermission?: Prisma.UserPermissionOmit
   project?: Prisma.ProjectOmit
   projectDeveloper?: Prisma.ProjectDeveloperOmit
   module?: Prisma.ModuleOmit

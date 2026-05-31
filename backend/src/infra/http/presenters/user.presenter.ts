@@ -8,6 +8,8 @@ export interface UserResponse {
   avatar: string | null;
   position: string;
   department: string;
+  isActive: boolean;
+  lastLoginAt: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -22,6 +24,8 @@ export class UserPresenter {
       avatar: user.avatar,
       position: user.position,
       department: user.department,
+      isActive: user.isActive,
+      lastLoginAt: user.lastLoginAt ? user.lastLoginAt.toISOString() : null,
       createdAt: user.createdAt.toISOString(),
       updatedAt: user.updatedAt.toISOString(),
     };

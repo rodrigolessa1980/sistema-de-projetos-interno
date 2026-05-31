@@ -1106,10 +1106,6 @@ export type EnumTaskStatusFieldUpdateOperationsInput = {
   set?: $Enums.TaskStatus
 }
 
-export type BoolFieldUpdateOperationsInput = {
-  set?: boolean
-}
-
 export type NullableEnumTaskStatusFieldUpdateOperationsInput = {
   set?: $Enums.TaskStatus | null
 }

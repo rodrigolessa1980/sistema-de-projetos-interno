@@ -75,6 +75,7 @@ interface UserStore {
   users: User[];
   getUserById: (id: string) => User | undefined;
   createUser: (data: Omit<User, "id" | "createdAt" | "updatedAt">) => User;
+  upsertUser: (user: User) => void;
   updateUser: (id: string, data: Partial<User>) => void;
   deleteUser: (id: string) => void;
 }
@@ -95,6 +96,20 @@ export const useUserStore = create<UserStore>()(
         };
         set((state) => ({ users: [...state.users, user] }));
         return user;
+      },
+
+      upsertUser: (user) => {
+        set((state) => {
+          const exists = state.users.some((u) => u.id === user.id || u.email === user.email);
+          if (exists) {
+            return {
+              users: state.users.map((u) =>
+                u.id === user.id || u.email === user.email ? { ...u, ...user } : u
+              ),
+            };
+          }
+          return { users: [...state.users, user] };
+        });
       },
 
       updateUser: (id, data) => {

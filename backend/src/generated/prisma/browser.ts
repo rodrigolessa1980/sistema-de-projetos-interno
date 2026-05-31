@@ -28,6 +28,11 @@ export type Company = Prisma.CompanyModel
  */
 export type User = Prisma.UserModel
 /**
+ * Model UserPermission
+ * 
+ */
+export type UserPermission = Prisma.UserPermissionModel
+/**
  * Model Project
  * 
  */

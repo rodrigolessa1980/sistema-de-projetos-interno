@@ -53,6 +53,7 @@ export const AnyNull = runtime.AnyNull
 export const ModelName = {
   Company: 'Company',
   User: 'User',
+  UserPermission: 'UserPermission',
   Project: 'Project',
   ProjectDeveloper: 'ProjectDeveloper',
   Module: 'Module',
@@ -107,11 +108,26 @@ export const UserScalarFieldEnum = {
   avatar: 'avatar',
   position: 'position',
   department: 'department',
+  isActive: 'isActive',
+  lastLoginAt: 'lastLoginAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
+
+
+export const UserPermissionScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  module: 'module',
+  action: 'action',
+  granted: 'granted',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type UserPermissionScalarFieldEnum = (typeof UserPermissionScalarFieldEnum)[keyof typeof UserPermissionScalarFieldEnum]
 
 
 export const ProjectScalarFieldEnum = {
@@ -384,6 +400,16 @@ export const UserOrderByRelevanceFieldEnum = {
 } as const
 
 export type UserOrderByRelevanceFieldEnum = (typeof UserOrderByRelevanceFieldEnum)[keyof typeof UserOrderByRelevanceFieldEnum]
+
+
+export const UserPermissionOrderByRelevanceFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  module: 'module',
+  action: 'action'
+} as const
+
+export type UserPermissionOrderByRelevanceFieldEnum = (typeof UserPermissionOrderByRelevanceFieldEnum)[keyof typeof UserPermissionOrderByRelevanceFieldEnum]
 
 
 export const ProjectOrderByRelevanceFieldEnum = {

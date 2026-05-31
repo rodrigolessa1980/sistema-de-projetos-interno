@@ -42,6 +42,11 @@ import { ListTimeLogsByTaskUseCase } from './time-logs/list-time-logs-by-task.us
 import { ListTimeLogsByUserUseCase } from './time-logs/list-time-logs-by-user.use-case';
 import { DeleteTimeLogUseCase } from './time-logs/delete-time-log.use-case';
 
+// User Use Cases
+import { ListUsersUseCase } from './users/list-users.use-case';
+import { GetUserPermissionsUseCase } from './users/get-user-permissions.use-case';
+import { UpdateUserPermissionsUseCase } from './users/update-user-permissions.use-case';
+
 const useCases = [
   // Auth
   LoginUseCase,
@@ -83,6 +88,11 @@ const useCases = [
   ListTimeLogsByTaskUseCase,
   ListTimeLogsByUserUseCase,
   DeleteTimeLogUseCase,
+
+  // Users & Permissions
+  ListUsersUseCase,
+  GetUserPermissionsUseCase,
+  UpdateUserPermissionsUseCase,
 ];
 
 @Module({

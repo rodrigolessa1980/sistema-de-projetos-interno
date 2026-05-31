@@ -5,6 +5,23 @@ import { persist } from "zustand/middleware";
 import type { User, AuthSession, LoginCredentials, RegisterCredentials } from "@/types";
 import { login as apiLogin, logout as apiLogout, register as apiRegister, getStoredSession } from "@/lib/auth";
 import { api } from "@/lib/api";
+import { useUserStore } from "@/stores/ui-store";
+
+function syncUserToStore(user: User) {
+  const now = new Date().toISOString();
+  useUserStore.getState().upsertUser({
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    role: user.role,
+    avatar: user.avatar,
+    position: user.position ?? "",
+    department: user.department ?? "",
+    projectIds: user.projectIds ?? [],
+    createdAt: user.createdAt ?? now,
+    updatedAt: user.updatedAt ?? now,
+  });
+}
 
 interface AuthStore {
   session: AuthSession | null;
@@ -40,7 +57,6 @@ export const useAuthStore = create<AuthStore>()(
         const session = getStoredSession();
         if (session) {
           set({ session, isLoading: false });
-          // Sincroniza os dados do usuário em segundo plano
           try {
             const data = await api.get<{ user: User }>("auth/me");
             const updatedSession = { ...session, user: data.user };
@@ -48,9 +64,9 @@ export const useAuthStore = create<AuthStore>()(
               localStorage.setItem("devflow_session", JSON.stringify(updatedSession));
             }
             set({ session: updatedSession });
+            syncUserToStore(data.user);
           } catch (err) {
             console.error("Falha ao sincronizar sessão:", err);
-            // Se o token falhar (ex: expirado no backend), limpa a sessão
             get().logout();
           }
         } else {
@@ -63,6 +79,7 @@ export const useAuthStore = create<AuthStore>()(
         try {
           const session = await apiLogin(credentials);
           set({ session, isLoading: false });
+          syncUserToStore(session.user);
         } catch (err) {
           set({
             error: err instanceof Error ? err.message : "Erro ao fazer login",
@@ -76,6 +93,7 @@ export const useAuthStore = create<AuthStore>()(
         try {
           const session = await apiRegister(credentials);
           set({ session, isLoading: false });
+          syncUserToStore(session.user);
         } catch (err) {
           set({
             error: err instanceof Error ? err.message : "Erro ao cadastrar conta",

@@ -9,6 +9,8 @@ export interface UserProps {
   avatar?: string | null;
   position: string;
   department: string;
+  isActive?: boolean;
+  lastLoginAt?: Date | null;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -26,6 +28,8 @@ export class User {
       avatar: props.avatar || null,
       position: props.position,
       department: props.department,
+      isActive: props.isActive ?? true,
+      lastLoginAt: props.lastLoginAt ?? null,
       createdAt: props.createdAt || new Date(),
       updatedAt: props.updatedAt || new Date(),
     };
@@ -49,6 +53,8 @@ export class User {
   public get avatar(): string | null { return this.props.avatar; }
   public get position(): string { return this.props.position; }
   public get department(): string { return this.props.department; }
+  public get isActive(): boolean { return this.props.isActive; }
+  public get lastLoginAt(): Date | null { return this.props.lastLoginAt; }
   public get createdAt(): Date { return this.props.createdAt; }
   public get updatedAt(): Date { return this.props.updatedAt; }
 }

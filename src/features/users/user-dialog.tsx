@@ -15,15 +15,16 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useUserStore } from "@/stores/ui-store";
-import { useProjectStore } from "@/stores";
-import { useTaskStore } from "@/stores";
+import { useProjectStore, useTaskStore } from "@/stores";
 import type { User } from "@/types";
-import { CheckSquare, FolderKanban, X, Check, UserPlus, Pencil } from "lucide-react";
+import { api } from "@/lib/api";
+import { CheckSquare, FolderKanban, Check, UserPlus, Pencil, Eye, EyeOff } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const schema = z.object({
   name: z.string().min(2, "Nome obrigatório"),
   email: z.string().email("E-mail inválido"),
+  password: z.string().min(6, "Senha deve ter pelo menos 6 caracteres").optional().or(z.literal("")),
   role: z.enum(["ADMIN", "DEVELOPER"]),
   position: z.string().min(2, "Cargo obrigatório"),
   department: z.string().min(2, "Departamento obrigatório"),
@@ -50,6 +51,7 @@ function UserDialogForm({ open, onOpenChange, editUser }: UserDialogProps) {
   const [selectedProjects, setSelectedProjects] = useState<string[]>(() => editUser?.projectIds ?? []);
   const [selectedTaskId, setSelectedTaskId] = useState<string>("");
   const [isSaving, setIsSaving] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const isEditing = !!editUser;
 
@@ -66,6 +68,7 @@ function UserDialogForm({ open, onOpenChange, editUser }: UserDialogProps) {
       : {
           name: "",
           email: "",
+          password: "",
           role: "DEVELOPER",
           position: "",
           department: "",
@@ -91,15 +94,40 @@ function UserDialogForm({ open, onOpenChange, editUser }: UserDialogProps) {
         updateUser(editUser.id, { ...values, projectIds: selectedProjects });
         userId = editUser.id;
 
-        // Sync project membership
         const prevProjects = editUser.projectIds ?? [];
         const added = selectedProjects.filter((p) => !prevProjects.includes(p));
         const removed = prevProjects.filter((p) => !selectedProjects.includes(p));
         added.forEach((pId) => addDeveloperToProject(pId, userId));
         removed.forEach((pId) => removeDeveloperFromProject(pId, userId));
       } else {
-        const user = createUser({ ...values, projectIds: selectedProjects, avatar: undefined });
-        userId = user.id;
+        if (values.password) {
+          const now = new Date().toISOString();
+          const result = await api.post<{ user: { id: string; name: string; email: string; role: string; avatar: string | null; position: string; department: string; createdAt: string } }>("auth/register", {
+            name: values.name,
+            email: values.email,
+            password: values.password,
+            position: values.position,
+            department: values.department,
+            role: values.role,
+          });
+          const u = result.user;
+          useUserStore.getState().upsertUser({
+            id: u.id,
+            name: u.name,
+            email: u.email,
+            role: values.role,
+            avatar: u.avatar ?? undefined,
+            position: u.position,
+            department: u.department,
+            projectIds: selectedProjects,
+            createdAt: u.createdAt ?? now,
+            updatedAt: u.createdAt ?? now,
+          });
+          userId = u.id;
+        } else {
+          const user = createUser({ ...values, projectIds: selectedProjects, avatar: undefined });
+          userId = user.id;
+        }
         selectedProjects.forEach((pId) => addDeveloperToProject(pId, userId));
       }
 
@@ -148,6 +176,32 @@ function UserDialogForm({ open, onOpenChange, editUser }: UserDialogProps) {
                   <FormMessage />
                 </FormItem>
               )} />
+
+              {!isEditing && (
+                <FormField control={form.control} name="password" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-zinc-400 text-xs">Senha (para acesso ao sistema)</FormLabel>
+                    <FormControl>
+                      <div className="relative">
+                        <Input
+                          {...field}
+                          type={showPassword ? "text" : "password"}
+                          placeholder="Mínimo 6 caracteres"
+                          className="bg-zinc-900 border-zinc-700 text-zinc-100 focus:border-violet-500 pr-10"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300"
+                        >
+                          {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                        </button>
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+              )}
 
               <div className="grid grid-cols-2 gap-3">
                 <FormField control={form.control} name="position" render={({ field }) => (

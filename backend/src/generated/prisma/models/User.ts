@@ -33,6 +33,8 @@ export type UserMinAggregateOutputType = {
   avatar: string | null
   position: string | null
   department: string | null
+  isActive: boolean | null
+  lastLoginAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -46,6 +48,8 @@ export type UserMaxAggregateOutputType = {
   avatar: string | null
   position: string | null
   department: string | null
+  isActive: boolean | null
+  lastLoginAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -59,6 +63,8 @@ export type UserCountAggregateOutputType = {
   avatar: number
   position: number
   department: number
+  isActive: number
+  lastLoginAt: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -74,6 +80,8 @@ export type UserMinAggregateInputType = {
   avatar?: true
   position?: true
   department?: true
+  isActive?: true
+  lastLoginAt?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -87,6 +95,8 @@ export type UserMaxAggregateInputType = {
   avatar?: true
   position?: true
   department?: true
+  isActive?: true
+  lastLoginAt?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -100,6 +110,8 @@ export type UserCountAggregateInputType = {
   avatar?: true
   position?: true
   department?: true
+  isActive?: true
+  lastLoginAt?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -186,6 +198,8 @@ export type UserGroupByOutputType = {
   avatar: string | null
   position: string
   department: string
+  isActive: boolean
+  lastLoginAt: Date | null
   createdAt: Date
   updatedAt: Date
   _count: UserCountAggregateOutputType | null
@@ -220,6 +234,8 @@ export type UserWhereInput = {
   avatar?: Prisma.StringNullableFilter<"User"> | string | null
   position?: Prisma.StringFilter<"User"> | string
   department?: Prisma.StringFilter<"User"> | string
+  isActive?: Prisma.BoolFilter<"User"> | boolean
+  lastLoginAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   managedProjects?: Prisma.ProjectListRelationFilter
@@ -234,6 +250,7 @@ export type UserWhereInput = {
   statusHistories?: Prisma.StatusHistoryListRelationFilter
   taskNotes?: Prisma.TaskNoteListRelationFilter
   attachments?: Prisma.TaskAttachmentListRelationFilter
+  permissions?: Prisma.UserPermissionListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -245,6 +262,8 @@ export type UserOrderByWithRelationInput = {
   avatar?: Prisma.SortOrderInput | Prisma.SortOrder
   position?: Prisma.SortOrder
   department?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
+  lastLoginAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   managedProjects?: Prisma.ProjectOrderByRelationAggregateInput
@@ -259,6 +278,7 @@ export type UserOrderByWithRelationInput = {
   statusHistories?: Prisma.StatusHistoryOrderByRelationAggregateInput
   taskNotes?: Prisma.TaskNoteOrderByRelationAggregateInput
   attachments?: Prisma.TaskAttachmentOrderByRelationAggregateInput
+  permissions?: Prisma.UserPermissionOrderByRelationAggregateInput
   _relevance?: Prisma.UserOrderByRelevanceInput
 }
 
@@ -274,6 +294,8 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   avatar?: Prisma.StringNullableFilter<"User"> | string | null
   position?: Prisma.StringFilter<"User"> | string
   department?: Prisma.StringFilter<"User"> | string
+  isActive?: Prisma.BoolFilter<"User"> | boolean
+  lastLoginAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   managedProjects?: Prisma.ProjectListRelationFilter
@@ -288,6 +310,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   statusHistories?: Prisma.StatusHistoryListRelationFilter
   taskNotes?: Prisma.TaskNoteListRelationFilter
   attachments?: Prisma.TaskAttachmentListRelationFilter
+  permissions?: Prisma.UserPermissionListRelationFilter
 }, "id" | "email">
 
 export type UserOrderByWithAggregationInput = {
@@ -299,6 +322,8 @@ export type UserOrderByWithAggregationInput = {
   avatar?: Prisma.SortOrderInput | Prisma.SortOrder
   position?: Prisma.SortOrder
   department?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
+  lastLoginAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.UserCountOrderByAggregateInput
@@ -318,6 +343,8 @@ export type UserScalarWhereWithAggregatesInput = {
   avatar?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   position?: Prisma.StringWithAggregatesFilter<"User"> | string
   department?: Prisma.StringWithAggregatesFilter<"User"> | string
+  isActive?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
+  lastLoginAt?: Prisma.DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
 }
@@ -331,6 +358,8 @@ export type UserCreateInput = {
   avatar?: string | null
   position: string
   department: string
+  isActive?: boolean
+  lastLoginAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   managedProjects?: Prisma.ProjectCreateNestedManyWithoutOwnerInput
@@ -345,6 +374,7 @@ export type UserCreateInput = {
   statusHistories?: Prisma.StatusHistoryCreateNestedManyWithoutUserInput
   taskNotes?: Prisma.TaskNoteCreateNestedManyWithoutUserInput
   attachments?: Prisma.TaskAttachmentCreateNestedManyWithoutUserInput
+  permissions?: Prisma.UserPermissionCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -356,6 +386,8 @@ export type UserUncheckedCreateInput = {
   avatar?: string | null
   position: string
   department: string
+  isActive?: boolean
+  lastLoginAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   managedProjects?: Prisma.ProjectUncheckedCreateNestedManyWithoutOwnerInput
@@ -370,6 +402,7 @@ export type UserUncheckedCreateInput = {
   statusHistories?: Prisma.StatusHistoryUncheckedCreateNestedManyWithoutUserInput
   taskNotes?: Prisma.TaskNoteUncheckedCreateNestedManyWithoutUserInput
   attachments?: Prisma.TaskAttachmentUncheckedCreateNestedManyWithoutUserInput
+  permissions?: Prisma.UserPermissionUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserUpdateInput = {
@@ -381,6 +414,8 @@ export type UserUpdateInput = {
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   position?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   managedProjects?: Prisma.ProjectUpdateManyWithoutOwnerNestedInput
@@ -395,6 +430,7 @@ export type UserUpdateInput = {
   statusHistories?: Prisma.StatusHistoryUpdateManyWithoutUserNestedInput
   taskNotes?: Prisma.TaskNoteUpdateManyWithoutUserNestedInput
   attachments?: Prisma.TaskAttachmentUpdateManyWithoutUserNestedInput
+  permissions?: Prisma.UserPermissionUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -406,6 +442,8 @@ export type UserUncheckedUpdateInput = {
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   position?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   managedProjects?: Prisma.ProjectUncheckedUpdateManyWithoutOwnerNestedInput
@@ -420,6 +458,7 @@ export type UserUncheckedUpdateInput = {
   statusHistories?: Prisma.StatusHistoryUncheckedUpdateManyWithoutUserNestedInput
   taskNotes?: Prisma.TaskNoteUncheckedUpdateManyWithoutUserNestedInput
   attachments?: Prisma.TaskAttachmentUncheckedUpdateManyWithoutUserNestedInput
+  permissions?: Prisma.UserPermissionUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -431,6 +470,8 @@ export type UserCreateManyInput = {
   avatar?: string | null
   position: string
   department: string
+  isActive?: boolean
+  lastLoginAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -444,6 +485,8 @@ export type UserUpdateManyMutationInput = {
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   position?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -457,6 +500,8 @@ export type UserUncheckedUpdateManyInput = {
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   position?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -476,6 +521,8 @@ export type UserCountOrderByAggregateInput = {
   avatar?: Prisma.SortOrder
   position?: Prisma.SortOrder
   department?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
+  lastLoginAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -489,6 +536,8 @@ export type UserMaxOrderByAggregateInput = {
   avatar?: Prisma.SortOrder
   position?: Prisma.SortOrder
   department?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
+  lastLoginAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -502,6 +551,8 @@ export type UserMinOrderByAggregateInput = {
   avatar?: Prisma.SortOrder
   position?: Prisma.SortOrder
   department?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
+  lastLoginAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -518,6 +569,28 @@ export type UserNullableScalarRelationFilter = {
 
 export type EnumUserRoleFieldUpdateOperationsInput = {
   set?: $Enums.UserRole
+}
+
+export type BoolFieldUpdateOperationsInput = {
+  set?: boolean
+}
+
+export type NullableDateTimeFieldUpdateOperationsInput = {
+  set?: Date | string | null
+}
+
+export type UserCreateNestedOneWithoutPermissionsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutPermissionsInput, Prisma.UserUncheckedCreateWithoutPermissionsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutPermissionsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutPermissionsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutPermissionsInput, Prisma.UserUncheckedCreateWithoutPermissionsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutPermissionsInput
+  upsert?: Prisma.UserUpsertWithoutPermissionsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutPermissionsInput, Prisma.UserUpdateWithoutPermissionsInput>, Prisma.UserUncheckedUpdateWithoutPermissionsInput>
 }
 
 export type UserCreateNestedOneWithoutManagedProjectsInput = {
@@ -690,7 +763,7 @@ export type UserUpdateOneRequiredWithoutAttachmentsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutAttachmentsInput, Prisma.UserUpdateWithoutAttachmentsInput>, Prisma.UserUncheckedUpdateWithoutAttachmentsInput>
 }
 
-export type UserCreateWithoutManagedProjectsInput = {
+export type UserCreateWithoutPermissionsInput = {
   id?: string
   name: string
   email: string
@@ -699,8 +772,11 @@ export type UserCreateWithoutManagedProjectsInput = {
   avatar?: string | null
   position: string
   department: string
+  isActive?: boolean
+  lastLoginAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  managedProjects?: Prisma.ProjectCreateNestedManyWithoutOwnerInput
   projects?: Prisma.ProjectDeveloperCreateNestedManyWithoutUserInput
   assignedTasks?: Prisma.TaskCreateNestedManyWithoutAssigneeInput
   reportedTasks?: Prisma.TaskCreateNestedManyWithoutReporterInput
@@ -714,6 +790,130 @@ export type UserCreateWithoutManagedProjectsInput = {
   attachments?: Prisma.TaskAttachmentCreateNestedManyWithoutUserInput
 }
 
+export type UserUncheckedCreateWithoutPermissionsInput = {
+  id?: string
+  name: string
+  email: string
+  passwordHash: string
+  role?: $Enums.UserRole
+  avatar?: string | null
+  position: string
+  department: string
+  isActive?: boolean
+  lastLoginAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  managedProjects?: Prisma.ProjectUncheckedCreateNestedManyWithoutOwnerInput
+  projects?: Prisma.ProjectDeveloperUncheckedCreateNestedManyWithoutUserInput
+  assignedTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutAssigneeInput
+  reportedTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutReporterInput
+  subtasks?: Prisma.SubtaskUncheckedCreateNestedManyWithoutAssigneeInput
+  timeLogs?: Prisma.TimeLogUncheckedCreateNestedManyWithoutUserInput
+  comments?: Prisma.CommentUncheckedCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput
+  statusHistories?: Prisma.StatusHistoryUncheckedCreateNestedManyWithoutUserInput
+  taskNotes?: Prisma.TaskNoteUncheckedCreateNestedManyWithoutUserInput
+  attachments?: Prisma.TaskAttachmentUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutPermissionsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutPermissionsInput, Prisma.UserUncheckedCreateWithoutPermissionsInput>
+}
+
+export type UserUpsertWithoutPermissionsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutPermissionsInput, Prisma.UserUncheckedUpdateWithoutPermissionsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutPermissionsInput, Prisma.UserUncheckedCreateWithoutPermissionsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutPermissionsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutPermissionsInput, Prisma.UserUncheckedUpdateWithoutPermissionsInput>
+}
+
+export type UserUpdateWithoutPermissionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  position?: Prisma.StringFieldUpdateOperationsInput | string
+  department?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  managedProjects?: Prisma.ProjectUpdateManyWithoutOwnerNestedInput
+  projects?: Prisma.ProjectDeveloperUpdateManyWithoutUserNestedInput
+  assignedTasks?: Prisma.TaskUpdateManyWithoutAssigneeNestedInput
+  reportedTasks?: Prisma.TaskUpdateManyWithoutReporterNestedInput
+  subtasks?: Prisma.SubtaskUpdateManyWithoutAssigneeNestedInput
+  timeLogs?: Prisma.TimeLogUpdateManyWithoutUserNestedInput
+  comments?: Prisma.CommentUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput
+  statusHistories?: Prisma.StatusHistoryUpdateManyWithoutUserNestedInput
+  taskNotes?: Prisma.TaskNoteUpdateManyWithoutUserNestedInput
+  attachments?: Prisma.TaskAttachmentUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutPermissionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  position?: Prisma.StringFieldUpdateOperationsInput | string
+  department?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  managedProjects?: Prisma.ProjectUncheckedUpdateManyWithoutOwnerNestedInput
+  projects?: Prisma.ProjectDeveloperUncheckedUpdateManyWithoutUserNestedInput
+  assignedTasks?: Prisma.TaskUncheckedUpdateManyWithoutAssigneeNestedInput
+  reportedTasks?: Prisma.TaskUncheckedUpdateManyWithoutReporterNestedInput
+  subtasks?: Prisma.SubtaskUncheckedUpdateManyWithoutAssigneeNestedInput
+  timeLogs?: Prisma.TimeLogUncheckedUpdateManyWithoutUserNestedInput
+  comments?: Prisma.CommentUncheckedUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput
+  statusHistories?: Prisma.StatusHistoryUncheckedUpdateManyWithoutUserNestedInput
+  taskNotes?: Prisma.TaskNoteUncheckedUpdateManyWithoutUserNestedInput
+  attachments?: Prisma.TaskAttachmentUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutManagedProjectsInput = {
+  id?: string
+  name: string
+  email: string
+  passwordHash: string
+  role?: $Enums.UserRole
+  avatar?: string | null
+  position: string
+  department: string
+  isActive?: boolean
+  lastLoginAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  projects?: Prisma.ProjectDeveloperCreateNestedManyWithoutUserInput
+  assignedTasks?: Prisma.TaskCreateNestedManyWithoutAssigneeInput
+  reportedTasks?: Prisma.TaskCreateNestedManyWithoutReporterInput
+  subtasks?: Prisma.SubtaskCreateNestedManyWithoutAssigneeInput
+  timeLogs?: Prisma.TimeLogCreateNestedManyWithoutUserInput
+  comments?: Prisma.CommentCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput
+  statusHistories?: Prisma.StatusHistoryCreateNestedManyWithoutUserInput
+  taskNotes?: Prisma.TaskNoteCreateNestedManyWithoutUserInput
+  attachments?: Prisma.TaskAttachmentCreateNestedManyWithoutUserInput
+  permissions?: Prisma.UserPermissionCreateNestedManyWithoutUserInput
+}
+
 export type UserUncheckedCreateWithoutManagedProjectsInput = {
   id?: string
   name: string
@@ -723,6 +923,8 @@ export type UserUncheckedCreateWithoutManagedProjectsInput = {
   avatar?: string | null
   position: string
   department: string
+  isActive?: boolean
+  lastLoginAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   projects?: Prisma.ProjectDeveloperUncheckedCreateNestedManyWithoutUserInput
@@ -736,6 +938,7 @@ export type UserUncheckedCreateWithoutManagedProjectsInput = {
   statusHistories?: Prisma.StatusHistoryUncheckedCreateNestedManyWithoutUserInput
   taskNotes?: Prisma.TaskNoteUncheckedCreateNestedManyWithoutUserInput
   attachments?: Prisma.TaskAttachmentUncheckedCreateNestedManyWithoutUserInput
+  permissions?: Prisma.UserPermissionUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutManagedProjectsInput = {
@@ -763,6 +966,8 @@ export type UserUpdateWithoutManagedProjectsInput = {
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   position?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   projects?: Prisma.ProjectDeveloperUpdateManyWithoutUserNestedInput
@@ -776,6 +981,7 @@ export type UserUpdateWithoutManagedProjectsInput = {
   statusHistories?: Prisma.StatusHistoryUpdateManyWithoutUserNestedInput
   taskNotes?: Prisma.TaskNoteUpdateManyWithoutUserNestedInput
   attachments?: Prisma.TaskAttachmentUpdateManyWithoutUserNestedInput
+  permissions?: Prisma.UserPermissionUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutManagedProjectsInput = {
@@ -787,6 +993,8 @@ export type UserUncheckedUpdateWithoutManagedProjectsInput = {
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   position?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   projects?: Prisma.ProjectDeveloperUncheckedUpdateManyWithoutUserNestedInput
@@ -800,6 +1008,7 @@ export type UserUncheckedUpdateWithoutManagedProjectsInput = {
   statusHistories?: Prisma.StatusHistoryUncheckedUpdateManyWithoutUserNestedInput
   taskNotes?: Prisma.TaskNoteUncheckedUpdateManyWithoutUserNestedInput
   attachments?: Prisma.TaskAttachmentUncheckedUpdateManyWithoutUserNestedInput
+  permissions?: Prisma.UserPermissionUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutProjectsInput = {
@@ -811,6 +1020,8 @@ export type UserCreateWithoutProjectsInput = {
   avatar?: string | null
   position: string
   department: string
+  isActive?: boolean
+  lastLoginAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   managedProjects?: Prisma.ProjectCreateNestedManyWithoutOwnerInput
@@ -824,6 +1035,7 @@ export type UserCreateWithoutProjectsInput = {
   statusHistories?: Prisma.StatusHistoryCreateNestedManyWithoutUserInput
   taskNotes?: Prisma.TaskNoteCreateNestedManyWithoutUserInput
   attachments?: Prisma.TaskAttachmentCreateNestedManyWithoutUserInput
+  permissions?: Prisma.UserPermissionCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutProjectsInput = {
@@ -835,6 +1047,8 @@ export type UserUncheckedCreateWithoutProjectsInput = {
   avatar?: string | null
   position: string
   department: string
+  isActive?: boolean
+  lastLoginAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   managedProjects?: Prisma.ProjectUncheckedCreateNestedManyWithoutOwnerInput
@@ -848,6 +1062,7 @@ export type UserUncheckedCreateWithoutProjectsInput = {
   statusHistories?: Prisma.StatusHistoryUncheckedCreateNestedManyWithoutUserInput
   taskNotes?: Prisma.TaskNoteUncheckedCreateNestedManyWithoutUserInput
   attachments?: Prisma.TaskAttachmentUncheckedCreateNestedManyWithoutUserInput
+  permissions?: Prisma.UserPermissionUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutProjectsInput = {
@@ -875,6 +1090,8 @@ export type UserUpdateWithoutProjectsInput = {
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   position?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   managedProjects?: Prisma.ProjectUpdateManyWithoutOwnerNestedInput
@@ -888,6 +1105,7 @@ export type UserUpdateWithoutProjectsInput = {
   statusHistories?: Prisma.StatusHistoryUpdateManyWithoutUserNestedInput
   taskNotes?: Prisma.TaskNoteUpdateManyWithoutUserNestedInput
   attachments?: Prisma.TaskAttachmentUpdateManyWithoutUserNestedInput
+  permissions?: Prisma.UserPermissionUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutProjectsInput = {
@@ -899,6 +1117,8 @@ export type UserUncheckedUpdateWithoutProjectsInput = {
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   position?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   managedProjects?: Prisma.ProjectUncheckedUpdateManyWithoutOwnerNestedInput
@@ -912,6 +1132,7 @@ export type UserUncheckedUpdateWithoutProjectsInput = {
   statusHistories?: Prisma.StatusHistoryUncheckedUpdateManyWithoutUserNestedInput
   taskNotes?: Prisma.TaskNoteUncheckedUpdateManyWithoutUserNestedInput
   attachments?: Prisma.TaskAttachmentUncheckedUpdateManyWithoutUserNestedInput
+  permissions?: Prisma.UserPermissionUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutAssignedTasksInput = {
@@ -923,6 +1144,8 @@ export type UserCreateWithoutAssignedTasksInput = {
   avatar?: string | null
   position: string
   department: string
+  isActive?: boolean
+  lastLoginAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   managedProjects?: Prisma.ProjectCreateNestedManyWithoutOwnerInput
@@ -936,6 +1159,7 @@ export type UserCreateWithoutAssignedTasksInput = {
   statusHistories?: Prisma.StatusHistoryCreateNestedManyWithoutUserInput
   taskNotes?: Prisma.TaskNoteCreateNestedManyWithoutUserInput
   attachments?: Prisma.TaskAttachmentCreateNestedManyWithoutUserInput
+  permissions?: Prisma.UserPermissionCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutAssignedTasksInput = {
@@ -947,6 +1171,8 @@ export type UserUncheckedCreateWithoutAssignedTasksInput = {
   avatar?: string | null
   position: string
   department: string
+  isActive?: boolean
+  lastLoginAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   managedProjects?: Prisma.ProjectUncheckedCreateNestedManyWithoutOwnerInput
@@ -960,6 +1186,7 @@ export type UserUncheckedCreateWithoutAssignedTasksInput = {
   statusHistories?: Prisma.StatusHistoryUncheckedCreateNestedManyWithoutUserInput
   taskNotes?: Prisma.TaskNoteUncheckedCreateNestedManyWithoutUserInput
   attachments?: Prisma.TaskAttachmentUncheckedCreateNestedManyWithoutUserInput
+  permissions?: Prisma.UserPermissionUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutAssignedTasksInput = {
@@ -976,6 +1203,8 @@ export type UserCreateWithoutReportedTasksInput = {
   avatar?: string | null
   position: string
   department: string
+  isActive?: boolean
+  lastLoginAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   managedProjects?: Prisma.ProjectCreateNestedManyWithoutOwnerInput
@@ -989,6 +1218,7 @@ export type UserCreateWithoutReportedTasksInput = {
   statusHistories?: Prisma.StatusHistoryCreateNestedManyWithoutUserInput
   taskNotes?: Prisma.TaskNoteCreateNestedManyWithoutUserInput
   attachments?: Prisma.TaskAttachmentCreateNestedManyWithoutUserInput
+  permissions?: Prisma.UserPermissionCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutReportedTasksInput = {
@@ -1000,6 +1230,8 @@ export type UserUncheckedCreateWithoutReportedTasksInput = {
   avatar?: string | null
   position: string
   department: string
+  isActive?: boolean
+  lastLoginAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   managedProjects?: Prisma.ProjectUncheckedCreateNestedManyWithoutOwnerInput
@@ -1013,6 +1245,7 @@ export type UserUncheckedCreateWithoutReportedTasksInput = {
   statusHistories?: Prisma.StatusHistoryUncheckedCreateNestedManyWithoutUserInput
   taskNotes?: Prisma.TaskNoteUncheckedCreateNestedManyWithoutUserInput
   attachments?: Prisma.TaskAttachmentUncheckedCreateNestedManyWithoutUserInput
+  permissions?: Prisma.UserPermissionUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutReportedTasksInput = {
@@ -1040,6 +1273,8 @@ export type UserUpdateWithoutAssignedTasksInput = {
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   position?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   managedProjects?: Prisma.ProjectUpdateManyWithoutOwnerNestedInput
@@ -1053,6 +1288,7 @@ export type UserUpdateWithoutAssignedTasksInput = {
   statusHistories?: Prisma.StatusHistoryUpdateManyWithoutUserNestedInput
   taskNotes?: Prisma.TaskNoteUpdateManyWithoutUserNestedInput
   attachments?: Prisma.TaskAttachmentUpdateManyWithoutUserNestedInput
+  permissions?: Prisma.UserPermissionUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAssignedTasksInput = {
@@ -1064,6 +1300,8 @@ export type UserUncheckedUpdateWithoutAssignedTasksInput = {
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   position?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   managedProjects?: Prisma.ProjectUncheckedUpdateManyWithoutOwnerNestedInput
@@ -1077,6 +1315,7 @@ export type UserUncheckedUpdateWithoutAssignedTasksInput = {
   statusHistories?: Prisma.StatusHistoryUncheckedUpdateManyWithoutUserNestedInput
   taskNotes?: Prisma.TaskNoteUncheckedUpdateManyWithoutUserNestedInput
   attachments?: Prisma.TaskAttachmentUncheckedUpdateManyWithoutUserNestedInput
+  permissions?: Prisma.UserPermissionUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserUpsertWithoutReportedTasksInput = {
@@ -1099,6 +1338,8 @@ export type UserUpdateWithoutReportedTasksInput = {
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   position?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   managedProjects?: Prisma.ProjectUpdateManyWithoutOwnerNestedInput
@@ -1112,6 +1353,7 @@ export type UserUpdateWithoutReportedTasksInput = {
   statusHistories?: Prisma.StatusHistoryUpdateManyWithoutUserNestedInput
   taskNotes?: Prisma.TaskNoteUpdateManyWithoutUserNestedInput
   attachments?: Prisma.TaskAttachmentUpdateManyWithoutUserNestedInput
+  permissions?: Prisma.UserPermissionUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutReportedTasksInput = {
@@ -1123,6 +1365,8 @@ export type UserUncheckedUpdateWithoutReportedTasksInput = {
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   position?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   managedProjects?: Prisma.ProjectUncheckedUpdateManyWithoutOwnerNestedInput
@@ -1136,6 +1380,7 @@ export type UserUncheckedUpdateWithoutReportedTasksInput = {
   statusHistories?: Prisma.StatusHistoryUncheckedUpdateManyWithoutUserNestedInput
   taskNotes?: Prisma.TaskNoteUncheckedUpdateManyWithoutUserNestedInput
   attachments?: Prisma.TaskAttachmentUncheckedUpdateManyWithoutUserNestedInput
+  permissions?: Prisma.UserPermissionUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutSubtasksInput = {
@@ -1147,6 +1392,8 @@ export type UserCreateWithoutSubtasksInput = {
   avatar?: string | null
   position: string
   department: string
+  isActive?: boolean
+  lastLoginAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   managedProjects?: Prisma.ProjectCreateNestedManyWithoutOwnerInput
@@ -1160,6 +1407,7 @@ export type UserCreateWithoutSubtasksInput = {
   statusHistories?: Prisma.StatusHistoryCreateNestedManyWithoutUserInput
   taskNotes?: Prisma.TaskNoteCreateNestedManyWithoutUserInput
   attachments?: Prisma.TaskAttachmentCreateNestedManyWithoutUserInput
+  permissions?: Prisma.UserPermissionCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutSubtasksInput = {
@@ -1171,6 +1419,8 @@ export type UserUncheckedCreateWithoutSubtasksInput = {
   avatar?: string | null
   position: string
   department: string
+  isActive?: boolean
+  lastLoginAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   managedProjects?: Prisma.ProjectUncheckedCreateNestedManyWithoutOwnerInput
@@ -1184,6 +1434,7 @@ export type UserUncheckedCreateWithoutSubtasksInput = {
   statusHistories?: Prisma.StatusHistoryUncheckedCreateNestedManyWithoutUserInput
   taskNotes?: Prisma.TaskNoteUncheckedCreateNestedManyWithoutUserInput
   attachments?: Prisma.TaskAttachmentUncheckedCreateNestedManyWithoutUserInput
+  permissions?: Prisma.UserPermissionUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutSubtasksInput = {
@@ -1211,6 +1462,8 @@ export type UserUpdateWithoutSubtasksInput = {
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   position?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   managedProjects?: Prisma.ProjectUpdateManyWithoutOwnerNestedInput
@@ -1224,6 +1477,7 @@ export type UserUpdateWithoutSubtasksInput = {
   statusHistories?: Prisma.StatusHistoryUpdateManyWithoutUserNestedInput
   taskNotes?: Prisma.TaskNoteUpdateManyWithoutUserNestedInput
   attachments?: Prisma.TaskAttachmentUpdateManyWithoutUserNestedInput
+  permissions?: Prisma.UserPermissionUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSubtasksInput = {
@@ -1235,6 +1489,8 @@ export type UserUncheckedUpdateWithoutSubtasksInput = {
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   position?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   managedProjects?: Prisma.ProjectUncheckedUpdateManyWithoutOwnerNestedInput
@@ -1248,6 +1504,7 @@ export type UserUncheckedUpdateWithoutSubtasksInput = {
   statusHistories?: Prisma.StatusHistoryUncheckedUpdateManyWithoutUserNestedInput
   taskNotes?: Prisma.TaskNoteUncheckedUpdateManyWithoutUserNestedInput
   attachments?: Prisma.TaskAttachmentUncheckedUpdateManyWithoutUserNestedInput
+  permissions?: Prisma.UserPermissionUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutTimeLogsInput = {
@@ -1259,6 +1516,8 @@ export type UserCreateWithoutTimeLogsInput = {
   avatar?: string | null
   position: string
   department: string
+  isActive?: boolean
+  lastLoginAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   managedProjects?: Prisma.ProjectCreateNestedManyWithoutOwnerInput
@@ -1272,6 +1531,7 @@ export type UserCreateWithoutTimeLogsInput = {
   statusHistories?: Prisma.StatusHistoryCreateNestedManyWithoutUserInput
   taskNotes?: Prisma.TaskNoteCreateNestedManyWithoutUserInput
   attachments?: Prisma.TaskAttachmentCreateNestedManyWithoutUserInput
+  permissions?: Prisma.UserPermissionCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutTimeLogsInput = {
@@ -1283,6 +1543,8 @@ export type UserUncheckedCreateWithoutTimeLogsInput = {
   avatar?: string | null
   position: string
   department: string
+  isActive?: boolean
+  lastLoginAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   managedProjects?: Prisma.ProjectUncheckedCreateNestedManyWithoutOwnerInput
@@ -1296,6 +1558,7 @@ export type UserUncheckedCreateWithoutTimeLogsInput = {
   statusHistories?: Prisma.StatusHistoryUncheckedCreateNestedManyWithoutUserInput
   taskNotes?: Prisma.TaskNoteUncheckedCreateNestedManyWithoutUserInput
   attachments?: Prisma.TaskAttachmentUncheckedCreateNestedManyWithoutUserInput
+  permissions?: Prisma.UserPermissionUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutTimeLogsInput = {
@@ -1323,6 +1586,8 @@ export type UserUpdateWithoutTimeLogsInput = {
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   position?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   managedProjects?: Prisma.ProjectUpdateManyWithoutOwnerNestedInput
@@ -1336,6 +1601,7 @@ export type UserUpdateWithoutTimeLogsInput = {
   statusHistories?: Prisma.StatusHistoryUpdateManyWithoutUserNestedInput
   taskNotes?: Prisma.TaskNoteUpdateManyWithoutUserNestedInput
   attachments?: Prisma.TaskAttachmentUpdateManyWithoutUserNestedInput
+  permissions?: Prisma.UserPermissionUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutTimeLogsInput = {
@@ -1347,6 +1613,8 @@ export type UserUncheckedUpdateWithoutTimeLogsInput = {
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   position?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   managedProjects?: Prisma.ProjectUncheckedUpdateManyWithoutOwnerNestedInput
@@ -1360,6 +1628,7 @@ export type UserUncheckedUpdateWithoutTimeLogsInput = {
   statusHistories?: Prisma.StatusHistoryUncheckedUpdateManyWithoutUserNestedInput
   taskNotes?: Prisma.TaskNoteUncheckedUpdateManyWithoutUserNestedInput
   attachments?: Prisma.TaskAttachmentUncheckedUpdateManyWithoutUserNestedInput
+  permissions?: Prisma.UserPermissionUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutCommentsInput = {
@@ -1371,6 +1640,8 @@ export type UserCreateWithoutCommentsInput = {
   avatar?: string | null
   position: string
   department: string
+  isActive?: boolean
+  lastLoginAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   managedProjects?: Prisma.ProjectCreateNestedManyWithoutOwnerInput
@@ -1384,6 +1655,7 @@ export type UserCreateWithoutCommentsInput = {
   statusHistories?: Prisma.StatusHistoryCreateNestedManyWithoutUserInput
   taskNotes?: Prisma.TaskNoteCreateNestedManyWithoutUserInput
   attachments?: Prisma.TaskAttachmentCreateNestedManyWithoutUserInput
+  permissions?: Prisma.UserPermissionCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutCommentsInput = {
@@ -1395,6 +1667,8 @@ export type UserUncheckedCreateWithoutCommentsInput = {
   avatar?: string | null
   position: string
   department: string
+  isActive?: boolean
+  lastLoginAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   managedProjects?: Prisma.ProjectUncheckedCreateNestedManyWithoutOwnerInput
@@ -1408,6 +1682,7 @@ export type UserUncheckedCreateWithoutCommentsInput = {
   statusHistories?: Prisma.StatusHistoryUncheckedCreateNestedManyWithoutUserInput
   taskNotes?: Prisma.TaskNoteUncheckedCreateNestedManyWithoutUserInput
   attachments?: Prisma.TaskAttachmentUncheckedCreateNestedManyWithoutUserInput
+  permissions?: Prisma.UserPermissionUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutCommentsInput = {
@@ -1435,6 +1710,8 @@ export type UserUpdateWithoutCommentsInput = {
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   position?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   managedProjects?: Prisma.ProjectUpdateManyWithoutOwnerNestedInput
@@ -1448,6 +1725,7 @@ export type UserUpdateWithoutCommentsInput = {
   statusHistories?: Prisma.StatusHistoryUpdateManyWithoutUserNestedInput
   taskNotes?: Prisma.TaskNoteUpdateManyWithoutUserNestedInput
   attachments?: Prisma.TaskAttachmentUpdateManyWithoutUserNestedInput
+  permissions?: Prisma.UserPermissionUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCommentsInput = {
@@ -1459,6 +1737,8 @@ export type UserUncheckedUpdateWithoutCommentsInput = {
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   position?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   managedProjects?: Prisma.ProjectUncheckedUpdateManyWithoutOwnerNestedInput
@@ -1472,6 +1752,7 @@ export type UserUncheckedUpdateWithoutCommentsInput = {
   statusHistories?: Prisma.StatusHistoryUncheckedUpdateManyWithoutUserNestedInput
   taskNotes?: Prisma.TaskNoteUncheckedUpdateManyWithoutUserNestedInput
   attachments?: Prisma.TaskAttachmentUncheckedUpdateManyWithoutUserNestedInput
+  permissions?: Prisma.UserPermissionUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutNotificationsInput = {
@@ -1483,6 +1764,8 @@ export type UserCreateWithoutNotificationsInput = {
   avatar?: string | null
   position: string
   department: string
+  isActive?: boolean
+  lastLoginAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   managedProjects?: Prisma.ProjectCreateNestedManyWithoutOwnerInput
@@ -1496,6 +1779,7 @@ export type UserCreateWithoutNotificationsInput = {
   statusHistories?: Prisma.StatusHistoryCreateNestedManyWithoutUserInput
   taskNotes?: Prisma.TaskNoteCreateNestedManyWithoutUserInput
   attachments?: Prisma.TaskAttachmentCreateNestedManyWithoutUserInput
+  permissions?: Prisma.UserPermissionCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutNotificationsInput = {
@@ -1507,6 +1791,8 @@ export type UserUncheckedCreateWithoutNotificationsInput = {
   avatar?: string | null
   position: string
   department: string
+  isActive?: boolean
+  lastLoginAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   managedProjects?: Prisma.ProjectUncheckedCreateNestedManyWithoutOwnerInput
@@ -1520,6 +1806,7 @@ export type UserUncheckedCreateWithoutNotificationsInput = {
   statusHistories?: Prisma.StatusHistoryUncheckedCreateNestedManyWithoutUserInput
   taskNotes?: Prisma.TaskNoteUncheckedCreateNestedManyWithoutUserInput
   attachments?: Prisma.TaskAttachmentUncheckedCreateNestedManyWithoutUserInput
+  permissions?: Prisma.UserPermissionUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutNotificationsInput = {
@@ -1547,6 +1834,8 @@ export type UserUpdateWithoutNotificationsInput = {
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   position?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   managedProjects?: Prisma.ProjectUpdateManyWithoutOwnerNestedInput
@@ -1560,6 +1849,7 @@ export type UserUpdateWithoutNotificationsInput = {
   statusHistories?: Prisma.StatusHistoryUpdateManyWithoutUserNestedInput
   taskNotes?: Prisma.TaskNoteUpdateManyWithoutUserNestedInput
   attachments?: Prisma.TaskAttachmentUpdateManyWithoutUserNestedInput
+  permissions?: Prisma.UserPermissionUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutNotificationsInput = {
@@ -1571,6 +1861,8 @@ export type UserUncheckedUpdateWithoutNotificationsInput = {
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   position?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   managedProjects?: Prisma.ProjectUncheckedUpdateManyWithoutOwnerNestedInput
@@ -1584,6 +1876,7 @@ export type UserUncheckedUpdateWithoutNotificationsInput = {
   statusHistories?: Prisma.StatusHistoryUncheckedUpdateManyWithoutUserNestedInput
   taskNotes?: Prisma.TaskNoteUncheckedUpdateManyWithoutUserNestedInput
   attachments?: Prisma.TaskAttachmentUncheckedUpdateManyWithoutUserNestedInput
+  permissions?: Prisma.UserPermissionUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutAuditLogsInput = {
@@ -1595,6 +1888,8 @@ export type UserCreateWithoutAuditLogsInput = {
   avatar?: string | null
   position: string
   department: string
+  isActive?: boolean
+  lastLoginAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   managedProjects?: Prisma.ProjectCreateNestedManyWithoutOwnerInput
@@ -1608,6 +1903,7 @@ export type UserCreateWithoutAuditLogsInput = {
   statusHistories?: Prisma.StatusHistoryCreateNestedManyWithoutUserInput
   taskNotes?: Prisma.TaskNoteCreateNestedManyWithoutUserInput
   attachments?: Prisma.TaskAttachmentCreateNestedManyWithoutUserInput
+  permissions?: Prisma.UserPermissionCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutAuditLogsInput = {
@@ -1619,6 +1915,8 @@ export type UserUncheckedCreateWithoutAuditLogsInput = {
   avatar?: string | null
   position: string
   department: string
+  isActive?: boolean
+  lastLoginAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   managedProjects?: Prisma.ProjectUncheckedCreateNestedManyWithoutOwnerInput
@@ -1632,6 +1930,7 @@ export type UserUncheckedCreateWithoutAuditLogsInput = {
   statusHistories?: Prisma.StatusHistoryUncheckedCreateNestedManyWithoutUserInput
   taskNotes?: Prisma.TaskNoteUncheckedCreateNestedManyWithoutUserInput
   attachments?: Prisma.TaskAttachmentUncheckedCreateNestedManyWithoutUserInput
+  permissions?: Prisma.UserPermissionUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutAuditLogsInput = {
@@ -1659,6 +1958,8 @@ export type UserUpdateWithoutAuditLogsInput = {
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   position?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   managedProjects?: Prisma.ProjectUpdateManyWithoutOwnerNestedInput
@@ -1672,6 +1973,7 @@ export type UserUpdateWithoutAuditLogsInput = {
   statusHistories?: Prisma.StatusHistoryUpdateManyWithoutUserNestedInput
   taskNotes?: Prisma.TaskNoteUpdateManyWithoutUserNestedInput
   attachments?: Prisma.TaskAttachmentUpdateManyWithoutUserNestedInput
+  permissions?: Prisma.UserPermissionUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAuditLogsInput = {
@@ -1683,6 +1985,8 @@ export type UserUncheckedUpdateWithoutAuditLogsInput = {
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   position?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   managedProjects?: Prisma.ProjectUncheckedUpdateManyWithoutOwnerNestedInput
@@ -1696,6 +2000,7 @@ export type UserUncheckedUpdateWithoutAuditLogsInput = {
   statusHistories?: Prisma.StatusHistoryUncheckedUpdateManyWithoutUserNestedInput
   taskNotes?: Prisma.TaskNoteUncheckedUpdateManyWithoutUserNestedInput
   attachments?: Prisma.TaskAttachmentUncheckedUpdateManyWithoutUserNestedInput
+  permissions?: Prisma.UserPermissionUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutStatusHistoriesInput = {
@@ -1707,6 +2012,8 @@ export type UserCreateWithoutStatusHistoriesInput = {
   avatar?: string | null
   position: string
   department: string
+  isActive?: boolean
+  lastLoginAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   managedProjects?: Prisma.ProjectCreateNestedManyWithoutOwnerInput
@@ -1720,6 +2027,7 @@ export type UserCreateWithoutStatusHistoriesInput = {
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput
   taskNotes?: Prisma.TaskNoteCreateNestedManyWithoutUserInput
   attachments?: Prisma.TaskAttachmentCreateNestedManyWithoutUserInput
+  permissions?: Prisma.UserPermissionCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutStatusHistoriesInput = {
@@ -1731,6 +2039,8 @@ export type UserUncheckedCreateWithoutStatusHistoriesInput = {
   avatar?: string | null
   position: string
   department: string
+  isActive?: boolean
+  lastLoginAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   managedProjects?: Prisma.ProjectUncheckedCreateNestedManyWithoutOwnerInput
@@ -1744,6 +2054,7 @@ export type UserUncheckedCreateWithoutStatusHistoriesInput = {
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput
   taskNotes?: Prisma.TaskNoteUncheckedCreateNestedManyWithoutUserInput
   attachments?: Prisma.TaskAttachmentUncheckedCreateNestedManyWithoutUserInput
+  permissions?: Prisma.UserPermissionUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutStatusHistoriesInput = {
@@ -1771,6 +2082,8 @@ export type UserUpdateWithoutStatusHistoriesInput = {
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   position?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   managedProjects?: Prisma.ProjectUpdateManyWithoutOwnerNestedInput
@@ -1784,6 +2097,7 @@ export type UserUpdateWithoutStatusHistoriesInput = {
   auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput
   taskNotes?: Prisma.TaskNoteUpdateManyWithoutUserNestedInput
   attachments?: Prisma.TaskAttachmentUpdateManyWithoutUserNestedInput
+  permissions?: Prisma.UserPermissionUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutStatusHistoriesInput = {
@@ -1795,6 +2109,8 @@ export type UserUncheckedUpdateWithoutStatusHistoriesInput = {
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   position?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   managedProjects?: Prisma.ProjectUncheckedUpdateManyWithoutOwnerNestedInput
@@ -1808,6 +2124,7 @@ export type UserUncheckedUpdateWithoutStatusHistoriesInput = {
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput
   taskNotes?: Prisma.TaskNoteUncheckedUpdateManyWithoutUserNestedInput
   attachments?: Prisma.TaskAttachmentUncheckedUpdateManyWithoutUserNestedInput
+  permissions?: Prisma.UserPermissionUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutTaskNotesInput = {
@@ -1819,6 +2136,8 @@ export type UserCreateWithoutTaskNotesInput = {
   avatar?: string | null
   position: string
   department: string
+  isActive?: boolean
+  lastLoginAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   managedProjects?: Prisma.ProjectCreateNestedManyWithoutOwnerInput
@@ -1832,6 +2151,7 @@ export type UserCreateWithoutTaskNotesInput = {
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput
   statusHistories?: Prisma.StatusHistoryCreateNestedManyWithoutUserInput
   attachments?: Prisma.TaskAttachmentCreateNestedManyWithoutUserInput
+  permissions?: Prisma.UserPermissionCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutTaskNotesInput = {
@@ -1843,6 +2163,8 @@ export type UserUncheckedCreateWithoutTaskNotesInput = {
   avatar?: string | null
   position: string
   department: string
+  isActive?: boolean
+  lastLoginAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   managedProjects?: Prisma.ProjectUncheckedCreateNestedManyWithoutOwnerInput
@@ -1856,6 +2178,7 @@ export type UserUncheckedCreateWithoutTaskNotesInput = {
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput
   statusHistories?: Prisma.StatusHistoryUncheckedCreateNestedManyWithoutUserInput
   attachments?: Prisma.TaskAttachmentUncheckedCreateNestedManyWithoutUserInput
+  permissions?: Prisma.UserPermissionUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutTaskNotesInput = {
@@ -1883,6 +2206,8 @@ export type UserUpdateWithoutTaskNotesInput = {
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   position?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   managedProjects?: Prisma.ProjectUpdateManyWithoutOwnerNestedInput
@@ -1896,6 +2221,7 @@ export type UserUpdateWithoutTaskNotesInput = {
   auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput
   statusHistories?: Prisma.StatusHistoryUpdateManyWithoutUserNestedInput
   attachments?: Prisma.TaskAttachmentUpdateManyWithoutUserNestedInput
+  permissions?: Prisma.UserPermissionUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutTaskNotesInput = {
@@ -1907,6 +2233,8 @@ export type UserUncheckedUpdateWithoutTaskNotesInput = {
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   position?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   managedProjects?: Prisma.ProjectUncheckedUpdateManyWithoutOwnerNestedInput
@@ -1920,6 +2248,7 @@ export type UserUncheckedUpdateWithoutTaskNotesInput = {
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput
   statusHistories?: Prisma.StatusHistoryUncheckedUpdateManyWithoutUserNestedInput
   attachments?: Prisma.TaskAttachmentUncheckedUpdateManyWithoutUserNestedInput
+  permissions?: Prisma.UserPermissionUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutAttachmentsInput = {
@@ -1931,6 +2260,8 @@ export type UserCreateWithoutAttachmentsInput = {
   avatar?: string | null
   position: string
   department: string
+  isActive?: boolean
+  lastLoginAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   managedProjects?: Prisma.ProjectCreateNestedManyWithoutOwnerInput
@@ -1944,6 +2275,7 @@ export type UserCreateWithoutAttachmentsInput = {
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput
   statusHistories?: Prisma.StatusHistoryCreateNestedManyWithoutUserInput
   taskNotes?: Prisma.TaskNoteCreateNestedManyWithoutUserInput
+  permissions?: Prisma.UserPermissionCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutAttachmentsInput = {
@@ -1955,6 +2287,8 @@ export type UserUncheckedCreateWithoutAttachmentsInput = {
   avatar?: string | null
   position: string
   department: string
+  isActive?: boolean
+  lastLoginAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   managedProjects?: Prisma.ProjectUncheckedCreateNestedManyWithoutOwnerInput
@@ -1968,6 +2302,7 @@ export type UserUncheckedCreateWithoutAttachmentsInput = {
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput
   statusHistories?: Prisma.StatusHistoryUncheckedCreateNestedManyWithoutUserInput
   taskNotes?: Prisma.TaskNoteUncheckedCreateNestedManyWithoutUserInput
+  permissions?: Prisma.UserPermissionUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutAttachmentsInput = {
@@ -1995,6 +2330,8 @@ export type UserUpdateWithoutAttachmentsInput = {
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   position?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   managedProjects?: Prisma.ProjectUpdateManyWithoutOwnerNestedInput
@@ -2008,6 +2345,7 @@ export type UserUpdateWithoutAttachmentsInput = {
   auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput
   statusHistories?: Prisma.StatusHistoryUpdateManyWithoutUserNestedInput
   taskNotes?: Prisma.TaskNoteUpdateManyWithoutUserNestedInput
+  permissions?: Prisma.UserPermissionUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAttachmentsInput = {
@@ -2019,6 +2357,8 @@ export type UserUncheckedUpdateWithoutAttachmentsInput = {
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   position?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   managedProjects?: Prisma.ProjectUncheckedUpdateManyWithoutOwnerNestedInput
@@ -2032,6 +2372,7 @@ export type UserUncheckedUpdateWithoutAttachmentsInput = {
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput
   statusHistories?: Prisma.StatusHistoryUncheckedUpdateManyWithoutUserNestedInput
   taskNotes?: Prisma.TaskNoteUncheckedUpdateManyWithoutUserNestedInput
+  permissions?: Prisma.UserPermissionUncheckedUpdateManyWithoutUserNestedInput
 }
 
 
@@ -2052,6 +2393,7 @@ export type UserCountOutputType = {
   statusHistories: number
   taskNotes: number
   attachments: number
+  permissions: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2067,6 +2409,7 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   statusHistories?: boolean | UserCountOutputTypeCountStatusHistoriesArgs
   taskNotes?: boolean | UserCountOutputTypeCountTaskNotesArgs
   attachments?: boolean | UserCountOutputTypeCountAttachmentsArgs
+  permissions?: boolean | UserCountOutputTypeCountPermissionsArgs
 }
 
 /**
@@ -2163,6 +2506,13 @@ export type UserCountOutputTypeCountAttachmentsArgs<ExtArgs extends runtime.Type
   where?: Prisma.TaskAttachmentWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountPermissionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.UserPermissionWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -2173,6 +2523,8 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   avatar?: boolean
   position?: boolean
   department?: boolean
+  isActive?: boolean
+  lastLoginAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   managedProjects?: boolean | Prisma.User$managedProjectsArgs<ExtArgs>
@@ -2187,6 +2539,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   statusHistories?: boolean | Prisma.User$statusHistoriesArgs<ExtArgs>
   taskNotes?: boolean | Prisma.User$taskNotesArgs<ExtArgs>
   attachments?: boolean | Prisma.User$attachmentsArgs<ExtArgs>
+  permissions?: boolean | Prisma.User$permissionsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -2201,11 +2554,13 @@ export type UserSelectScalar = {
   avatar?: boolean
   position?: boolean
   department?: boolean
+  isActive?: boolean
+  lastLoginAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "email" | "passwordHash" | "role" | "avatar" | "position" | "department" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "email" | "passwordHash" | "role" | "avatar" | "position" | "department" | "isActive" | "lastLoginAt" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   managedProjects?: boolean | Prisma.User$managedProjectsArgs<ExtArgs>
   projects?: boolean | Prisma.User$projectsArgs<ExtArgs>
@@ -2219,6 +2574,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   statusHistories?: boolean | Prisma.User$statusHistoriesArgs<ExtArgs>
   taskNotes?: boolean | Prisma.User$taskNotesArgs<ExtArgs>
   attachments?: boolean | Prisma.User$attachmentsArgs<ExtArgs>
+  permissions?: boolean | Prisma.User$permissionsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 
@@ -2237,6 +2593,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     statusHistories: Prisma.$StatusHistoryPayload<ExtArgs>[]
     taskNotes: Prisma.$TaskNotePayload<ExtArgs>[]
     attachments: Prisma.$TaskAttachmentPayload<ExtArgs>[]
+    permissions: Prisma.$UserPermissionPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -2247,6 +2604,8 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     avatar: string | null
     position: string
     department: string
+    isActive: boolean
+    lastLoginAt: Date | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["user"]>
@@ -2601,6 +2960,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   statusHistories<T extends Prisma.User$statusHistoriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$statusHistoriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StatusHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   taskNotes<T extends Prisma.User$taskNotesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$taskNotesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskNotePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   attachments<T extends Prisma.User$attachmentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$attachmentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskAttachmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  permissions<T extends Prisma.User$permissionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$permissionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserPermissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2638,6 +2998,8 @@ export interface UserFieldRefs {
   readonly avatar: Prisma.FieldRef<"User", 'String'>
   readonly position: Prisma.FieldRef<"User", 'String'>
   readonly department: Prisma.FieldRef<"User", 'String'>
+  readonly isActive: Prisma.FieldRef<"User", 'Boolean'>
+  readonly lastLoginAt: Prisma.FieldRef<"User", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"User", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"User", 'DateTime'>
 }
@@ -3273,6 +3635,30 @@ export type User$attachmentsArgs<ExtArgs extends runtime.Types.Extensions.Intern
   take?: number
   skip?: number
   distinct?: Prisma.TaskAttachmentScalarFieldEnum | Prisma.TaskAttachmentScalarFieldEnum[]
+}
+
+/**
+ * User.permissions
+ */
+export type User$permissionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the UserPermission
+   */
+  select?: Prisma.UserPermissionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the UserPermission
+   */
+  omit?: Prisma.UserPermissionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserPermissionInclude<ExtArgs> | null
+  where?: Prisma.UserPermissionWhereInput
+  orderBy?: Prisma.UserPermissionOrderByWithRelationInput | Prisma.UserPermissionOrderByWithRelationInput[]
+  cursor?: Prisma.UserPermissionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.UserPermissionScalarFieldEnum | Prisma.UserPermissionScalarFieldEnum[]
 }
 
 /**

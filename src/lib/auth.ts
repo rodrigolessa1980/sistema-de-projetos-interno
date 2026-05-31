@@ -5,7 +5,7 @@ const SESSION_KEY = "devflow_session";
 
 export async function login(credentials: LoginCredentials): Promise<AuthSession> {
   const session = await api.post<AuthSession>("auth/login", credentials);
-  
+
   if (typeof window !== "undefined") {
     localStorage.setItem(SESSION_KEY, JSON.stringify(session));
   }
@@ -15,7 +15,7 @@ export async function login(credentials: LoginCredentials): Promise<AuthSession>
 
 export async function register(credentials: RegisterCredentials): Promise<AuthSession> {
   const session = await api.post<AuthSession>("auth/register", credentials);
-  
+
   if (typeof window !== "undefined") {
     localStorage.setItem(SESSION_KEY, JSON.stringify(session));
   }

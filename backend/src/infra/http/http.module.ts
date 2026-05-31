@@ -6,6 +6,7 @@ import { HealthController } from './controllers/health.controller';
 import { TasksController } from './controllers/tasks.controller';
 import { ProjectsController } from './controllers/projects.controller';
 import { TimeLogsController } from './controllers/time-logs.controller';
+import { UsersController } from './controllers/users.controller';
 
 @Module({
   imports: [UseCasesModule],
@@ -16,6 +17,7 @@ import { TimeLogsController } from './controllers/time-logs.controller';
     TasksController,
     ProjectsController,
     TimeLogsController,
+    UsersController,
   ],
 })
 export class HttpModule {}

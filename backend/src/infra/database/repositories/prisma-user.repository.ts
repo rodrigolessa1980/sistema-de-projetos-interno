@@ -18,6 +18,8 @@ export class PrismaUserRepository implements IUserRepository {
       avatar: raw.avatar,
       position: raw.position,
       department: raw.department,
+      isActive: raw.isActive,
+      lastLoginAt: raw.lastLoginAt,
       createdAt: raw.createdAt,
       updatedAt: raw.updatedAt,
     });
@@ -44,6 +46,7 @@ export class PrismaUserRepository implements IUserRepository {
         avatar: user.avatar,
         position: user.position,
         department: user.department,
+        isActive: user.isActive,
       },
     });
     return this.mapToDomain(raw);
@@ -60,6 +63,8 @@ export class PrismaUserRepository implements IUserRepository {
         avatar: user.avatar,
         position: user.position,
         department: user.department,
+        isActive: user.isActive,
+        lastLoginAt: user.lastLoginAt,
       },
     });
     return this.mapToDomain(raw);
@@ -70,7 +75,14 @@ export class PrismaUserRepository implements IUserRepository {
   }
 
   async listAll(): Promise<User[]> {
-    const raws = await this.prisma.user.findMany();
+    const raws = await this.prisma.user.findMany({ orderBy: { createdAt: 'asc' } });
     return raws.map((raw) => this.mapToDomain(raw));
+  }
+
+  async updateLastLogin(id: string): Promise<void> {
+    await this.prisma.user.update({
+      where: { id },
+      data: { lastLoginAt: new Date() },
+    });
   }
 }

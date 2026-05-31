@@ -86,16 +86,18 @@ model Company {
 }
 
 model User {
-  id           String   @id @default(uuid())
-  name         String   @db.VarChar(100)
-  email        String   @unique @db.VarChar(150)
-  passwordHash String   @db.VarChar(255)
-  role         UserRole @default(DEVELOPER)
-  avatar       String?  @db.VarChar(255)
-  position     String   @db.VarChar(100)
-  department   String   @db.VarChar(100)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id           String    @id @default(uuid())
+  name         String    @db.VarChar(100)
+  email        String    @unique @db.VarChar(150)
+  passwordHash String    @db.VarChar(255)
+  role         UserRole  @default(DEVELOPER)
+  avatar       String?   @db.VarChar(255)
+  position     String    @db.VarChar(100)
+  department   String    @db.VarChar(100)
+  isActive     Boolean   @default(true)
+  lastLoginAt  DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 
   managedProjects Project[]          @relation("ProjectOwner")
   projects        ProjectDeveloper[]
@@ -109,9 +111,25 @@ model User {
   statusHistories StatusHistory[]
   taskNotes       TaskNote[]
   attachments     TaskAttachment[]
+  permissions     UserPermission[]
 
   @@index([email])
   @@map("users")
+}
+
+model UserPermission {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  module    String   @db.VarChar(50)
+  action    String   @db.VarChar(20)
+  granted   Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, module, action])
+  @@index([userId])
+  @@map("user_permissions")
 }
 
 model Project {

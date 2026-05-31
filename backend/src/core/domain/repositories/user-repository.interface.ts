@@ -7,5 +7,6 @@ export interface IUserRepository {
   update(user: User): Promise<User>;
   delete(id: string): Promise<void>;
   listAll(): Promise<User[]>;
+  updateLastLogin(id: string): Promise<void>;
 }
 export const IUserRepositoryToken = Symbol('IUserRepository');

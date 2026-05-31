@@ -792,10 +792,6 @@ export type EnumProjectStatusFieldUpdateOperationsInput = {
   set?: $Enums.ProjectStatus
 }
 
-export type NullableDateTimeFieldUpdateOperationsInput = {
-  set?: Date | string | null
-}
-
 export type IntFieldUpdateOperationsInput = {
   set?: number
   increment?: number

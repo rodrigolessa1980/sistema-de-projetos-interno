@@ -37,6 +37,8 @@ export class LoginUseCase {
       throw new UnauthorizedException('Credenciais inválidas. Verifique seu email e senha.');
     }
 
+    await this.userRepository.updateLastLogin(user.id);
+
     const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
     const token = await this.jwtService.signAsync({
       sub: user.id,

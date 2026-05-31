@@ -10,6 +10,7 @@
  */
 export type * from './models/Company.js'
 export type * from './models/User.js'
+export type * from './models/UserPermission.js'
 export type * from './models/Project.js'
 export type * from './models/ProjectDeveloper.js'
 export type * from './models/Module.js'
