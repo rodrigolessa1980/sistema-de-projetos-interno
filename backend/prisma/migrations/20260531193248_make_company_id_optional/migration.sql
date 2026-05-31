@@ -1,2 +1,1 @@
--- AlterTable
-ALTER TABLE `projects` MODIFY `companyId` VARCHAR(191) NULL;
+-- This migration was superseded by 20260601000001_make_company_id_optional
