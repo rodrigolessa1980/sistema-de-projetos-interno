@@ -1,5 +1,5 @@
 import { IsArray, IsDateString, IsEnum, IsInt, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
-import { ProjectStatus } from '../../../core/domain/entities/enums';
+import { ProjectStatus } from '../../../../core/domain/entities/enums';
 
 export class CreateProjectDto {
   @IsString()
