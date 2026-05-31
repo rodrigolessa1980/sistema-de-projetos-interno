@@ -47,21 +47,24 @@ export function getStoredSession(): AuthSession | null {
 
 export function hasPermission(user: User | null, permission: string): boolean {
   if (!user) return false;
-  const adminPermissions = [
-    "projects:create", "projects:read", "projects:update", "projects:delete",
-    "modules:create", "modules:read", "modules:update", "modules:delete",
-    "epics:create", "epics:read", "epics:update", "epics:delete",
-    "tasks:create", "tasks:read", "tasks:update", "tasks:delete",
-    "users:read", "users:create", "users:update", "users:delete",
-    "metrics:read", "audit:read",
-  ];
-  const developerPermissions = [
+
+  // Admins have full access
+  if (user.role === "ADMIN") return true;
+
+  // If user has stored permissions from the DB, use them
+  if (user.permissions && user.permissions.length > 0) {
+    const [module, action] = permission.split(":");
+    return user.permissions.some(
+      (p) => p.module === module && p.action === action && p.granted
+    );
+  }
+
+  // Fallback: default permissions for developers without explicit grants
+  const defaultDeveloperPermissions = [
     "projects:read", "modules:read", "epics:read",
     "tasks:read", "tasks:update",
     "timelogs:create", "timelogs:read",
     "comments:create", "comments:read",
   ];
-
-  if (user.role === "ADMIN") return adminPermissions.includes(permission);
-  return developerPermissions.includes(permission);
+  return defaultDeveloperPermissions.includes(permission);
 }

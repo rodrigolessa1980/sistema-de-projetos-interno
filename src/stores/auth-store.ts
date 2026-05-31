@@ -2,7 +2,7 @@
 
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type { User, AuthSession, LoginCredentials, RegisterCredentials } from "@/types";
+import type { User, AuthSession, LoginCredentials, RegisterCredentials, UserPermission } from "@/types";
 import { login as apiLogin, logout as apiLogout, register as apiRegister, getStoredSession } from "@/lib/auth";
 import { api } from "@/lib/api";
 import { useUserStore } from "@/stores/ui-store";
@@ -18,6 +18,7 @@ function syncUserToStore(user: User) {
     position: user.position ?? "",
     department: user.department ?? "",
     projectIds: user.projectIds ?? [],
+    permissions: user.permissions ?? [],
     createdAt: user.createdAt ?? now,
     updatedAt: user.updatedAt ?? now,
   });
@@ -58,13 +59,17 @@ export const useAuthStore = create<AuthStore>()(
         if (session) {
           set({ session, isLoading: false });
           try {
-            const data = await api.get<{ user: User }>("auth/me");
-            const updatedSession = { ...session, user: data.user };
+            const [meData, permsData] = await Promise.all([
+              api.get<{ user: User }>("auth/me"),
+              api.get<UserPermission[]>(`users/${session.user.id}/permissions`).catch(() => [] as UserPermission[]),
+            ]);
+            const userWithPerms: User = { ...meData.user, permissions: permsData };
+            const updatedSession = { ...session, user: userWithPerms };
             if (typeof window !== "undefined") {
               localStorage.setItem("devflow_session", JSON.stringify(updatedSession));
             }
             set({ session: updatedSession });
-            syncUserToStore(data.user);
+            syncUserToStore(userWithPerms);
           } catch (err) {
             console.error("Falha ao sincronizar sessão:", err);
             get().logout();

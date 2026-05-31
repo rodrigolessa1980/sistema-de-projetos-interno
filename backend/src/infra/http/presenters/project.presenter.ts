@@ -8,6 +8,7 @@ export interface ProjectResponse {
   description: string;
   status: ProjectStatus;
   ownerId: string;
+  developerIds: string[];
   startDate: string;
   endDate: string | null;
   estimatedHours: number;
@@ -22,7 +23,7 @@ export interface ProjectResponse {
 }
 
 export class ProjectPresenter {
-  static toHTTP(project: Project): ProjectResponse {
+  static toHTTP(project: Project & { developerIds?: string[] }): ProjectResponse {
     return {
       id: project.id,
       companyId: project.companyId,
@@ -30,6 +31,7 @@ export class ProjectPresenter {
       description: project.description,
       status: project.status,
       ownerId: project.ownerId,
+      developerIds: (project as any).developerIds ?? [],
       startDate: project.startDate.toISOString(),
       endDate: project.endDate ? project.endDate.toISOString() : null,
       estimatedHours: project.estimatedHours,

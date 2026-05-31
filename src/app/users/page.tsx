@@ -3,39 +3,35 @@
 import { useState, useEffect, useCallback } from "react";
 import { AppLayout } from "@/components/layout/app-layout";
 import { useAuth } from "@/hooks/use-auth";
-import { api } from "@/lib/api";
+import { useUserStore } from "@/stores";
 import { EmptyState } from "@/components/shared/empty-state";
-import { Users, ShieldCheck, Save, RotateCcw, Trash2, CheckSquare, Square } from "lucide-react";
+import { Users, ShieldCheck, Save, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 // ──────────────────────────────────────────────
-// Módulos do sistema com suas labels
+// Módulos e ações (chaves em EN para bater com o backend)
 // ──────────────────────────────────────────────
 const MODULES = [
-  { key: "dashboard", label: "Dashboard" },
-  { key: "projetos", label: "Projetos" },
-  { key: "tarefas", label: "Tarefas" },
-  { key: "kanban", label: "Kanban" },
-  { key: "gantt", label: "Gantt" },
-  { key: "modulos", label: "Módulos" },
-  { key: "epicos", label: "Épicos" },
-  { key: "fila", label: "Fila de Desenvolvimento" },
-  { key: "dependencias", label: "Dependências" },
-  { key: "registro_horas", label: "Registro de Horas" },
-  { key: "relatorios", label: "Relatórios" },
-  { key: "metricas", label: "Métricas" },
-  { key: "empresas", label: "Empresas" },
-  { key: "usuarios", label: "Gestão de Usuários" },
+  { key: "projects",  label: "Projetos" },
+  { key: "modules",   label: "Módulos" },
+  { key: "epics",     label: "Épicos" },
+  { key: "tasks",     label: "Tarefas" },
+  { key: "users",     label: "Usuários" },
+  { key: "timelogs",  label: "Registro de Horas" },
+  { key: "comments",  label: "Comentários" },
+  { key: "metrics",   label: "Métricas" },
+  { key: "audit",     label: "Auditoria" },
 ];
 
 const ACTIONS = [
-  { key: "visualizar", label: "Visualizar" },
-  { key: "criar", label: "Criar" },
-  { key: "editar", label: "Editar" },
-  { key: "excluir", label: "Excluir" },
+  { key: "read",   label: "Visualizar" },
+  { key: "create", label: "Criar" },
+  { key: "update", label: "Editar" },
+  { key: "delete", label: "Excluir" },
 ];
 
 // ──────────────────────────────────────────────
@@ -53,7 +49,6 @@ interface ApiUser {
   department: string;
   isActive: boolean;
   lastLoginAt: string | null;
-  permissionCount: number;
   permissions: { module: string; action: string; granted: boolean }[];
 }
 
@@ -104,6 +99,7 @@ function formatLastLogin(date: string | null): string {
 // ──────────────────────────────────────────────
 export default function UsersPage() {
   const { isAdmin } = useAuth();
+  const { users: storeUsers, fetchUsers, updateUserPermissions } = useUserStore();
   const [users, setUsers] = useState<ApiUser[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [permMap, setPermMap] = useState<PermissionMap>({});
@@ -112,32 +108,45 @@ export default function UsersPage() {
 
   const selectedUser = users.find((u) => u.id === selectedId) ?? null;
 
-  // Carregar lista de usuários
   const loadUsers = useCallback(async () => {
     setIsLoading(true);
     try {
-      const data = await api.get<ApiUser[]>("users");
-      setUsers(data);
-      if (!selectedId && data.length > 0) {
-        setSelectedId(data[0].id);
-        setPermMap(buildPermissionMap(data[0].permissions));
-      }
+      await fetchUsers();
     } catch (e) {
-      console.error("Erro ao carregar usuários", e);
+      toast.error("Erro ao carregar usuários");
     } finally {
       setIsLoading(false);
     }
-  }, [selectedId]);
+  }, [fetchUsers]);
+
+  // Sync local state from store
+  useEffect(() => {
+    const mapped: ApiUser[] = storeUsers.map((u) => ({
+      id: u.id,
+      name: u.name,
+      email: u.email,
+      role: u.role,
+      avatar: u.avatar ?? null,
+      position: u.position,
+      department: u.department,
+      isActive: true,
+      lastLoginAt: null,
+      permissions: u.permissions ?? [],
+    }));
+    setUsers(mapped);
+    if (!selectedId && mapped.length > 0) {
+      setSelectedId(mapped[0].id);
+      setPermMap(buildPermissionMap(mapped[0].permissions));
+    }
+  }, [storeUsers]);
 
   useEffect(() => { loadUsers(); }, []);
 
-  // Selecionar usuário
   function selectUser(user: ApiUser) {
     setSelectedId(user.id);
     setPermMap(buildPermissionMap(user.permissions));
   }
 
-  // Toggle individual
   function togglePerm(module: string, action: string) {
     setPermMap((prev) => ({
       ...prev,
@@ -145,7 +154,6 @@ export default function UsersPage() {
     }));
   }
 
-  // Marcar/limpar linha inteira (módulo)
   function toggleRow(module: string, grant: boolean) {
     setPermMap((prev) => {
       const updated = { ...prev[module] };
@@ -154,7 +162,6 @@ export default function UsersPage() {
     });
   }
 
-  // Marcar/limpar coluna inteira (ação)
   function toggleColumn(action: string, grant: boolean) {
     setPermMap((prev) => {
       const next = { ...prev };
@@ -165,39 +172,27 @@ export default function UsersPage() {
     });
   }
 
-  // Verificar se coluna está toda marcada
-  function isColumnAll(action: string): boolean {
-    return MODULES.every((m) => permMap[m.key]?.[action]);
-  }
-
-  // Verificar se linha está toda marcada
   function isRowAll(module: string): boolean {
     return ACTIONS.every((a) => permMap[module]?.[a.key]);
   }
 
-  // Salvar permissões
   async function savePermissions() {
     if (!selectedId) return;
     setIsSaving(true);
     try {
-      await api.put(`users/${selectedId}/permissions`, { permissions: flattenPermissionMap(permMap) });
-      // Atualizar contagem na lista local
-      const granted = countGranted(permMap);
+      const perms = flattenPermissionMap(permMap);
+      await updateUserPermissions(selectedId, perms);
       setUsers((prev) =>
-        prev.map((u) =>
-          u.id === selectedId
-            ? { ...u, permissionCount: granted, permissions: flattenPermissionMap(permMap) }
-            : u
-        )
+        prev.map((u) => u.id === selectedId ? { ...u, permissions: perms } : u)
       );
-    } catch (e) {
-      console.error("Erro ao salvar permissões", e);
+      toast.success("Permissões salvas com sucesso");
+    } catch {
+      toast.error("Erro ao salvar permissões");
     } finally {
       setIsSaving(false);
     }
   }
 
-  // Resetar para o original
   function resetPermissions() {
     if (!selectedUser) return;
     setPermMap(buildPermissionMap(selectedUser.permissions));
@@ -263,7 +258,7 @@ export default function UsersPage() {
                       </div>
                       <p className="text-xs text-zinc-500 truncate">{user.email}</p>
                       <p className="text-[10px] text-zinc-400 mt-0.5">
-                        {user.permissionCount} permissões · último login {formatLastLogin(user.lastLoginAt)}
+                        {user.permissions.filter((p) => p.granted).length} permissões · último login {formatLastLogin(user.lastLoginAt)}
                       </p>
                     </div>
                   </div>

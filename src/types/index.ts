@@ -45,6 +45,12 @@ export interface Company {
   updatedAt: string;
 }
 
+export interface UserPermission {
+  module: string;
+  action: string;
+  granted: boolean;
+}
+
 export interface User {
   id: string;
   name: string;
@@ -54,6 +60,7 @@ export interface User {
   position: string;
   department: string;
   projectIds: string[];
+  permissions?: UserPermission[];
   createdAt: string;
   updatedAt: string;
 }

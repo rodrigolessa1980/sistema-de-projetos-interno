@@ -8,8 +8,8 @@ import { ProjectStatus } from '../../../core/domain/entities/enums';
 export class PrismaProjectRepository implements IProjectRepository {
   constructor(private prisma: PrismaService) {}
 
-  private mapToDomain(raw: any): Project {
-    return new Project({
+  private mapToDomain(raw: any): Project & { developerIds: string[] } {
+    const entity = new Project({
       id: raw.id,
       companyId: raw.companyId,
       name: raw.name,
@@ -27,11 +27,15 @@ export class PrismaProjectRepository implements IProjectRepository {
       queueOrder: raw.queueOrder,
       createdAt: raw.createdAt,
       updatedAt: raw.updatedAt,
-    });
+    }) as Project & { developerIds: string[] };
+    entity.developerIds = (raw.developers ?? []).map((d: any) => d.userId);
+    return entity;
   }
 
+  private includeDevs = { developers: { select: { userId: true } } } as const;
+
   async findById(id: string): Promise<Project | null> {
-    const raw = await this.prisma.project.findUnique({ where: { id } });
+    const raw = await this.prisma.project.findUnique({ where: { id }, include: this.includeDevs });
     return raw ? this.mapToDomain(raw) : null;
   }
 
@@ -54,6 +58,7 @@ export class PrismaProjectRepository implements IProjectRepository {
         testUrl: project.testUrl,
         queueOrder: project.queueOrder,
       },
+      include: this.includeDevs,
     });
     return this.mapToDomain(raw);
   }
@@ -76,6 +81,7 @@ export class PrismaProjectRepository implements IProjectRepository {
         testUrl: project.testUrl,
         queueOrder: project.queueOrder,
       },
+      include: this.includeDevs,
     });
     return this.mapToDomain(raw);
   }
@@ -85,12 +91,12 @@ export class PrismaProjectRepository implements IProjectRepository {
   }
 
   async listAll(): Promise<Project[]> {
-    const raws = await this.prisma.project.findMany();
+    const raws = await this.prisma.project.findMany({ include: this.includeDevs });
     return raws.map((raw) => this.mapToDomain(raw));
   }
 
   async findByCompanyId(companyId: string): Promise<Project[]> {
-    const raws = await this.prisma.project.findMany({ where: { companyId } });
+    const raws = await this.prisma.project.findMany({ where: { companyId }, include: this.includeDevs });
     return raws.map((raw) => this.mapToDomain(raw));
   }
 
@@ -101,6 +107,7 @@ export class PrismaProjectRepository implements IProjectRepository {
         status: { notIn: [ProjectStatus.CONCLUIDO, ProjectStatus.CANCELADO] },
       },
       orderBy: { queueOrder: 'asc' },
+      include: this.includeDevs,
     });
     return raws.map((raw) => this.mapToDomain(raw));
   }

@@ -147,7 +147,7 @@ model Project {
   actualHours    Float         @default(0.0)
   progress       Int           @default(0)
   color          String        @db.VarChar(7)
-  avatar         String?       @db.VarChar(255)
+  avatar         String?       @db.Text
   testUrl        String?       @db.VarChar(255)
   queueOrder     Int?
   createdAt      DateTime      @default(now())

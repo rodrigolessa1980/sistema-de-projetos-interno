@@ -2,7 +2,8 @@
 
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type { Notification, User } from "@/types";
+import type { Notification, User, UserPermission } from "@/types";
+import { api } from "@/lib/api";
 
 interface UIStore {
   sidebarCollapsed: boolean;
@@ -74,10 +75,12 @@ export const useUIStore = create<UIStore>()(
 interface UserStore {
   users: User[];
   getUserById: (id: string) => User | undefined;
+  fetchUsers: () => Promise<void>;
   createUser: (data: Omit<User, "id" | "createdAt" | "updatedAt">) => User;
   upsertUser: (user: User) => void;
   updateUser: (id: string, data: Partial<User>) => void;
   deleteUser: (id: string) => void;
+  updateUserPermissions: (userId: string, permissions: UserPermission[]) => Promise<void>;
 }
 
 export const useUserStore = create<UserStore>()(
@@ -85,6 +88,26 @@ export const useUserStore = create<UserStore>()(
     (set, get) => ({
       users: [],
       getUserById: (id) => get().users.find((user) => user.id === id),
+
+      fetchUsers: async () => {
+        const response = await api.get<(User & { permissions: UserPermission[]; permissionCount: number })[]>("users");
+        set((state) => ({
+          users: response.map((u) => ({
+            ...state.users.find((existing) => existing.id === u.id),
+            id: u.id,
+            name: u.name,
+            email: u.email,
+            role: u.role,
+            avatar: u.avatar ?? undefined,
+            position: u.position ?? "",
+            department: u.department ?? "",
+            projectIds: u.projectIds ?? [],
+            permissions: u.permissions ?? [],
+            createdAt: u.createdAt,
+            updatedAt: u.updatedAt,
+          })),
+        }));
+      },
 
       createUser: (data) => {
         const now = new Date().toISOString();
@@ -124,6 +147,15 @@ export const useUserStore = create<UserStore>()(
       deleteUser: (id) => {
         set((state) => ({
           users: state.users.filter((user) => user.id !== id),
+        }));
+      },
+
+      updateUserPermissions: async (userId, permissions) => {
+        await api.put(`users/${userId}/permissions`, { permissions });
+        set((state) => ({
+          users: state.users.map((u) =>
+            u.id === userId ? { ...u, permissions } : u
+          ),
         }));
       },
     }),

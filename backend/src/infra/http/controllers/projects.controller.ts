@@ -50,11 +50,13 @@ export class ProjectsController {
       name: body.name,
       description: body.description,
       ownerId: body.ownerId,
+      status: body.status,
       startDate: new Date(body.startDate),
       endDate: body.endDate ? new Date(body.endDate) : null,
       estimatedHours: body.estimatedHours,
       color: body.color,
       testUrl: body.testUrl,
+      avatar: body.avatar,
     });
     return ProjectPresenter.toHTTP(project);
   }
