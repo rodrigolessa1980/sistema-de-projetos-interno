@@ -5,7 +5,7 @@ import { Project } from '../../domain/entities/project.entity';
 import { ProjectStatus } from '../../domain/entities/enums';
 
 export interface CreateProjectInput {
-  companyId: string;
+  companyId?: string | null;
   name: string;
   description: string;
   ownerId: string;

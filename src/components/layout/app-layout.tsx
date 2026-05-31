@@ -6,6 +6,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useRouter, usePathname } from "next/navigation";
 import { useEffect } from "react";
 import { motion } from "framer-motion";
+import { useProjectStore } from "@/stores";
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -16,12 +17,19 @@ export function AppLayout({ children, title }: AppLayoutProps) {
   const { isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
+  const fetchProjects = useProjectStore((s) => s.fetchProjects);
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated && pathname !== "/login") {
       router.push("/login");
     }
   }, [isAuthenticated, isLoading, pathname, router]);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchProjects().catch(() => {});
+    }
+  }, [isAuthenticated, fetchProjects]);
 
   if (isLoading) {
     return (

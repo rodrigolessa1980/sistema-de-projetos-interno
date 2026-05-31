@@ -22,6 +22,8 @@ import { UpdateProjectUseCase } from './projects/update-project.use-case';
 import { DeleteProjectUseCase } from './projects/delete-project.use-case';
 import { GetQueuedProjectsUseCase } from './projects/get-queued-projects.use-case';
 import { ReorderQueueUseCase } from './projects/reorder-queue.use-case';
+import { AddDeveloperUseCase } from './projects/add-developer.use-case';
+import { RemoveDeveloperUseCase } from './projects/remove-developer.use-case';
 
 // Task Use Cases
 import { CreateTaskUseCase } from './tasks/create-task.use-case';
@@ -69,6 +71,8 @@ const useCases = [
   DeleteProjectUseCase,
   GetQueuedProjectsUseCase,
   ReorderQueueUseCase,
+  AddDeveloperUseCase,
+  RemoveDeveloperUseCase,
 
   // Tasks
   CreateTaskUseCase,

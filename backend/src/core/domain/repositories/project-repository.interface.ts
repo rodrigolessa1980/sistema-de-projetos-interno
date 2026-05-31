@@ -9,5 +9,7 @@ export interface IProjectRepository {
   findByCompanyId(companyId: string): Promise<Project[]>;
   getQueuedProjects(): Promise<Project[]>;
   updateQueueOrder(orderedIds: string[]): Promise<void>;
+  addDeveloper(projectId: string, userId: string): Promise<void>;
+  removeDeveloper(projectId: string, userId: string): Promise<void>;
 }
 export const IProjectRepositoryToken = Symbol('IProjectRepository');

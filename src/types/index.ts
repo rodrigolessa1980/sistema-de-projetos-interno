@@ -68,7 +68,7 @@ export interface User {
 export interface Project {
   id: string;
   /** Empresa do grupo à qual o projeto pertence */
-  companyId: string;
+  companyId?: string;
   name: string;
   description: string;
   status: ProjectStatus;

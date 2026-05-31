@@ -2,9 +2,9 @@ import { IsArray, IsDateString, IsEnum, IsInt, IsNotEmpty, IsNumber, IsOptional,
 import { ProjectStatus } from '../../../../core/domain/entities/enums';
 
 export class CreateProjectDto {
+  @IsOptional()
   @IsString()
-  @IsNotEmpty()
-  companyId: string;
+  companyId?: string;
 
   @IsString()
   @IsNotEmpty()

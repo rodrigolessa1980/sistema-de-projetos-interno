@@ -51,7 +51,7 @@ const statusColors: Record<ProjectStatus, string> = {
 };
 
 const createProjectSchema = z.object({
-  companyId: z.string().min(1, "Selecione a empresa"),
+  companyId: z.string().optional(),
   name: z.string().min(3, "Mínimo 3 caracteres"),
   description: z.string().min(10, "Mínimo 10 caracteres"),
   status: z.enum(["ATIVO", "PAUSADO", "CONCLUIDO", "CANCELADO", "NA_FILA"]),
@@ -135,6 +135,7 @@ export default function ProjectsPage() {
   const onSubmit = async (data: CreateProjectForm) => {
     const newProject = await createProject({
       ...data,
+      companyId: data.companyId || undefined,
       ownerId: user?.id ?? "",
       developerIds: [],
       actualHours: 0,
@@ -395,13 +396,16 @@ export default function ProjectsPage() {
                     <Building2 className="w-3.5 h-3.5 text-zinc-400" />
                     Empresa do Grupo
                   </Label>
-                  <Select value={field.value} onValueChange={field.onChange}>
+                  <Select value={field.value ?? ""} onValueChange={(v) => field.onChange(v === "__none__" ? "" : v)}>
                     <FormControl>
                       <SelectTrigger className="bg-zinc-800 border-zinc-700 text-zinc-100">
-                        <SelectValue placeholder="Selecione a empresa..." />
+                        <SelectValue placeholder="Nenhuma (opcional)" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent className="bg-zinc-800 border-zinc-700">
+                      <SelectItem value="__none__" className="text-zinc-500 focus:bg-zinc-700">
+                        Nenhuma
+                      </SelectItem>
                       {companies.map((company) => (
                         <SelectItem key={company.id} value={company.id} className="text-zinc-100 focus:bg-zinc-700">
                           <div className="flex items-center gap-2">

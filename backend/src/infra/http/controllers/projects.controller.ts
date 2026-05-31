@@ -7,6 +7,8 @@ import { UpdateProjectUseCase } from '../../../core/use-cases/projects/update-pr
 import { DeleteProjectUseCase } from '../../../core/use-cases/projects/delete-project.use-case';
 import { GetQueuedProjectsUseCase } from '../../../core/use-cases/projects/get-queued-projects.use-case';
 import { ReorderQueueUseCase } from '../../../core/use-cases/projects/reorder-queue.use-case';
+import { AddDeveloperUseCase } from '../../../core/use-cases/projects/add-developer.use-case';
+import { RemoveDeveloperUseCase } from '../../../core/use-cases/projects/remove-developer.use-case';
 import { CreateProjectDto } from '../dtos/projects/create-project.dto';
 import { UpdateProjectDto } from '../dtos/projects/update-project.dto';
 import { ReorderQueueDto } from '../dtos/projects/reorder-queue.dto';
@@ -23,6 +25,8 @@ export class ProjectsController {
     private readonly deleteProjectUseCase: DeleteProjectUseCase,
     private readonly getQueuedProjectsUseCase: GetQueuedProjectsUseCase,
     private readonly reorderQueueUseCase: ReorderQueueUseCase,
+    private readonly addDeveloperUseCase: AddDeveloperUseCase,
+    private readonly removeDeveloperUseCase: RemoveDeveloperUseCase,
   ) {}
 
   @Get()
@@ -90,6 +94,24 @@ export class ProjectsController {
   @Post('queue/reorder')
   async reorderQueue(@Body() body: ReorderQueueDto): Promise<{ success: boolean }> {
     await this.reorderQueueUseCase.execute(body.orderedIds);
+    return { success: true };
+  }
+
+  @Post(':id/developers/:userId')
+  async addDeveloper(
+    @Param('id') id: string,
+    @Param('userId') userId: string,
+  ): Promise<{ success: boolean }> {
+    await this.addDeveloperUseCase.execute(id, userId);
+    return { success: true };
+  }
+
+  @Delete(':id/developers/:userId')
+  async removeDeveloper(
+    @Param('id') id: string,
+    @Param('userId') userId: string,
+  ): Promise<{ success: boolean }> {
+    await this.removeDeveloperUseCase.execute(id, userId);
     return { success: true };
   }
 }

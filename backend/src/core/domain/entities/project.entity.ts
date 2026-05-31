@@ -2,7 +2,7 @@ import { ProjectStatus } from './enums';
 
 export interface ProjectProps {
   id?: string;
-  companyId: string;
+  companyId?: string | null;
   name: string;
   description: string;
   status?: ProjectStatus;
@@ -26,7 +26,7 @@ export class Project {
   constructor(props: ProjectProps) {
     this.props = {
       id: props.id || '',
-      companyId: props.companyId,
+      companyId: props.companyId ?? null,
       name: props.name,
       description: props.description,
       status: props.status || ProjectStatus.NA_FILA,
@@ -59,7 +59,7 @@ export class Project {
   }
 
   public get id(): string { return this.props.id; }
-  public get companyId(): string { return this.props.companyId; }
+  public get companyId(): string | null { return this.props.companyId; }
   public get name(): string { return this.props.name; }
   public get description(): string { return this.props.description; }
   public get status(): ProjectStatus { return this.props.status; }

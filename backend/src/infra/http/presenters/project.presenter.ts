@@ -3,7 +3,7 @@ import { ProjectStatus } from '../../../core/domain/entities/enums';
 
 export interface ProjectResponse {
   id: string;
-  companyId: string;
+  companyId: string | null;
   name: string;
   description: string;
   status: ProjectStatus;

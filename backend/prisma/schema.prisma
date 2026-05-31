@@ -134,8 +134,8 @@ model UserPermission {
 
 model Project {
   id             String        @id @default(uuid())
-  companyId      String
-  company        Company       @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  companyId      String?
+  company        Company?      @relation(fields: [companyId], references: [id], onDelete: Restrict)
   name           String        @db.VarChar(150)
   description    String        @db.Text
   status         ProjectStatus @default(NA_FILA)

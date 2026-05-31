@@ -43,7 +43,7 @@ export class PrismaProjectRepository implements IProjectRepository {
     const raw = await this.prisma.project.create({
       data: {
         id: project.id || undefined,
-        companyId: project.companyId,
+        companyId: project.companyId ?? undefined,
         name: project.name,
         description: project.description,
         status: project.status,
@@ -110,6 +110,18 @@ export class PrismaProjectRepository implements IProjectRepository {
       include: this.includeDevs,
     });
     return raws.map((raw) => this.mapToDomain(raw));
+  }
+
+  async addDeveloper(projectId: string, userId: string): Promise<void> {
+    await this.prisma.projectDeveloper.upsert({
+      where: { projectId_userId: { projectId, userId } },
+      create: { projectId, userId },
+      update: {},
+    });
+  }
+
+  async removeDeveloper(projectId: string, userId: string): Promise<void> {
+    await this.prisma.projectDeveloper.deleteMany({ where: { projectId, userId } });
   }
 
   async updateQueueOrder(orderedIds: string[]): Promise<void> {

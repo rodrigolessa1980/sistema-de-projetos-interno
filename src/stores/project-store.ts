@@ -224,9 +224,19 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
           : p
       ),
     }));
+    void api.post(`projects/${projectId}/developers/${userId}`, {}).catch(() => {
+      set((state) => ({
+        projects: state.projects.map((p) =>
+          p.id === projectId
+            ? { ...p, developerIds: p.developerIds.filter((id) => id !== userId) }
+            : p
+        ),
+      }));
+    });
   },
 
   removeDeveloperFromProject: (projectId, userId) => {
+    const previous = get().projects;
     set((state) => ({
       projects: state.projects.map((p) =>
         p.id === projectId
@@ -234,6 +244,9 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
           : p
       ),
     }));
+    void api.delete(`projects/${projectId}/developers/${userId}`).catch(() => {
+      set({ projects: previous });
+    });
   },
 
   getQueuedProjects: () => {

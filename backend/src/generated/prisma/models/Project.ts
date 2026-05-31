@@ -265,7 +265,7 @@ export type ProjectGroupByArgs<ExtArgs extends runtime.Types.Extensions.Internal
 
 export type ProjectGroupByOutputType = {
   id: string
-  companyId: string
+  companyId: string | null
   name: string
   description: string
   status: $Enums.ProjectStatus
@@ -308,7 +308,7 @@ export type ProjectWhereInput = {
   OR?: Prisma.ProjectWhereInput[]
   NOT?: Prisma.ProjectWhereInput | Prisma.ProjectWhereInput[]
   id?: Prisma.StringFilter<"Project"> | string
-  companyId?: Prisma.StringFilter<"Project"> | string
+  companyId?: Prisma.StringNullableFilter<"Project"> | string | null
   name?: Prisma.StringFilter<"Project"> | string
   description?: Prisma.StringFilter<"Project"> | string
   status?: Prisma.EnumProjectStatusFilter<"Project"> | $Enums.ProjectStatus
@@ -324,7 +324,7 @@ export type ProjectWhereInput = {
   queueOrder?: Prisma.IntNullableFilter<"Project"> | number | null
   createdAt?: Prisma.DateTimeFilter<"Project"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Project"> | Date | string
-  company?: Prisma.XOR<Prisma.CompanyScalarRelationFilter, Prisma.CompanyWhereInput>
+  company?: Prisma.XOR<Prisma.CompanyNullableScalarRelationFilter, Prisma.CompanyWhereInput> | null
   owner?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   developers?: Prisma.ProjectDeveloperListRelationFilter
   modules?: Prisma.ModuleListRelationFilter
@@ -336,7 +336,7 @@ export type ProjectWhereInput = {
 
 export type ProjectOrderByWithRelationInput = {
   id?: Prisma.SortOrder
-  companyId?: Prisma.SortOrder
+  companyId?: Prisma.SortOrderInput | Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
   status?: Prisma.SortOrder
@@ -368,7 +368,7 @@ export type ProjectWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.ProjectWhereInput | Prisma.ProjectWhereInput[]
   OR?: Prisma.ProjectWhereInput[]
   NOT?: Prisma.ProjectWhereInput | Prisma.ProjectWhereInput[]
-  companyId?: Prisma.StringFilter<"Project"> | string
+  companyId?: Prisma.StringNullableFilter<"Project"> | string | null
   name?: Prisma.StringFilter<"Project"> | string
   description?: Prisma.StringFilter<"Project"> | string
   status?: Prisma.EnumProjectStatusFilter<"Project"> | $Enums.ProjectStatus
@@ -384,7 +384,7 @@ export type ProjectWhereUniqueInput = Prisma.AtLeast<{
   queueOrder?: Prisma.IntNullableFilter<"Project"> | number | null
   createdAt?: Prisma.DateTimeFilter<"Project"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Project"> | Date | string
-  company?: Prisma.XOR<Prisma.CompanyScalarRelationFilter, Prisma.CompanyWhereInput>
+  company?: Prisma.XOR<Prisma.CompanyNullableScalarRelationFilter, Prisma.CompanyWhereInput> | null
   owner?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   developers?: Prisma.ProjectDeveloperListRelationFilter
   modules?: Prisma.ModuleListRelationFilter
@@ -396,7 +396,7 @@ export type ProjectWhereUniqueInput = Prisma.AtLeast<{
 
 export type ProjectOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
-  companyId?: Prisma.SortOrder
+  companyId?: Prisma.SortOrderInput | Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
   status?: Prisma.SortOrder
@@ -424,7 +424,7 @@ export type ProjectScalarWhereWithAggregatesInput = {
   OR?: Prisma.ProjectScalarWhereWithAggregatesInput[]
   NOT?: Prisma.ProjectScalarWhereWithAggregatesInput | Prisma.ProjectScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Project"> | string
-  companyId?: Prisma.StringWithAggregatesFilter<"Project"> | string
+  companyId?: Prisma.StringNullableWithAggregatesFilter<"Project"> | string | null
   name?: Prisma.StringWithAggregatesFilter<"Project"> | string
   description?: Prisma.StringWithAggregatesFilter<"Project"> | string
   status?: Prisma.EnumProjectStatusWithAggregatesFilter<"Project"> | $Enums.ProjectStatus
@@ -458,7 +458,7 @@ export type ProjectCreateInput = {
   queueOrder?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  company: Prisma.CompanyCreateNestedOneWithoutProjectsInput
+  company?: Prisma.CompanyCreateNestedOneWithoutProjectsInput
   owner: Prisma.UserCreateNestedOneWithoutManagedProjectsInput
   developers?: Prisma.ProjectDeveloperCreateNestedManyWithoutProjectInput
   modules?: Prisma.ModuleCreateNestedManyWithoutProjectInput
@@ -470,7 +470,7 @@ export type ProjectCreateInput = {
 
 export type ProjectUncheckedCreateInput = {
   id?: string
-  companyId: string
+  companyId?: string | null
   name: string
   description: string
   status?: $Enums.ProjectStatus
@@ -510,7 +510,7 @@ export type ProjectUpdateInput = {
   queueOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  company?: Prisma.CompanyUpdateOneRequiredWithoutProjectsNestedInput
+  company?: Prisma.CompanyUpdateOneWithoutProjectsNestedInput
   owner?: Prisma.UserUpdateOneRequiredWithoutManagedProjectsNestedInput
   developers?: Prisma.ProjectDeveloperUpdateManyWithoutProjectNestedInput
   modules?: Prisma.ModuleUpdateManyWithoutProjectNestedInput
@@ -522,7 +522,7 @@ export type ProjectUpdateInput = {
 
 export type ProjectUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  companyId?: Prisma.StringFieldUpdateOperationsInput | string
+  companyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
@@ -548,7 +548,7 @@ export type ProjectUncheckedUpdateInput = {
 
 export type ProjectCreateManyInput = {
   id?: string
-  companyId: string
+  companyId?: string | null
   name: string
   description: string
   status?: $Enums.ProjectStatus
@@ -586,7 +586,7 @@ export type ProjectUpdateManyMutationInput = {
 
 export type ProjectUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  companyId?: Prisma.StringFieldUpdateOperationsInput | string
+  companyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
@@ -983,7 +983,7 @@ export type ProjectScalarWhereInput = {
   OR?: Prisma.ProjectScalarWhereInput[]
   NOT?: Prisma.ProjectScalarWhereInput | Prisma.ProjectScalarWhereInput[]
   id?: Prisma.StringFilter<"Project"> | string
-  companyId?: Prisma.StringFilter<"Project"> | string
+  companyId?: Prisma.StringNullableFilter<"Project"> | string | null
   name?: Prisma.StringFilter<"Project"> | string
   description?: Prisma.StringFilter<"Project"> | string
   status?: Prisma.EnumProjectStatusFilter<"Project"> | $Enums.ProjectStatus
@@ -1017,7 +1017,7 @@ export type ProjectCreateWithoutOwnerInput = {
   queueOrder?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  company: Prisma.CompanyCreateNestedOneWithoutProjectsInput
+  company?: Prisma.CompanyCreateNestedOneWithoutProjectsInput
   developers?: Prisma.ProjectDeveloperCreateNestedManyWithoutProjectInput
   modules?: Prisma.ModuleCreateNestedManyWithoutProjectInput
   epics?: Prisma.EpicCreateNestedManyWithoutProjectInput
@@ -1028,7 +1028,7 @@ export type ProjectCreateWithoutOwnerInput = {
 
 export type ProjectUncheckedCreateWithoutOwnerInput = {
   id?: string
-  companyId: string
+  companyId?: string | null
   name: string
   description: string
   status?: $Enums.ProjectStatus
@@ -1093,7 +1093,7 @@ export type ProjectCreateWithoutDevelopersInput = {
   queueOrder?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  company: Prisma.CompanyCreateNestedOneWithoutProjectsInput
+  company?: Prisma.CompanyCreateNestedOneWithoutProjectsInput
   owner: Prisma.UserCreateNestedOneWithoutManagedProjectsInput
   modules?: Prisma.ModuleCreateNestedManyWithoutProjectInput
   epics?: Prisma.EpicCreateNestedManyWithoutProjectInput
@@ -1104,7 +1104,7 @@ export type ProjectCreateWithoutDevelopersInput = {
 
 export type ProjectUncheckedCreateWithoutDevelopersInput = {
   id?: string
-  companyId: string
+  companyId?: string | null
   name: string
   description: string
   status?: $Enums.ProjectStatus
@@ -1159,7 +1159,7 @@ export type ProjectUpdateWithoutDevelopersInput = {
   queueOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  company?: Prisma.CompanyUpdateOneRequiredWithoutProjectsNestedInput
+  company?: Prisma.CompanyUpdateOneWithoutProjectsNestedInput
   owner?: Prisma.UserUpdateOneRequiredWithoutManagedProjectsNestedInput
   modules?: Prisma.ModuleUpdateManyWithoutProjectNestedInput
   epics?: Prisma.EpicUpdateManyWithoutProjectNestedInput
@@ -1170,7 +1170,7 @@ export type ProjectUpdateWithoutDevelopersInput = {
 
 export type ProjectUncheckedUpdateWithoutDevelopersInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  companyId?: Prisma.StringFieldUpdateOperationsInput | string
+  companyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
@@ -1209,7 +1209,7 @@ export type ProjectCreateWithoutModulesInput = {
   queueOrder?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  company: Prisma.CompanyCreateNestedOneWithoutProjectsInput
+  company?: Prisma.CompanyCreateNestedOneWithoutProjectsInput
   owner: Prisma.UserCreateNestedOneWithoutManagedProjectsInput
   developers?: Prisma.ProjectDeveloperCreateNestedManyWithoutProjectInput
   epics?: Prisma.EpicCreateNestedManyWithoutProjectInput
@@ -1220,7 +1220,7 @@ export type ProjectCreateWithoutModulesInput = {
 
 export type ProjectUncheckedCreateWithoutModulesInput = {
   id?: string
-  companyId: string
+  companyId?: string | null
   name: string
   description: string
   status?: $Enums.ProjectStatus
@@ -1275,7 +1275,7 @@ export type ProjectUpdateWithoutModulesInput = {
   queueOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  company?: Prisma.CompanyUpdateOneRequiredWithoutProjectsNestedInput
+  company?: Prisma.CompanyUpdateOneWithoutProjectsNestedInput
   owner?: Prisma.UserUpdateOneRequiredWithoutManagedProjectsNestedInput
   developers?: Prisma.ProjectDeveloperUpdateManyWithoutProjectNestedInput
   epics?: Prisma.EpicUpdateManyWithoutProjectNestedInput
@@ -1286,7 +1286,7 @@ export type ProjectUpdateWithoutModulesInput = {
 
 export type ProjectUncheckedUpdateWithoutModulesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  companyId?: Prisma.StringFieldUpdateOperationsInput | string
+  companyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
@@ -1325,7 +1325,7 @@ export type ProjectCreateWithoutEpicsInput = {
   queueOrder?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  company: Prisma.CompanyCreateNestedOneWithoutProjectsInput
+  company?: Prisma.CompanyCreateNestedOneWithoutProjectsInput
   owner: Prisma.UserCreateNestedOneWithoutManagedProjectsInput
   developers?: Prisma.ProjectDeveloperCreateNestedManyWithoutProjectInput
   modules?: Prisma.ModuleCreateNestedManyWithoutProjectInput
@@ -1336,7 +1336,7 @@ export type ProjectCreateWithoutEpicsInput = {
 
 export type ProjectUncheckedCreateWithoutEpicsInput = {
   id?: string
-  companyId: string
+  companyId?: string | null
   name: string
   description: string
   status?: $Enums.ProjectStatus
@@ -1391,7 +1391,7 @@ export type ProjectUpdateWithoutEpicsInput = {
   queueOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  company?: Prisma.CompanyUpdateOneRequiredWithoutProjectsNestedInput
+  company?: Prisma.CompanyUpdateOneWithoutProjectsNestedInput
   owner?: Prisma.UserUpdateOneRequiredWithoutManagedProjectsNestedInput
   developers?: Prisma.ProjectDeveloperUpdateManyWithoutProjectNestedInput
   modules?: Prisma.ModuleUpdateManyWithoutProjectNestedInput
@@ -1402,7 +1402,7 @@ export type ProjectUpdateWithoutEpicsInput = {
 
 export type ProjectUncheckedUpdateWithoutEpicsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  companyId?: Prisma.StringFieldUpdateOperationsInput | string
+  companyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
@@ -1441,7 +1441,7 @@ export type ProjectCreateWithoutTasksInput = {
   queueOrder?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  company: Prisma.CompanyCreateNestedOneWithoutProjectsInput
+  company?: Prisma.CompanyCreateNestedOneWithoutProjectsInput
   owner: Prisma.UserCreateNestedOneWithoutManagedProjectsInput
   developers?: Prisma.ProjectDeveloperCreateNestedManyWithoutProjectInput
   modules?: Prisma.ModuleCreateNestedManyWithoutProjectInput
@@ -1452,7 +1452,7 @@ export type ProjectCreateWithoutTasksInput = {
 
 export type ProjectUncheckedCreateWithoutTasksInput = {
   id?: string
-  companyId: string
+  companyId?: string | null
   name: string
   description: string
   status?: $Enums.ProjectStatus
@@ -1507,7 +1507,7 @@ export type ProjectUpdateWithoutTasksInput = {
   queueOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  company?: Prisma.CompanyUpdateOneRequiredWithoutProjectsNestedInput
+  company?: Prisma.CompanyUpdateOneWithoutProjectsNestedInput
   owner?: Prisma.UserUpdateOneRequiredWithoutManagedProjectsNestedInput
   developers?: Prisma.ProjectDeveloperUpdateManyWithoutProjectNestedInput
   modules?: Prisma.ModuleUpdateManyWithoutProjectNestedInput
@@ -1518,7 +1518,7 @@ export type ProjectUpdateWithoutTasksInput = {
 
 export type ProjectUncheckedUpdateWithoutTasksInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  companyId?: Prisma.StringFieldUpdateOperationsInput | string
+  companyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
@@ -1557,7 +1557,7 @@ export type ProjectCreateWithoutTimeLogsInput = {
   queueOrder?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  company: Prisma.CompanyCreateNestedOneWithoutProjectsInput
+  company?: Prisma.CompanyCreateNestedOneWithoutProjectsInput
   owner: Prisma.UserCreateNestedOneWithoutManagedProjectsInput
   developers?: Prisma.ProjectDeveloperCreateNestedManyWithoutProjectInput
   modules?: Prisma.ModuleCreateNestedManyWithoutProjectInput
@@ -1568,7 +1568,7 @@ export type ProjectCreateWithoutTimeLogsInput = {
 
 export type ProjectUncheckedCreateWithoutTimeLogsInput = {
   id?: string
-  companyId: string
+  companyId?: string | null
   name: string
   description: string
   status?: $Enums.ProjectStatus
@@ -1623,7 +1623,7 @@ export type ProjectUpdateWithoutTimeLogsInput = {
   queueOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  company?: Prisma.CompanyUpdateOneRequiredWithoutProjectsNestedInput
+  company?: Prisma.CompanyUpdateOneWithoutProjectsNestedInput
   owner?: Prisma.UserUpdateOneRequiredWithoutManagedProjectsNestedInput
   developers?: Prisma.ProjectDeveloperUpdateManyWithoutProjectNestedInput
   modules?: Prisma.ModuleUpdateManyWithoutProjectNestedInput
@@ -1634,7 +1634,7 @@ export type ProjectUpdateWithoutTimeLogsInput = {
 
 export type ProjectUncheckedUpdateWithoutTimeLogsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  companyId?: Prisma.StringFieldUpdateOperationsInput | string
+  companyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
@@ -1673,7 +1673,7 @@ export type ProjectCreateWithoutNotificationsInput = {
   queueOrder?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  company: Prisma.CompanyCreateNestedOneWithoutProjectsInput
+  company?: Prisma.CompanyCreateNestedOneWithoutProjectsInput
   owner: Prisma.UserCreateNestedOneWithoutManagedProjectsInput
   developers?: Prisma.ProjectDeveloperCreateNestedManyWithoutProjectInput
   modules?: Prisma.ModuleCreateNestedManyWithoutProjectInput
@@ -1684,7 +1684,7 @@ export type ProjectCreateWithoutNotificationsInput = {
 
 export type ProjectUncheckedCreateWithoutNotificationsInput = {
   id?: string
-  companyId: string
+  companyId?: string | null
   name: string
   description: string
   status?: $Enums.ProjectStatus
@@ -1739,7 +1739,7 @@ export type ProjectUpdateWithoutNotificationsInput = {
   queueOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  company?: Prisma.CompanyUpdateOneRequiredWithoutProjectsNestedInput
+  company?: Prisma.CompanyUpdateOneWithoutProjectsNestedInput
   owner?: Prisma.UserUpdateOneRequiredWithoutManagedProjectsNestedInput
   developers?: Prisma.ProjectDeveloperUpdateManyWithoutProjectNestedInput
   modules?: Prisma.ModuleUpdateManyWithoutProjectNestedInput
@@ -1750,7 +1750,7 @@ export type ProjectUpdateWithoutNotificationsInput = {
 
 export type ProjectUncheckedUpdateWithoutNotificationsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  companyId?: Prisma.StringFieldUpdateOperationsInput | string
+  companyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
@@ -1863,7 +1863,7 @@ export type ProjectUncheckedUpdateManyWithoutCompanyInput = {
 
 export type ProjectCreateManyOwnerInput = {
   id?: string
-  companyId: string
+  companyId?: string | null
   name: string
   description: string
   status?: $Enums.ProjectStatus
@@ -1896,7 +1896,7 @@ export type ProjectUpdateWithoutOwnerInput = {
   queueOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  company?: Prisma.CompanyUpdateOneRequiredWithoutProjectsNestedInput
+  company?: Prisma.CompanyUpdateOneWithoutProjectsNestedInput
   developers?: Prisma.ProjectDeveloperUpdateManyWithoutProjectNestedInput
   modules?: Prisma.ModuleUpdateManyWithoutProjectNestedInput
   epics?: Prisma.EpicUpdateManyWithoutProjectNestedInput
@@ -1907,7 +1907,7 @@ export type ProjectUpdateWithoutOwnerInput = {
 
 export type ProjectUncheckedUpdateWithoutOwnerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  companyId?: Prisma.StringFieldUpdateOperationsInput | string
+  companyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
@@ -1932,7 +1932,7 @@ export type ProjectUncheckedUpdateWithoutOwnerInput = {
 
 export type ProjectUncheckedUpdateManyWithoutOwnerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  companyId?: Prisma.StringFieldUpdateOperationsInput | string
+  companyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
@@ -2043,7 +2043,7 @@ export type ProjectSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   queueOrder?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
+  company?: boolean | Prisma.Project$companyArgs<ExtArgs>
   owner?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   developers?: boolean | Prisma.Project$developersArgs<ExtArgs>
   modules?: boolean | Prisma.Project$modulesArgs<ExtArgs>
@@ -2078,7 +2078,7 @@ export type ProjectSelectScalar = {
 
 export type ProjectOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "companyId" | "name" | "description" | "status" | "ownerId" | "startDate" | "endDate" | "estimatedHours" | "actualHours" | "progress" | "color" | "avatar" | "testUrl" | "queueOrder" | "createdAt" | "updatedAt", ExtArgs["result"]["project"]>
 export type ProjectInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
+  company?: boolean | Prisma.Project$companyArgs<ExtArgs>
   owner?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   developers?: boolean | Prisma.Project$developersArgs<ExtArgs>
   modules?: boolean | Prisma.Project$modulesArgs<ExtArgs>
@@ -2092,7 +2092,7 @@ export type ProjectInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs
 export type $ProjectPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Project"
   objects: {
-    company: Prisma.$CompanyPayload<ExtArgs>
+    company: Prisma.$CompanyPayload<ExtArgs> | null
     owner: Prisma.$UserPayload<ExtArgs>
     developers: Prisma.$ProjectDeveloperPayload<ExtArgs>[]
     modules: Prisma.$ModulePayload<ExtArgs>[]
@@ -2103,7 +2103,7 @@ export type $ProjectPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
-    companyId: string
+    companyId: string | null
     name: string
     description: string
     status: $Enums.ProjectStatus
@@ -2459,7 +2459,7 @@ readonly fields: ProjectFieldRefs;
  */
 export interface Prisma__ProjectClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  company<T extends Prisma.CompanyDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CompanyDefaultArgs<ExtArgs>>): Prisma.Prisma__CompanyClient<runtime.Types.Result.GetResult<Prisma.$CompanyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  company<T extends Prisma.Project$companyArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Project$companyArgs<ExtArgs>>): Prisma.Prisma__CompanyClient<runtime.Types.Result.GetResult<Prisma.$CompanyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   owner<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   developers<T extends Prisma.Project$developersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Project$developersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProjectDeveloperPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   modules<T extends Prisma.Project$modulesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Project$modulesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ModulePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -2858,6 +2858,25 @@ export type ProjectDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Inter
    * Limit how many Projects to delete.
    */
   limit?: number
+}
+
+/**
+ * Project.company
+ */
+export type Project$companyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Company
+   */
+  select?: Prisma.CompanySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Company
+   */
+  omit?: Prisma.CompanyOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CompanyInclude<ExtArgs> | null
+  where?: Prisma.CompanyWhereInput
 }
 
 /**
