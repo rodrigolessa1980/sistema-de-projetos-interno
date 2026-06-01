@@ -6,7 +6,24 @@ import { Select as SelectPrimitive } from "@base-ui/react/select"
 import { cn } from "@/lib/utils"
 import { ChevronDownIcon, CheckIcon, ChevronUpIcon } from "lucide-react"
 
-const Select = SelectPrimitive.Root
+// Registry context — maps value strings to display labels.
+// Populated by SelectItem on mount; read by SelectValue via render function.
+const LabelRegistryContext = React.createContext<React.MutableRefObject<Record<string, string>>>(
+  { current: {} }
+)
+
+// Wrap Select.Root to provide a fresh label registry per select instance.
+// Keep generics so callers' onValueChange handlers retain proper value types.
+function Select<Value = string, Multiple extends boolean = false>(
+  props: SelectPrimitive.Root.Props<Value, Multiple>
+) {
+  const labelsRef = React.useRef<Record<string, string>>({})
+  return (
+    <LabelRegistryContext.Provider value={labelsRef}>
+      <SelectPrimitive.Root<Value, Multiple> {...props} />
+    </LabelRegistryContext.Provider>
+  )
+}
 
 function SelectGroup({ className, ...props }: SelectPrimitive.Group.Props) {
   return (
@@ -18,13 +35,39 @@ function SelectGroup({ className, ...props }: SelectPrimitive.Group.Props) {
   )
 }
 
-function SelectValue({ className, ...props }: SelectPrimitive.Value.Props) {
+function SelectValue({ className, placeholder, children, ...props }: SelectPrimitive.Value.Props) {
+  const labelsRef = React.useContext(LabelRegistryContext)
+
+  // If caller passes explicit children, use them as-is (allows manual overrides).
+  if (children !== undefined) {
+    return (
+      <SelectPrimitive.Value
+        data-slot="select-value"
+        className={cn("flex flex-1 text-left", className)}
+        placeholder={placeholder}
+        {...props}
+      >
+        {children}
+      </SelectPrimitive.Value>
+    )
+  }
+
+  // Auto-resolve label from registry via render-function API.
+  // When value is null/undefined, show placeholder text so the trigger isn't empty.
+  // @base-ui still sets data-placeholder state attribute on trigger/value via its
+  // internal hasSelectedValue check, so muted-foreground styling applies correctly.
   return (
     <SelectPrimitive.Value
       data-slot="select-value"
       className={cn("flex flex-1 text-left", className)}
+      placeholder={placeholder}
       {...props}
-    />
+    >
+      {(value: unknown) => {
+        if (value == null || value === "") return placeholder ?? null
+        return labelsRef.current[String(value)] ?? String(value)
+      }}
+    </SelectPrimitive.Value>
   )
 }
 
@@ -111,8 +154,23 @@ function SelectLabel({
 function SelectItem({
   className,
   children,
+  label,
   ...props
 }: SelectPrimitive.Item.Props) {
+  const labelsRef = React.useContext(LabelRegistryContext)
+  const value = props.value
+
+  // Derive the display text: prefer explicit label prop, then string children.
+  const displayLabel = label ?? (typeof children === "string" ? children : undefined)
+
+  // Register label every render so the registry stays current.
+  // SelectItem only renders when the popup is open, so this is infrequent.
+  React.useEffect(() => {
+    if (value != null && displayLabel != null) {
+      labelsRef.current[String(value)] = String(displayLabel)
+    }
+  })
+
   return (
     <SelectPrimitive.Item
       data-slot="select-item"
@@ -120,6 +178,7 @@ function SelectItem({
         "relative flex w-full cursor-default items-center gap-1.5 rounded-md py-1 pr-8 pl-1.5 text-sm outline-hidden select-none focus:bg-accent focus:text-accent-foreground not-data-[variant=destructive]:focus:**:text-accent-foreground data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 *:[span]:last:flex *:[span]:last:items-center *:[span]:last:gap-2",
         className
       )}
+      label={label}
       {...props}
     >
       <SelectPrimitive.ItemText className="flex flex-1 shrink-0 gap-2 whitespace-nowrap">
@@ -162,8 +221,7 @@ function SelectScrollUpButton({
       )}
       {...props}
     >
-      <ChevronUpIcon
-      />
+      <ChevronUpIcon />
     </SelectPrimitive.ScrollUpArrow>
   )
 }
@@ -181,8 +239,7 @@ function SelectScrollDownButton({
       )}
       {...props}
     >
-      <ChevronDownIcon
-      />
+      <ChevronDownIcon />
     </SelectPrimitive.ScrollDownArrow>
   )
 }
