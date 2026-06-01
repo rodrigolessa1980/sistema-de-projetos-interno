@@ -151,7 +151,7 @@ export default function EpicsPage() {
                   <FormItem>
                     <Label className="text-zinc-300 text-sm">Projeto</Label>
                     <Select
-                      value={field.value}
+                      value={field.value || undefined}
                       onValueChange={(value) => {
                         field.onChange(value ?? "");
                         form.setValue("moduleId", "");
@@ -164,7 +164,7 @@ export default function EpicsPage() {
                       </FormControl>
                       <SelectContent className="bg-zinc-900 border-zinc-700/50">
                         {projects.map((project) => (
-                          <SelectItem key={project.id} value={project.id}>{project.name}</SelectItem>
+                          <SelectItem key={project.id} value={project.id} label={project.name}>{project.name}</SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
@@ -174,7 +174,7 @@ export default function EpicsPage() {
                 <FormField control={form.control} name="moduleId" render={({ field }) => (
                   <FormItem>
                     <Label className="text-zinc-300 text-sm">Modulo</Label>
-                    <Select value={field.value} onValueChange={(value) => field.onChange(value ?? "")} disabled={!projectId}>
+                    <Select value={field.value || undefined} onValueChange={(value) => field.onChange(value ?? "")} disabled={!projectId}>
                       <FormControl>
                         <SelectTrigger className="w-full bg-zinc-800 border-zinc-700 text-zinc-300">
                           <SelectValue placeholder="Selecionar..." />
@@ -182,7 +182,7 @@ export default function EpicsPage() {
                       </FormControl>
                       <SelectContent className="bg-zinc-900 border-zinc-700/50">
                         {filteredModules.map((module) => (
-                          <SelectItem key={module.id} value={module.id}>{module.name}</SelectItem>
+                          <SelectItem key={module.id} value={module.id} label={module.name}>{module.name}</SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
