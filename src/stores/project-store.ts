@@ -2,6 +2,7 @@
 
 import { create } from "zustand";
 import type { Project, Module, Epic, Company } from "@/types";
+// Module and Epic are fetched from API; types re-exported for clarity
 import { generateId, delay } from "@/lib/utils";
 import { api } from "@/lib/api";
 
@@ -94,16 +95,31 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
         api.get<Project[]>("projects"),
         api.get<{ companies: Company[] }>("companies"),
       ]);
+      const normalizedProjects = projects.map((project) => ({
+        ...project,
+        endDate: project.endDate ?? undefined,
+        queueOrder: project.queueOrder ?? undefined,
+        avatar: project.avatar ?? undefined,
+        testUrl: project.testUrl ?? undefined,
+        developerIds: project.developerIds ?? [],
+      }));
+
+      // Busca módulos e epics de todos os projetos em paralelo
+      const projectIds = normalizedProjects.map((p) => p.id);
+      const [modulesResults, epicsResults] = await Promise.all([
+        Promise.all(projectIds.map((id) =>
+          api.get<{ modules: Module[] }>(`projects/${id}/modules`).then((r) => r.modules).catch(() => [] as Module[])
+        )),
+        Promise.all(projectIds.map((id) =>
+          api.get<{ epics: Epic[] }>(`projects/${id}/epics`).then((r) => r.epics).catch(() => [] as Epic[])
+        )),
+      ]);
+
       set({
-        projects: projects.map((project) => ({
-          ...project,
-          endDate: project.endDate ?? undefined,
-          queueOrder: project.queueOrder ?? undefined,
-          avatar: project.avatar ?? undefined,
-          testUrl: project.testUrl ?? undefined,
-          developerIds: project.developerIds ?? [],
-        })),
+        projects: normalizedProjects,
         companies: companiesResponse.companies,
+        modules: modulesResults.flat(),
+        epics: epicsResults.flat(),
         isLoading: false,
       });
     } catch (error) {
@@ -153,9 +169,8 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
   },
 
   createModule: async (data) => {
-    await delay(200);
-    const now = new Date().toISOString();
-    const projectModule: Module = { ...data, id: generateId("mod"), createdAt: now, updatedAt: now };
+    const response = await api.post<{ module: Module }>("modules", data);
+    const projectModule = response.module;
     set((state) => ({ modules: [...state.modules, projectModule] }));
     return projectModule;
   },
@@ -165,17 +180,17 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
   },
 
   createModulesBulk: async (projectId, modulesData) => {
-    const now = new Date().toISOString();
-    const created: Module[] = modulesData.map((m, i) => ({
-      id: generateId("mod"),
-      projectId,
-      name: m.name,
-      description: m.description,
-      order: i,
-      progress: 0,
-      createdAt: now,
-      updatedAt: now,
-    }));
+    const created = await Promise.all(
+      modulesData.map(async (m, i) => {
+        const response = await api.post<{ module: Module }>("modules", {
+          projectId,
+          name: m.name,
+          description: m.description,
+          order: i,
+        });
+        return response.module;
+      })
+    );
     set((state) => ({ modules: [...state.modules, ...created] }));
     return created;
   },
@@ -194,9 +209,8 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
   },
 
   createEpic: async (data) => {
-    await delay(400);
-    const now = new Date().toISOString();
-    const epic: Epic = { ...data, id: generateId("epic"), createdAt: now, updatedAt: now };
+    const response = await api.post<{ epic: Epic }>("epics", data);
+    const epic = response.epic;
     set((state) => ({ epics: [...state.epics, epic] }));
     return epic;
   },

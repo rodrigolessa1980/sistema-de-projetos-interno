@@ -403,11 +403,11 @@ export default function ProjectsPage() {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent className="bg-zinc-800 border-zinc-700">
-                      <SelectItem value="__none__" className="text-zinc-500 focus:bg-zinc-700">
+                      <SelectItem value="__none__" label="Nenhuma" className="text-zinc-500 focus:bg-zinc-700">
                         Nenhuma
                       </SelectItem>
                       {companies.map((company) => (
-                        <SelectItem key={company.id} value={company.id} className="text-zinc-100 focus:bg-zinc-700">
+                        <SelectItem key={company.id} value={company.id} label={company.name} className="text-zinc-100 focus:bg-zinc-700">
                           <div className="flex items-center gap-2">
                             <span
                               className="w-2 h-2 rounded-full shrink-0"

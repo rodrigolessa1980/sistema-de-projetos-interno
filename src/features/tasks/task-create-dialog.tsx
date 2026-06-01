@@ -163,7 +163,7 @@ export function TaskCreateDialog({ open, onOpenChange }: Props) {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent className="bg-zinc-900 border-zinc-700/50">
-                      {projects.map((p) => <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>)}
+                      {projects.map((p) => <SelectItem key={p.id} value={p.id} label={p.name}>{p.name}</SelectItem>)}
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -179,7 +179,7 @@ export function TaskCreateDialog({ open, onOpenChange }: Props) {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent className="bg-zinc-900 border-zinc-700/50">
-                      {filteredModules.map((m) => <SelectItem key={m.id} value={m.id}>{m.name}</SelectItem>)}
+                      {filteredModules.map((m) => <SelectItem key={m.id} value={m.id} label={m.name}>{m.name}</SelectItem>)}
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -197,7 +197,7 @@ export function TaskCreateDialog({ open, onOpenChange }: Props) {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent className="bg-zinc-900 border-zinc-700/50">
-                      {filteredEpics.map((e) => <SelectItem key={e.id} value={e.id}>{e.name}</SelectItem>)}
+                      {filteredEpics.map((e) => <SelectItem key={e.id} value={e.id} label={e.name}>{e.name}</SelectItem>)}
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -213,7 +213,7 @@ export function TaskCreateDialog({ open, onOpenChange }: Props) {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent className="bg-zinc-900 border-zinc-700/50">
-                      {users.map((u) => <SelectItem key={u.id} value={u.id}>{u.name}</SelectItem>)}
+                      {users.map((u) => <SelectItem key={u.id} value={u.id} label={u.name}>{u.name}</SelectItem>)}
                     </SelectContent>
                   </Select>
                   <FormMessage />

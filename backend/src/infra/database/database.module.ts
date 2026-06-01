@@ -12,6 +12,10 @@ import { ITimeLogRepositoryToken } from '../../core/domain/repositories/time-log
 import { PrismaTimeLogRepository } from './repositories/prisma-time-log.repository';
 import { IUserPermissionRepositoryToken } from '../../core/domain/repositories/user-permission-repository.interface';
 import { PrismaUserPermissionRepository } from './repositories/prisma-user-permission.repository';
+import { IModuleRepositoryToken } from '../../core/domain/repositories/module-repository.interface';
+import { PrismaModuleRepository } from './repositories/prisma-module.repository';
+import { IEpicRepositoryToken } from '../../core/domain/repositories/epic-repository.interface';
+import { PrismaEpicRepository } from './repositories/prisma-epic.repository';
 
 @Global()
 @Module({
@@ -23,6 +27,8 @@ import { PrismaUserPermissionRepository } from './repositories/prisma-user-permi
     { provide: ITaskRepositoryToken, useClass: PrismaTaskRepository },
     { provide: ITimeLogRepositoryToken, useClass: PrismaTimeLogRepository },
     { provide: IUserPermissionRepositoryToken, useClass: PrismaUserPermissionRepository },
+    { provide: IModuleRepositoryToken, useClass: PrismaModuleRepository },
+    { provide: IEpicRepositoryToken, useClass: PrismaEpicRepository },
   ],
   exports: [
     IUserRepositoryToken,
@@ -31,6 +37,8 @@ import { PrismaUserPermissionRepository } from './repositories/prisma-user-permi
     ITaskRepositoryToken,
     ITimeLogRepositoryToken,
     IUserPermissionRepositoryToken,
+    IModuleRepositoryToken,
+    IEpicRepositoryToken,
   ],
 })
 export class DatabaseModule {}

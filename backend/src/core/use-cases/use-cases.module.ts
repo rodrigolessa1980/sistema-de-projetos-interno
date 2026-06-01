@@ -24,6 +24,10 @@ import { GetQueuedProjectsUseCase } from './projects/get-queued-projects.use-cas
 import { ReorderQueueUseCase } from './projects/reorder-queue.use-case';
 import { AddDeveloperUseCase } from './projects/add-developer.use-case';
 import { RemoveDeveloperUseCase } from './projects/remove-developer.use-case';
+import { CreateModuleUseCase } from './modules/create-module.use-case';
+import { ListModulesByProjectUseCase } from './modules/list-modules-by-project.use-case';
+import { CreateEpicUseCase } from './epics/create-epic.use-case';
+import { ListEpicsByProjectUseCase } from './epics/list-epics-by-project.use-case';
 
 // Task Use Cases
 import { CreateTaskUseCase } from './tasks/create-task.use-case';
@@ -73,6 +77,14 @@ const useCases = [
   ReorderQueueUseCase,
   AddDeveloperUseCase,
   RemoveDeveloperUseCase,
+
+  // Modules
+  CreateModuleUseCase,
+  ListModulesByProjectUseCase,
+
+  // Epics
+  CreateEpicUseCase,
+  ListEpicsByProjectUseCase,
 
   // Tasks
   CreateTaskUseCase,
