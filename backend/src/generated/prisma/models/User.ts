@@ -240,6 +240,7 @@ export type UserWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   managedProjects?: Prisma.ProjectListRelationFilter
   projects?: Prisma.ProjectDeveloperListRelationFilter
+  epicAssignments?: Prisma.EpicDeveloperListRelationFilter
   assignedTasks?: Prisma.TaskListRelationFilter
   reportedTasks?: Prisma.TaskListRelationFilter
   subtasks?: Prisma.SubtaskListRelationFilter
@@ -268,6 +269,7 @@ export type UserOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   managedProjects?: Prisma.ProjectOrderByRelationAggregateInput
   projects?: Prisma.ProjectDeveloperOrderByRelationAggregateInput
+  epicAssignments?: Prisma.EpicDeveloperOrderByRelationAggregateInput
   assignedTasks?: Prisma.TaskOrderByRelationAggregateInput
   reportedTasks?: Prisma.TaskOrderByRelationAggregateInput
   subtasks?: Prisma.SubtaskOrderByRelationAggregateInput
@@ -300,6 +302,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   managedProjects?: Prisma.ProjectListRelationFilter
   projects?: Prisma.ProjectDeveloperListRelationFilter
+  epicAssignments?: Prisma.EpicDeveloperListRelationFilter
   assignedTasks?: Prisma.TaskListRelationFilter
   reportedTasks?: Prisma.TaskListRelationFilter
   subtasks?: Prisma.SubtaskListRelationFilter
@@ -364,6 +367,7 @@ export type UserCreateInput = {
   updatedAt?: Date | string
   managedProjects?: Prisma.ProjectCreateNestedManyWithoutOwnerInput
   projects?: Prisma.ProjectDeveloperCreateNestedManyWithoutUserInput
+  epicAssignments?: Prisma.EpicDeveloperCreateNestedManyWithoutUserInput
   assignedTasks?: Prisma.TaskCreateNestedManyWithoutAssigneeInput
   reportedTasks?: Prisma.TaskCreateNestedManyWithoutReporterInput
   subtasks?: Prisma.SubtaskCreateNestedManyWithoutAssigneeInput
@@ -392,6 +396,7 @@ export type UserUncheckedCreateInput = {
   updatedAt?: Date | string
   managedProjects?: Prisma.ProjectUncheckedCreateNestedManyWithoutOwnerInput
   projects?: Prisma.ProjectDeveloperUncheckedCreateNestedManyWithoutUserInput
+  epicAssignments?: Prisma.EpicDeveloperUncheckedCreateNestedManyWithoutUserInput
   assignedTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutAssigneeInput
   reportedTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutReporterInput
   subtasks?: Prisma.SubtaskUncheckedCreateNestedManyWithoutAssigneeInput
@@ -420,6 +425,7 @@ export type UserUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   managedProjects?: Prisma.ProjectUpdateManyWithoutOwnerNestedInput
   projects?: Prisma.ProjectDeveloperUpdateManyWithoutUserNestedInput
+  epicAssignments?: Prisma.EpicDeveloperUpdateManyWithoutUserNestedInput
   assignedTasks?: Prisma.TaskUpdateManyWithoutAssigneeNestedInput
   reportedTasks?: Prisma.TaskUpdateManyWithoutReporterNestedInput
   subtasks?: Prisma.SubtaskUpdateManyWithoutAssigneeNestedInput
@@ -448,6 +454,7 @@ export type UserUncheckedUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   managedProjects?: Prisma.ProjectUncheckedUpdateManyWithoutOwnerNestedInput
   projects?: Prisma.ProjectDeveloperUncheckedUpdateManyWithoutUserNestedInput
+  epicAssignments?: Prisma.EpicDeveloperUncheckedUpdateManyWithoutUserNestedInput
   assignedTasks?: Prisma.TaskUncheckedUpdateManyWithoutAssigneeNestedInput
   reportedTasks?: Prisma.TaskUncheckedUpdateManyWithoutReporterNestedInput
   subtasks?: Prisma.SubtaskUncheckedUpdateManyWithoutAssigneeNestedInput
@@ -621,6 +628,20 @@ export type UserUpdateOneRequiredWithoutProjectsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutProjectsInput, Prisma.UserUpdateWithoutProjectsInput>, Prisma.UserUncheckedUpdateWithoutProjectsInput>
 }
 
+export type UserCreateNestedOneWithoutEpicAssignmentsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutEpicAssignmentsInput, Prisma.UserUncheckedCreateWithoutEpicAssignmentsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutEpicAssignmentsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutEpicAssignmentsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutEpicAssignmentsInput, Prisma.UserUncheckedCreateWithoutEpicAssignmentsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutEpicAssignmentsInput
+  upsert?: Prisma.UserUpsertWithoutEpicAssignmentsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutEpicAssignmentsInput, Prisma.UserUpdateWithoutEpicAssignmentsInput>, Prisma.UserUncheckedUpdateWithoutEpicAssignmentsInput>
+}
+
 export type UserCreateNestedOneWithoutAssignedTasksInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutAssignedTasksInput, Prisma.UserUncheckedCreateWithoutAssignedTasksInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutAssignedTasksInput
@@ -778,6 +799,7 @@ export type UserCreateWithoutPermissionsInput = {
   updatedAt?: Date | string
   managedProjects?: Prisma.ProjectCreateNestedManyWithoutOwnerInput
   projects?: Prisma.ProjectDeveloperCreateNestedManyWithoutUserInput
+  epicAssignments?: Prisma.EpicDeveloperCreateNestedManyWithoutUserInput
   assignedTasks?: Prisma.TaskCreateNestedManyWithoutAssigneeInput
   reportedTasks?: Prisma.TaskCreateNestedManyWithoutReporterInput
   subtasks?: Prisma.SubtaskCreateNestedManyWithoutAssigneeInput
@@ -805,6 +827,7 @@ export type UserUncheckedCreateWithoutPermissionsInput = {
   updatedAt?: Date | string
   managedProjects?: Prisma.ProjectUncheckedCreateNestedManyWithoutOwnerInput
   projects?: Prisma.ProjectDeveloperUncheckedCreateNestedManyWithoutUserInput
+  epicAssignments?: Prisma.EpicDeveloperUncheckedCreateNestedManyWithoutUserInput
   assignedTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutAssigneeInput
   reportedTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutReporterInput
   subtasks?: Prisma.SubtaskUncheckedCreateNestedManyWithoutAssigneeInput
@@ -848,6 +871,7 @@ export type UserUpdateWithoutPermissionsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   managedProjects?: Prisma.ProjectUpdateManyWithoutOwnerNestedInput
   projects?: Prisma.ProjectDeveloperUpdateManyWithoutUserNestedInput
+  epicAssignments?: Prisma.EpicDeveloperUpdateManyWithoutUserNestedInput
   assignedTasks?: Prisma.TaskUpdateManyWithoutAssigneeNestedInput
   reportedTasks?: Prisma.TaskUpdateManyWithoutReporterNestedInput
   subtasks?: Prisma.SubtaskUpdateManyWithoutAssigneeNestedInput
@@ -875,6 +899,7 @@ export type UserUncheckedUpdateWithoutPermissionsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   managedProjects?: Prisma.ProjectUncheckedUpdateManyWithoutOwnerNestedInput
   projects?: Prisma.ProjectDeveloperUncheckedUpdateManyWithoutUserNestedInput
+  epicAssignments?: Prisma.EpicDeveloperUncheckedUpdateManyWithoutUserNestedInput
   assignedTasks?: Prisma.TaskUncheckedUpdateManyWithoutAssigneeNestedInput
   reportedTasks?: Prisma.TaskUncheckedUpdateManyWithoutReporterNestedInput
   subtasks?: Prisma.SubtaskUncheckedUpdateManyWithoutAssigneeNestedInput
@@ -901,6 +926,7 @@ export type UserCreateWithoutManagedProjectsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   projects?: Prisma.ProjectDeveloperCreateNestedManyWithoutUserInput
+  epicAssignments?: Prisma.EpicDeveloperCreateNestedManyWithoutUserInput
   assignedTasks?: Prisma.TaskCreateNestedManyWithoutAssigneeInput
   reportedTasks?: Prisma.TaskCreateNestedManyWithoutReporterInput
   subtasks?: Prisma.SubtaskCreateNestedManyWithoutAssigneeInput
@@ -928,6 +954,7 @@ export type UserUncheckedCreateWithoutManagedProjectsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   projects?: Prisma.ProjectDeveloperUncheckedCreateNestedManyWithoutUserInput
+  epicAssignments?: Prisma.EpicDeveloperUncheckedCreateNestedManyWithoutUserInput
   assignedTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutAssigneeInput
   reportedTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutReporterInput
   subtasks?: Prisma.SubtaskUncheckedCreateNestedManyWithoutAssigneeInput
@@ -971,6 +998,7 @@ export type UserUpdateWithoutManagedProjectsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   projects?: Prisma.ProjectDeveloperUpdateManyWithoutUserNestedInput
+  epicAssignments?: Prisma.EpicDeveloperUpdateManyWithoutUserNestedInput
   assignedTasks?: Prisma.TaskUpdateManyWithoutAssigneeNestedInput
   reportedTasks?: Prisma.TaskUpdateManyWithoutReporterNestedInput
   subtasks?: Prisma.SubtaskUpdateManyWithoutAssigneeNestedInput
@@ -998,6 +1026,7 @@ export type UserUncheckedUpdateWithoutManagedProjectsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   projects?: Prisma.ProjectDeveloperUncheckedUpdateManyWithoutUserNestedInput
+  epicAssignments?: Prisma.EpicDeveloperUncheckedUpdateManyWithoutUserNestedInput
   assignedTasks?: Prisma.TaskUncheckedUpdateManyWithoutAssigneeNestedInput
   reportedTasks?: Prisma.TaskUncheckedUpdateManyWithoutReporterNestedInput
   subtasks?: Prisma.SubtaskUncheckedUpdateManyWithoutAssigneeNestedInput
@@ -1025,6 +1054,7 @@ export type UserCreateWithoutProjectsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   managedProjects?: Prisma.ProjectCreateNestedManyWithoutOwnerInput
+  epicAssignments?: Prisma.EpicDeveloperCreateNestedManyWithoutUserInput
   assignedTasks?: Prisma.TaskCreateNestedManyWithoutAssigneeInput
   reportedTasks?: Prisma.TaskCreateNestedManyWithoutReporterInput
   subtasks?: Prisma.SubtaskCreateNestedManyWithoutAssigneeInput
@@ -1052,6 +1082,7 @@ export type UserUncheckedCreateWithoutProjectsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   managedProjects?: Prisma.ProjectUncheckedCreateNestedManyWithoutOwnerInput
+  epicAssignments?: Prisma.EpicDeveloperUncheckedCreateNestedManyWithoutUserInput
   assignedTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutAssigneeInput
   reportedTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutReporterInput
   subtasks?: Prisma.SubtaskUncheckedCreateNestedManyWithoutAssigneeInput
@@ -1095,6 +1126,7 @@ export type UserUpdateWithoutProjectsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   managedProjects?: Prisma.ProjectUpdateManyWithoutOwnerNestedInput
+  epicAssignments?: Prisma.EpicDeveloperUpdateManyWithoutUserNestedInput
   assignedTasks?: Prisma.TaskUpdateManyWithoutAssigneeNestedInput
   reportedTasks?: Prisma.TaskUpdateManyWithoutReporterNestedInput
   subtasks?: Prisma.SubtaskUpdateManyWithoutAssigneeNestedInput
@@ -1122,6 +1154,135 @@ export type UserUncheckedUpdateWithoutProjectsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   managedProjects?: Prisma.ProjectUncheckedUpdateManyWithoutOwnerNestedInput
+  epicAssignments?: Prisma.EpicDeveloperUncheckedUpdateManyWithoutUserNestedInput
+  assignedTasks?: Prisma.TaskUncheckedUpdateManyWithoutAssigneeNestedInput
+  reportedTasks?: Prisma.TaskUncheckedUpdateManyWithoutReporterNestedInput
+  subtasks?: Prisma.SubtaskUncheckedUpdateManyWithoutAssigneeNestedInput
+  timeLogs?: Prisma.TimeLogUncheckedUpdateManyWithoutUserNestedInput
+  comments?: Prisma.CommentUncheckedUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput
+  statusHistories?: Prisma.StatusHistoryUncheckedUpdateManyWithoutUserNestedInput
+  taskNotes?: Prisma.TaskNoteUncheckedUpdateManyWithoutUserNestedInput
+  attachments?: Prisma.TaskAttachmentUncheckedUpdateManyWithoutUserNestedInput
+  permissions?: Prisma.UserPermissionUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutEpicAssignmentsInput = {
+  id?: string
+  name: string
+  email: string
+  passwordHash: string
+  role?: $Enums.UserRole
+  avatar?: string | null
+  position: string
+  department: string
+  isActive?: boolean
+  lastLoginAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  managedProjects?: Prisma.ProjectCreateNestedManyWithoutOwnerInput
+  projects?: Prisma.ProjectDeveloperCreateNestedManyWithoutUserInput
+  assignedTasks?: Prisma.TaskCreateNestedManyWithoutAssigneeInput
+  reportedTasks?: Prisma.TaskCreateNestedManyWithoutReporterInput
+  subtasks?: Prisma.SubtaskCreateNestedManyWithoutAssigneeInput
+  timeLogs?: Prisma.TimeLogCreateNestedManyWithoutUserInput
+  comments?: Prisma.CommentCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput
+  statusHistories?: Prisma.StatusHistoryCreateNestedManyWithoutUserInput
+  taskNotes?: Prisma.TaskNoteCreateNestedManyWithoutUserInput
+  attachments?: Prisma.TaskAttachmentCreateNestedManyWithoutUserInput
+  permissions?: Prisma.UserPermissionCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutEpicAssignmentsInput = {
+  id?: string
+  name: string
+  email: string
+  passwordHash: string
+  role?: $Enums.UserRole
+  avatar?: string | null
+  position: string
+  department: string
+  isActive?: boolean
+  lastLoginAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  managedProjects?: Prisma.ProjectUncheckedCreateNestedManyWithoutOwnerInput
+  projects?: Prisma.ProjectDeveloperUncheckedCreateNestedManyWithoutUserInput
+  assignedTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutAssigneeInput
+  reportedTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutReporterInput
+  subtasks?: Prisma.SubtaskUncheckedCreateNestedManyWithoutAssigneeInput
+  timeLogs?: Prisma.TimeLogUncheckedCreateNestedManyWithoutUserInput
+  comments?: Prisma.CommentUncheckedCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput
+  statusHistories?: Prisma.StatusHistoryUncheckedCreateNestedManyWithoutUserInput
+  taskNotes?: Prisma.TaskNoteUncheckedCreateNestedManyWithoutUserInput
+  attachments?: Prisma.TaskAttachmentUncheckedCreateNestedManyWithoutUserInput
+  permissions?: Prisma.UserPermissionUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutEpicAssignmentsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutEpicAssignmentsInput, Prisma.UserUncheckedCreateWithoutEpicAssignmentsInput>
+}
+
+export type UserUpsertWithoutEpicAssignmentsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutEpicAssignmentsInput, Prisma.UserUncheckedUpdateWithoutEpicAssignmentsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutEpicAssignmentsInput, Prisma.UserUncheckedCreateWithoutEpicAssignmentsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutEpicAssignmentsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutEpicAssignmentsInput, Prisma.UserUncheckedUpdateWithoutEpicAssignmentsInput>
+}
+
+export type UserUpdateWithoutEpicAssignmentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  position?: Prisma.StringFieldUpdateOperationsInput | string
+  department?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  managedProjects?: Prisma.ProjectUpdateManyWithoutOwnerNestedInput
+  projects?: Prisma.ProjectDeveloperUpdateManyWithoutUserNestedInput
+  assignedTasks?: Prisma.TaskUpdateManyWithoutAssigneeNestedInput
+  reportedTasks?: Prisma.TaskUpdateManyWithoutReporterNestedInput
+  subtasks?: Prisma.SubtaskUpdateManyWithoutAssigneeNestedInput
+  timeLogs?: Prisma.TimeLogUpdateManyWithoutUserNestedInput
+  comments?: Prisma.CommentUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput
+  statusHistories?: Prisma.StatusHistoryUpdateManyWithoutUserNestedInput
+  taskNotes?: Prisma.TaskNoteUpdateManyWithoutUserNestedInput
+  attachments?: Prisma.TaskAttachmentUpdateManyWithoutUserNestedInput
+  permissions?: Prisma.UserPermissionUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutEpicAssignmentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  position?: Prisma.StringFieldUpdateOperationsInput | string
+  department?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  managedProjects?: Prisma.ProjectUncheckedUpdateManyWithoutOwnerNestedInput
+  projects?: Prisma.ProjectDeveloperUncheckedUpdateManyWithoutUserNestedInput
   assignedTasks?: Prisma.TaskUncheckedUpdateManyWithoutAssigneeNestedInput
   reportedTasks?: Prisma.TaskUncheckedUpdateManyWithoutReporterNestedInput
   subtasks?: Prisma.SubtaskUncheckedUpdateManyWithoutAssigneeNestedInput
@@ -1150,6 +1311,7 @@ export type UserCreateWithoutAssignedTasksInput = {
   updatedAt?: Date | string
   managedProjects?: Prisma.ProjectCreateNestedManyWithoutOwnerInput
   projects?: Prisma.ProjectDeveloperCreateNestedManyWithoutUserInput
+  epicAssignments?: Prisma.EpicDeveloperCreateNestedManyWithoutUserInput
   reportedTasks?: Prisma.TaskCreateNestedManyWithoutReporterInput
   subtasks?: Prisma.SubtaskCreateNestedManyWithoutAssigneeInput
   timeLogs?: Prisma.TimeLogCreateNestedManyWithoutUserInput
@@ -1177,6 +1339,7 @@ export type UserUncheckedCreateWithoutAssignedTasksInput = {
   updatedAt?: Date | string
   managedProjects?: Prisma.ProjectUncheckedCreateNestedManyWithoutOwnerInput
   projects?: Prisma.ProjectDeveloperUncheckedCreateNestedManyWithoutUserInput
+  epicAssignments?: Prisma.EpicDeveloperUncheckedCreateNestedManyWithoutUserInput
   reportedTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutReporterInput
   subtasks?: Prisma.SubtaskUncheckedCreateNestedManyWithoutAssigneeInput
   timeLogs?: Prisma.TimeLogUncheckedCreateNestedManyWithoutUserInput
@@ -1209,6 +1372,7 @@ export type UserCreateWithoutReportedTasksInput = {
   updatedAt?: Date | string
   managedProjects?: Prisma.ProjectCreateNestedManyWithoutOwnerInput
   projects?: Prisma.ProjectDeveloperCreateNestedManyWithoutUserInput
+  epicAssignments?: Prisma.EpicDeveloperCreateNestedManyWithoutUserInput
   assignedTasks?: Prisma.TaskCreateNestedManyWithoutAssigneeInput
   subtasks?: Prisma.SubtaskCreateNestedManyWithoutAssigneeInput
   timeLogs?: Prisma.TimeLogCreateNestedManyWithoutUserInput
@@ -1236,6 +1400,7 @@ export type UserUncheckedCreateWithoutReportedTasksInput = {
   updatedAt?: Date | string
   managedProjects?: Prisma.ProjectUncheckedCreateNestedManyWithoutOwnerInput
   projects?: Prisma.ProjectDeveloperUncheckedCreateNestedManyWithoutUserInput
+  epicAssignments?: Prisma.EpicDeveloperUncheckedCreateNestedManyWithoutUserInput
   assignedTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutAssigneeInput
   subtasks?: Prisma.SubtaskUncheckedCreateNestedManyWithoutAssigneeInput
   timeLogs?: Prisma.TimeLogUncheckedCreateNestedManyWithoutUserInput
@@ -1279,6 +1444,7 @@ export type UserUpdateWithoutAssignedTasksInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   managedProjects?: Prisma.ProjectUpdateManyWithoutOwnerNestedInput
   projects?: Prisma.ProjectDeveloperUpdateManyWithoutUserNestedInput
+  epicAssignments?: Prisma.EpicDeveloperUpdateManyWithoutUserNestedInput
   reportedTasks?: Prisma.TaskUpdateManyWithoutReporterNestedInput
   subtasks?: Prisma.SubtaskUpdateManyWithoutAssigneeNestedInput
   timeLogs?: Prisma.TimeLogUpdateManyWithoutUserNestedInput
@@ -1306,6 +1472,7 @@ export type UserUncheckedUpdateWithoutAssignedTasksInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   managedProjects?: Prisma.ProjectUncheckedUpdateManyWithoutOwnerNestedInput
   projects?: Prisma.ProjectDeveloperUncheckedUpdateManyWithoutUserNestedInput
+  epicAssignments?: Prisma.EpicDeveloperUncheckedUpdateManyWithoutUserNestedInput
   reportedTasks?: Prisma.TaskUncheckedUpdateManyWithoutReporterNestedInput
   subtasks?: Prisma.SubtaskUncheckedUpdateManyWithoutAssigneeNestedInput
   timeLogs?: Prisma.TimeLogUncheckedUpdateManyWithoutUserNestedInput
@@ -1344,6 +1511,7 @@ export type UserUpdateWithoutReportedTasksInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   managedProjects?: Prisma.ProjectUpdateManyWithoutOwnerNestedInput
   projects?: Prisma.ProjectDeveloperUpdateManyWithoutUserNestedInput
+  epicAssignments?: Prisma.EpicDeveloperUpdateManyWithoutUserNestedInput
   assignedTasks?: Prisma.TaskUpdateManyWithoutAssigneeNestedInput
   subtasks?: Prisma.SubtaskUpdateManyWithoutAssigneeNestedInput
   timeLogs?: Prisma.TimeLogUpdateManyWithoutUserNestedInput
@@ -1371,6 +1539,7 @@ export type UserUncheckedUpdateWithoutReportedTasksInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   managedProjects?: Prisma.ProjectUncheckedUpdateManyWithoutOwnerNestedInput
   projects?: Prisma.ProjectDeveloperUncheckedUpdateManyWithoutUserNestedInput
+  epicAssignments?: Prisma.EpicDeveloperUncheckedUpdateManyWithoutUserNestedInput
   assignedTasks?: Prisma.TaskUncheckedUpdateManyWithoutAssigneeNestedInput
   subtasks?: Prisma.SubtaskUncheckedUpdateManyWithoutAssigneeNestedInput
   timeLogs?: Prisma.TimeLogUncheckedUpdateManyWithoutUserNestedInput
@@ -1398,6 +1567,7 @@ export type UserCreateWithoutSubtasksInput = {
   updatedAt?: Date | string
   managedProjects?: Prisma.ProjectCreateNestedManyWithoutOwnerInput
   projects?: Prisma.ProjectDeveloperCreateNestedManyWithoutUserInput
+  epicAssignments?: Prisma.EpicDeveloperCreateNestedManyWithoutUserInput
   assignedTasks?: Prisma.TaskCreateNestedManyWithoutAssigneeInput
   reportedTasks?: Prisma.TaskCreateNestedManyWithoutReporterInput
   timeLogs?: Prisma.TimeLogCreateNestedManyWithoutUserInput
@@ -1425,6 +1595,7 @@ export type UserUncheckedCreateWithoutSubtasksInput = {
   updatedAt?: Date | string
   managedProjects?: Prisma.ProjectUncheckedCreateNestedManyWithoutOwnerInput
   projects?: Prisma.ProjectDeveloperUncheckedCreateNestedManyWithoutUserInput
+  epicAssignments?: Prisma.EpicDeveloperUncheckedCreateNestedManyWithoutUserInput
   assignedTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutAssigneeInput
   reportedTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutReporterInput
   timeLogs?: Prisma.TimeLogUncheckedCreateNestedManyWithoutUserInput
@@ -1468,6 +1639,7 @@ export type UserUpdateWithoutSubtasksInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   managedProjects?: Prisma.ProjectUpdateManyWithoutOwnerNestedInput
   projects?: Prisma.ProjectDeveloperUpdateManyWithoutUserNestedInput
+  epicAssignments?: Prisma.EpicDeveloperUpdateManyWithoutUserNestedInput
   assignedTasks?: Prisma.TaskUpdateManyWithoutAssigneeNestedInput
   reportedTasks?: Prisma.TaskUpdateManyWithoutReporterNestedInput
   timeLogs?: Prisma.TimeLogUpdateManyWithoutUserNestedInput
@@ -1495,6 +1667,7 @@ export type UserUncheckedUpdateWithoutSubtasksInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   managedProjects?: Prisma.ProjectUncheckedUpdateManyWithoutOwnerNestedInput
   projects?: Prisma.ProjectDeveloperUncheckedUpdateManyWithoutUserNestedInput
+  epicAssignments?: Prisma.EpicDeveloperUncheckedUpdateManyWithoutUserNestedInput
   assignedTasks?: Prisma.TaskUncheckedUpdateManyWithoutAssigneeNestedInput
   reportedTasks?: Prisma.TaskUncheckedUpdateManyWithoutReporterNestedInput
   timeLogs?: Prisma.TimeLogUncheckedUpdateManyWithoutUserNestedInput
@@ -1522,6 +1695,7 @@ export type UserCreateWithoutTimeLogsInput = {
   updatedAt?: Date | string
   managedProjects?: Prisma.ProjectCreateNestedManyWithoutOwnerInput
   projects?: Prisma.ProjectDeveloperCreateNestedManyWithoutUserInput
+  epicAssignments?: Prisma.EpicDeveloperCreateNestedManyWithoutUserInput
   assignedTasks?: Prisma.TaskCreateNestedManyWithoutAssigneeInput
   reportedTasks?: Prisma.TaskCreateNestedManyWithoutReporterInput
   subtasks?: Prisma.SubtaskCreateNestedManyWithoutAssigneeInput
@@ -1549,6 +1723,7 @@ export type UserUncheckedCreateWithoutTimeLogsInput = {
   updatedAt?: Date | string
   managedProjects?: Prisma.ProjectUncheckedCreateNestedManyWithoutOwnerInput
   projects?: Prisma.ProjectDeveloperUncheckedCreateNestedManyWithoutUserInput
+  epicAssignments?: Prisma.EpicDeveloperUncheckedCreateNestedManyWithoutUserInput
   assignedTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutAssigneeInput
   reportedTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutReporterInput
   subtasks?: Prisma.SubtaskUncheckedCreateNestedManyWithoutAssigneeInput
@@ -1592,6 +1767,7 @@ export type UserUpdateWithoutTimeLogsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   managedProjects?: Prisma.ProjectUpdateManyWithoutOwnerNestedInput
   projects?: Prisma.ProjectDeveloperUpdateManyWithoutUserNestedInput
+  epicAssignments?: Prisma.EpicDeveloperUpdateManyWithoutUserNestedInput
   assignedTasks?: Prisma.TaskUpdateManyWithoutAssigneeNestedInput
   reportedTasks?: Prisma.TaskUpdateManyWithoutReporterNestedInput
   subtasks?: Prisma.SubtaskUpdateManyWithoutAssigneeNestedInput
@@ -1619,6 +1795,7 @@ export type UserUncheckedUpdateWithoutTimeLogsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   managedProjects?: Prisma.ProjectUncheckedUpdateManyWithoutOwnerNestedInput
   projects?: Prisma.ProjectDeveloperUncheckedUpdateManyWithoutUserNestedInput
+  epicAssignments?: Prisma.EpicDeveloperUncheckedUpdateManyWithoutUserNestedInput
   assignedTasks?: Prisma.TaskUncheckedUpdateManyWithoutAssigneeNestedInput
   reportedTasks?: Prisma.TaskUncheckedUpdateManyWithoutReporterNestedInput
   subtasks?: Prisma.SubtaskUncheckedUpdateManyWithoutAssigneeNestedInput
@@ -1646,6 +1823,7 @@ export type UserCreateWithoutCommentsInput = {
   updatedAt?: Date | string
   managedProjects?: Prisma.ProjectCreateNestedManyWithoutOwnerInput
   projects?: Prisma.ProjectDeveloperCreateNestedManyWithoutUserInput
+  epicAssignments?: Prisma.EpicDeveloperCreateNestedManyWithoutUserInput
   assignedTasks?: Prisma.TaskCreateNestedManyWithoutAssigneeInput
   reportedTasks?: Prisma.TaskCreateNestedManyWithoutReporterInput
   subtasks?: Prisma.SubtaskCreateNestedManyWithoutAssigneeInput
@@ -1673,6 +1851,7 @@ export type UserUncheckedCreateWithoutCommentsInput = {
   updatedAt?: Date | string
   managedProjects?: Prisma.ProjectUncheckedCreateNestedManyWithoutOwnerInput
   projects?: Prisma.ProjectDeveloperUncheckedCreateNestedManyWithoutUserInput
+  epicAssignments?: Prisma.EpicDeveloperUncheckedCreateNestedManyWithoutUserInput
   assignedTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutAssigneeInput
   reportedTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutReporterInput
   subtasks?: Prisma.SubtaskUncheckedCreateNestedManyWithoutAssigneeInput
@@ -1716,6 +1895,7 @@ export type UserUpdateWithoutCommentsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   managedProjects?: Prisma.ProjectUpdateManyWithoutOwnerNestedInput
   projects?: Prisma.ProjectDeveloperUpdateManyWithoutUserNestedInput
+  epicAssignments?: Prisma.EpicDeveloperUpdateManyWithoutUserNestedInput
   assignedTasks?: Prisma.TaskUpdateManyWithoutAssigneeNestedInput
   reportedTasks?: Prisma.TaskUpdateManyWithoutReporterNestedInput
   subtasks?: Prisma.SubtaskUpdateManyWithoutAssigneeNestedInput
@@ -1743,6 +1923,7 @@ export type UserUncheckedUpdateWithoutCommentsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   managedProjects?: Prisma.ProjectUncheckedUpdateManyWithoutOwnerNestedInput
   projects?: Prisma.ProjectDeveloperUncheckedUpdateManyWithoutUserNestedInput
+  epicAssignments?: Prisma.EpicDeveloperUncheckedUpdateManyWithoutUserNestedInput
   assignedTasks?: Prisma.TaskUncheckedUpdateManyWithoutAssigneeNestedInput
   reportedTasks?: Prisma.TaskUncheckedUpdateManyWithoutReporterNestedInput
   subtasks?: Prisma.SubtaskUncheckedUpdateManyWithoutAssigneeNestedInput
@@ -1770,6 +1951,7 @@ export type UserCreateWithoutNotificationsInput = {
   updatedAt?: Date | string
   managedProjects?: Prisma.ProjectCreateNestedManyWithoutOwnerInput
   projects?: Prisma.ProjectDeveloperCreateNestedManyWithoutUserInput
+  epicAssignments?: Prisma.EpicDeveloperCreateNestedManyWithoutUserInput
   assignedTasks?: Prisma.TaskCreateNestedManyWithoutAssigneeInput
   reportedTasks?: Prisma.TaskCreateNestedManyWithoutReporterInput
   subtasks?: Prisma.SubtaskCreateNestedManyWithoutAssigneeInput
@@ -1797,6 +1979,7 @@ export type UserUncheckedCreateWithoutNotificationsInput = {
   updatedAt?: Date | string
   managedProjects?: Prisma.ProjectUncheckedCreateNestedManyWithoutOwnerInput
   projects?: Prisma.ProjectDeveloperUncheckedCreateNestedManyWithoutUserInput
+  epicAssignments?: Prisma.EpicDeveloperUncheckedCreateNestedManyWithoutUserInput
   assignedTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutAssigneeInput
   reportedTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutReporterInput
   subtasks?: Prisma.SubtaskUncheckedCreateNestedManyWithoutAssigneeInput
@@ -1840,6 +2023,7 @@ export type UserUpdateWithoutNotificationsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   managedProjects?: Prisma.ProjectUpdateManyWithoutOwnerNestedInput
   projects?: Prisma.ProjectDeveloperUpdateManyWithoutUserNestedInput
+  epicAssignments?: Prisma.EpicDeveloperUpdateManyWithoutUserNestedInput
   assignedTasks?: Prisma.TaskUpdateManyWithoutAssigneeNestedInput
   reportedTasks?: Prisma.TaskUpdateManyWithoutReporterNestedInput
   subtasks?: Prisma.SubtaskUpdateManyWithoutAssigneeNestedInput
@@ -1867,6 +2051,7 @@ export type UserUncheckedUpdateWithoutNotificationsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   managedProjects?: Prisma.ProjectUncheckedUpdateManyWithoutOwnerNestedInput
   projects?: Prisma.ProjectDeveloperUncheckedUpdateManyWithoutUserNestedInput
+  epicAssignments?: Prisma.EpicDeveloperUncheckedUpdateManyWithoutUserNestedInput
   assignedTasks?: Prisma.TaskUncheckedUpdateManyWithoutAssigneeNestedInput
   reportedTasks?: Prisma.TaskUncheckedUpdateManyWithoutReporterNestedInput
   subtasks?: Prisma.SubtaskUncheckedUpdateManyWithoutAssigneeNestedInput
@@ -1894,6 +2079,7 @@ export type UserCreateWithoutAuditLogsInput = {
   updatedAt?: Date | string
   managedProjects?: Prisma.ProjectCreateNestedManyWithoutOwnerInput
   projects?: Prisma.ProjectDeveloperCreateNestedManyWithoutUserInput
+  epicAssignments?: Prisma.EpicDeveloperCreateNestedManyWithoutUserInput
   assignedTasks?: Prisma.TaskCreateNestedManyWithoutAssigneeInput
   reportedTasks?: Prisma.TaskCreateNestedManyWithoutReporterInput
   subtasks?: Prisma.SubtaskCreateNestedManyWithoutAssigneeInput
@@ -1921,6 +2107,7 @@ export type UserUncheckedCreateWithoutAuditLogsInput = {
   updatedAt?: Date | string
   managedProjects?: Prisma.ProjectUncheckedCreateNestedManyWithoutOwnerInput
   projects?: Prisma.ProjectDeveloperUncheckedCreateNestedManyWithoutUserInput
+  epicAssignments?: Prisma.EpicDeveloperUncheckedCreateNestedManyWithoutUserInput
   assignedTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutAssigneeInput
   reportedTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutReporterInput
   subtasks?: Prisma.SubtaskUncheckedCreateNestedManyWithoutAssigneeInput
@@ -1964,6 +2151,7 @@ export type UserUpdateWithoutAuditLogsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   managedProjects?: Prisma.ProjectUpdateManyWithoutOwnerNestedInput
   projects?: Prisma.ProjectDeveloperUpdateManyWithoutUserNestedInput
+  epicAssignments?: Prisma.EpicDeveloperUpdateManyWithoutUserNestedInput
   assignedTasks?: Prisma.TaskUpdateManyWithoutAssigneeNestedInput
   reportedTasks?: Prisma.TaskUpdateManyWithoutReporterNestedInput
   subtasks?: Prisma.SubtaskUpdateManyWithoutAssigneeNestedInput
@@ -1991,6 +2179,7 @@ export type UserUncheckedUpdateWithoutAuditLogsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   managedProjects?: Prisma.ProjectUncheckedUpdateManyWithoutOwnerNestedInput
   projects?: Prisma.ProjectDeveloperUncheckedUpdateManyWithoutUserNestedInput
+  epicAssignments?: Prisma.EpicDeveloperUncheckedUpdateManyWithoutUserNestedInput
   assignedTasks?: Prisma.TaskUncheckedUpdateManyWithoutAssigneeNestedInput
   reportedTasks?: Prisma.TaskUncheckedUpdateManyWithoutReporterNestedInput
   subtasks?: Prisma.SubtaskUncheckedUpdateManyWithoutAssigneeNestedInput
@@ -2018,6 +2207,7 @@ export type UserCreateWithoutStatusHistoriesInput = {
   updatedAt?: Date | string
   managedProjects?: Prisma.ProjectCreateNestedManyWithoutOwnerInput
   projects?: Prisma.ProjectDeveloperCreateNestedManyWithoutUserInput
+  epicAssignments?: Prisma.EpicDeveloperCreateNestedManyWithoutUserInput
   assignedTasks?: Prisma.TaskCreateNestedManyWithoutAssigneeInput
   reportedTasks?: Prisma.TaskCreateNestedManyWithoutReporterInput
   subtasks?: Prisma.SubtaskCreateNestedManyWithoutAssigneeInput
@@ -2045,6 +2235,7 @@ export type UserUncheckedCreateWithoutStatusHistoriesInput = {
   updatedAt?: Date | string
   managedProjects?: Prisma.ProjectUncheckedCreateNestedManyWithoutOwnerInput
   projects?: Prisma.ProjectDeveloperUncheckedCreateNestedManyWithoutUserInput
+  epicAssignments?: Prisma.EpicDeveloperUncheckedCreateNestedManyWithoutUserInput
   assignedTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutAssigneeInput
   reportedTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutReporterInput
   subtasks?: Prisma.SubtaskUncheckedCreateNestedManyWithoutAssigneeInput
@@ -2088,6 +2279,7 @@ export type UserUpdateWithoutStatusHistoriesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   managedProjects?: Prisma.ProjectUpdateManyWithoutOwnerNestedInput
   projects?: Prisma.ProjectDeveloperUpdateManyWithoutUserNestedInput
+  epicAssignments?: Prisma.EpicDeveloperUpdateManyWithoutUserNestedInput
   assignedTasks?: Prisma.TaskUpdateManyWithoutAssigneeNestedInput
   reportedTasks?: Prisma.TaskUpdateManyWithoutReporterNestedInput
   subtasks?: Prisma.SubtaskUpdateManyWithoutAssigneeNestedInput
@@ -2115,6 +2307,7 @@ export type UserUncheckedUpdateWithoutStatusHistoriesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   managedProjects?: Prisma.ProjectUncheckedUpdateManyWithoutOwnerNestedInput
   projects?: Prisma.ProjectDeveloperUncheckedUpdateManyWithoutUserNestedInput
+  epicAssignments?: Prisma.EpicDeveloperUncheckedUpdateManyWithoutUserNestedInput
   assignedTasks?: Prisma.TaskUncheckedUpdateManyWithoutAssigneeNestedInput
   reportedTasks?: Prisma.TaskUncheckedUpdateManyWithoutReporterNestedInput
   subtasks?: Prisma.SubtaskUncheckedUpdateManyWithoutAssigneeNestedInput
@@ -2142,6 +2335,7 @@ export type UserCreateWithoutTaskNotesInput = {
   updatedAt?: Date | string
   managedProjects?: Prisma.ProjectCreateNestedManyWithoutOwnerInput
   projects?: Prisma.ProjectDeveloperCreateNestedManyWithoutUserInput
+  epicAssignments?: Prisma.EpicDeveloperCreateNestedManyWithoutUserInput
   assignedTasks?: Prisma.TaskCreateNestedManyWithoutAssigneeInput
   reportedTasks?: Prisma.TaskCreateNestedManyWithoutReporterInput
   subtasks?: Prisma.SubtaskCreateNestedManyWithoutAssigneeInput
@@ -2169,6 +2363,7 @@ export type UserUncheckedCreateWithoutTaskNotesInput = {
   updatedAt?: Date | string
   managedProjects?: Prisma.ProjectUncheckedCreateNestedManyWithoutOwnerInput
   projects?: Prisma.ProjectDeveloperUncheckedCreateNestedManyWithoutUserInput
+  epicAssignments?: Prisma.EpicDeveloperUncheckedCreateNestedManyWithoutUserInput
   assignedTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutAssigneeInput
   reportedTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutReporterInput
   subtasks?: Prisma.SubtaskUncheckedCreateNestedManyWithoutAssigneeInput
@@ -2212,6 +2407,7 @@ export type UserUpdateWithoutTaskNotesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   managedProjects?: Prisma.ProjectUpdateManyWithoutOwnerNestedInput
   projects?: Prisma.ProjectDeveloperUpdateManyWithoutUserNestedInput
+  epicAssignments?: Prisma.EpicDeveloperUpdateManyWithoutUserNestedInput
   assignedTasks?: Prisma.TaskUpdateManyWithoutAssigneeNestedInput
   reportedTasks?: Prisma.TaskUpdateManyWithoutReporterNestedInput
   subtasks?: Prisma.SubtaskUpdateManyWithoutAssigneeNestedInput
@@ -2239,6 +2435,7 @@ export type UserUncheckedUpdateWithoutTaskNotesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   managedProjects?: Prisma.ProjectUncheckedUpdateManyWithoutOwnerNestedInput
   projects?: Prisma.ProjectDeveloperUncheckedUpdateManyWithoutUserNestedInput
+  epicAssignments?: Prisma.EpicDeveloperUncheckedUpdateManyWithoutUserNestedInput
   assignedTasks?: Prisma.TaskUncheckedUpdateManyWithoutAssigneeNestedInput
   reportedTasks?: Prisma.TaskUncheckedUpdateManyWithoutReporterNestedInput
   subtasks?: Prisma.SubtaskUncheckedUpdateManyWithoutAssigneeNestedInput
@@ -2266,6 +2463,7 @@ export type UserCreateWithoutAttachmentsInput = {
   updatedAt?: Date | string
   managedProjects?: Prisma.ProjectCreateNestedManyWithoutOwnerInput
   projects?: Prisma.ProjectDeveloperCreateNestedManyWithoutUserInput
+  epicAssignments?: Prisma.EpicDeveloperCreateNestedManyWithoutUserInput
   assignedTasks?: Prisma.TaskCreateNestedManyWithoutAssigneeInput
   reportedTasks?: Prisma.TaskCreateNestedManyWithoutReporterInput
   subtasks?: Prisma.SubtaskCreateNestedManyWithoutAssigneeInput
@@ -2293,6 +2491,7 @@ export type UserUncheckedCreateWithoutAttachmentsInput = {
   updatedAt?: Date | string
   managedProjects?: Prisma.ProjectUncheckedCreateNestedManyWithoutOwnerInput
   projects?: Prisma.ProjectDeveloperUncheckedCreateNestedManyWithoutUserInput
+  epicAssignments?: Prisma.EpicDeveloperUncheckedCreateNestedManyWithoutUserInput
   assignedTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutAssigneeInput
   reportedTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutReporterInput
   subtasks?: Prisma.SubtaskUncheckedCreateNestedManyWithoutAssigneeInput
@@ -2336,6 +2535,7 @@ export type UserUpdateWithoutAttachmentsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   managedProjects?: Prisma.ProjectUpdateManyWithoutOwnerNestedInput
   projects?: Prisma.ProjectDeveloperUpdateManyWithoutUserNestedInput
+  epicAssignments?: Prisma.EpicDeveloperUpdateManyWithoutUserNestedInput
   assignedTasks?: Prisma.TaskUpdateManyWithoutAssigneeNestedInput
   reportedTasks?: Prisma.TaskUpdateManyWithoutReporterNestedInput
   subtasks?: Prisma.SubtaskUpdateManyWithoutAssigneeNestedInput
@@ -2363,6 +2563,7 @@ export type UserUncheckedUpdateWithoutAttachmentsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   managedProjects?: Prisma.ProjectUncheckedUpdateManyWithoutOwnerNestedInput
   projects?: Prisma.ProjectDeveloperUncheckedUpdateManyWithoutUserNestedInput
+  epicAssignments?: Prisma.EpicDeveloperUncheckedUpdateManyWithoutUserNestedInput
   assignedTasks?: Prisma.TaskUncheckedUpdateManyWithoutAssigneeNestedInput
   reportedTasks?: Prisma.TaskUncheckedUpdateManyWithoutReporterNestedInput
   subtasks?: Prisma.SubtaskUncheckedUpdateManyWithoutAssigneeNestedInput
@@ -2383,6 +2584,7 @@ export type UserUncheckedUpdateWithoutAttachmentsInput = {
 export type UserCountOutputType = {
   managedProjects: number
   projects: number
+  epicAssignments: number
   assignedTasks: number
   reportedTasks: number
   subtasks: number
@@ -2399,6 +2601,7 @@ export type UserCountOutputType = {
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   managedProjects?: boolean | UserCountOutputTypeCountManagedProjectsArgs
   projects?: boolean | UserCountOutputTypeCountProjectsArgs
+  epicAssignments?: boolean | UserCountOutputTypeCountEpicAssignmentsArgs
   assignedTasks?: boolean | UserCountOutputTypeCountAssignedTasksArgs
   reportedTasks?: boolean | UserCountOutputTypeCountReportedTasksArgs
   subtasks?: boolean | UserCountOutputTypeCountSubtasksArgs
@@ -2434,6 +2637,13 @@ export type UserCountOutputTypeCountManagedProjectsArgs<ExtArgs extends runtime.
  */
 export type UserCountOutputTypeCountProjectsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.ProjectDeveloperWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountEpicAssignmentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.EpicDeveloperWhereInput
 }
 
 /**
@@ -2529,6 +2739,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   updatedAt?: boolean
   managedProjects?: boolean | Prisma.User$managedProjectsArgs<ExtArgs>
   projects?: boolean | Prisma.User$projectsArgs<ExtArgs>
+  epicAssignments?: boolean | Prisma.User$epicAssignmentsArgs<ExtArgs>
   assignedTasks?: boolean | Prisma.User$assignedTasksArgs<ExtArgs>
   reportedTasks?: boolean | Prisma.User$reportedTasksArgs<ExtArgs>
   subtasks?: boolean | Prisma.User$subtasksArgs<ExtArgs>
@@ -2564,6 +2775,7 @@ export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = run
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   managedProjects?: boolean | Prisma.User$managedProjectsArgs<ExtArgs>
   projects?: boolean | Prisma.User$projectsArgs<ExtArgs>
+  epicAssignments?: boolean | Prisma.User$epicAssignmentsArgs<ExtArgs>
   assignedTasks?: boolean | Prisma.User$assignedTasksArgs<ExtArgs>
   reportedTasks?: boolean | Prisma.User$reportedTasksArgs<ExtArgs>
   subtasks?: boolean | Prisma.User$subtasksArgs<ExtArgs>
@@ -2583,6 +2795,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   objects: {
     managedProjects: Prisma.$ProjectPayload<ExtArgs>[]
     projects: Prisma.$ProjectDeveloperPayload<ExtArgs>[]
+    epicAssignments: Prisma.$EpicDeveloperPayload<ExtArgs>[]
     assignedTasks: Prisma.$TaskPayload<ExtArgs>[]
     reportedTasks: Prisma.$TaskPayload<ExtArgs>[]
     subtasks: Prisma.$SubtaskPayload<ExtArgs>[]
@@ -2950,6 +3163,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   readonly [Symbol.toStringTag]: "PrismaPromise"
   managedProjects<T extends Prisma.User$managedProjectsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$managedProjectsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   projects<T extends Prisma.User$projectsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$projectsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProjectDeveloperPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  epicAssignments<T extends Prisma.User$epicAssignmentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$epicAssignmentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EpicDeveloperPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   assignedTasks<T extends Prisma.User$assignedTasksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$assignedTasksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   reportedTasks<T extends Prisma.User$reportedTasksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$reportedTasksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   subtasks<T extends Prisma.User$subtasksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$subtasksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SubtaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -3395,6 +3609,30 @@ export type User$projectsArgs<ExtArgs extends runtime.Types.Extensions.InternalA
   take?: number
   skip?: number
   distinct?: Prisma.ProjectDeveloperScalarFieldEnum | Prisma.ProjectDeveloperScalarFieldEnum[]
+}
+
+/**
+ * User.epicAssignments
+ */
+export type User$epicAssignmentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the EpicDeveloper
+   */
+  select?: Prisma.EpicDeveloperSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the EpicDeveloper
+   */
+  omit?: Prisma.EpicDeveloperOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.EpicDeveloperInclude<ExtArgs> | null
+  where?: Prisma.EpicDeveloperWhereInput
+  orderBy?: Prisma.EpicDeveloperOrderByWithRelationInput | Prisma.EpicDeveloperOrderByWithRelationInput[]
+  cursor?: Prisma.EpicDeveloperWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.EpicDeveloperScalarFieldEnum | Prisma.EpicDeveloperScalarFieldEnum[]
 }
 
 /**

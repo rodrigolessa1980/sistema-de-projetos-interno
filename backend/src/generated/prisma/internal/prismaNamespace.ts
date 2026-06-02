@@ -391,6 +391,7 @@ export const ModelName = {
   ProjectDeveloper: 'ProjectDeveloper',
   Module: 'Module',
   Epic: 'Epic',
+  EpicDeveloper: 'EpicDeveloper',
   Task: 'Task',
   Subtask: 'Subtask',
   TaskDependency: 'TaskDependency',
@@ -416,7 +417,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "company" | "user" | "userPermission" | "project" | "projectDeveloper" | "module" | "epic" | "task" | "subtask" | "taskDependency" | "timeLog" | "comment" | "notification" | "auditLog" | "statusHistory" | "taskNote" | "taskAttachment"
+    modelProps: "company" | "user" | "userPermission" | "project" | "projectDeveloper" | "module" | "epic" | "epicDeveloper" | "task" | "subtask" | "taskDependency" | "timeLog" | "comment" | "notification" | "auditLog" | "statusHistory" | "taskNote" | "taskAttachment"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -879,6 +880,72 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.EpicCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.EpicCountAggregateOutputType> | number
+        }
+      }
+    }
+    EpicDeveloper: {
+      payload: Prisma.$EpicDeveloperPayload<ExtArgs>
+      fields: Prisma.EpicDeveloperFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.EpicDeveloperFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EpicDeveloperPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.EpicDeveloperFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EpicDeveloperPayload>
+        }
+        findFirst: {
+          args: Prisma.EpicDeveloperFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EpicDeveloperPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.EpicDeveloperFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EpicDeveloperPayload>
+        }
+        findMany: {
+          args: Prisma.EpicDeveloperFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EpicDeveloperPayload>[]
+        }
+        create: {
+          args: Prisma.EpicDeveloperCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EpicDeveloperPayload>
+        }
+        createMany: {
+          args: Prisma.EpicDeveloperCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        delete: {
+          args: Prisma.EpicDeveloperDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EpicDeveloperPayload>
+        }
+        update: {
+          args: Prisma.EpicDeveloperUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EpicDeveloperPayload>
+        }
+        deleteMany: {
+          args: Prisma.EpicDeveloperDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.EpicDeveloperUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        upsert: {
+          args: Prisma.EpicDeveloperUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EpicDeveloperPayload>
+        }
+        aggregate: {
+          args: Prisma.EpicDeveloperAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateEpicDeveloper>
+        }
+        groupBy: {
+          args: Prisma.EpicDeveloperGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.EpicDeveloperGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.EpicDeveloperCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.EpicDeveloperCountAggregateOutputType> | number
         }
       }
     }
@@ -1687,6 +1754,14 @@ export const EpicScalarFieldEnum = {
 export type EpicScalarFieldEnum = (typeof EpicScalarFieldEnum)[keyof typeof EpicScalarFieldEnum]
 
 
+export const EpicDeveloperScalarFieldEnum = {
+  epicId: 'epicId',
+  userId: 'userId'
+} as const
+
+export type EpicDeveloperScalarFieldEnum = (typeof EpicDeveloperScalarFieldEnum)[keyof typeof EpicDeveloperScalarFieldEnum]
+
+
 export const TaskScalarFieldEnum = {
   id: 'id',
   projectId: 'projectId',
@@ -1948,6 +2023,14 @@ export const EpicOrderByRelevanceFieldEnum = {
 } as const
 
 export type EpicOrderByRelevanceFieldEnum = (typeof EpicOrderByRelevanceFieldEnum)[keyof typeof EpicOrderByRelevanceFieldEnum]
+
+
+export const EpicDeveloperOrderByRelevanceFieldEnum = {
+  epicId: 'epicId',
+  userId: 'userId'
+} as const
+
+export type EpicDeveloperOrderByRelevanceFieldEnum = (typeof EpicDeveloperOrderByRelevanceFieldEnum)[keyof typeof EpicDeveloperOrderByRelevanceFieldEnum]
 
 
 export const TaskOrderByRelevanceFieldEnum = {
@@ -2304,6 +2387,7 @@ export type GlobalOmitConfig = {
   projectDeveloper?: Prisma.ProjectDeveloperOmit
   module?: Prisma.ModuleOmit
   epic?: Prisma.EpicOmit
+  epicDeveloper?: Prisma.EpicDeveloperOmit
   task?: Prisma.TaskOmit
   subtask?: Prisma.SubtaskOmit
   taskDependency?: Prisma.TaskDependencyOmit

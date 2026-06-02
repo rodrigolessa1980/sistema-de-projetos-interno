@@ -109,6 +109,7 @@ export interface Epic {
   startDate: string;
   endDate?: string;
   progress: number;
+  developerIds: string[];
   createdAt: string;
   updatedAt: string;
 }

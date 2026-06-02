@@ -10,6 +10,7 @@ export interface CreateEpicInput {
   description: string;
   startDate: Date;
   endDate?: Date | null;
+  developerIds?: string[];
 }
 
 @Injectable()
@@ -27,6 +28,7 @@ export class CreateEpicUseCase {
       description: input.description,
       startDate: input.startDate,
       endDate: input.endDate ?? null,
+      developerIds: input.developerIds ?? [],
     });
     return this.epicRepository.create(epic);
   }

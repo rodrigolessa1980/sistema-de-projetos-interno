@@ -10,6 +10,7 @@ export interface EpicProps {
   startDate: Date;
   endDate?: Date | null;
   progress?: number;
+  developerIds?: string[];
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -28,6 +29,7 @@ export class Epic {
       startDate: props.startDate,
       endDate: props.endDate ?? null,
       progress: props.progress ?? 0,
+      developerIds: props.developerIds ?? [],
       createdAt: props.createdAt || new Date(),
       updatedAt: props.updatedAt || new Date(),
     };
@@ -42,6 +44,7 @@ export class Epic {
   public get startDate(): Date { return this.props.startDate; }
   public get endDate(): Date | null { return this.props.endDate; }
   public get progress(): number { return this.props.progress; }
+  public get developerIds(): string[] { return this.props.developerIds; }
   public get createdAt(): Date { return this.props.createdAt; }
   public get updatedAt(): Date { return this.props.updatedAt; }
 }

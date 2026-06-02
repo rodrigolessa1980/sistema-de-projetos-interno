@@ -75,6 +75,11 @@ export type Module = Prisma.ModuleModel
  */
 export type Epic = Prisma.EpicModel
 /**
+ * Model EpicDeveloper
+ * 
+ */
+export type EpicDeveloper = Prisma.EpicDeveloperModel
+/**
  * Model Task
  * 
  */

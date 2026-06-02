@@ -4,7 +4,7 @@ import { CreateModuleUseCase } from '../../../core/use-cases/modules/create-modu
 import { ListModulesByProjectUseCase } from '../../../core/use-cases/modules/list-modules-by-project.use-case';
 import { CreateEpicUseCase } from '../../../core/use-cases/epics/create-epic.use-case';
 import { ListEpicsByProjectUseCase } from '../../../core/use-cases/epics/list-epics-by-project.use-case';
-import { IsNotEmpty, IsOptional, IsString, IsDateString } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString, IsDateString, IsArray } from 'class-validator';
 
 class CreateModuleDto {
   @IsString() @IsNotEmpty() projectId: string;
@@ -19,6 +19,7 @@ class CreateEpicDto {
   @IsOptional() @IsString() description?: string;
   @IsOptional() @IsDateString() startDate?: string;
   @IsOptional() @IsDateString() endDate?: string;
+  @IsOptional() @IsArray() @IsString({ each: true }) developerIds?: string[];
 }
 
 function moduleToHTTP(m: any) {
@@ -45,6 +46,7 @@ function epicToHTTP(e: any) {
     startDate: e.startDate instanceof Date ? e.startDate.toISOString() : e.startDate,
     endDate: e.endDate instanceof Date ? e.endDate.toISOString() : (e.endDate ?? null),
     progress: e.progress,
+    developerIds: e.developerIds ?? [],
     createdAt: e.createdAt instanceof Date ? e.createdAt.toISOString() : e.createdAt,
     updatedAt: e.updatedAt instanceof Date ? e.updatedAt.toISOString() : e.updatedAt,
   };
@@ -91,6 +93,7 @@ export class ModulesController {
       description: body.description ?? '',
       startDate: body.startDate ? new Date(body.startDate) : new Date(),
       endDate: body.endDate ? new Date(body.endDate) : null,
+      developerIds: body.developerIds ?? [],
     });
     return { epic: epicToHTTP(epic) };
   }

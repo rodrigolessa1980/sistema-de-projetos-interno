@@ -19,6 +19,7 @@ export class PrismaEpicRepository implements IEpicRepository {
       startDate: raw.startDate,
       endDate: raw.endDate ?? null,
       progress: raw.progress,
+      developerIds: raw.developers?.map((d: any) => d.userId) ?? [],
       createdAt: raw.createdAt,
       updatedAt: raw.updatedAt,
     });
@@ -36,23 +37,27 @@ export class PrismaEpicRepository implements IEpicRepository {
         startDate: epic.startDate,
         endDate: epic.endDate,
         progress: epic.progress,
+        developers: epic.developerIds.length > 0
+          ? { create: epic.developerIds.map((userId) => ({ userId })) }
+          : undefined,
       },
+      include: { developers: true },
     });
     return this.mapToDomain(raw);
   }
 
   async findById(id: string): Promise<Epic | null> {
-    const raw = await this.prisma.epic.findUnique({ where: { id } });
+    const raw = await this.prisma.epic.findUnique({ where: { id }, include: { developers: true } });
     return raw ? this.mapToDomain(raw) : null;
   }
 
   async listByModule(moduleId: string): Promise<Epic[]> {
-    const raws = await this.prisma.epic.findMany({ where: { moduleId } });
+    const raws = await this.prisma.epic.findMany({ where: { moduleId }, include: { developers: true } });
     return raws.map((r) => this.mapToDomain(r));
   }
 
   async listByProject(projectId: string): Promise<Epic[]> {
-    const raws = await this.prisma.epic.findMany({ where: { projectId } });
+    const raws = await this.prisma.epic.findMany({ where: { projectId }, include: { developers: true } });
     return raws.map((r) => this.mapToDomain(r));
   }
 

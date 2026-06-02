@@ -99,9 +99,10 @@ model User {
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
 
-  managedProjects Project[]          @relation("ProjectOwner")
-  projects        ProjectDeveloper[]
-  assignedTasks   Task[]             @relation("TaskAssignee")
+  managedProjects    Project[]          @relation("ProjectOwner")
+  projects           ProjectDeveloper[]
+  epicAssignments    EpicDeveloper[]
+  assignedTasks      Task[]             @relation("TaskAssignee")
   reportedTasks   Task[]             @relation("TaskReporter")
   subtasks        Subtask[]
   timeLogs        TimeLog[]
@@ -208,10 +209,22 @@ model Epic {
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
   tasks       Task[]
+  developers  EpicDeveloper[]
 
   @@index([projectId])
   @@index([moduleId])
   @@map("epics")
+}
+
+model EpicDeveloper {
+  epicId String
+  epic   Epic   @relation(fields: [epicId], references: [id], onDelete: Cascade)
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([epicId, userId])
+  @@index([userId])
+  @@map("epic_developers")
 }
 
 model Task {

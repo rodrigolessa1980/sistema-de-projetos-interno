@@ -58,6 +58,7 @@ export const ModelName = {
   ProjectDeveloper: 'ProjectDeveloper',
   Module: 'Module',
   Epic: 'Epic',
+  EpicDeveloper: 'EpicDeveloper',
   Task: 'Task',
   Subtask: 'Subtask',
   TaskDependency: 'TaskDependency',
@@ -190,6 +191,14 @@ export const EpicScalarFieldEnum = {
 } as const
 
 export type EpicScalarFieldEnum = (typeof EpicScalarFieldEnum)[keyof typeof EpicScalarFieldEnum]
+
+
+export const EpicDeveloperScalarFieldEnum = {
+  epicId: 'epicId',
+  userId: 'userId'
+} as const
+
+export type EpicDeveloperScalarFieldEnum = (typeof EpicDeveloperScalarFieldEnum)[keyof typeof EpicDeveloperScalarFieldEnum]
 
 
 export const TaskScalarFieldEnum = {
@@ -453,6 +462,14 @@ export const EpicOrderByRelevanceFieldEnum = {
 } as const
 
 export type EpicOrderByRelevanceFieldEnum = (typeof EpicOrderByRelevanceFieldEnum)[keyof typeof EpicOrderByRelevanceFieldEnum]
+
+
+export const EpicDeveloperOrderByRelevanceFieldEnum = {
+  epicId: 'epicId',
+  userId: 'userId'
+} as const
+
+export type EpicDeveloperOrderByRelevanceFieldEnum = (typeof EpicDeveloperOrderByRelevanceFieldEnum)[keyof typeof EpicDeveloperOrderByRelevanceFieldEnum]
 
 
 export const TaskOrderByRelevanceFieldEnum = {
