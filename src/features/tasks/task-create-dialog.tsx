@@ -19,15 +19,15 @@ import { toast } from "sonner";
 import { Link2, X, AlertTriangle, Flame, ShieldAlert } from "lucide-react";
 
 const schema = z.object({
-  title: z.string().min(5, "Mínimo 5 caracteres"),
-  description: z.string().min(10, "Mínimo 10 caracteres"),
-  projectId: z.string().min(1, "Selecione um projeto"),
-  moduleId: z.string().min(1, "Selecione um módulo"),
-  epicId: z.string().min(1, "Selecione um epic"),
-  assigneeId: z.string().min(1, "Selecione um responsável"),
-  status: z.enum(["BACKLOG", "PLANEJADA", "BLOQUEADA", "EM_DESENVOLVIMENTO", "EM_REVISAO", "HOMOLOGACAO", "CONCLUIDA", "CANCELADA"] as const),
-  complexity: z.number(),
-  estimatedHours: z.number().min(0.5),
+  title: z.string().optional(),
+  description: z.string().optional(),
+  projectId: z.string().optional(),
+  moduleId: z.string().optional(),
+  epicId: z.string().optional(),
+  assigneeId: z.string().optional(),
+  status: z.enum(["BACKLOG", "PLANEJADA", "BLOQUEADA", "EM_DESENVOLVIMENTO", "EM_REVISAO", "HOMOLOGACAO", "CONCLUIDA", "CANCELADA"] as const).optional(),
+  complexity: z.number().optional(),
+  estimatedHours: z.number().optional(),
   dueDate: z.string().optional(),
 });
 
@@ -89,12 +89,32 @@ export function TaskCreateDialog({ open, onOpenChange }: Props) {
   }
 
   const onSubmit = async (data: FormData) => {
+    const fallbackProject = projects[0];
+    const finalProjectId = data.projectId || fallbackProject?.id || "";
+    const fallbackModule = modules.find((module) => module.projectId === finalProjectId) ?? modules[0];
+    const finalModuleId = data.moduleId || fallbackModule?.id || "";
+    const fallbackEpic = epics.find((epic) => epic.moduleId === finalModuleId) ?? epics.find((epic) => epic.projectId === finalProjectId) ?? epics[0];
+    const finalEpicId = data.epicId || fallbackEpic?.id || "";
+    const finalAssigneeId = data.assigneeId || users[0]?.id || user?.id || "";
+
+    if (!finalProjectId || !finalModuleId || !finalEpicId || !finalAssigneeId) {
+      toast.error("Cadastre ao menos um projeto com modulo, epic e usuario para criar tarefas.");
+      return;
+    }
+
     // Se há dependências pendentes, força status BLOQUEADA
-    const finalStatus: TaskStatus = hasPendingDeps ? "BLOQUEADA" : (data.status as TaskStatus);
+    const finalStatus: TaskStatus = hasPendingDeps ? "BLOQUEADA" : ((data.status ?? "BACKLOG") as TaskStatus);
 
     const task = await createTask({
       ...data,
-      complexity: data.complexity as TaskComplexity,
+      title: data.title?.trim() || `Tarefa ${new Date().toLocaleString("pt-BR")}`,
+      description: data.description?.trim() || "Tarefa criada sem descricao.",
+      projectId: finalProjectId,
+      moduleId: finalModuleId,
+      epicId: finalEpicId,
+      assigneeId: finalAssigneeId,
+      estimatedHours: data.estimatedHours ?? 0,
+      complexity: (data.complexity ?? 1) as TaskComplexity,
       status: finalStatus,
       reporterId: user?.id ?? "",
       actualHours: 0,

@@ -1,15 +1,15 @@
-import { IsOptional, IsString, Matches, MaxLength, MinLength } from 'class-validator';
+import { IsOptional, IsString, Matches, MaxLength } from 'class-validator';
 
 export class CreateCompanyDto {
+  @IsOptional()
   @IsString()
-  @MinLength(1)
   @MaxLength(100)
-  name!: string;
+  name?: string;
 
+  @IsOptional()
   @IsString()
-  @MinLength(1)
   @MaxLength(10)
-  shortName!: string;
+  shortName?: string;
 
   @IsOptional()
   @IsString()

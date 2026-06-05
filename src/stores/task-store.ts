@@ -68,6 +68,7 @@ interface TaskStore {
   addDependency: (data: Omit<TaskDependency, "id" | "createdAt">) => Promise<TaskDependency>;
   removeDependency: (id: string) => Promise<void>;
   setSelectedTask: (id: string | null) => void;
+  fetchTasksForProjects: (projectIds: string[]) => Promise<void>;
   reorderTasks: (projectId: string, status: TaskStatus, taskIds: string[]) => void;
   applyKanbanOrder: (data: {
     taskId: string;
@@ -227,6 +228,30 @@ export const useTaskStore = create<TaskStore>()(
   },
 
   setSelectedTask: (id) => set({ selectedTaskId: id }),
+
+  fetchTasksForProjects: async (projectIds) => {
+    const uniqueProjectIds = Array.from(new Set(projectIds.filter(Boolean)));
+    if (uniqueProjectIds.length === 0) {
+      set({ tasks: [] });
+      return;
+    }
+
+    set({ isLoading: true });
+    try {
+      const projectTasks = await Promise.all(
+        uniqueProjectIds.map((projectId) =>
+          api.get<ApiTask[]>(`tasks/project/${projectId}`).catch(() => [] as ApiTask[])
+        )
+      );
+      set({
+        tasks: projectTasks.flat().map(normalizeTask),
+        isLoading: false,
+      });
+    } catch (error) {
+      set({ isLoading: false });
+      throw error;
+    }
+  },
 
   reorderTasks: (projectId, status, taskIds) => {
     set((state) => ({

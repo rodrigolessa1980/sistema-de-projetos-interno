@@ -6,7 +6,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useRouter, usePathname } from "next/navigation";
 import { useEffect } from "react";
 import { motion } from "framer-motion";
-import { useProjectStore, useUserStore } from "@/stores";
+import { useProjectStore, useTaskStore, useUIStore, useUserStore } from "@/stores";
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -18,6 +18,8 @@ export function AppLayout({ children, title }: AppLayoutProps) {
   const router = useRouter();
   const pathname = usePathname();
   const fetchProjects = useProjectStore((s) => s.fetchProjects);
+  const fetchTasksForProjects = useTaskStore((s) => s.fetchTasksForProjects);
+  const fetchNotifications = useUIStore((s) => s.fetchNotifications);
   const fetchUsers = useUserStore((s) => s.fetchUsers);
 
   useEffect(() => {
@@ -28,10 +30,16 @@ export function AppLayout({ children, title }: AppLayoutProps) {
 
   useEffect(() => {
     if (isAuthenticated) {
-      fetchProjects().catch(() => {});
+      fetchProjects()
+        .then(() => {
+          const ids = useProjectStore.getState().projects.map((project) => project.id);
+          return fetchTasksForProjects(ids);
+        })
+        .catch(() => {});
       fetchUsers().catch(() => {});
+      fetchNotifications().catch(() => {});
     }
-  }, [isAuthenticated, fetchProjects, fetchUsers]);
+  }, [isAuthenticated, fetchNotifications, fetchProjects, fetchTasksForProjects, fetchUsers]);
 
   if (isLoading) {
     return (

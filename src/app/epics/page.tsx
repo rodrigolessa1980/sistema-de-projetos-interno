@@ -17,7 +17,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import type { ProjectStatus } from "@/types";
@@ -32,25 +31,24 @@ const statusColors: Record<ProjectStatus, string> = {
 };
 
 const epicSchema = z.object({
-  projectId: z.string().min(1, "Selecione um projeto"),
-  moduleId: z.string().min(1, "Selecione um modulo"),
-  name: z.string().min(3, "Minimo 3 caracteres"),
-  description: z.string().min(10, "Minimo 10 caracteres"),
-  startDate: z.string().min(1, "Data obrigatoria"),
-  endDate: z.string().min(1, "Prazo obrigatorio"),
-  developerIds: z.array(z.string()),
+  projectId: z.string().optional(),
+  moduleId: z.string().optional(),
+  name: z.string().optional(),
+  description: z.string().optional(),
+  startDate: z.string().optional(),
+  endDate: z.string().optional(),
+  developerIds: z.array(z.string()).optional(),
 });
 
 type EpicForm = z.infer<typeof epicSchema>;
 
 export default function EpicsPage() {
-  const { epics, projects, modules, createEpic } = useProjectStore();
+  const { epics, projects, modules, createEpic, createModule } = useProjectStore();
   const { tasks } = useTaskStore();
   const { users } = useUserStore();
   const { isAdmin } = useAuth();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const form = useForm<EpicForm>({
-    resolver: zodResolver(epicSchema),
     defaultValues: {
       projectId: "",
       moduleId: "",
@@ -63,12 +61,15 @@ export default function EpicsPage() {
   });
   const projectId = useWatch({ control: form.control, name: "projectId" });
   const selectedDeveloperIds = useWatch({ control: form.control, name: "developerIds" });
+  const projectsWithModules = projects.filter((project) =>
+    modules.some((module) => module.projectId === project.id)
+  );
   const filteredModules = modules.filter((module) => module.projectId === projectId);
   const selectedProject = projects.find((p) => p.id === projectId);
   const projectDevelopers = users.filter((u) => selectedProject?.developerIds.includes(u.id));
 
   const toggleDeveloper = (userId: string) => {
-    const current = form.getValues("developerIds");
+    const current = form.getValues("developerIds") ?? [];
     const next = current.includes(userId) ? current.filter((id) => id !== userId) : [...current, userId];
     form.setValue("developerIds", next);
   };
@@ -87,7 +88,36 @@ export default function EpicsPage() {
   };
 
   const handleCreate = async (data: EpicForm) => {
-    await createEpic({ ...data, status: "ATIVO", progress: 0 });
+    const fallbackProject = projectsWithModules[0];
+    const firstAvailableModule = modules[0];
+    const finalProjectId = data.projectId || fallbackProject?.id || firstAvailableModule?.projectId || projects[0]?.id || "";
+    let fallbackModule = modules.find((module) => module.projectId === finalProjectId) ?? firstAvailableModule;
+    if (!fallbackModule && finalProjectId) {
+      fallbackModule = await createModule({
+        projectId: finalProjectId,
+        name: "Modulo Geral",
+        description: "Modulo criado automaticamente.",
+        order: 0,
+        progress: 0,
+      });
+    }
+    const finalModuleId = data.moduleId || fallbackModule?.id || "";
+
+    if (!finalProjectId || !finalModuleId) {
+      toast.error("Cadastre ao menos um projeto com modulo para criar epics.");
+      return;
+    }
+
+    await createEpic({
+      ...data,
+      projectId: finalProjectId,
+      moduleId: finalModuleId,
+      name: data.name?.trim() || `Epic ${new Date().toLocaleString("pt-BR")}`,
+      description: data.description?.trim() || "Epic criado sem descricao.",
+      startDate: data.startDate || new Date().toISOString().split("T")[0],
+      endDate: data.endDate || undefined,
+      developerIds: data.developerIds ?? [],
+    });
     toast.success("Epic criado com sucesso");
     setIsCreateOpen(false);
     form.reset();
@@ -193,7 +223,7 @@ export default function EpicsPage() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent className="bg-zinc-900 border-zinc-700/50">
-                        {projects.map((project) => (
+                        {projectsWithModules.map((project) => (
                           <SelectItem key={project.id} value={project.id} label={project.name}>{project.name}</SelectItem>
                         ))}
                       </SelectContent>
@@ -266,7 +296,7 @@ export default function EpicsPage() {
                   </Label>
                   <div className="space-y-1.5 max-h-36 overflow-y-auto pr-1">
                     {projectDevelopers.map((dev) => {
-                      const checked = selectedDeveloperIds.includes(dev.id);
+                      const checked = (selectedDeveloperIds ?? []).includes(dev.id);
                       return (
                         <button
                           key={dev.id}
@@ -298,7 +328,7 @@ export default function EpicsPage() {
                 <Button type="button" variant="ghost" onClick={() => setIsCreateOpen(false)} className="text-zinc-400">
                   Cancelar
                 </Button>
-                <Button type="submit" className="bg-violet-600 hover:bg-violet-700">
+                <Button type="button" onClick={() => void handleCreate(form.getValues())} className="bg-violet-600 hover:bg-violet-700">
                   Criar Epic
                 </Button>
               </div>

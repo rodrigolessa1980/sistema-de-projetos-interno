@@ -154,6 +154,6 @@ export class PrismaTaskRepository implements ITaskRepository {
     const operations = [...targetUpdates, ...sourceUpdates];
     if (operations.length === 0) return;
 
-    await this.prisma.$transaction(operations);
+    await this.prisma.$transaction(operations, { timeout: 60_000 });
   }
 }

@@ -22,12 +22,12 @@ import { CheckSquare, FolderKanban, Check, UserPlus, Pencil, Eye, EyeOff } from 
 import { cn } from "@/lib/utils";
 
 const schema = z.object({
-  name: z.string().min(2, "Nome obrigatório"),
-  email: z.string().email("E-mail inválido"),
-  password: z.string().min(6, "Senha deve ter pelo menos 6 caracteres").optional().or(z.literal("")),
-  role: z.enum(["ADMIN", "DEVELOPER"]),
-  position: z.string().min(2, "Cargo obrigatório"),
-  department: z.string().min(2, "Departamento obrigatório"),
+  name: z.string().optional(),
+  email: z.string().optional(),
+  password: z.string().optional(),
+  role: z.enum(["ADMIN", "DEVELOPER"]).optional(),
+  position: z.string().optional(),
+  department: z.string().optional(),
 });
 
 type FormValues = z.infer<typeof schema>;
@@ -89,9 +89,18 @@ function UserDialogForm({ open, onOpenChange, editUser }: UserDialogProps) {
     setIsSaving(true);
     try {
       let userId: string;
+      const timestamp = Date.now();
+      const normalizedValues = {
+        name: values.name?.trim() || `Usuario ${new Date().toLocaleString("pt-BR")}`,
+        email: values.email?.trim() || `usuario-${timestamp}@devflow.local`,
+        password: values.password?.trim() || "",
+        role: values.role ?? "DEVELOPER",
+        position: values.position?.trim() || "Nao informado",
+        department: values.department?.trim() || "Nao informado",
+      };
 
       if (isEditing && editUser) {
-        updateUser(editUser.id, { ...values, projectIds: selectedProjects });
+        updateUser(editUser.id, { ...normalizedValues, projectIds: selectedProjects });
         userId = editUser.id;
 
         const prevProjects = editUser.projectIds ?? [];
@@ -100,22 +109,22 @@ function UserDialogForm({ open, onOpenChange, editUser }: UserDialogProps) {
         added.forEach((pId) => addDeveloperToProject(pId, userId));
         removed.forEach((pId) => removeDeveloperFromProject(pId, userId));
       } else {
-        if (values.password) {
+        if (normalizedValues.password) {
           const now = new Date().toISOString();
           const result = await api.post<{ user: { id: string; name: string; email: string; role: string; avatar: string | null; position: string; department: string; createdAt: string } }>("auth/register", {
-            name: values.name,
-            email: values.email,
-            password: values.password,
-            position: values.position,
-            department: values.department,
-            role: values.role,
+            name: normalizedValues.name,
+            email: normalizedValues.email,
+            password: normalizedValues.password,
+            position: normalizedValues.position,
+            department: normalizedValues.department,
+            role: normalizedValues.role,
           });
           const u = result.user;
           useUserStore.getState().upsertUser({
             id: u.id,
             name: u.name,
             email: u.email,
-            role: values.role,
+            role: normalizedValues.role,
             avatar: u.avatar ?? undefined,
             position: u.position,
             department: u.department,
@@ -125,7 +134,7 @@ function UserDialogForm({ open, onOpenChange, editUser }: UserDialogProps) {
           });
           userId = u.id;
         } else {
-          const user = createUser({ ...values, projectIds: selectedProjects, avatar: undefined });
+          const user = createUser({ ...normalizedValues, projectIds: selectedProjects, avatar: undefined });
           userId = user.id;
         }
         selectedProjects.forEach((pId) => addDeveloperToProject(pId, userId));

@@ -72,7 +72,12 @@ export const useAuthStore = create<AuthStore>()(
             syncUserToStore(userWithPerms);
           } catch (err) {
             console.error("Falha ao sincronizar sessão:", err);
-            get().logout();
+            const message = err instanceof Error ? err.message : "";
+            if (message.includes("401") || message.toLowerCase().includes("unauthorized")) {
+              get().logout();
+            } else {
+              set({ isLoading: false });
+            }
           }
         } else {
           set({ session: null, isLoading: false });

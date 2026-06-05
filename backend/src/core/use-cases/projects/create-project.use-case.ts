@@ -6,11 +6,11 @@ import { ProjectStatus } from '../../domain/entities/enums';
 
 export interface CreateProjectInput {
   companyId?: string | null;
-  name: string;
-  description: string;
+  name?: string;
+  description?: string;
   ownerId: string;
   status?: ProjectStatus;
-  startDate: Date;
+  startDate?: Date;
   endDate?: Date | null;
   estimatedHours?: number;
   color?: string;
@@ -28,11 +28,11 @@ export class CreateProjectUseCase {
   async execute(input: CreateProjectInput): Promise<Project> {
     const project = new Project({
       companyId: input.companyId,
-      name: input.name,
-      description: input.description,
+      name: input.name?.trim() || `Projeto ${new Date().toLocaleString('pt-BR')}`,
+      description: input.description?.trim() || 'Projeto criado sem descricao.',
       ownerId: input.ownerId,
       status: input.status,
-      startDate: input.startDate,
+      startDate: input.startDate ?? new Date(),
       endDate: input.endDate ?? null,
       estimatedHours: input.estimatedHours ?? 0,
       color: input.color ?? '#6366f1',

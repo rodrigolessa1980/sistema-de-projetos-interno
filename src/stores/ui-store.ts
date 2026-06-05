@@ -17,6 +17,7 @@ interface UIStore {
   markNotificationRead: (id: string) => void;
   markAllRead: (userId?: string) => void;
   addNotification: (notif: Omit<Notification, "id" | "createdAt">) => void;
+  fetchNotifications: () => Promise<void>;
   setSearchQuery: (query: string) => void;
   setSearchOpen: (open: boolean) => void;
 }
@@ -38,16 +39,20 @@ export const useUIStore = create<UIStore>()(
           const updated = state.notifications.map((n) =>
             n.id === id ? { ...n, read: true } : n
           );
+          void api.patch(`notifications/${id}/read`, {}).catch(() => {});
           return { notifications: updated, unreadCount: updated.filter((n) => !n.read).length };
         }),
 
       markAllRead: (userId) =>
-        set((state) => ({
-          notifications: state.notifications.map((n) =>
-            !userId || n.userId === userId ? { ...n, read: true } : n
-          ),
-          unreadCount: state.notifications.filter((n) => !n.read && (!userId || n.userId !== userId)).length,
-        })),
+        set((state) => {
+          void api.patch("notifications/read-all", {}).catch(() => {});
+          return {
+            notifications: state.notifications.map((n) =>
+              !userId || n.userId === userId ? { ...n, read: true } : n
+            ),
+            unreadCount: state.notifications.filter((n) => !n.read && (!userId || n.userId !== userId)).length,
+          };
+        }),
 
       addNotification: (notif) => {
         const now = new Date().toISOString();
@@ -60,6 +65,14 @@ export const useUIStore = create<UIStore>()(
           notifications: [full, ...state.notifications],
           unreadCount: state.unreadCount + (notif.read ? 0 : 1),
         }));
+      },
+
+      fetchNotifications: async () => {
+        const notifications = await api.get<Notification[]>("notifications");
+        set({
+          notifications,
+          unreadCount: notifications.filter((notification) => !notification.read).length,
+        });
       },
 
       setSearchQuery: (query) => set({ searchQuery: query }),

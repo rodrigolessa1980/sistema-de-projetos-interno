@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { AppLayout } from "@/components/layout/app-layout";
 import { useAuth } from "@/hooks/use-auth";
 import { useUserStore } from "@/stores";
 import { EmptyState } from "@/components/shared/empty-state";
-import { Users, ShieldCheck, Save, RotateCcw } from "lucide-react";
+import { Users, Save, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -100,47 +100,47 @@ function formatLastLogin(date: string | null): string {
 export default function UsersPage() {
   const { isAdmin } = useAuth();
   const { users: storeUsers, fetchUsers, updateUserPermissions } = useUserStore();
-  const [users, setUsers] = useState<ApiUser[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [permMap, setPermMap] = useState<PermissionMap>({});
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  const selectedUser = users.find((u) => u.id === selectedId) ?? null;
+  const users = useMemo<ApiUser[]>(() => storeUsers.map((u) => ({
+    id: u.id,
+    name: u.name,
+    email: u.email,
+    role: u.role,
+    avatar: u.avatar ?? null,
+    position: u.position,
+    department: u.department,
+    isActive: true,
+    lastLoginAt: null,
+    permissions: u.permissions ?? [],
+  })), [storeUsers]);
+
+  const selectedUser = users.find((u) => u.id === selectedId) ?? users[0] ?? null;
+  const activePermMap = useMemo(
+    () => (Object.keys(permMap).length > 0 ? permMap : buildPermissionMap(selectedUser?.permissions ?? [])),
+    [permMap, selectedUser]
+  );
 
   const loadUsers = useCallback(async () => {
-    setIsLoading(true);
     try {
       await fetchUsers();
-    } catch (e) {
+    } catch {
       toast.error("Erro ao carregar usuários");
-    } finally {
-      setIsLoading(false);
     }
   }, [fetchUsers]);
 
-  // Sync local state from store
   useEffect(() => {
-    const mapped: ApiUser[] = storeUsers.map((u) => ({
-      id: u.id,
-      name: u.name,
-      email: u.email,
-      role: u.role,
-      avatar: u.avatar ?? null,
-      position: u.position,
-      department: u.department,
-      isActive: true,
-      lastLoginAt: null,
-      permissions: u.permissions ?? [],
-    }));
-    setUsers(mapped);
-    if (!selectedId && mapped.length > 0) {
-      setSelectedId(mapped[0].id);
-      setPermMap(buildPermissionMap(mapped[0].permissions));
-    }
-  }, [storeUsers]);
-
-  useEffect(() => { loadUsers(); }, []);
+    let active = true;
+    loadUsers().finally(() => {
+      if (active) setIsLoading(false);
+    });
+    return () => {
+      active = false;
+    };
+  }, [loadUsers]);
 
   function selectUser(user: ApiUser) {
     setSelectedId(user.id);
@@ -148,23 +148,28 @@ export default function UsersPage() {
   }
 
   function togglePerm(module: string, action: string) {
-    setPermMap((prev) => ({
-      ...prev,
-      [module]: { ...prev[module], [action]: !prev[module][action] },
-    }));
+    setPermMap((prev) => {
+      const base = Object.keys(prev).length > 0 ? prev : activePermMap;
+      return {
+        ...base,
+        [module]: { ...base[module], [action]: !base[module][action] },
+      };
+    });
   }
 
   function toggleRow(module: string, grant: boolean) {
     setPermMap((prev) => {
-      const updated = { ...prev[module] };
+      const base = Object.keys(prev).length > 0 ? prev : activePermMap;
+      const updated = { ...base[module] };
       for (const act of ACTIONS) updated[act.key] = grant;
-      return { ...prev, [module]: updated };
+      return { ...base, [module]: updated };
     });
   }
 
   function toggleColumn(action: string, grant: boolean) {
     setPermMap((prev) => {
-      const next = { ...prev };
+      const base = Object.keys(prev).length > 0 ? prev : activePermMap;
+      const next = { ...base };
       for (const mod of MODULES) {
         next[mod.key] = { ...next[mod.key], [action]: grant };
       }
@@ -173,18 +178,15 @@ export default function UsersPage() {
   }
 
   function isRowAll(module: string): boolean {
-    return ACTIONS.every((a) => permMap[module]?.[a.key]);
+    return ACTIONS.every((a) => activePermMap[module]?.[a.key]);
   }
 
   async function savePermissions() {
-    if (!selectedId) return;
+    if (!selectedUser) return;
     setIsSaving(true);
     try {
-      const perms = flattenPermissionMap(permMap);
-      await updateUserPermissions(selectedId, perms);
-      setUsers((prev) =>
-        prev.map((u) => u.id === selectedId ? { ...u, permissions: perms } : u)
-      );
+      const perms = flattenPermissionMap(activePermMap);
+      await updateUserPermissions(selectedUser.id, perms);
       toast.success("Permissões salvas com sucesso");
     } catch {
       toast.error("Erro ao salvar permissões");
@@ -229,7 +231,7 @@ export default function UsersPage() {
                   onClick={() => selectUser(user)}
                   className={cn(
                     "w-full text-left p-4 transition-all hover:bg-zinc-50 dark:hover:bg-zinc-900",
-                    selectedId === user.id
+                    selectedUser?.id === user.id
                       ? "border-l-2 border-violet-500 bg-violet-50/50 dark:bg-violet-950/20"
                       : "border-l-2 border-transparent"
                   )}
@@ -362,7 +364,7 @@ export default function UsersPage() {
                               </span>
                             </td>
                             {ACTIONS.map((act) => {
-                              const checked = permMap[mod.key]?.[act.key] ?? false;
+                              const checked = activePermMap[mod.key]?.[act.key] ?? false;
                               return (
                                 <td key={act.key} className="px-4 py-3.5 text-center">
                                   <button
@@ -404,7 +406,7 @@ export default function UsersPage() {
                   {/* Resumo */}
                   <div className="px-5 py-3 border-t border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50 flex items-center justify-between">
                     <span className="text-xs text-zinc-500">
-                      {countGranted(permMap)} de {MODULES.length * ACTIONS.length} permissões concedidas
+                      {countGranted(activePermMap)} de {MODULES.length * ACTIONS.length} permissões concedidas
                     </span>
                     <div className="flex gap-2">
                       <button

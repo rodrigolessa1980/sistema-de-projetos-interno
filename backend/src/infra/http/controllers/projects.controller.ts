@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Req, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { ListProjectsUseCase } from '../../../core/use-cases/projects/list-projects.use-case';
 import { GetProjectByIdUseCase } from '../../../core/use-cases/projects/get-project-by-id.use-case';
@@ -13,6 +13,7 @@ import { CreateProjectDto } from '../dtos/projects/create-project.dto';
 import { UpdateProjectDto } from '../dtos/projects/update-project.dto';
 import { ReorderQueueDto } from '../dtos/projects/reorder-queue.dto';
 import { ProjectPresenter, ProjectResponse } from '../presenters/project.presenter';
+import type { AuthenticatedRequest } from '../guards/jwt-auth.guard';
 
 @Controller('projects')
 @UseGuards(JwtAuthGuard)
@@ -48,14 +49,17 @@ export class ProjectsController {
   }
 
   @Post()
-  async create(@Body() body: CreateProjectDto): Promise<ProjectResponse> {
+  async create(
+    @Body() body: CreateProjectDto,
+    @Req() request: AuthenticatedRequest,
+  ): Promise<ProjectResponse> {
     const project = await this.createProjectUseCase.execute({
       companyId: body.companyId,
       name: body.name,
       description: body.description,
-      ownerId: body.ownerId,
+      ownerId: body.ownerId || request.userId,
       status: body.status,
-      startDate: new Date(body.startDate),
+      startDate: body.startDate ? new Date(body.startDate) : undefined,
       endDate: body.endDate ? new Date(body.endDate) : null,
       estimatedHours: body.estimatedHours,
       color: body.color,

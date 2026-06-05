@@ -1,4 +1,4 @@
-import { IsArray, IsDateString, IsEnum, IsInt, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsArray, IsDateString, IsEnum, IsInt, IsNumber, IsOptional, IsString } from 'class-validator';
 import { ProjectStatus } from '../../../../core/domain/entities/enums';
 
 export class CreateProjectDto {
@@ -6,24 +6,25 @@ export class CreateProjectDto {
   @IsString()
   companyId?: string;
 
+  @IsOptional()
   @IsString()
-  @IsNotEmpty()
-  name: string;
+  name?: string;
 
+  @IsOptional()
   @IsString()
-  @IsNotEmpty()
-  description: string;
+  description?: string;
 
+  @IsOptional()
   @IsString()
-  @IsNotEmpty()
-  ownerId: string;
+  ownerId?: string;
 
   @IsOptional()
   @IsEnum(ProjectStatus)
   status?: ProjectStatus;
 
+  @IsOptional()
   @IsDateString()
-  startDate: string;
+  startDate?: string;
 
   @IsOptional()
   @IsDateString()

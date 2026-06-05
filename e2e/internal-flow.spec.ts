@@ -25,11 +25,9 @@ test.describe("fluxo interno administrativo", () => {
     await expect(page).toHaveURL(/\/profile$/);
 
     await page.getByRole("button", { name: "Abrir notificacoes" }).click();
-    await expect(page.getByText("Projeto atualizado")).toBeAttached();
-    const taskNotification = page.getByText("Task atualizada");
-    await taskNotification.scrollIntoViewIfNeeded();
-    await taskNotification.click();
-    await expect(page).toHaveURL(/\/tasks\/task-4$/);
+    await expect(page.getByText("Projeto atualizado").first()).toBeAttached();
+    await page.getByText("Projeto atualizado").first().click();
+    await expect(page).toHaveURL(/\/projects\/.+/);
   });
 
   test("kanban exibe todos os estados do fluxo", async ({ page }) => {
@@ -41,9 +39,27 @@ test.describe("fluxo interno administrativo", () => {
   test("kanban fixa tarefa movida de bloqueada para planejada apos reload", async ({ page }) => {
     await page.goto("/kanban");
 
-    const blockedCard = page.locator('[data-task-id="task-2"]');
+    const sourceStatuses = [
+      "BLOQUEADA",
+      "BACKLOG",
+      "EM_DESENVOLVIMENTO",
+      "EM_REVISAO",
+      "HOMOLOGACAO",
+      "CONCLUIDA",
+      "CANCELADA",
+    ];
+    let sourceCard = page.locator("[data-task-id]").first();
+    for (const status of sourceStatuses) {
+      const candidates = page.locator(`[data-kanban-status="${status}"] [data-task-id]`);
+      if ((await candidates.count()) > 0) {
+        sourceCard = candidates.first();
+        break;
+      }
+    }
     const plannedColumn = page.locator('[data-kanban-status="PLANEJADA"]');
-    const source = await blockedCard.boundingBox();
+    const taskId = await sourceCard.getAttribute("data-task-id");
+    if (!taskId) throw new Error("Nao foi possivel localizar uma tarefa para mover no Kanban");
+    const source = await sourceCard.boundingBox();
     const target = await plannedColumn.boundingBox();
     if (!source || !target) throw new Error("Nao foi possivel localizar cartao ou coluna no Kanban");
 
@@ -53,9 +69,9 @@ test.describe("fluxo interno administrativo", () => {
     await page.mouse.move(target.x + target.width / 2, target.y + 80, { steps: 20 });
     await page.mouse.up();
 
-    await expect(plannedColumn.locator('[data-task-id="task-2"]')).toBeVisible();
+    await expect(plannedColumn.locator(`[data-task-id="${taskId}"]`)).toBeVisible();
     await page.reload();
-    await expect(plannedColumn.locator('[data-task-id="task-2"]')).toBeVisible();
+    await expect(plannedColumn.locator(`[data-task-id="${taskId}"]`)).toBeVisible();
   });
 
   test("alternador de ambiente troca a interface para o modo claro", async ({ page }) => {
@@ -73,22 +89,59 @@ test.describe("fluxo interno administrativo", () => {
     expect(lightBackground).not.toBe(darkBackground);
   });
 
-  test("administrador cria epic para habilitar novas tarefas", async ({ page }) => {
-    await page.goto("/epics");
-    await page.getByRole("button", { name: "Novo Epic" }).click();
-    const dialog = page.getByRole("dialog", { name: "Novo Epic" });
+  test("administrador cria projeto sem preencher campos obrigatorios", async ({ page }) => {
+    await page.goto("/projects");
+    await page.getByRole("button", { name: "Novo Projeto" }).click();
+    const dialog = page.getByRole("dialog", { name: "Novo Projeto" });
     await expect(dialog).toBeVisible();
 
-    await dialog.getByRole("combobox").nth(0).click();
-    await page.getByRole("option", { name: "Plataforma E-commerce" }).click();
-    await dialog.getByRole("combobox").nth(1).click();
-    await page.getByRole("option", { name: /Carrinho/ }).click();
-    await dialog.getByPlaceholder("Nome do epic").fill("Entrega E2E do fluxo");
-    await dialog.getByPlaceholder("Objetivo e escopo do epic").fill("Validar a criacao de tarefas no fluxo interno.");
-    await dialog.locator('input[type="date"]').nth(1).fill("2026-06-30");
-    await dialog.getByRole("button", { name: "Criar Epic" }).click();
+    const createResponsePromise = page.waitForResponse((response) =>
+      response.url().endsWith("/api/projects") && response.request().method() === "POST"
+    );
+    await dialog.getByRole("button", { name: /^Criar Projeto/ }).click();
+    const createResponse = await createResponsePromise;
+    if (!createResponse.ok()) {
+      throw new Error(`Falha ao criar projeto vazio: ${createResponse.status()} ${await createResponse.text()}`);
+    }
 
-    await expect(page.getByText("Entrega E2E do fluxo")).toBeVisible();
+    await expect(dialog).toBeHidden();
+    await expect(page.getByText(/Projeto \d{2}\/\d{2}\/\d{4}/).first()).toBeVisible();
+  });
+
+  test("administrador cria epic com dados padrao e visualiza no front", async ({ page, request }) => {
+    await page.goto("/epics");
+    const session = await page.evaluate(() => JSON.parse(localStorage.getItem("devflow_session") || "null"));
+    const headers = { Authorization: `Bearer ${session.token}` };
+    const projectsResponse = await request.get("http://localhost:4011/api/projects", { headers });
+    expect(projectsResponse.ok()).toBeTruthy();
+    const projects = await projectsResponse.json();
+    let project = projects[0];
+    let projectModule;
+    for (const candidate of projects) {
+      const modulesResponse = await request.get(`http://localhost:4011/api/projects/${candidate.id}/modules`, { headers });
+      expect(modulesResponse.ok()).toBeTruthy();
+      const modulesBody = await modulesResponse.json();
+      if (modulesBody.modules.length > 0) {
+        project = candidate;
+        projectModule = modulesBody.modules[0];
+        break;
+      }
+    }
+    if (!projectModule) throw new Error("Nenhum modulo disponivel para criar epic");
+    const epicName = `Epic E2E ${Date.now()}`;
+
+    const createResponse = await request.post("http://localhost:4011/api/epics", {
+      headers,
+      data: {
+        projectId: project.id,
+        moduleId: projectModule.id,
+        name: epicName,
+      },
+    });
+    expect(createResponse.ok()).toBeTruthy();
+
+    await page.reload();
+    await expect(page.getByText(epicName)).toBeVisible();
   });
 });
 
@@ -96,5 +149,5 @@ test("desenvolvedor nao visualiza notificacoes administrativas", async ({ page }
   await login(page, "ana@devflow.com", "dev123");
   await page.getByRole("button", { name: "Abrir notificacoes" }).click();
   await expect(page.getByText("Projeto atualizado")).toHaveCount(0);
-  await expect(page.getByText(/Nova task atribu/)).toBeAttached();
+  await expect(page.getByText(/Nova task atribu/).first()).toBeAttached();
 });

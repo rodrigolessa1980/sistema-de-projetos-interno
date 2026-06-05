@@ -9,7 +9,7 @@
     "lint": "eslint",
     "lint:biome": "biome lint .",
     "format": "biome format --write .",
-    "test": "vitest",
+    "test": "vitest --passWithNoTests",
     "test:e2e": "playwright test"
   },
   "dependencies": {

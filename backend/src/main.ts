@@ -10,8 +10,19 @@ async function bootstrap() {
   app.use(require('express').urlencoded({ limit: '10mb', extended: true }));
 
   app.setGlobalPrefix('api');
+  const allowedOrigins = (process.env.CORS_ORIGIN ?? 'http://localhost:8022')
+    .split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean);
+
   app.enableCors({
-    origin: process.env.CORS_ORIGIN?.split(',') ?? ['http://localhost:8022'],
+    origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+        return;
+      }
+      callback(new Error(`Origin not allowed by CORS: ${origin}`));
+    },
     credentials: true,
   });
   app.useGlobalPipes(

@@ -52,13 +52,13 @@ const statusColors: Record<ProjectStatus, string> = {
 
 const createProjectSchema = z.object({
   companyId: z.string().optional(),
-  name: z.string().min(3, "Mínimo 3 caracteres"),
-  description: z.string().min(10, "Mínimo 10 caracteres"),
-  status: z.enum(["ATIVO", "PAUSADO", "CONCLUIDO", "CANCELADO", "NA_FILA"]),
-  startDate: z.string().min(1, "Data obrigatória"),
-  endDate: z.string().min(1, "Prazo de entrega obrigatório"),
-  estimatedHours: z.number().min(1),
-  color: z.string(),
+  name: z.string().optional(),
+  description: z.string().optional(),
+  status: z.enum(["ATIVO", "PAUSADO", "CONCLUIDO", "CANCELADO", "NA_FILA"]).optional(),
+  startDate: z.string().optional(),
+  endDate: z.string().optional(),
+  estimatedHours: z.number().optional(),
+  color: z.string().optional(),
   testUrl: z.string().url("URL inválida").optional().or(z.literal("")),
 });
 
@@ -133,15 +133,22 @@ export default function ProjectsPage() {
   }
 
   const onSubmit = async (data: CreateProjectForm) => {
+    const fallbackName = `Projeto ${new Date().toLocaleString("pt-BR")}`;
+    const startDate = data.startDate || new Date().toISOString().split("T")[0];
     const newProject = await createProject({
       ...data,
+      name: data.name?.trim() || fallbackName,
+      description: data.description?.trim() || "Projeto criado sem descricao.",
+      status: data.status ?? "ATIVO",
       companyId: data.companyId || undefined,
       ownerId: user?.id ?? "",
       developerIds: [],
       actualHours: 0,
       progress: 0,
-      estimatedHours: data.estimatedHours,
+      estimatedHours: data.estimatedHours ?? 0,
       avatar: avatarPreview ?? undefined,
+      color: data.color || projectColors[0],
+      startDate,
       testUrl: data.testUrl || undefined,
       endDate: data.endDate || undefined,
     });
@@ -357,7 +364,7 @@ export default function ProjectsPage() {
                 <div className="relative shrink-0">
                   <ProjectAvatar
                     name={watchedName || "PR"}
-                    color={watchedColor}
+                    color={watchedColor || projectColors[0]}
                     avatar={avatarPreview ?? undefined}
                     size="xl"
                   />

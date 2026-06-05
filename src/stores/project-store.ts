@@ -31,7 +31,7 @@ interface ProjectStore {
   updateModule: (id: string, data: Partial<Module>) => Promise<Module>;
   deleteModule: (id: string) => void;
   createModulesBulk: (projectId: string, modules: { name: string; description: string }[]) => Promise<Module[]>;
-  createEpic: (data: Omit<Epic, "id" | "createdAt" | "updatedAt">) => Promise<Epic>;
+  createEpic: (data: Omit<Epic, "id" | "createdAt" | "updatedAt" | "status" | "progress">) => Promise<Epic>;
   updateEpic: (id: string, data: Partial<Epic>) => Promise<Epic>;
   setSelectedProject: (id: string | null) => void;
   addDeveloperToProject: (projectId: string, userId: string) => void;

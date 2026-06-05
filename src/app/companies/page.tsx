@@ -30,9 +30,9 @@ const companyColors = [
 ];
 
 const companySchema = z.object({
-  name: z.string().min(3, "Mínimo 3 caracteres"),
-  shortName: z.string().min(1, "Obrigatório").max(10, "Máximo 10 caracteres"),
-  color: z.string(),
+  name: z.string().optional(),
+  shortName: z.string().max(10, "Máximo 10 caracteres").optional(),
+  color: z.string().optional(),
   cnpj: z.string().optional(),
 });
 
@@ -78,7 +78,7 @@ function CompanyFormDialog({
             <div className="flex items-center gap-3 p-3 rounded-lg bg-zinc-800/60 border border-zinc-700/50">
               <div
                 className="w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold text-sm shrink-0"
-                style={{ background: watchedColor }}
+                style={{ background: watchedColor || companyColors[0] }}
               >
                 {watchedShort?.slice(0, 2).toUpperCase() || "??"}
               </div>
@@ -87,9 +87,9 @@ function CompanyFormDialog({
                 <span
                   className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium border"
                   style={{
-                    background: `${watchedColor}18`,
-                    color: watchedColor,
-                    borderColor: `${watchedColor}35`,
+                    background: `${watchedColor || companyColors[0]}18`,
+                    color: watchedColor || companyColors[0],
+                    borderColor: `${watchedColor || companyColors[0]}35`,
                   }}
                 >
                   <Building2 className="w-3 h-3" />
@@ -174,14 +174,26 @@ export default function CompaniesPage() {
   const createDefaults: CompanyForm = { name: "", shortName: "", color: companyColors[0], cnpj: "" };
 
   function handleCreate(data: CompanyForm) {
-    createCompany({ ...data, cnpj: data.cnpj || undefined });
+    createCompany({
+      ...data,
+      name: data.name?.trim() || `Empresa ${new Date().toLocaleString("pt-BR")}`,
+      shortName: data.shortName?.trim() || "EMP",
+      color: data.color || companyColors[0],
+      cnpj: data.cnpj || undefined,
+    });
     toast.success("Empresa cadastrada com sucesso!");
     setIsCreateOpen(false);
   }
 
   function handleEdit(data: CompanyForm) {
     if (!editingCompany) return;
-    updateCompany(editingCompany.id, { ...data, cnpj: data.cnpj || undefined });
+    updateCompany(editingCompany.id, {
+      ...data,
+      name: data.name?.trim() || editingCompany.name,
+      shortName: data.shortName?.trim() || editingCompany.shortName,
+      color: data.color || editingCompany.color,
+      cnpj: data.cnpj || undefined,
+    });
     toast.success("Empresa atualizada!");
     setEditingCompany(null);
   }
