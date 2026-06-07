@@ -118,8 +118,6 @@ export function TaskCreateDialog({ open, onOpenChange }: Props) {
       status: finalStatus,
       reporterId: user?.id ?? "",
       actualHours: 0,
-      dependencyIds: selectedDepIds,
-      tags: [],
       order: 0,
       isUrgent,
       blockedReason: hasPendingDeps

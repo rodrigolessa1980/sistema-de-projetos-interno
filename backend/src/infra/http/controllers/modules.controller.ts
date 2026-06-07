@@ -1,14 +1,22 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { CreateModuleUseCase } from '../../../core/use-cases/modules/create-module.use-case';
+import { UpdateModuleUseCase } from '../../../core/use-cases/modules/update-module.use-case';
+import { DeleteModuleUseCase } from '../../../core/use-cases/modules/delete-module.use-case';
 import { ListModulesByProjectUseCase } from '../../../core/use-cases/modules/list-modules-by-project.use-case';
 import { CreateEpicUseCase } from '../../../core/use-cases/epics/create-epic.use-case';
 import { ListEpicsByProjectUseCase } from '../../../core/use-cases/epics/list-epics-by-project.use-case';
-import { IsNotEmpty, IsOptional, IsString, IsDateString, IsArray } from 'class-validator';
+import { IsInt, IsNotEmpty, IsOptional, IsString, IsDateString, IsArray } from 'class-validator';
 
 class CreateModuleDto {
   @IsString() @IsNotEmpty() projectId: string;
   @IsString() @IsNotEmpty() name: string;
+  @IsOptional() @IsString() description?: string;
+  @IsOptional() @IsInt() order?: number;
+}
+
+class UpdateModuleDto {
+  @IsOptional() @IsString() @IsNotEmpty() name?: string;
   @IsOptional() @IsString() description?: string;
 }
 
@@ -57,6 +65,8 @@ function epicToHTTP(e: any) {
 export class ModulesController {
   constructor(
     private readonly createModuleUseCase: CreateModuleUseCase,
+    private readonly updateModuleUseCase: UpdateModuleUseCase,
+    private readonly deleteModuleUseCase: DeleteModuleUseCase,
     private readonly listModulesByProjectUseCase: ListModulesByProjectUseCase,
     private readonly createEpicUseCase: CreateEpicUseCase,
     private readonly listEpicsByProjectUseCase: ListEpicsByProjectUseCase,
@@ -74,8 +84,24 @@ export class ModulesController {
       projectId: body.projectId,
       name: body.name,
       description: body.description ?? '',
+      order: body.order,
     });
     return { module: moduleToHTTP(module) };
+  }
+
+  @Patch('modules/:id')
+  async updateModule(@Param('id') id: string, @Body() body: UpdateModuleDto) {
+    const module = await this.updateModuleUseCase.execute(id, {
+      name: body.name,
+      description: body.description,
+    });
+    return { module: moduleToHTTP(module) };
+  }
+
+  @Delete('modules/:id')
+  @HttpCode(204)
+  async deleteModule(@Param('id') id: string) {
+    await this.deleteModuleUseCase.execute(id);
   }
 
   @Get('projects/:projectId/epics')

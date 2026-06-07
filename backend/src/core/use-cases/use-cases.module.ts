@@ -25,6 +25,8 @@ import { ReorderQueueUseCase } from './projects/reorder-queue.use-case';
 import { AddDeveloperUseCase } from './projects/add-developer.use-case';
 import { RemoveDeveloperUseCase } from './projects/remove-developer.use-case';
 import { CreateModuleUseCase } from './modules/create-module.use-case';
+import { UpdateModuleUseCase } from './modules/update-module.use-case';
+import { DeleteModuleUseCase } from './modules/delete-module.use-case';
 import { ListModulesByProjectUseCase } from './modules/list-modules-by-project.use-case';
 import { CreateEpicUseCase } from './epics/create-epic.use-case';
 import { ListEpicsByProjectUseCase } from './epics/list-epics-by-project.use-case';
@@ -80,6 +82,8 @@ const useCases = [
 
   // Modules
   CreateModuleUseCase,
+  UpdateModuleUseCase,
+  DeleteModuleUseCase,
   ListModulesByProjectUseCase,
 
   // Epics

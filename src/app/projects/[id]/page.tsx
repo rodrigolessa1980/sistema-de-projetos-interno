@@ -15,7 +15,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   ChevronLeft, Clock, CheckCircle2, AlertTriangle, Layers,
   Crown, UserPlus, UserMinus, ShieldCheck, RefreshCw, ExternalLink, Link2,
-  Plus, Pencil, Trash2, Check, X, Box,
+  Plus, Pencil, Trash2, Check, X, Box, Paperclip, ChevronDown,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { ProjectAvatar } from "@/components/shared/project-avatar";
@@ -24,11 +24,12 @@ import { notFound } from "next/navigation";
 import { ReassignPopover } from "@/components/shared/reassign-popover";
 import { toast } from "sonner";
 import type { User } from "@/types";
+import { ModuleAttachmentsPanel } from "@/features/modules/module-attachments-panel";
 
 export default function ProjectDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const { getProjectById, getModulesByProject, getEpicsByProject, updateProject, addDeveloperToProject, removeDeveloperFromProject, createModule, updateModule, deleteModule } = useProjectStore();
-  const { getTasksByProject, updateTask } = useTaskStore();
+  const { getTasksByProject, updateTask, getAttachmentsByModule } = useTaskStore();
   const { users } = useUserStore();
   const { isAdmin } = useAuth();
 
@@ -38,6 +39,9 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
   const [editingName, setEditingName] = useState("");
   const [editingDesc, setEditingDesc] = useState("");
   const [addingModule, setAddingModule] = useState(false);
+  const [savingModule, setSavingModule] = useState(false);
+  const [savingEditId, setSavingEditId] = useState<string | null>(null);
+  const [openAttachmentsId, setOpenAttachmentsId] = useState<string | null>(null);
 
   const project = getProjectById(id);
   if (!project) notFound();
@@ -77,19 +81,33 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
   async function handleAddModule() {
     const name = newModuleName.trim();
     if (!name) return;
-    const existingCount = modules.length;
-    await createModule({ projectId: id, name, description: newModuleDesc.trim(), order: existingCount, progress: 0 });
-    setNewModuleName("");
-    setNewModuleDesc("");
-    setAddingModule(false);
-    toast.success("Módulo adicionado");
+    setSavingModule(true);
+    try {
+      const existingCount = modules.length;
+      await createModule({ projectId: id, name, description: newModuleDesc.trim(), order: existingCount });
+      setNewModuleName("");
+      setNewModuleDesc("");
+      setAddingModule(false);
+      toast.success("Módulo adicionado");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Erro ao salvar módulo");
+    } finally {
+      setSavingModule(false);
+    }
   }
 
   async function handleSaveEdit(moduleId: string) {
     if (!editingName.trim()) return;
-    await updateModule(moduleId, { name: editingName.trim(), description: editingDesc.trim() });
-    setEditingModuleId(null);
-    toast.success("Módulo atualizado");
+    setSavingEditId(moduleId);
+    try {
+      await updateModule(moduleId, { name: editingName.trim(), description: editingDesc.trim() });
+      setEditingModuleId(null);
+      toast.success("Módulo atualizado");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Erro ao atualizar módulo");
+    } finally {
+      setSavingEditId(null);
+    }
   }
 
   function startEdit(mod: { id: string; name: string; description: string }) {
@@ -141,7 +159,7 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
               </div>
               {project.testUrl && (
                 <a
-                  href={project.testUrl}
+                  href={/^https?:\/\//i.test(project.testUrl) ? project.testUrl : `https://${project.testUrl}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-1.5 text-xs text-cyan-400 hover:text-cyan-300 transition-colors group"
@@ -153,8 +171,12 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
               {isAdmin && (
                 <button
                   onClick={() => {
-                    const url = prompt("URL de Homologação / Teste:", project.testUrl ?? "");
-                    if (url !== null) updateProject(id, { testUrl: url.trim() || undefined });
+                    const raw = prompt("URL de Homologação / Teste:", project.testUrl ?? "");
+                    if (raw !== null) {
+                      const trimmed = raw.trim();
+                      const normalized = trimmed && !/^https?:\/\//i.test(trimmed) ? `https://${trimmed}` : trimmed;
+                      updateProject(id, { testUrl: normalized || undefined });
+                    }
                   }}
                   className="flex items-center gap-1 text-xs text-zinc-600 hover:text-zinc-400 transition-colors"
                 >
@@ -238,11 +260,12 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
                     className="w-full text-sm bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-zinc-200 placeholder-zinc-600 outline-none focus:border-violet-500/50 transition-colors resize-none"
                   />
                   <div className="flex justify-end gap-2">
-                    <Button size="sm" variant="ghost" onClick={() => { setAddingModule(false); setNewModuleName(""); setNewModuleDesc(""); }} className="h-7 text-xs text-zinc-400">
+                    <Button size="sm" variant="ghost" onClick={() => { setAddingModule(false); setNewModuleName(""); setNewModuleDesc(""); }} className="h-7 text-xs text-zinc-400" disabled={savingModule}>
                       Cancelar
                     </Button>
-                    <Button size="sm" onClick={handleAddModule} disabled={!newModuleName.trim()} className="h-7 text-xs bg-violet-600 hover:bg-violet-700 gap-1">
-                      <Check className="w-3.5 h-3.5" /> Salvar Módulo
+                    <Button size="sm" onClick={handleAddModule} disabled={!newModuleName.trim() || savingModule} className="h-7 text-xs bg-violet-600 hover:bg-violet-700 gap-1">
+                      {savingModule ? <div className="w-3.5 h-3.5 border-2 border-white/40 border-t-white rounded-full animate-spin" /> : <Check className="w-3.5 h-3.5" />}
+                      {savingModule ? "Salvando..." : "Salvar Módulo"}
                     </Button>
                   </div>
                 </motion.div>
@@ -288,11 +311,12 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
                       className="w-full text-sm bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-zinc-200 placeholder-zinc-600 outline-none focus:border-violet-500/50 transition-colors resize-none"
                     />
                     <div className="flex justify-end gap-2">
-                      <Button size="sm" variant="ghost" onClick={() => setEditingModuleId(null)} className="h-7 text-xs text-zinc-400">
+                      <Button size="sm" variant="ghost" onClick={() => setEditingModuleId(null)} className="h-7 text-xs text-zinc-400" disabled={savingEditId === module.id}>
                         <X className="w-3.5 h-3.5 mr-1" /> Cancelar
                       </Button>
-                      <Button size="sm" onClick={() => handleSaveEdit(module.id)} className="h-7 text-xs bg-violet-600 hover:bg-violet-700 gap-1">
-                        <Check className="w-3.5 h-3.5" /> Salvar
+                      <Button size="sm" onClick={() => handleSaveEdit(module.id)} disabled={!editingName.trim() || savingEditId === module.id} className="h-7 text-xs bg-violet-600 hover:bg-violet-700 gap-1">
+                        {savingEditId === module.id ? <div className="w-3.5 h-3.5 border-2 border-white/40 border-t-white rounded-full animate-spin" /> : <Check className="w-3.5 h-3.5" />}
+                        {savingEditId === module.id ? "Salvando..." : "Salvar"}
                       </Button>
                     </div>
                   </div>
@@ -330,11 +354,34 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
                     {module.description && (
                       <p className="text-xs text-zinc-500 mb-3">{module.description}</p>
                     )}
-                    <div className="flex items-center gap-4 text-xs text-zinc-500">
-                      <span>{modEpics.length} épico{modEpics.length !== 1 ? "s" : ""}</span>
-                      <span>{modTasks.length} tarefa{modTasks.length !== 1 ? "s" : ""}</span>
-                      <span>{modTasks.filter((t) => t.status === "CONCLUIDA").length} concluída{modTasks.filter((t) => t.status === "CONCLUIDA").length !== 1 ? "s" : ""}</span>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4 text-xs text-zinc-500">
+                        <span>{modEpics.length} épico{modEpics.length !== 1 ? "s" : ""}</span>
+                        <span>{modTasks.length} tarefa{modTasks.length !== 1 ? "s" : ""}</span>
+                        <span>{modTasks.filter((t) => t.status === "CONCLUIDA").length} concluída{modTasks.filter((t) => t.status === "CONCLUIDA").length !== 1 ? "s" : ""}</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setOpenAttachmentsId(openAttachmentsId === module.id ? null : module.id)}
+                        className="flex items-center gap-1 text-xs text-zinc-500 hover:text-zinc-300 transition-colors"
+                      >
+                        <Paperclip className="w-3 h-3" />
+                        <span>Anexos{getAttachmentsByModule(module.id).length > 0 ? ` (${getAttachmentsByModule(module.id).length})` : ""}</span>
+                        <ChevronDown className={`w-3 h-3 transition-transform ${openAttachmentsId === module.id ? "rotate-180" : ""}`} />
+                      </button>
                     </div>
+                    <AnimatePresence>
+                      {openAttachmentsId === module.id && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: "auto" }}
+                          exit={{ opacity: 0, height: 0 }}
+                          transition={{ duration: 0.2 }}
+                        >
+                          <ModuleAttachmentsPanel moduleId={module.id} />
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </>
                 )}
               </motion.div>

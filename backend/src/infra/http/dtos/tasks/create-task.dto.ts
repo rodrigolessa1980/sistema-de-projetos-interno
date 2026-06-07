@@ -1,4 +1,5 @@
-import { IsDateString, IsInt, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsDateString, IsEnum, IsInt, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { TaskStatus } from '../../../core/domain/entities/enums';
 
 export class CreateTaskDto {
   @IsString()
@@ -26,6 +27,10 @@ export class CreateTaskDto {
   description: string;
 
   @IsOptional()
+  @IsEnum(TaskStatus)
+  status?: TaskStatus;
+
+  @IsOptional()
   @IsInt()
   complexity?: number;
 
@@ -40,6 +45,18 @@ export class CreateTaskDto {
   @IsOptional()
   @IsInt()
   estimatedHours?: number;
+
+  @IsOptional()
+  @IsNumber()
+  actualHours?: number;
+
+  @IsOptional()
+  @IsInt()
+  order?: number;
+
+  @IsOptional()
+  @IsString()
+  blockedReason?: string | null;
 
   @IsOptional()
   @IsDateString()

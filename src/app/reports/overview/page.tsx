@@ -38,8 +38,9 @@ export default function OverviewReportPage() {
   const { tasks, timeLogs } = useTaskStore();
   const { projects } = useProjectStore();
   const { users } = useUserStore();
-  const { isAdmin } = useAuth();
+  const { isAdmin, isLoading } = useAuth();
 
+  if (isLoading) return null;
   if (!isAdmin) notFound();
 
   const today = new Date().toISOString().split("T")[0];

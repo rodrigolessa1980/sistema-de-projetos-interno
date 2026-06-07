@@ -99,6 +99,20 @@ export interface Module {
   updatedAt: string;
 }
 
+export interface ModuleAttachment {
+  id: string;
+  moduleId: string;
+  userId: string;
+  name: string;
+  /** MIME type */
+  type: string;
+  /** Tamanho em bytes */
+  size: number;
+  /** Base64 data URL para persistência local */
+  dataUrl: string;
+  createdAt: string;
+}
+
 export interface Epic {
   id: string;
   projectId: string;

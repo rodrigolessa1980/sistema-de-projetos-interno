@@ -47,6 +47,14 @@ export class PrismaModuleRepository implements IModuleRepository {
     return raws.map((r) => this.mapToDomain(r));
   }
 
+  async update(id: string, data: { name?: string; description?: string }): Promise<Module> {
+    const raw = await this.prisma.module.update({
+      where: { id },
+      data: { ...data, updatedAt: new Date() },
+    });
+    return this.mapToDomain(raw);
+  }
+
   async delete(id: string): Promise<void> {
     await this.prisma.module.delete({ where: { id } });
   }

@@ -41,9 +41,13 @@ export class TasksController {
       assigneeId: body.assigneeId,
       reporterId: body.reporterId,
       estimatedHours: body.estimatedHours,
+      actualHours: body.actualHours,
+      order: body.order,
+      blockedReason: body.blockedReason,
       startDate: body.startDate ? new Date(body.startDate) : null,
       dueDate: body.dueDate ? new Date(body.dueDate) : null,
       isUrgent: body.isUrgent,
+      status: body.status,
     });
     return TaskPresenter.toHTTP(task);
   }

@@ -11,10 +11,14 @@ export interface CreateTaskInput {
   parentTaskId?: string | null;
   title: string;
   description: string;
+  status?: TaskStatus;
   complexity?: number;
   assigneeId: string;
   reporterId: string;
   estimatedHours?: number;
+  actualHours?: number;
+  order?: number;
+  blockedReason?: string | null;
   startDate?: Date | null;
   dueDate?: Date | null;
   isUrgent?: boolean;
@@ -35,14 +39,17 @@ export class CreateTaskUseCase {
       parentTaskId: input.parentTaskId ?? null,
       title: input.title,
       description: input.description,
+      status: input.status ?? TaskStatus.BACKLOG,
       complexity: input.complexity ?? 1,
       assigneeId: input.assigneeId,
       reporterId: input.reporterId,
       estimatedHours: input.estimatedHours ?? 0,
+      actualHours: input.actualHours ?? 0,
+      order: input.order ?? 0,
+      blockedReason: input.blockedReason ?? null,
       startDate: input.startDate ?? null,
       dueDate: input.dueDate ?? null,
       isUrgent: input.isUrgent ?? false,
-      status: TaskStatus.BACKLOG,
     });
 
     const savedTask = await this.taskRepository.create(task);

@@ -2,7 +2,7 @@
 
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type { Task, Subtask, TimeLog, Comment, TaskDependency, StatusHistory, TaskStatus, TaskNote, TaskAttachment } from "@/types";
+import type { Task, Subtask, TimeLog, Comment, TaskDependency, StatusHistory, TaskStatus, TaskNote, TaskAttachment, ModuleAttachment } from "@/types";
 import { generateId, delay } from "@/lib/utils";
 import type { AuditLog } from "@/types";
 import { api } from "@/lib/api";
@@ -85,10 +85,16 @@ interface TaskStore {
   deleteNote: (id: string) => Promise<void>;
   togglePinNote: (id: string) => Promise<void>;
 
-  // Attachments
+  // Attachments (Tasks)
   getAttachmentsByTask: (taskId: string) => TaskAttachment[];
   addAttachment: (data: Omit<TaskAttachment, "id" | "createdAt">) => Promise<TaskAttachment>;
   deleteAttachment: (id: string) => Promise<void>;
+
+  // Attachments (Modules)
+  moduleAttachments: ModuleAttachment[];
+  getAttachmentsByModule: (moduleId: string) => ModuleAttachment[];
+  addModuleAttachment: (data: Omit<ModuleAttachment, "id" | "createdAt">) => Promise<ModuleAttachment>;
+  deleteModuleAttachment: (id: string) => Promise<void>;
 }
 
 export const useTaskStore = create<TaskStore>()(
@@ -103,6 +109,7 @@ export const useTaskStore = create<TaskStore>()(
   auditLogs: [],
   notes: [],
   attachments: [],
+  moduleAttachments: [],
   isLoading: false,
   selectedTaskId: null,
 
@@ -375,6 +382,28 @@ export const useTaskStore = create<TaskStore>()(
     await delay(150);
     set((state) => ({ attachments: state.attachments.filter((a) => a.id !== id) }));
   },
+
+  // ── Module Attachments ─────────────────────────────────────────────────────
+  getAttachmentsByModule: (moduleId) =>
+    get().moduleAttachments
+      .filter((a) => a.moduleId === moduleId)
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
+
+  addModuleAttachment: async (data) => {
+    await delay(300);
+    const attachment: ModuleAttachment = {
+      ...data,
+      id: generateId("matt"),
+      createdAt: new Date().toISOString(),
+    };
+    set((state) => ({ moduleAttachments: [...state.moduleAttachments, attachment] }));
+    return attachment;
+  },
+
+  deleteModuleAttachment: async (id) => {
+    await delay(150);
+    set((state) => ({ moduleAttachments: state.moduleAttachments.filter((a) => a.id !== id) }));
+  },
   }),
   {
     name: "devflow-tasks",
@@ -385,6 +414,7 @@ export const useTaskStore = create<TaskStore>()(
       auditLogs: state.auditLogs,
       notes: state.notes,
       attachments: state.attachments,
+      moduleAttachments: state.moduleAttachments,
       timeLogs: state.timeLogs,
     }),
   }

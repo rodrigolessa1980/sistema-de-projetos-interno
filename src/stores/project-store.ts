@@ -27,7 +27,7 @@ interface ProjectStore {
   createProject: (data: Omit<Project, "id" | "createdAt" | "updatedAt">) => Promise<Project>;
   updateProject: (id: string, data: Partial<Project>) => Promise<Project>;
   deleteProject: (id: string) => Promise<void>;
-  createModule: (data: Omit<Module, "id" | "createdAt" | "updatedAt">) => Promise<Module>;
+  createModule: (data: Omit<Module, "id" | "createdAt" | "updatedAt" | "progress">) => Promise<Module>;
   updateModule: (id: string, data: Partial<Module>) => Promise<Module>;
   deleteModule: (id: string) => void;
   createModulesBulk: (projectId: string, modules: { name: string; description: string }[]) => Promise<Module[]>;
@@ -176,7 +176,11 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
   },
 
   deleteModule: (id) => {
+    const previous = get().modules;
     set((state) => ({ modules: state.modules.filter((m) => m.id !== id) }));
+    void api.delete(`modules/${id}`).catch(() => {
+      set({ modules: previous });
+    });
   },
 
   createModulesBulk: async (projectId, modulesData) => {
@@ -196,14 +200,10 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
   },
 
   updateModule: async (id, data) => {
-    await delay(300);
-    const now = new Date().toISOString();
-    let updated!: Module;
+    const response = await api.patch<{ module: Module }>(`modules/${id}`, data);
+    const updated = response.module;
     set((state) => ({
-      modules: state.modules.map((m) => {
-        if (m.id === id) { updated = { ...m, ...data, updatedAt: now }; return updated; }
-        return m;
-      }),
+      modules: state.modules.map((m) => (m.id === id ? updated : m)),
     }));
     return updated;
   },
