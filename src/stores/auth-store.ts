@@ -6,6 +6,7 @@ import type { User, AuthSession, LoginCredentials, RegisterCredentials, UserPerm
 import { login as apiLogin, logout as apiLogout, register as apiRegister, getStoredSession } from "@/lib/auth";
 import { api } from "@/lib/api";
 import { useUserStore } from "@/stores/ui-store";
+import { useWorkSessionStore } from "@/stores/work-session-store";
 
 function syncUserToStore(user: User) {
   const now = new Date().toISOString();
@@ -90,6 +91,7 @@ export const useAuthStore = create<AuthStore>()(
           const session = await apiLogin(credentials);
           set({ session, isLoading: false });
           syncUserToStore(session.user);
+          void useWorkSessionStore.getState().syncFromServer();
         } catch (err) {
           set({
             error: err instanceof Error ? err.message : "Erro ao fazer login",
@@ -114,6 +116,7 @@ export const useAuthStore = create<AuthStore>()(
 
       logout: () => {
         apiLogout();
+        useWorkSessionStore.getState().clearSession();
         set({ session: null });
       },
 

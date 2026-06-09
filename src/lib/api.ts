@@ -68,12 +68,16 @@ async function request<T>(endpoint: string, options: RequestOptions = {}): Promi
     throw new Error(errorMessage);
   }
 
-  // Handle empty responses
   if (response.status === 204) {
-    return {} as T;
+    return null as T;
   }
 
-  return response.json();
+  const text = await response.text();
+  if (!text) {
+    return null as T;
+  }
+
+  return JSON.parse(text) as T;
 }
 
 export const api = {

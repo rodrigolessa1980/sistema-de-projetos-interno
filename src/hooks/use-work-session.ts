@@ -21,13 +21,12 @@ export function useWorkSession(taskId: string) {
   const { user } = useAuth();
   const { activeSession, startSession, stopSession, cancelSession, isWorking, getElapsedSeconds } =
     useWorkSessionStore();
-  const { logTime, updateTaskStatus, getTaskById } = useTaskStore();
+  const { appendTimeLog, updateTaskStatus, getTaskById } = useTaskStore();
 
   const isActive = isWorking(taskId);
-  const [elapsed, setElapsed] = useState(() => isActive ? getElapsedSeconds() : 0);
+  const [elapsed, setElapsed] = useState(() => (isActive ? getElapsedSeconds() : 0));
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // Tick em tempo real enquanto a sessão estiver ativa para ESTE task
   useEffect(() => {
     if (!isActive) return;
 
@@ -45,7 +44,6 @@ export function useWorkSession(taskId: string) {
   const start = useCallback(async () => {
     if (!user) return;
 
-    // Bloqueia se houtra sessão em andamento em outra task
     if (activeSession && activeSession.taskId !== taskId) {
       toast.error("Finalize o trabalho na task atual antes de iniciar outra.");
       return;
@@ -54,52 +52,59 @@ export function useWorkSession(taskId: string) {
     const task = getTaskById(taskId);
     if (!task) return;
 
-    // Muda status automaticamente para EM_DESENVOLVIMENTO
-    if (task.status !== "EM_DESENVOLVIMENTO") {
-      await updateTaskStatus(taskId, "EM_DESENVOLVIMENTO", user.id);
-    }
+    try {
+      if (task.status !== "EM_DESENVOLVIMENTO") {
+        await updateTaskStatus(taskId, "EM_DESENVOLVIMENTO", user.id);
+      }
 
-    startSession(taskId, user.id);
-    setElapsed(0);
-    toast.success("Cronômetro iniciado! Bom trabalho 🚀", { duration: 3000 });
+      await startSession({
+        taskId,
+        userId: user.id,
+        projectId: task.projectId,
+        status: "EM_DESENVOLVIMENTO",
+      });
+      setElapsed(0);
+      toast.success("Cronômetro iniciado! Bom trabalho 🚀", { duration: 3000 });
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Erro ao iniciar cronômetro");
+    }
   }, [user, activeSession, taskId, getTaskById, updateTaskStatus, startSession]);
 
   const stop = useCallback(
     async (description = "Trabalho realizado") => {
       if (!user) return;
 
-      const result = stopSession(description);
-      if (!result) return;
+      try {
+        const result = await stopSession(description);
+        if (!result) return;
 
-      const { hours, elapsedSeconds } = result;
-      setElapsed(0);
+        const { hours, elapsedSeconds, timeLog } = result;
+        appendTimeLog(timeLog);
+        setElapsed(0);
 
-      // Registra automaticamente o tempo no time log
-      await logTime({
-        taskId,
-        userId: user.id,
-        hours,
-        description,
-        date: new Date().toISOString().split("T")[0],
-        status: "EM_DESENVOLVIMENTO",
-      });
+        const h = Math.floor(elapsedSeconds / 3600);
+        const m = Math.floor((elapsedSeconds % 3600) / 60);
+        const s = elapsedSeconds % 60;
+        const label = h > 0 ? `${h}h ${m}min` : m > 0 ? `${m}min ${s}s` : `${s}s`;
 
-      const h = Math.floor(elapsedSeconds / 3600);
-      const m = Math.floor((elapsedSeconds % 3600) / 60);
-      const s = elapsedSeconds % 60;
-      const label = h > 0 ? `${h}h ${m}min` : m > 0 ? `${m}min ${s}s` : `${s}s`;
-
-      toast.success(`Trabalho finalizado! ${label} registrado automaticamente.`, {
-        duration: 5000,
-      });
+        toast.success(`Trabalho finalizado! ${label} (${hours}h) registrado automaticamente.`, {
+          duration: 5000,
+        });
+      } catch (err) {
+        toast.error(err instanceof Error ? err.message : "Erro ao finalizar cronômetro");
+      }
     },
-    [user, stopSession, logTime, taskId]
+    [user, stopSession, appendTimeLog]
   );
 
-  const cancel = useCallback(() => {
-    cancelSession();
-    setElapsed(0);
-    toast.info("Sessão cancelada. Tempo não registrado.");
+  const cancel = useCallback(async () => {
+    try {
+      await cancelSession();
+      setElapsed(0);
+      toast.info("Sessão cancelada. Tempo não registrado.");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Erro ao cancelar sessão");
+    }
   }, [cancelSession]);
 
   const displayedElapsed = isActive ? elapsed : 0;
@@ -108,7 +113,6 @@ export function useWorkSession(taskId: string) {
     isActive,
     elapsed: displayedElapsed,
     elapsedFormatted: formatElapsed(displayedElapsed),
-    /** Se há alguma sessão ativa em outra task */
     hasOtherActiveSession: !!activeSession && activeSession.taskId !== taskId,
     activeSession,
     start,
@@ -137,4 +141,24 @@ export function useActiveWorkSession() {
 
   const displayedElapsed = activeSession ? elapsed : 0;
   return { activeSession, elapsed: displayedElapsed, elapsedFormatted: formatElapsed(displayedElapsed) };
+}
+
+/** Sincroniza sessão ativa com o servidor (login, refresh, troca de aba) */
+export function useSyncWorkSession(enabled: boolean) {
+  const syncFromServer = useWorkSessionStore((s) => s.syncFromServer);
+
+  useEffect(() => {
+    if (!enabled) return;
+
+    void syncFromServer();
+
+    const onVisible = () => {
+      if (document.visibilityState === "visible") {
+        void syncFromServer();
+      }
+    };
+
+    document.addEventListener("visibilitychange", onVisible);
+    return () => document.removeEventListener("visibilitychange", onVisible);
+  }, [enabled, syncFromServer]);
 }

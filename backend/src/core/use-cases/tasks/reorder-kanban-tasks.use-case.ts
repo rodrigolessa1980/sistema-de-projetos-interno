@@ -3,6 +3,7 @@ import { TaskStatus } from '../../domain/entities/enums';
 import { NotFoundException } from '../../domain/exceptions/not-found.exception';
 import type { ITaskRepository } from '../../domain/repositories/task-repository.interface';
 import { ITaskRepositoryToken } from '../../domain/repositories/task-repository.interface';
+import { ReleaseUrgencyBlocksUseCase } from './release-urgency-blocks.use-case';
 
 export interface ReorderKanbanTasksInput {
   taskId: string;
@@ -17,6 +18,7 @@ export class ReorderKanbanTasksUseCase {
   constructor(
     @Inject(ITaskRepositoryToken)
     private readonly taskRepository: ITaskRepository,
+    private readonly releaseUrgencyBlocksUseCase: ReleaseUrgencyBlocksUseCase,
   ) {}
 
   async execute(input: ReorderKanbanTasksInput): Promise<void> {
@@ -38,6 +40,14 @@ export class ReorderKanbanTasksUseCase {
       throw new BadRequestException('A lista de origem contém tarefas duplicadas.');
     }
 
+    const isCompleting =
+      input.targetStatus !== task.status &&
+      (input.targetStatus === TaskStatus.CONCLUIDA || input.targetStatus === TaskStatus.CANCELADA);
+
     await this.taskRepository.updateKanbanOrder(input);
+
+    if (isCompleting) {
+      await this.releaseUrgencyBlocksUseCase.execute(input.taskId);
+    }
   }
 }

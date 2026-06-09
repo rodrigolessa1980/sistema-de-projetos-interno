@@ -15,6 +15,7 @@ export interface ITaskRepository {
   update(task: Task): Promise<Task>;
   delete(id: string): Promise<void>;
   findByAssignee(assigneeId: string): Promise<Task[]>;
+  findByUrgentBlockedById(urgentTaskId: string): Promise<Task[]>;
   findByProjectId(projectId: string): Promise<Task[]>;
   setTaskUrgent(id: string, isUrgent: boolean): Promise<void>;
   updateKanbanOrder(input: KanbanOrderUpdate): Promise<void>;

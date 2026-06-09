@@ -103,13 +103,16 @@ export class Task {
   }
 
   public releaseUrgencyBlock(): void {
-    if (this.props.status === TaskStatus.BLOQUEADA && this.props.urgentBlockedById) {
-      this.props.status = this.props.urgentPreviousStatus || TaskStatus.BACKLOG;
-      this.props.urgentBlockedById = null;
-      this.props.urgentPreviousStatus = null;
-      this.props.blockedReason = null;
-      this.props.updatedAt = new Date();
+    if (!this.props.urgentBlockedById) {
+      return;
     }
+    if (this.props.status === TaskStatus.BLOQUEADA) {
+      this.props.status = this.props.urgentPreviousStatus || TaskStatus.BACKLOG;
+    }
+    this.props.urgentBlockedById = null;
+    this.props.urgentPreviousStatus = null;
+    this.props.blockedReason = null;
+    this.props.updatedAt = new Date();
   }
 
   public addHours(hours: number): void {

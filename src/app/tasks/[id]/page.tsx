@@ -25,7 +25,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { toast } from "sonner";
 import type { TaskStatus } from "@/types";
-import { useUpdateTaskStatus, useLogTime } from "@/hooks/use-tasks";
+import { useTask, useUpdateTaskStatus, useLogTime } from "@/hooks/use-tasks";
 import { WorkTimer } from "@/components/shared/work-timer";
 import { NotesPanel } from "@/features/tasks/notes-panel";
 import { AttachmentsPanel } from "@/features/tasks/attachments-panel";
@@ -38,6 +38,7 @@ export default function TaskDetailPage({ params }: { params: Promise<{ id: strin
   const { user, isAdmin } = useAuth();
   const updateStatus = useUpdateTaskStatus();
   const logTimeMutation = useLogTime();
+  useTask(id);
 
   const [commentText, setCommentText] = useState("");
   const [newSubtask, setNewSubtask] = useState("");
@@ -210,7 +211,8 @@ export default function TaskDetailPage({ params }: { params: Promise<{ id: strin
               {/* Banner bloqueado por urgência */}
               {task.urgentBlockedById && (() => {
                 const urgentTask = tasks.find((t) => t.id === task.urgentBlockedById);
-                return urgentTask ? (
+                const isStillBlocking = urgentTask && !["CONCLUIDA", "CANCELADA"].includes(urgentTask.status);
+                return urgentTask && isStillBlocking ? (
                   <div className="flex items-start gap-2 p-3 rounded-lg bg-orange-500/10 border border-orange-500/20 mb-4">
                     <ShieldAlert className="w-4 h-4 text-orange-400 shrink-0 mt-0.5" />
                     <div>
