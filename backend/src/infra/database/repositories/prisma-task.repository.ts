@@ -111,6 +111,11 @@ export class PrismaTaskRepository implements ITaskRepository {
     return raws.map((raw) => this.mapToDomain(raw));
   }
 
+  async findByUrgentBlockedById(urgentTaskId: string): Promise<Task[]> {
+    const raws = await this.prisma.task.findMany({ where: { urgentBlockedById: urgentTaskId } });
+    return raws.map((raw) => this.mapToDomain(raw));
+  }
+
   async findByProjectId(projectId: string): Promise<Task[]> {
     const raws = await this.prisma.task.findMany({ where: { projectId } });
     return raws.map((raw) => this.mapToDomain(raw));

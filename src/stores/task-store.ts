@@ -17,6 +17,20 @@ type ApiTask = Omit<Task, "parentTaskId" | "startDate" | "dueDate" | "completedA
   urgentPreviousStatus?: TaskStatus | null;
 };
 
+const TERMINAL_STATUSES: TaskStatus[] = ["CONCLUIDA", "CANCELADA"];
+
+const releaseUrgencyBlocksInStore = (tasks: Task[], urgentTaskId: string): Task[] =>
+  tasks.map((task) => {
+    if (task.urgentBlockedById !== urgentTaskId) return task;
+    return {
+      ...task,
+      status: task.status === "BLOQUEADA" ? (task.urgentPreviousStatus ?? "BACKLOG") : task.status,
+      urgentBlockedById: undefined,
+      urgentPreviousStatus: undefined,
+      blockedReason: undefined,
+    };
+  });
+
 const normalizeTask = (task: ApiTask): Task => ({
   ...task,
   parentTaskId: task.parentTaskId ?? undefined,
@@ -62,6 +76,7 @@ interface TaskStore {
   updateTaskStatus: (id: string, newStatus: TaskStatus, userId: string) => Promise<void>;
   deleteTask: (id: string) => Promise<void>;
   logTime: (data: Omit<TimeLog, "id" | "createdAt">) => Promise<TimeLog>;
+  appendTimeLog: (log: TimeLog) => void;
   addComment: (data: Omit<Comment, "id" | "createdAt" | "updatedAt">) => Promise<Comment>;
   toggleSubtask: (subtaskId: string) => Promise<void>;
   addSubtask: (data: Omit<Subtask, "id" | "createdAt" | "updatedAt">) => Promise<Subtask>;
@@ -164,7 +179,12 @@ export const useTaskStore = create<TaskStore>()(
     void userId;
     const updated = normalizeTask(await api.put<ApiTask>(`tasks/${id}`, { status: newStatus }));
     set((state) => ({
-      tasks: state.tasks.map((task) => (task.id === id ? updated : task)),
+      tasks: TERMINAL_STATUSES.includes(newStatus)
+        ? releaseUrgencyBlocksInStore(
+            state.tasks.map((task) => (task.id === id ? updated : task)),
+            id,
+          )
+        : state.tasks.map((task) => (task.id === id ? updated : task)),
     }));
   },
 
@@ -183,18 +203,24 @@ export const useTaskStore = create<TaskStore>()(
       projectId: task.projectId,
       source: "MANUAL",
     });
+    get().appendTimeLog(log);
+    return log;
+  },
+
+  appendTimeLog: (log) => {
     set((state) => {
       const now = new Date().toISOString();
-      const taskLogs = state.timeLogs.filter((tl) => tl.taskId === data.taskId);
-      const totalHours = taskLogs.reduce((acc, tl) => acc + tl.hours, 0) + data.hours;
+      const taskLogs = [...state.timeLogs.filter((tl) => tl.id !== log.id), log];
+      const totalHours = taskLogs
+        .filter((tl) => tl.taskId === log.taskId)
+        .reduce((acc, tl) => acc + tl.hours, 0);
       return {
-        timeLogs: [...state.timeLogs, log],
+        timeLogs: taskLogs,
         tasks: state.tasks.map((t) =>
-          t.id === data.taskId ? { ...t, actualHours: totalHours, updatedAt: now } : t
+          t.id === log.taskId ? { ...t, actualHours: totalHours, updatedAt: now } : t
         ),
       };
     });
-    return log;
   },
 
   addComment: async (data) => {
@@ -285,8 +311,8 @@ export const useTaskStore = create<TaskStore>()(
     const targetOrder = new Map(targetTaskIds.map((id, index) => [id, index]));
     const sourceOrder = new Map(sourceTaskIds.map((id, index) => [id, index]));
 
-    set((state) => ({
-      tasks: state.tasks.map((task) => {
+    set((state) => {
+      let nextTasks = state.tasks.map((task) => {
         const targetIndex = targetOrder.get(task.id);
         if (targetIndex !== undefined) {
           return {
@@ -314,8 +340,14 @@ export const useTaskStore = create<TaskStore>()(
         }
 
         return task;
-      }),
-    }));
+      });
+
+      if (TERMINAL_STATUSES.includes(targetStatus)) {
+        nextTasks = releaseUrgencyBlocksInStore(nextTasks, taskId);
+      }
+
+      return { tasks: nextTasks };
+    });
   },
 
   // ── Notes ─────────────────────────────────────────────────────────────────

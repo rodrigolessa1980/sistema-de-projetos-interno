@@ -14,7 +14,7 @@ import {
   CalendarX, TrendingUp,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { Task } from "@/types";
+import type { Task, Project } from "@/types";
 
 function hoursDisplay(h: number) {
   if (h < 0.017) return null;
@@ -29,7 +29,7 @@ function TaskRow({
   todayHours,
 }: {
   task: Task;
-  projects: ReturnType<typeof useProjectStore>["projects"];
+  projects: Project[];
   isActive: boolean;
   elapsedSeconds: number;
   todayHours: number;

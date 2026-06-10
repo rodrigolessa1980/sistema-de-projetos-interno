@@ -98,7 +98,6 @@ export default function EpicsPage() {
         name: "Modulo Geral",
         description: "Modulo criado automaticamente.",
         order: 0,
-        progress: 0,
       });
     }
     const finalModuleId = data.moduleId || fallbackModule?.id || "";

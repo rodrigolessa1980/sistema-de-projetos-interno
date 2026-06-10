@@ -1,85 +1,126 @@
 "use client";
 
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
-import { generateId } from "@/lib/utils";
+import { api } from "@/lib/api";
+import type { TaskStatus, TimeLog } from "@/types";
 
 export interface WorkSession {
   id: string;
   taskId: string;
   userId: string;
   startedAt: string;
-  /** Descrição opcional preenchida ao pausar/finalizar */
   description?: string;
 }
 
-interface WorkSessionStore {
-  /** Sessão atualmente ativa (apenas uma por vez por usuário) */
-  activeSession: WorkSession | null;
-  /** Histórico de sessões finalizadas nesta aba (memória da sessão do navegador) */
-  finishedSessions: Array<WorkSession & { endedAt: string; elapsedSeconds: number }>;
+interface TrackerTimeLog {
+  id: string;
+  projectId: string;
+  taskId: string;
+  userId: string;
+  hours: number;
+  durationSeconds: number | null;
+  description: string;
+  date: string;
+  startedAt: string | null;
+  endedAt: string | null;
+  status: TaskStatus;
+  createdAt: string;
+}
 
-  startSession: (taskId: string, userId: string) => WorkSession;
-  stopSession: (description?: string) => { elapsedSeconds: number; hours: number } | null;
-  cancelSession: () => void;
+const toWorkSession = (log: TrackerTimeLog): WorkSession => ({
+  id: log.id,
+  taskId: log.taskId,
+  userId: log.userId,
+  startedAt: log.startedAt ?? log.createdAt,
+});
+
+const toTimeLog = (log: TrackerTimeLog): TimeLog => ({
+  id: log.id,
+  taskId: log.taskId,
+  userId: log.userId,
+  hours: log.hours,
+  description: log.description,
+  date: log.date.split("T")[0],
+  status: log.status,
+  createdAt: log.createdAt,
+});
+
+interface WorkSessionStore {
+  activeSession: WorkSession | null;
+  isSyncing: boolean;
+
+  syncFromServer: () => Promise<void>;
+  startSession: (input: { taskId: string; userId: string; projectId: string; status?: TaskStatus }) => Promise<WorkSession>;
+  stopSession: (description?: string) => Promise<{ elapsedSeconds: number; hours: number; timeLog: TimeLog } | null>;
+  cancelSession: () => Promise<void>;
+  clearSession: () => void;
   isWorking: (taskId: string) => boolean;
   getElapsedSeconds: () => number;
 }
 
-export const useWorkSessionStore = create<WorkSessionStore>()(
-  persist(
-    (set, get) => ({
-      activeSession: null,
-      finishedSessions: [],
+export const useWorkSessionStore = create<WorkSessionStore>()((set, get) => ({
+  activeSession: null,
+  isSyncing: false,
 
-      startSession: (taskId, userId) => {
-        // Garante que só existe uma sessão ativa por vez
-        const session: WorkSession = {
-          id: generateId("ws"),
-          taskId,
-          userId,
-          startedAt: new Date().toISOString(),
-        };
-        set({ activeSession: session });
-        return session;
-      },
-
-      stopSession: (description) => {
-        const { activeSession } = get();
-        if (!activeSession) return null;
-
-        const endedAt = new Date().toISOString();
-        const elapsedMs = new Date(endedAt).getTime() - new Date(activeSession.startedAt).getTime();
-        const elapsedSeconds = Math.floor(elapsedMs / 1000);
-        // Arredondar para 0.25h mínimo, precisão de 0.25h
-        const rawHours = elapsedMs / 3_600_000;
-        const hours = Math.max(0.25, Math.round(rawHours * 4) / 4);
-
-        set((state) => ({
-          activeSession: null,
-          finishedSessions: [
-            ...state.finishedSessions,
-            { ...activeSession, description, endedAt, elapsedSeconds },
-          ],
-        }));
-
-        return { elapsedSeconds, hours };
-      },
-
-      cancelSession: () => set({ activeSession: null }),
-
-      isWorking: (taskId) => get().activeSession?.taskId === taskId,
-
-      getElapsedSeconds: () => {
-        const { activeSession } = get();
-        if (!activeSession) return 0;
-        return Math.floor((Date.now() - new Date(activeSession.startedAt).getTime()) / 1000);
-      },
-    }),
-    {
-      name: "devflow-work-session",
-      // Persiste apenas a sessão ativa para sobreviver a refreshes
-      partialize: (state) => ({ activeSession: state.activeSession }),
+  syncFromServer: async () => {
+    set({ isSyncing: true });
+    try {
+      const active = await api.get<TrackerTimeLog | null>("time-logs/tracker/active");
+      set({ activeSession: active ? toWorkSession(active) : null });
+    } catch {
+      // Mantém estado atual se a API estiver indisponível
+    } finally {
+      set({ isSyncing: false });
     }
-  )
-);
+  },
+
+  startSession: async ({ taskId, userId, projectId, status = "EM_DESENVOLVIMENTO" }) => {
+    const log = await api.post<TrackerTimeLog>("time-logs/tracker/start", {
+      projectId,
+      taskId,
+      status,
+    });
+    const session = toWorkSession(log);
+    set({ activeSession: session });
+    return session;
+  },
+
+  stopSession: async (description = "Trabalho realizado") => {
+    const { activeSession } = get();
+    if (!activeSession) return null;
+
+    const startedAt = new Date(activeSession.startedAt).getTime();
+    const log = await api.post<TrackerTimeLog>("time-logs/tracker/stop", { description });
+    const endedAt = log.endedAt ? new Date(log.endedAt).getTime() : Date.now();
+    const elapsedSeconds = log.durationSeconds ?? Math.max(1, Math.floor((endedAt - startedAt) / 1000));
+
+    set({ activeSession: null });
+    return {
+      elapsedSeconds,
+      hours: log.hours,
+      timeLog: toTimeLog(log),
+    };
+  },
+
+  cancelSession: async () => {
+    const { activeSession } = get();
+    if (!activeSession) return;
+
+    try {
+      await api.delete(`time-logs/${activeSession.id}`);
+    } catch {
+      // Se já foi removido no servidor, apenas limpa o estado local
+    }
+    set({ activeSession: null });
+  },
+
+  clearSession: () => set({ activeSession: null }),
+
+  isWorking: (taskId) => get().activeSession?.taskId === taskId,
+
+  getElapsedSeconds: () => {
+    const { activeSession } = get();
+    if (!activeSession) return 0;
+    return Math.floor((Date.now() - new Date(activeSession.startedAt).getTime()) / 1000);
+  },
+}));

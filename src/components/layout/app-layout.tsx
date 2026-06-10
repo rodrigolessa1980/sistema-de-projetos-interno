@@ -3,6 +3,7 @@
 import { Sidebar } from "./sidebar";
 import { Header } from "./header";
 import { useAuth } from "@/hooks/use-auth";
+import { useSyncWorkSession } from "@/hooks/use-work-session";
 import { useRouter, usePathname } from "next/navigation";
 import { useEffect } from "react";
 import { motion } from "framer-motion";
@@ -21,6 +22,7 @@ export function AppLayout({ children, title }: AppLayoutProps) {
   const fetchTasksForProjects = useTaskStore((s) => s.fetchTasksForProjects);
   const fetchNotifications = useUIStore((s) => s.fetchNotifications);
   const fetchUsers = useUserStore((s) => s.fetchUsers);
+  useSyncWorkSession(isAuthenticated);
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated && pathname !== "/login") {

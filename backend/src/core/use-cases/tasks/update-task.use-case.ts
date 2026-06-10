@@ -3,6 +3,7 @@ import type { ITaskRepository } from '../../domain/repositories/task-repository.
 import { ITaskRepositoryToken } from '../../domain/repositories/task-repository.interface';
 import { Task } from '../../domain/entities/task.entity';
 import { TaskStatus } from '../../domain/entities/enums';
+import { ReleaseUrgencyBlocksUseCase } from './release-urgency-blocks.use-case';
 
 export interface UpdateTaskInput {
   id: string;
@@ -29,6 +30,7 @@ export class UpdateTaskUseCase {
   constructor(
     @Inject(ITaskRepositoryToken)
     private readonly taskRepository: ITaskRepository,
+    private readonly releaseUrgencyBlocksUseCase: ReleaseUrgencyBlocksUseCase,
   ) {}
 
   async execute(input: UpdateTaskInput): Promise<Task> {
@@ -77,15 +79,7 @@ export class UpdateTaskUseCase {
 
     // Regras de transição de Urgência:
     if (wasActiveAndUrgent && !isActiveAndUrgent) {
-      // Deixou de ser urgente ou ativa (concluída/cancelada/removida urgência)
-      // Liberar as tarefas que estavam bloqueadas por esta
-      const oldAssigneeTasks = await this.taskRepository.findByAssignee(oldAssigneeId);
-      for (const t of oldAssigneeTasks) {
-        if (t.urgentBlockedById === saved.id) {
-          t.releaseUrgencyBlock();
-          await this.taskRepository.update(t);
-        }
-      }
+      await this.releaseUrgencyBlocksUseCase.execute(saved.id);
     } else if (!wasActiveAndUrgent && isActiveAndUrgent) {
       // Passou a ser ativa e urgente
       // Bloquear todas as outras tarefas ativas do novo assignee
@@ -98,15 +92,8 @@ export class UpdateTaskUseCase {
       }
     } else if (wasActiveAndUrgent && isActiveAndUrgent && oldAssigneeId !== newAssigneeId) {
       // Continua ativa e urgente, mas mudou de desenvolvedor
-      // 1. Liberar as tarefas do antigo assignee
-      const oldAssigneeTasks = await this.taskRepository.findByAssignee(oldAssigneeId);
-      for (const t of oldAssigneeTasks) {
-        if (t.urgentBlockedById === saved.id) {
-          t.releaseUrgencyBlock();
-          await this.taskRepository.update(t);
-        }
-      }
-      // 2. Bloquear as do novo assignee
+      await this.releaseUrgencyBlocksUseCase.execute(saved.id);
+      // Bloquear as do novo assignee
       const newAssigneeTasks = await this.taskRepository.findByAssignee(newAssigneeId);
       for (const t of newAssigneeTasks) {
         if (t.id !== saved.id && t.status !== TaskStatus.CONCLUIDA && t.status !== TaskStatus.CANCELADA) {
@@ -114,6 +101,11 @@ export class UpdateTaskUseCase {
           await this.taskRepository.update(t);
         }
       }
+    } else if (
+      (newStatus === TaskStatus.CONCLUIDA || newStatus === TaskStatus.CANCELADA) &&
+      oldStatus !== newStatus
+    ) {
+      await this.releaseUrgencyBlocksUseCase.execute(saved.id);
     }
 
     return saved;

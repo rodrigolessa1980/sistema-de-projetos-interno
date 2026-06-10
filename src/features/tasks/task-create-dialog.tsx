@@ -119,6 +119,8 @@ export function TaskCreateDialog({ open, onOpenChange }: Props) {
       reporterId: user?.id ?? "",
       actualHours: 0,
       order: 0,
+      dependencyIds: [],
+      tags: [],
       isUrgent,
       blockedReason: hasPendingDeps
         ? `Aguardando conclusão de: ${selectedDepTasks.filter((t) => t.status !== "CONCLUIDA" && t.status !== "CANCELADA").map((t) => t.title).join(", ")}`

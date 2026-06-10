@@ -40,6 +40,7 @@ import { ListTasksByProjectUseCase } from './tasks/list-tasks-by-project.use-cas
 import { ListTasksByAssigneeUseCase } from './tasks/list-tasks-by-assignee.use-case';
 import { SetTaskUrgentUseCase } from './tasks/set-task-urgent.use-case';
 import { ReorderKanbanTasksUseCase } from './tasks/reorder-kanban-tasks.use-case';
+import { ReleaseUrgencyBlocksUseCase } from './tasks/release-urgency-blocks.use-case';
 
 // TimeLog Use Cases
 import { CreateTimeLogUseCase } from './time-logs/create-time-log.use-case';
@@ -98,6 +99,7 @@ const useCases = [
   ListTasksByProjectUseCase,
   ListTasksByAssigneeUseCase,
   SetTaskUrgentUseCase,
+  ReleaseUrgencyBlocksUseCase,
   ReorderKanbanTasksUseCase,
 
   // TimeLogs

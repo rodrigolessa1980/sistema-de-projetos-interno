@@ -1,13 +1,14 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import type { ITaskRepository } from '../../domain/repositories/task-repository.interface';
 import { ITaskRepositoryToken } from '../../domain/repositories/task-repository.interface';
-import { TaskStatus } from '../../domain/entities/enums';
+import { ReleaseUrgencyBlocksUseCase } from './release-urgency-blocks.use-case';
 
 @Injectable()
 export class DeleteTaskUseCase {
   constructor(
     @Inject(ITaskRepositoryToken)
     private readonly taskRepository: ITaskRepository,
+    private readonly releaseUrgencyBlocksUseCase: ReleaseUrgencyBlocksUseCase,
   ) {}
 
   async execute(id: string): Promise<void> {
@@ -16,19 +17,7 @@ export class DeleteTaskUseCase {
       throw new NotFoundException('Tarefa não encontrada.');
     }
 
-    const wasActiveAndUrgent = existing.isUrgent && existing.status !== TaskStatus.CONCLUIDA && existing.status !== TaskStatus.CANCELADA;
-
-    if (wasActiveAndUrgent) {
-      // Liberar todas as tarefas que estavam bloqueadas por esta
-      const assigneeTasks = await this.taskRepository.findByAssignee(existing.assigneeId);
-      for (const t of assigneeTasks) {
-        if (t.urgentBlockedById === existing.id) {
-          t.releaseUrgencyBlock();
-          await this.taskRepository.update(t);
-        }
-      }
-    }
-
+    await this.releaseUrgencyBlocksUseCase.execute(existing.id);
     await this.taskRepository.delete(id);
   }
 }
