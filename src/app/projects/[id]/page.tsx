@@ -1,11 +1,10 @@
 "use client";
 
-import { use, useState } from "react";
+import { use, useState, useEffect } from "react";
 import { AppLayout } from "@/components/layout/app-layout";
 import { useProjectStore, useTaskStore, useUserStore } from "@/stores";
 import { useAuth } from "@/hooks/use-auth";
 import { StatusBadge, ComplexityBadge } from "@/components/shared/task-badge";
-import { formatDate } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import { Progress } from "@/components/ui/progress";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -14,17 +13,32 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   ChevronLeft, Clock, CheckCircle2, AlertTriangle, Layers,
-  Crown, UserPlus, UserMinus, ShieldCheck, RefreshCw, ExternalLink, Link2,
+  Crown, UserPlus, UserMinus, ExternalLink, Link2,
   Plus, Pencil, Trash2, Check, X, Box, Paperclip, ChevronDown,
+  TrendingUp, Calendar, BarChart3, Target,
 } from "lucide-react";
-import { Input } from "@/components/ui/input";
 import { ProjectAvatar } from "@/components/shared/project-avatar";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ReassignPopover } from "@/components/shared/reassign-popover";
 import { toast } from "sonner";
-import type { User } from "@/types";
 import { ModuleAttachmentsPanel } from "@/features/modules/module-attachments-panel";
+import { api } from "@/lib/api";
+
+interface DevStats {
+  userId: string; name: string; avatar: string | null;
+  totalHours: number; logCount: number; taskCount: number; avgHoursPerDay: number;
+}
+interface CalendarDay {
+  date: string; totalHours: number;
+  developers: { userId: string; name: string; avatar: string | null; hours: number; logs: { taskId: string; taskTitle: string; hours: number; description: string }[] }[];
+}
+interface ProjectSummary {
+  estimatedHours: number; actualHours: number; remainingHours: number;
+  progressPercent: number; deviationPercent: number;
+  workingDaysConsumed: number; workingDaysEstimated: number;
+  developers: DevStats[];
+}
 
 export default function ProjectDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -42,9 +56,23 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
   const [savingModule, setSavingModule] = useState(false);
   const [savingEditId, setSavingEditId] = useState<string | null>(null);
   const [openAttachmentsId, setOpenAttachmentsId] = useState<string | null>(null);
+  const [summary, setSummary] = useState<ProjectSummary | null>(null);
+  const [calendar, setCalendar] = useState<CalendarDay[]>([]);
+  const [loadingReport, setLoadingReport] = useState(false);
 
   const project = getProjectById(id);
   if (!project) notFound();
+
+  useEffect(() => {
+    setLoadingReport(true);
+    Promise.all([
+      api.get<ProjectSummary>(`reports/projects/${id}/summary`).catch(() => null),
+      api.get<{ projectId: string; days: CalendarDay[] }>(`reports/projects/${id}/calendar`).catch(() => ({ projectId: id, days: [] })),
+    ]).then(([s, c]) => {
+      if (s) setSummary(s);
+      setCalendar(c?.days ?? []);
+    }).finally(() => setLoadingReport(false));
+  }, [id]);
 
   const modules = getModulesByProject(id);
   const epics = getEpicsByProject(id);
@@ -190,20 +218,43 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
 
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-          {[
-            { label: "Progresso", value: `${project.progress}%`, icon: CheckCircle2 },
-            { label: "Horas Gastas", value: `${project.actualHours}h`, icon: Clock },
-            { label: "Tarefas Totais", value: tasks.length, icon: Layers },
-            { label: "Bloqueadas", value: tasks.filter((t) => t.status === "BLOQUEADA").length, icon: AlertTriangle },
-          ].map((stat) => (
-            <div key={stat.label} className="bg-zinc-900/60 border border-zinc-800/50 rounded-xl p-4">
-              <div className="flex items-center gap-2 mb-2">
-                <stat.icon className="w-4 h-4 text-zinc-500" />
-                <span className="text-xs text-zinc-500">{stat.label}</span>
-              </div>
-              <p className="text-xl font-bold text-zinc-100">{stat.value}</p>
+          <div className="bg-zinc-900/60 border border-zinc-800/50 rounded-xl p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <CheckCircle2 className="w-4 h-4 text-zinc-500" />
+              <span className="text-xs text-zinc-500">Progresso</span>
             </div>
-          ))}
+            <p className="text-xl font-bold text-zinc-100">{project.progress}%</p>
+          </div>
+          <div className="bg-zinc-900/60 border border-zinc-800/50 rounded-xl p-4">
+            <div className="flex items-center gap-2 mb-1">
+              <Clock className="w-4 h-4 text-zinc-500" />
+              <span className="text-xs text-zinc-500">Horas</span>
+            </div>
+            <p className="text-xl font-bold text-zinc-100">
+              {summary ? summary.actualHours.toFixed(1) : project.actualHours.toFixed(1)}h
+            </p>
+            {summary && summary.estimatedHours > 0 && (
+              <p className="text-xs text-zinc-500 mt-0.5">
+                de {summary.estimatedHours}h estimadas
+              </p>
+            )}
+          </div>
+          <div className="bg-zinc-900/60 border border-zinc-800/50 rounded-xl p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <Layers className="w-4 h-4 text-zinc-500" />
+              <span className="text-xs text-zinc-500">Tarefas Totais</span>
+            </div>
+            <p className="text-xl font-bold text-zinc-100">{tasks.length}</p>
+          </div>
+          <div className="bg-zinc-900/60 border border-zinc-800/50 rounded-xl p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <AlertTriangle className="w-4 h-4 text-zinc-500" />
+              <span className="text-xs text-zinc-500">Bloqueadas</span>
+            </div>
+            <p className="text-xl font-bold text-zinc-100">
+              {tasks.filter((t) => t.status === "BLOQUEADA").length}
+            </p>
+          </div>
         </div>
 
         <Tabs defaultValue="modules" className="space-y-4">
@@ -212,6 +263,9 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
             <TabsTrigger value="tasks" className="data-[state=active]:bg-zinc-800">Tasks</TabsTrigger>
             <TabsTrigger value="team" className="data-[state=active]:bg-zinc-800">
               Equipe ({devs.length + 1})
+            </TabsTrigger>
+            <TabsTrigger value="hours" className="data-[state=active]:bg-zinc-800">
+              <BarChart3 className="w-3.5 h-3.5 mr-1" /> Horas
             </TabsTrigger>
           </TabsList>
 
@@ -576,6 +630,147 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
                 </div>
               )}
             </div>
+          </TabsContent>
+          {/* Horas */}
+          <TabsContent value="hours" className="space-y-6">
+            <div className="flex items-center justify-between">
+              <p className="text-xs text-zinc-500">Dados consolidados do backend em tempo real</p>
+              <Link
+                href={`/reports/projects/${id}`}
+                className="text-xs text-violet-400 hover:text-violet-300 transition-colors"
+              >
+                Relatório completo →
+              </Link>
+            </div>
+            {loadingReport && (
+              <div className="flex items-center justify-center py-16">
+                <div className="w-6 h-6 border-2 border-violet-500/40 border-t-violet-500 rounded-full animate-spin" />
+              </div>
+            )}
+
+            {!loadingReport && summary && (
+              <>
+                {/* Cards de estimativa */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {[
+                    { label: "Horas estimadas", value: `${summary.estimatedHours}h`, icon: Target, color: "text-zinc-400" },
+                    { label: "Horas realizadas", value: `${summary.actualHours.toFixed(1)}h`, icon: Clock, color: "text-violet-400" },
+                    { label: "Horas restantes", value: `${summary.remainingHours.toFixed(1)}h`, icon: TrendingUp, color: summary.remainingHours <= 0 ? "text-red-400" : "text-emerald-400" },
+                    { label: "Desvio", value: `${summary.deviationPercent}%`, icon: BarChart3, color: summary.deviationPercent > 100 ? "text-red-400" : "text-emerald-400" },
+                  ].map((s) => (
+                    <div key={s.label} className="bg-zinc-900/60 border border-zinc-800/50 rounded-xl p-4">
+                      <div className="flex items-center gap-2 mb-2">
+                        <s.icon className={`w-4 h-4 ${s.color}`} />
+                        <span className="text-xs text-zinc-500">{s.label}</span>
+                      </div>
+                      <p className={`text-xl font-bold ${s.color}`}>{s.value}</p>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Dias úteis */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="bg-zinc-900/60 border border-zinc-800/50 rounded-xl p-4">
+                    <p className="text-xs text-zinc-500 mb-1">Dias úteis estimados (÷ 8h)</p>
+                    <p className="text-2xl font-bold text-zinc-100">{summary.workingDaysEstimated}</p>
+                  </div>
+                  <div className="bg-zinc-900/60 border border-zinc-800/50 rounded-xl p-4">
+                    <p className="text-xs text-zinc-500 mb-1">Dias úteis consumidos (÷ 8h)</p>
+                    <p className="text-2xl font-bold text-zinc-100">{summary.workingDaysConsumed}</p>
+                  </div>
+                </div>
+
+                {/* Ranking de desenvolvedores */}
+                {summary.developers.length > 0 && (
+                  <div className="bg-zinc-900/60 border border-zinc-800/50 rounded-xl p-5">
+                    <h3 className="text-sm font-semibold text-zinc-300 mb-4 flex items-center gap-2">
+                      <BarChart3 className="w-4 h-4 text-violet-400" /> Desempenho por Desenvolvedor
+                    </h3>
+                    <div className="space-y-3">
+                      {summary.developers.map((dev, i) => {
+                        const pct = summary.actualHours > 0 ? (dev.totalHours / summary.actualHours) * 100 : 0;
+                        return (
+                          <div key={dev.userId} className="flex items-center gap-3">
+                            <span className="text-xs text-zinc-600 w-4">{i + 1}</span>
+                            <Avatar className="w-7 h-7 shrink-0">
+                              <AvatarFallback className="text-[9px] bg-zinc-700">
+                                {dev.name.slice(0, 2).toUpperCase()}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center justify-between mb-1">
+                                <span className="text-xs text-zinc-300 truncate">{dev.name}</span>
+                                <span className="text-xs text-zinc-400 shrink-0 ml-2 font-medium">{dev.totalHours.toFixed(1)}h</span>
+                              </div>
+                              <div className="h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+                                <div
+                                  className="h-full bg-violet-500 rounded-full transition-all"
+                                  style={{ width: `${pct}%` }}
+                                />
+                              </div>
+                              <div className="flex gap-3 mt-1 text-[10px] text-zinc-600">
+                                <span>{dev.taskCount} task{dev.taskCount !== 1 ? "s" : ""}</span>
+                                <span>{dev.avgHoursPerDay}h/dia</span>
+                                <span>{dev.logCount} registro{dev.logCount !== 1 ? "s" : ""}</span>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
+
+            {/* Calendário */}
+            {!loadingReport && calendar.length > 0 && (
+              <div className="bg-zinc-900/60 border border-zinc-800/50 rounded-xl p-5">
+                <h3 className="text-sm font-semibold text-zinc-300 mb-4 flex items-center gap-2">
+                  <Calendar className="w-4 h-4 text-violet-400" /> Calendário de Trabalho
+                </h3>
+                <div className="space-y-3">
+                  {calendar.map((day) => (
+                    <div key={day.date} className="border border-zinc-800/60 rounded-xl overflow-hidden">
+                      <div className="flex items-center justify-between px-4 py-2 bg-zinc-800/40">
+                        <span className="text-xs font-medium text-zinc-300">
+                          {new Date(day.date + "T12:00:00").toLocaleDateString("pt-BR", { weekday: "short", day: "2-digit", month: "short" })}
+                        </span>
+                        <span className="text-xs font-bold text-violet-400">{day.totalHours.toFixed(1)}h registradas</span>
+                      </div>
+                      <div className="divide-y divide-zinc-800/40">
+                        {day.developers.map((dev) => (
+                          <div key={dev.userId} className="px-4 py-2.5">
+                            <div className="flex items-center gap-2 mb-1.5">
+                              <Avatar className="w-5 h-5">
+                                <AvatarFallback className="text-[8px] bg-zinc-700">{dev.name.slice(0, 2).toUpperCase()}</AvatarFallback>
+                              </Avatar>
+                              <span className="text-xs font-medium text-zinc-300">{dev.name}</span>
+                              <span className="text-xs text-zinc-500 ml-auto">{dev.hours.toFixed(1)}h</span>
+                            </div>
+                            <div className="pl-7 space-y-1">
+                              {dev.logs.map((log, li) => (
+                                <div key={li} className="text-[11px] text-zinc-500 flex gap-2">
+                                  <span className="text-violet-400/70 shrink-0">{log.hours.toFixed(1)}h</span>
+                                  <span className="truncate">{log.taskTitle} — {log.description}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {!loadingReport && !summary && calendar.length === 0 && (
+              <div className="flex flex-col items-center justify-center py-16 text-center">
+                <BarChart3 className="w-10 h-10 text-zinc-700 mb-3" />
+                <p className="text-sm text-zinc-500">Nenhuma hora registrada neste projeto ainda</p>
+              </div>
+            )}
           </TabsContent>
         </Tabs>
       </div>

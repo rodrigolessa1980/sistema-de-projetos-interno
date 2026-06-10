@@ -39,8 +39,12 @@ export class TimeLog {
   }
 
   private validate() {
-    if (this.props.hours <= 0) {
-      throw new Error('As horas registradas devem ser maiores que zero.');
+    if (this.props.hours < 0) {
+      throw new Error('As horas registradas não podem ser negativas.');
+    }
+    // Sessões ativas (timer rodando) têm hours=0 e endedAt=null — são válidas
+    if (this.props.endedAt !== null && this.props.hours === 0) {
+      throw new Error('As horas registradas devem ser maiores que zero em logs finalizados.');
     }
     if (!this.props.description || this.props.description.trim().length === 0) {
       throw new Error('A descrição do log de tempo é obrigatória.');

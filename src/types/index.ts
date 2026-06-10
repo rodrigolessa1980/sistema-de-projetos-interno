@@ -179,11 +179,16 @@ export interface TaskDependency {
 
 export interface TimeLog {
   id: string;
+  projectId: string;
   taskId: string;
   userId: string;
   hours: number;
+  durationSeconds?: number | null;
   description: string;
   date: string;
+  startedAt?: string | null;
+  endedAt?: string | null;
+  source?: "TIMER" | "MANUAL";
   status: TaskStatus;
   createdAt: string;
 }

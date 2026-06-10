@@ -77,6 +77,8 @@ interface TaskStore {
   deleteTask: (id: string) => Promise<void>;
   logTime: (data: Omit<TimeLog, "id" | "createdAt">) => Promise<TimeLog>;
   appendTimeLog: (log: TimeLog) => void;
+  fetchTimeLogsForTask: (taskId: string) => Promise<void>;
+  deleteTimeLog: (id: string, taskId: string) => Promise<void>;
   addComment: (data: Omit<Comment, "id" | "createdAt" | "updatedAt">) => Promise<Comment>;
   toggleSubtask: (subtaskId: string) => Promise<void>;
   addSubtask: (data: Omit<Subtask, "id" | "createdAt" | "updatedAt">) => Promise<Subtask>;
@@ -204,12 +206,13 @@ export const useTaskStore = create<TaskStore>()(
       source: "MANUAL",
     });
     get().appendTimeLog(log);
+    // Atualiza actualHours da task com o valor retornado pelo backend
+    await get().fetchTimeLogsForTask(data.taskId);
     return log;
   },
 
   appendTimeLog: (log) => {
     set((state) => {
-      const now = new Date().toISOString();
       const taskLogs = [...state.timeLogs.filter((tl) => tl.id !== log.id), log];
       const totalHours = taskLogs
         .filter((tl) => tl.taskId === log.taskId)
@@ -217,10 +220,33 @@ export const useTaskStore = create<TaskStore>()(
       return {
         timeLogs: taskLogs,
         tasks: state.tasks.map((t) =>
-          t.id === log.taskId ? { ...t, actualHours: totalHours, updatedAt: now } : t
+          t.id === log.taskId ? { ...t, actualHours: totalHours } : t
         ),
       };
     });
+  },
+
+  fetchTimeLogsForTask: async (taskId) => {
+    const logs = await api.get<TimeLog[]>(`time-logs/task/${taskId}`);
+    const finalized = logs.filter((l) => l.endedAt !== undefined && l.endedAt !== null);
+    const totalHours = finalized.reduce((sum, l) => sum + l.hours, 0);
+    set((state) => ({
+      timeLogs: [
+        ...state.timeLogs.filter((tl) => tl.taskId !== taskId),
+        ...finalized,
+      ],
+      tasks: state.tasks.map((t) =>
+        t.id === taskId ? { ...t, actualHours: totalHours } : t
+      ),
+    }));
+  },
+
+  deleteTimeLog: async (id, taskId) => {
+    await api.delete(`time-logs/${id}`);
+    set((state) => ({
+      timeLogs: state.timeLogs.filter((tl) => tl.id !== id),
+    }));
+    await get().fetchTimeLogsForTask(taskId);
   },
 
   addComment: async (data) => {
@@ -447,7 +473,7 @@ export const useTaskStore = create<TaskStore>()(
       notes: state.notes,
       attachments: state.attachments,
       moduleAttachments: state.moduleAttachments,
-      timeLogs: state.timeLogs,
+      // timeLogs não é persistido — sempre vem do backend
     }),
   }
 ));

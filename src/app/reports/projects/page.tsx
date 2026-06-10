@@ -156,9 +156,17 @@ export default function ProjectsReportPage() {
                   <span className="flex items-center gap-1"><Box className="w-3 h-3" /> {ps.modules.length} módulo{ps.modules.length !== 1 ? "s" : ""}</span>
                   <span className="flex items-center gap-1"><Users className="w-3 h-3" /> {ps.teamSize} membro{ps.teamSize !== 1 ? "s" : ""}</span>
                 </div>
-                {ps.owner && (
-                  <span>Responsável: <span className="text-zinc-400">{ps.owner.name.split(" ")[0]}</span></span>
-                )}
+                <div className="flex items-center gap-3">
+                  {ps.owner && (
+                    <span>Responsável: <span className="text-zinc-400">{ps.owner.name.split(" ")[0]}</span></span>
+                  )}
+                  <Link
+                    href={`/reports/projects/${ps.project.id}`}
+                    className="text-violet-400 hover:text-violet-300 transition-colors font-medium"
+                  >
+                    Ver relatório →
+                  </Link>
+                </div>
               </div>
             </motion.div>
           ))}

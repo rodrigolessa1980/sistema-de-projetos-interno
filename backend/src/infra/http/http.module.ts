@@ -9,6 +9,7 @@ import { TimeLogsController } from './controllers/time-logs.controller';
 import { UsersController } from './controllers/users.controller';
 import { ModulesController } from './controllers/modules.controller';
 import { NotificationsController } from './controllers/notifications.controller';
+import { ReportsController } from './controllers/reports.controller';
 
 @Module({
   imports: [UseCasesModule],
@@ -22,6 +23,7 @@ import { NotificationsController } from './controllers/notifications.controller'
     UsersController,
     ModulesController,
     NotificationsController,
+    ReportsController,
   ],
 })
 export class HttpModule {}

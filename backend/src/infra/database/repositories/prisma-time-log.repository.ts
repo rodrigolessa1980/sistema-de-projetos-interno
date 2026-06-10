@@ -61,17 +61,41 @@ export class PrismaTimeLogRepository implements ITimeLogRepository {
   }
 
   async findByUserId(userId: string): Promise<TimeLog[]> {
-    const raws = await this.prisma.timeLog.findMany({ where: { userId } });
+    const raws = await this.prisma.timeLog.findMany({
+      where: { userId },
+      orderBy: { date: 'desc' },
+    });
+    return raws.map((raw) => this.mapToDomain(raw));
+  }
+
+  async findByProjectId(projectId: string): Promise<TimeLog[]> {
+    const raws = await this.prisma.timeLog.findMany({
+      where: { projectId },
+      orderBy: { date: 'desc' },
+    });
     return raws.map((raw) => this.mapToDomain(raw));
   }
 
   async findActiveSessionByUserId(userId: string): Promise<TimeLog | null> {
     const raw = await this.prisma.timeLog.findFirst({
-      where: {
-        userId,
-        endedAt: null,
-      },
+      where: { userId, endedAt: null },
     });
     return raw ? this.mapToDomain(raw) : null;
+  }
+
+  async sumFinalizedHoursByTaskId(taskId: string): Promise<number> {
+    const result = await this.prisma.timeLog.aggregate({
+      where: { taskId, endedAt: { not: null } },
+      _sum: { hours: true },
+    });
+    return result._sum.hours ?? 0;
+  }
+
+  async sumFinalizedHoursByProjectId(projectId: string): Promise<number> {
+    const result = await this.prisma.timeLog.aggregate({
+      where: { projectId, endedAt: { not: null } },
+      _sum: { hours: true },
+    });
+    return result._sum.hours ?? 0;
   }
 }

@@ -19,5 +19,6 @@ export interface ITaskRepository {
   findByProjectId(projectId: string): Promise<Task[]>;
   setTaskUrgent(id: string, isUrgent: boolean): Promise<void>;
   updateKanbanOrder(input: KanbanOrderUpdate): Promise<void>;
+  updateActualHours(taskId: string, hours: number): Promise<void>;
 }
 export const ITaskRepositoryToken = Symbol('ITaskRepository');

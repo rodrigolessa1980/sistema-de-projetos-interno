@@ -28,7 +28,7 @@ export class StartTimerUseCase {
       projectId: input.projectId,
       taskId: input.taskId,
       userId: input.userId,
-      hours: 0.01, // Valor mínimo inicial para passar na validação de horas > 0
+      hours: 0,
       description: 'Timer ativo',
       date: new Date(),
       startedAt: new Date(),

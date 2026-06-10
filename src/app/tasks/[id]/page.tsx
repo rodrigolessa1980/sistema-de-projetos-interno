@@ -139,7 +139,7 @@ export default function TaskDetailPage({ params }: { params: Promise<{ id: strin
     const hours = parseFloat(logHours);
     if (!hours || hours <= 0) { toast.error("Informe um valor válido de horas"); return; }
     await logTimeMutation.mutateAsync({
-      taskId: id, userId: user?.id ?? "", hours, description: logDesc,
+      taskId: id, projectId: task.projectId, userId: user?.id ?? "", hours, description: logDesc,
       date: new Date().toISOString().split("T")[0], status: task.status,
     });
     setLogHours(""); setLogDesc("");

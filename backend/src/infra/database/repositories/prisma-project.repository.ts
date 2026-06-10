@@ -124,6 +124,13 @@ export class PrismaProjectRepository implements IProjectRepository {
     await this.prisma.projectDeveloper.deleteMany({ where: { projectId, userId } });
   }
 
+  async updateActualHours(projectId: string, hours: number): Promise<void> {
+    await this.prisma.project.update({
+      where: { id: projectId },
+      data: { actualHours: hours },
+    });
+  }
+
   async updateQueueOrder(orderedIds: string[]): Promise<void> {
     await this.prisma.$transaction(
       orderedIds.map((id, index) =>

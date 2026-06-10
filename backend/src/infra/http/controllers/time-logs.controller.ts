@@ -7,6 +7,7 @@ import { StopTimerUseCase } from '../../../core/use-cases/time-logs/stop-timer.u
 import { GetActiveSessionUseCase } from '../../../core/use-cases/time-logs/get-active-session.use-case';
 import { ListTimeLogsByTaskUseCase } from '../../../core/use-cases/time-logs/list-time-logs-by-task.use-case';
 import { ListTimeLogsByUserUseCase } from '../../../core/use-cases/time-logs/list-time-logs-by-user.use-case';
+import { ListTimeLogsByProjectUseCase } from '../../../core/use-cases/time-logs/list-time-logs-by-project.use-case';
 import { DeleteTimeLogUseCase } from '../../../core/use-cases/time-logs/delete-time-log.use-case';
 import { CreateTimeLogDto } from '../dtos/time-logs/create-time-log.dto';
 import { StartTimerDto } from '../dtos/time-logs/start-timer.dto';
@@ -23,6 +24,7 @@ export class TimeLogsController {
     private readonly getActiveSessionUseCase: GetActiveSessionUseCase,
     private readonly listTimeLogsByTaskUseCase: ListTimeLogsByTaskUseCase,
     private readonly listTimeLogsByUserUseCase: ListTimeLogsByUserUseCase,
+    private readonly listTimeLogsByProjectUseCase: ListTimeLogsByProjectUseCase,
     private readonly deleteTimeLogUseCase: DeleteTimeLogUseCase,
   ) {}
 
@@ -59,6 +61,12 @@ export class TimeLogsController {
   @Get('user/:userId')
   async listByUser(@Param('userId') userId: string): Promise<TimeLogResponse[]> {
     const logs = await this.listTimeLogsByUserUseCase.execute(userId);
+    return logs.map(TimeLogPresenter.toHTTP);
+  }
+
+  @Get('project/:projectId')
+  async listByProject(@Param('projectId') projectId: string): Promise<TimeLogResponse[]> {
+    const logs = await this.listTimeLogsByProjectUseCase.execute(projectId);
     return logs.map(TimeLogPresenter.toHTTP);
   }
 

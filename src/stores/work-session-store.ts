@@ -36,11 +36,15 @@ const toWorkSession = (log: TrackerTimeLog): WorkSession => ({
 
 const toTimeLog = (log: TrackerTimeLog): TimeLog => ({
   id: log.id,
+  projectId: log.projectId,
   taskId: log.taskId,
   userId: log.userId,
   hours: log.hours,
+  durationSeconds: log.durationSeconds,
   description: log.description,
   date: log.date.split("T")[0],
+  startedAt: log.startedAt,
+  endedAt: log.endedAt,
   status: log.status,
   createdAt: log.createdAt,
 });

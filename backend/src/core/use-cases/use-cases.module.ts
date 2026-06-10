@@ -49,6 +49,7 @@ import { StopTimerUseCase } from './time-logs/stop-timer.use-case';
 import { GetActiveSessionUseCase } from './time-logs/get-active-session.use-case';
 import { ListTimeLogsByTaskUseCase } from './time-logs/list-time-logs-by-task.use-case';
 import { ListTimeLogsByUserUseCase } from './time-logs/list-time-logs-by-user.use-case';
+import { ListTimeLogsByProjectUseCase } from './time-logs/list-time-logs-by-project.use-case';
 import { DeleteTimeLogUseCase } from './time-logs/delete-time-log.use-case';
 
 // User Use Cases
@@ -109,6 +110,7 @@ const useCases = [
   GetActiveSessionUseCase,
   ListTimeLogsByTaskUseCase,
   ListTimeLogsByUserUseCase,
+  ListTimeLogsByProjectUseCase,
   DeleteTimeLogUseCase,
 
   // Users & Permissions

@@ -128,6 +128,13 @@ export class PrismaTaskRepository implements ITaskRepository {
     });
   }
 
+  async updateActualHours(taskId: string, hours: number): Promise<void> {
+    await this.prisma.task.update({
+      where: { id: taskId },
+      data: { actualHours: hours },
+    });
+  }
+
   async updateKanbanOrder(input: KanbanOrderUpdate): Promise<void> {
     const completedAt = input.targetStatus === TaskStatus.CONCLUIDA ? new Date() : null;
     const sourceTaskIds =

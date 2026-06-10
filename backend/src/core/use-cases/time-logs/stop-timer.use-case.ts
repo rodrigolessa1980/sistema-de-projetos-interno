@@ -1,6 +1,10 @@
 import { Inject, Injectable, BadRequestException } from '@nestjs/common';
 import type { ITimeLogRepository } from '../../domain/repositories/time-log-repository.interface';
 import { ITimeLogRepositoryToken } from '../../domain/repositories/time-log-repository.interface';
+import type { ITaskRepository } from '../../domain/repositories/task-repository.interface';
+import { ITaskRepositoryToken } from '../../domain/repositories/task-repository.interface';
+import type { IProjectRepository } from '../../domain/repositories/project-repository.interface';
+import { IProjectRepositoryToken } from '../../domain/repositories/project-repository.interface';
 import { TimeLog } from '../../domain/entities/time-log.entity';
 import { TimeLogSource } from '../../domain/entities/enums';
 
@@ -14,6 +18,10 @@ export class StopTimerUseCase {
   constructor(
     @Inject(ITimeLogRepositoryToken)
     private readonly timeLogRepository: ITimeLogRepository,
+    @Inject(ITaskRepositoryToken)
+    private readonly taskRepository: ITaskRepository,
+    @Inject(IProjectRepositoryToken)
+    private readonly projectRepository: IProjectRepository,
   ) {}
 
   async execute(input: StopTimerInput): Promise<TimeLog> {
@@ -49,6 +57,17 @@ export class StopTimerUseCase {
       status: active.status,
     });
 
-    return this.timeLogRepository.create(finalizedTimeLog);
+    const finalized = await this.timeLogRepository.create(finalizedTimeLog);
+
+    const [taskHours, projectHours] = await Promise.all([
+      this.timeLogRepository.sumFinalizedHoursByTaskId(active.taskId),
+      this.timeLogRepository.sumFinalizedHoursByProjectId(active.projectId),
+    ]);
+    await Promise.all([
+      this.taskRepository.updateActualHours(active.taskId, taskHours),
+      this.projectRepository.updateActualHours(active.projectId, projectHours),
+    ]);
+
+    return finalized;
   }
 }
