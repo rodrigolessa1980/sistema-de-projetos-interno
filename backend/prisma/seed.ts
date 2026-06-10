@@ -1,5 +1,4 @@
 import 'dotenv/config';
-import * as bcrypt from 'bcrypt';
 import {
   AuditEntityType,
   NotificationType,
@@ -249,7 +248,7 @@ async function ensureNotification(data: {
   });
 }
 
-async function cleanupPhantomDevelopers(emails: string[]) {
+async function cleanupPhantomUsers(emails: string[], fallbackOwnerId?: string) {
   const users = await prisma.user.findMany({
     where: { email: { in: emails } },
     select: { id: true },
@@ -305,6 +304,12 @@ async function cleanupPhantomDevelopers(emails: string[]) {
   await prisma.epicDeveloper.deleteMany({ where: { userId: { in: userIds } } });
   await prisma.projectDeveloper.deleteMany({ where: { userId: { in: userIds } } });
   await prisma.userPermission.deleteMany({ where: { userId: { in: userIds } } });
+  if (fallbackOwnerId) {
+    await prisma.project.updateMany({
+      where: { ownerId: { in: userIds } },
+      data: { ownerId: fallbackOwnerId },
+    });
+  }
   await prisma.subtask.updateMany({
     where: { assigneeId: { in: userIds } },
     data: { assigneeId: null },
@@ -314,29 +319,29 @@ async function cleanupPhantomDevelopers(emails: string[]) {
 
 async function main() {
   const phantomDeveloperEmails = ['ana@devflow.com', 'lucas@devflow.com', 'fernanda@devflow.com'];
-  await cleanupPhantomDevelopers(phantomDeveloperEmails);
+  const phantomAdminEmails = ['admin@devflow.com'];
 
-  const passwordHash = await bcrypt.hash('admin123', 10);
-
-  const admin = await prisma.user.upsert({
-    where: { email: 'admin@devflow.com' },
-    update: {
-      name: 'Rafael Monteiro',
+  const fallbackAdmin = await prisma.user.findFirst({
+    where: {
       role: UserRole.ADMIN,
-      position: 'CTO',
-      department: 'Tecnologia',
       isActive: true,
+      email: { notIn: phantomAdminEmails },
     },
-    create: {
-      name: 'Rafael Monteiro',
-      email: 'admin@devflow.com',
-      passwordHash,
-      role: UserRole.ADMIN,
-      position: 'CTO',
-      department: 'Tecnologia',
-      avatar: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f98a.png',
-    },
+    orderBy: { createdAt: 'asc' },
   });
+
+  await cleanupPhantomUsers(phantomDeveloperEmails);
+  await cleanupPhantomUsers(phantomAdminEmails, fallbackAdmin?.id);
+
+  const admin = fallbackAdmin ?? await prisma.user.findFirst({
+    where: { role: UserRole.ADMIN, isActive: true },
+    orderBy: { createdAt: 'asc' },
+  });
+
+  if (!admin) {
+    console.log('Seed concluido sem dados: nenhum administrador real ativo encontrado.');
+    return;
+  }
 
   const developers = await prisma.user.findMany({
     where: {

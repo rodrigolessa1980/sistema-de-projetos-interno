@@ -12,7 +12,11 @@ async function login(page: Page, email: string, password: string) {
 
 test.describe("fluxo interno administrativo", () => {
   test.beforeEach(async ({ page }) => {
-    await login(page, "admin@devflow.com", "admin123");
+    await login(
+      page,
+      process.env.E2E_ADMIN_EMAIL ?? "benitesjenifer44@gmail.com",
+      process.env.E2E_ADMIN_PASSWORD ?? "admin123"
+    );
   });
 
   test("atalho de busca, perfil e notificacao relacionada navegam", async ({ page }) => {
