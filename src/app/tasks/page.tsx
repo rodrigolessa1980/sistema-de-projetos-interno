@@ -51,7 +51,7 @@ export default function TasksPage() {
         actions={isAdmin ? [{ label: "Nova Tarefa", onClick: () => setIsCreateOpen(true) }] : undefined}
       />
 
-      <div className="p-6 space-y-4">
+      <div className="p-6 w-full space-y-4">
         <div className="flex flex-wrap items-center gap-3">
           <div className="relative flex-1 min-w-48">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />

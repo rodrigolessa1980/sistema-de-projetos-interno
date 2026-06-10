@@ -53,7 +53,7 @@ export default function MetricsPage() {
 
   return (
     <AppLayout>
-      <div className="p-6 max-w-7xl mx-auto space-y-6">
+      <div className="p-6 w-full space-y-6">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-xl font-bold text-zinc-100">Dashboard de Métricas</h1>

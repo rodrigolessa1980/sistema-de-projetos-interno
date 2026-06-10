@@ -149,7 +149,7 @@ export default function TaskDetailPage({ params }: { params: Promise<{ id: strin
 
   return (
     <AppLayout>
-      <div className="p-6 max-w-6xl mx-auto">
+      <div className="p-6 w-full">
         <div className="flex items-center gap-2 mb-6">
           <Link href="/tasks" className="flex items-center gap-1 text-sm text-zinc-500 hover:text-zinc-300">
             <ChevronLeft className="w-4 h-4" /> Tarefas

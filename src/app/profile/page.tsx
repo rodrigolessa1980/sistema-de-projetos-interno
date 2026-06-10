@@ -50,7 +50,7 @@ export default function ProfilePage() {
 
   return (
     <AppLayout>
-      <div className="p-6 max-w-4xl mx-auto">
+      <div className="p-6 w-full">
         {/* Card do perfil */}
         <motion.div
           initial={{ opacity: 0, y: 12 }}

@@ -19,7 +19,7 @@ export default function ModulesPage() {
   return (
     <AppLayout>
       <PageHeader title="Módulos" description={`${modules.length} módulos em todos os projetos`} />
-      <div className="p-6">
+      <div className="p-6 w-full">
         {modules.length === 0 ? (
           <EmptyState icon={Box} title="Nenhum módulo" description="Os módulos serão exibidos aqui." />
         ) : (

@@ -129,7 +129,7 @@ export default function EpicsPage() {
         description={`${epics.length} epics em andamento`}
         actions={isAdmin ? [{ label: "Novo Epic", onClick: openCreateDialog }] : undefined}
       />
-      <div className="p-6">
+      <div className="p-6 w-full">
         {epics.length === 0 ? (
           <EmptyState icon={Layers} title="Nenhum epic" description="Os epics serão exibidos aqui." />
         ) : (

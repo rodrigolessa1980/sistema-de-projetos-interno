@@ -238,7 +238,7 @@ export default function ProjectsPage() {
         actions={isAdmin ? [{ label: "Novo Projeto", onClick: handleOpenCreate }] : undefined}
       />
 
-      <div className="p-6">
+      <div className="p-6 w-full">
         {visibleProjects.length === 0 ? (
           <EmptyState
             icon={FolderKanban}

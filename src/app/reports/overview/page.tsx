@@ -84,7 +84,7 @@ export default function OverviewReportPage() {
 
   return (
     <AppLayout>
-      <div className="p-6 max-w-7xl mx-auto space-y-6" data-print-content
+      <div className="p-6 w-full space-y-6" data-print-content
         data-print-footer
         data-date={new Date().toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" })}>
         <div className="flex items-start justify-between gap-4" data-print-header>

@@ -319,7 +319,7 @@ export default function KanbanPage() {
 
   return (
     <AppLayout>
-      <div className="flex flex-col h-full">
+      <div className="flex flex-col h-full w-full">
         <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-800/50">
           <div>
             <h1 className="text-lg font-bold text-zinc-100">Quadro Kanban</h1>

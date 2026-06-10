@@ -267,7 +267,7 @@ export default function QueuePage() {
         }
       />
 
-      <div className="p-6">
+      <div className="p-6 w-full">
         {orderedProjects.length === 0 ? (
           <EmptyState
             icon={ListOrdered}

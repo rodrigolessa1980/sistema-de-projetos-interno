@@ -69,7 +69,7 @@ export function AppLayout({ children, title }: AppLayoutProps) {
           initial={{ opacity: 0, y: 4 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.2 }}
-          className="flex-1 overflow-y-auto bg-zinc-950 print:overflow-visible print:h-auto"
+          className="flex-1 overflow-y-auto bg-zinc-950 w-full min-w-0 print:overflow-visible print:h-auto"
         >
           {children}
         </motion.main>

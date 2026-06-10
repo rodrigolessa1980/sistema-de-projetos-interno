@@ -216,7 +216,7 @@ export default function CompaniesPage() {
         actions={isAdmin ? [{ label: "Nova Empresa", onClick: () => setIsCreateOpen(true) }] : undefined}
       />
 
-      <div className="p-6">
+      <div className="p-6 w-full">
         {companies.length === 0 ? (
           <EmptyState
             icon={Building2}

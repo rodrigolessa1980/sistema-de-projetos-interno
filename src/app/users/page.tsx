@@ -210,7 +210,7 @@ export default function UsersPage() {
 
   return (
     <AppLayout>
-      <div className="flex h-[calc(100vh-64px)] overflow-hidden">
+      <div className="flex h-[calc(100vh-64px)] overflow-hidden w-full">
         {/* ── Painel Esquerdo: Lista de Usuários ── */}
         <div className="w-80 min-w-[300px] border-r border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 overflow-y-auto flex flex-col">
           <div className="p-4 border-b border-zinc-200 dark:border-zinc-800">

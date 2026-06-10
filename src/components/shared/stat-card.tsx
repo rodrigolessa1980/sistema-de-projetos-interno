@@ -35,7 +35,7 @@ export function StatCard({ title, value, subtitle, icon: Icon, trend, color = "v
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, delay }}
       className={cn(
-        "relative bg-zinc-900/60 border border-zinc-800/50 rounded-xl p-5 overflow-hidden group hover:border-zinc-700/50 transition-colors",
+        "relative bg-zinc-900/60 border border-zinc-800/50 rounded-xl p-5 overflow-hidden group hover:border-blue-300/50 transition-colors shadow-blue-card",
         className
       )}
     >

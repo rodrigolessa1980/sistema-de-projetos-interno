@@ -59,7 +59,7 @@ export default function ProjectReportPage({ params }: { params: Promise<{ id: st
 
   return (
     <AppLayout>
-      <div className="p-6 max-w-5xl mx-auto space-y-6">
+      <div className="p-6 w-full space-y-6">
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 text-sm text-zinc-500">
           <Link href="/reports/projects" className="hover:text-zinc-300 flex items-center gap-1">

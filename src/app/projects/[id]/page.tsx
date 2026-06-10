@@ -20,12 +20,25 @@ import {
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
   ChevronLeft, Clock, Layers,
   Crown, UserPlus, UserMinus, ExternalLink, Link2,
   Plus, Pencil, Trash2, Check, X, Box,
   TrendingUp, Calendar, BarChart3, Target, Eye,
-  File, FileText, ImageIcon, Download,
+  File, FileText, ImageIcon, Download, MoreVertical,
+  ChevronDown, ChevronUp,
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { ProjectAvatar } from "@/components/shared/project-avatar";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -120,6 +133,9 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
   const [newModuleDate, setNewModuleDate] = useState(today);
   const [pendingAttachments, setPendingAttachments] = useState<PendingModuleFile[]>([]);
   const [technicalDraft, setTechnicalDraft] = useState("");
+  const [editingShowcase, setEditingShowcase] = useState(false);
+  const [showcaseDescExpanded, setShowcaseDescExpanded] = useState(false);
+  const [previewShowcaseImage, setPreviewShowcaseImage] = useState<{ dataUrl: string; name: string } | null>(null);
   const [savingShowcase, setSavingShowcase] = useState(false);
   const [deletingShowcaseFileId, setDeletingShowcaseFileId] = useState<string | null>(null);
   const [editingModuleId, setEditingModuleId] = useState<string | null>(null);
@@ -169,10 +185,16 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
     setTechnicalDraft(project.technicalDescription ?? "");
   }, [project.id, project.technicalDescription]);
 
+  useEffect(() => {
+    setShowcaseDescExpanded(false);
+  }, [id, project.technicalDescription]);
+
   const modules = getModulesByProject(id);
   const epics = getEpicsByProject(id);
   const tasks = getTasksByProject(id);
   const showcaseAttachments = getShowcaseAttachmentsByProject(id);
+  const technicalText = project.technicalDescription?.trim() ?? "";
+  const hasTechnicalText = technicalText.length > 0;
 
   const owner = users.find((u) => u.id === project.ownerId);
   const devs = users.filter((u) => project.developerIds.includes(u.id));
@@ -308,12 +330,23 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
     setSavingShowcase(true);
     try {
       await updateProjectShowcase(id, technicalDraft);
+      setEditingShowcase(false);
       toast.success("Visual do projeto salvo");
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Erro ao salvar visual do projeto");
     } finally {
       setSavingShowcase(false);
     }
+  }
+
+  function startEditShowcase() {
+    setTechnicalDraft(project.technicalDescription ?? "");
+    setEditingShowcase(true);
+  }
+
+  function cancelEditShowcase() {
+    setTechnicalDraft(project.technicalDescription ?? "");
+    setEditingShowcase(false);
   }
 
   async function handleShowcaseFileSelect(fileList: FileList | null) {
@@ -334,6 +367,7 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
         });
       }
       toast.success("Arquivo adicionado ao visual do projeto");
+      setEditingShowcase(false);
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Erro ao enviar arquivo");
     } finally {
@@ -358,7 +392,7 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
 
   return (
     <AppLayout>
-      <div className="p-6 max-w-6xl mx-auto">
+      <div className="p-6 w-full">
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 mb-6">
           <Link href="/projects" className="flex items-center gap-1 text-sm text-zinc-500 hover:text-zinc-300 transition-colors">
@@ -462,45 +496,103 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
                 <h2 className="text-sm font-semibold text-zinc-100">Visual do projeto</h2>
               </div>
               <p className="text-xs text-zinc-500 mt-1">
-                Telas, arquivos e explicacoes tecnicas do que foi implementado neste projeto.
+                Telas, arquivos e explicações técnicas do que foi implementado neste projeto.
               </p>
             </div>
             <div className="flex items-center gap-2 shrink-0">
               <Badge className="bg-zinc-800 text-zinc-400 border-zinc-700">
                 {showcaseAttachments.length} arquivo{showcaseAttachments.length !== 1 ? "s" : ""}
               </Badge>
-              {canAddModule && (
-                <Button
-                  size="sm"
-                  onClick={handleSaveShowcase}
-                  disabled={savingShowcase}
-                  className="h-8 px-3 text-xs bg-violet-600 hover:bg-violet-700 gap-1"
-                >
-                  {savingShowcase ? <div className="w-3.5 h-3.5 border-2 border-white/40 border-t-white rounded-full animate-spin" /> : <Check className="w-3.5 h-3.5" />}
-                  {savingShowcase ? "Salvando..." : "Salvar"}
-                </Button>
-              )}
+              {canAddModule && editingShowcase ? (
+                <>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={cancelEditShowcase}
+                    disabled={savingShowcase}
+                    className="h-8 w-8 p-0 text-zinc-400 hover:text-zinc-200"
+                    title="Cancelar edição"
+                  >
+                    <X className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    size="sm"
+                    onClick={handleSaveShowcase}
+                    disabled={savingShowcase}
+                    className="h-8 px-3 text-xs bg-violet-600 hover:bg-violet-700 gap-1"
+                  >
+                    {savingShowcase ? <div className="w-3.5 h-3.5 border-2 border-white/40 border-t-white rounded-full animate-spin" /> : <Check className="w-3.5 h-3.5" />}
+                    {savingShowcase ? "Salvando..." : "Salvar"}
+                  </Button>
+                </>
+              ) : canAddModule ? (
+                <DropdownMenu>
+                  <DropdownMenuTrigger
+                    className="p-1.5 rounded-lg hover:bg-zinc-800 text-zinc-400 hover:text-zinc-200 transition-colors outline-none"
+                    title="Opções"
+                  >
+                    <MoreVertical className="w-4 h-4" />
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="bg-zinc-900 border-zinc-700/50 w-44">
+                    <DropdownMenuItem
+                      onClick={startEditShowcase}
+                      className="text-zinc-300 focus:bg-zinc-800 focus:text-zinc-100 gap-2 cursor-pointer"
+                    >
+                      <Pencil className="w-3.5 h-3.5" /> Editar visual
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ) : null}
             </div>
           </div>
 
-          {canAddModule ? (
-            <div className="space-y-4">
-              <div className="rounded-xl border border-zinc-700/70 bg-zinc-950/35 p-3 space-y-2">
-                <label className="text-[11px] text-zinc-500 flex items-center gap-1">
-                  <FileText className="w-3 h-3" /> Explicacao tecnica
-                </label>
-                <textarea
-                  value={technicalDraft}
-                  onChange={(e) => setTechnicalDraft(e.target.value)}
-                  rows={6}
-                  placeholder="Descreva as telas, regras tecnicas, integracoes, arquivos alterados e pontos importantes para o usuario entender o projeto."
-                  className="w-full min-h-[150px] text-sm bg-transparent border-0 px-0 py-1 text-zinc-200 placeholder-zinc-600 outline-none resize-y"
-                />
-              </div>
+          {editingShowcase && canAddModule ? (
+            <div className="rounded-xl border border-zinc-200 bg-white p-3 space-y-2">
+              <label className="text-[11px] text-zinc-500 flex items-center gap-1">
+                <FileText className="w-3 h-3" /> Explicação técnica
+              </label>
+              <textarea
+                value={technicalDraft}
+                onChange={(e) => setTechnicalDraft(e.target.value)}
+                rows={6}
+                placeholder="Descreva as telas, regras técnicas, integrações, arquivos alterados e pontos importantes para o usuário entender o projeto."
+                className="w-full min-h-[150px] text-sm bg-transparent border-0 px-0 py-1 text-zinc-900 placeholder-zinc-400 outline-none resize-y"
+              />
             </div>
           ) : (
-            <div className="text-sm text-zinc-400 whitespace-pre-wrap rounded-lg bg-zinc-950/40 border border-zinc-800/60 p-3 min-h-[72px]">
-              {project.technicalDescription || "Nenhuma explicacao tecnica adicionada ainda."}
+            <div className="rounded-lg bg-white border border-zinc-200 overflow-hidden">
+              <div
+                className={cn(
+                  "text-sm whitespace-pre-wrap px-3 pt-3 leading-relaxed",
+                  hasTechnicalText ? "text-zinc-800" : "text-zinc-500",
+                  !showcaseDescExpanded && hasTechnicalText && "line-clamp-3 pb-1",
+                  (showcaseDescExpanded || !hasTechnicalText) && "pb-3",
+                )}
+              >
+                {hasTechnicalText
+                  ? technicalText
+                  : "Nenhuma explicação técnica adicionada ainda."}
+              </div>
+              {hasTechnicalText && (
+                <button
+                  type="button"
+                  onClick={() => setShowcaseDescExpanded((prev) => !prev)}
+                  className="w-full flex items-center justify-center gap-1.5 py-2.5 text-xs text-zinc-600 hover:text-violet-600 hover:bg-zinc-50 border-t border-zinc-200 transition-colors"
+                  aria-expanded={showcaseDescExpanded}
+                >
+                  {showcaseDescExpanded ? (
+                    <>
+                      <ChevronUp className="w-4 h-4" />
+                      Recolher explicação
+                    </>
+                  ) : (
+                    <>
+                      <ChevronDown className="w-4 h-4" />
+                      Ver explicação completa
+                    </>
+                  )}
+                </button>
+              )}
             </div>
           )}
 
@@ -510,46 +602,47 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
             multiple
             accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.zip,.rar,.txt,.png,.jpg,.jpeg,.webp,.gif"
             className="hidden"
-            disabled={!canAddModule || savingShowcase}
+            disabled={!editingShowcase || !canAddModule || savingShowcase}
             onChange={(event) => {
               void handleShowcaseFileSelect(event.target.files);
               event.currentTarget.value = "";
             }}
           />
 
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {[
-              ...showcaseAttachments,
-              ...Array.from({ length: Math.max(0, 4 - showcaseAttachments.length) }, (_, index) => ({
-                id: `empty-${index}`,
-                empty: true as const,
-              })),
-            ].map((item) => {
-              if ("empty" in item) {
-                return (
-                  <button
-                    key={item.id}
-                    type="button"
-                    onClick={() => canAddModule && showcaseFileInputRef.current?.click()}
-                    disabled={!canAddModule || savingShowcase}
-                    className="aspect-square rounded-xl border-2 border-dashed border-zinc-700/80 bg-zinc-950/35 flex flex-col items-center justify-center gap-2 text-zinc-500 hover:border-violet-500/50 hover:text-violet-300 hover:bg-violet-500/10 transition-colors disabled:cursor-not-allowed disabled:opacity-50"
-                    title="Adicionar imagem ou arquivo"
-                  >
-                    <Plus className="w-6 h-6" />
-                    <span className="text-xs">Adicionar arquivo</span>
-                  </button>
-                );
-              }
-              const attachment = item;
+          <div className="grid gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
+            {editingShowcase && canAddModule ? (
+              [
+                ...showcaseAttachments,
+                ...Array.from({ length: Math.max(0, 4 - showcaseAttachments.length) }, (_, index) => ({
+                  id: `empty-${index}`,
+                  empty: true as const,
+                })),
+              ].map((item) => {
+                if ("empty" in item) {
+                  return (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={() => showcaseFileInputRef.current?.click()}
+                      disabled={savingShowcase}
+                      className="aspect-square rounded-xl border-2 border-dashed border-zinc-700/80 bg-zinc-950/35 flex flex-col items-center justify-center gap-2 text-zinc-500 hover:border-violet-500/50 hover:text-violet-300 hover:bg-violet-500/10 transition-colors disabled:cursor-not-allowed disabled:opacity-50"
+                      title="Adicionar imagem ou arquivo"
+                    >
+                      <Plus className="w-6 h-6" />
+                      <span className="text-xs">Adicionar arquivo</span>
+                    </button>
+                  );
+                }
+                const attachment = item;
                 const isImage = attachment.type.startsWith("image/");
                 return (
                   <div key={attachment.id} className="rounded-xl border border-zinc-800/70 bg-zinc-950/35 overflow-hidden">
                     {isImage ? (
                       <button
                         type="button"
-                        onClick={() => window.open(attachment.dataUrl, "_blank")}
-                        className="block w-full aspect-square bg-zinc-900 overflow-hidden"
-                        title="Abrir imagem"
+                        onClick={() => setPreviewShowcaseImage({ dataUrl: attachment.dataUrl, name: attachment.name })}
+                        className="block w-full aspect-square bg-zinc-900 overflow-hidden cursor-zoom-in"
+                        title="Ampliar imagem"
                       >
                         <img src={attachment.dataUrl} alt={attachment.name} className="w-full h-full object-cover hover:scale-[1.02] transition-transform" />
                       </button>
@@ -572,22 +665,58 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
                         >
                           <Download className="w-3.5 h-3.5" /> Baixar
                         </Button>
-                        {canAddModule && (
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={() => handleDeleteShowcaseFile(attachment.id)}
-                            disabled={deletingShowcaseFileId === attachment.id}
-                            className="h-7 px-2 text-xs text-red-400 hover:text-red-300 hover:bg-red-500/10 gap-1 ml-auto"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" /> Excluir
-                          </Button>
-                        )}
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => handleDeleteShowcaseFile(attachment.id)}
+                          disabled={deletingShowcaseFileId === attachment.id}
+                          className="h-7 px-2 text-xs text-red-400 hover:text-red-300 hover:bg-red-500/10 gap-1 ml-auto"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" /> Excluir
+                        </Button>
                       </div>
                     </div>
                   </div>
                 );
-              })}
+              })
+            ) : showcaseAttachments.length > 0 ? (
+              showcaseAttachments.map((attachment) => {
+                const isImage = attachment.type.startsWith("image/");
+                return (
+                  <div key={attachment.id} className="rounded-xl border border-zinc-800/70 bg-zinc-950/35 overflow-hidden group">
+                    {isImage ? (
+                      <button
+                        type="button"
+                        onClick={() => setPreviewShowcaseImage({ dataUrl: attachment.dataUrl, name: attachment.name })}
+                        className="block w-full aspect-square bg-zinc-900 overflow-hidden cursor-zoom-in group"
+                        title="Ampliar imagem"
+                      >
+                        <img src={attachment.dataUrl} alt={attachment.name} className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform" />
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => downloadDataUrl(attachment.dataUrl, attachment.name)}
+                        className="block w-full aspect-square bg-zinc-900 flex flex-col items-center justify-center gap-2 text-zinc-500 hover:text-violet-300 transition-colors"
+                        title="Baixar arquivo"
+                      >
+                        <File className="w-8 h-8" />
+                        <span className="text-[10px] px-2 text-center truncate max-w-full">{attachment.name}</span>
+                      </button>
+                    )}
+                    {isImage && (
+                      <div className="px-3 py-2 border-t border-zinc-800/60">
+                        <p className="text-[10px] text-zinc-500 truncate">{attachment.name}</p>
+                      </div>
+                    )}
+                  </div>
+                );
+              })
+            ) : (
+              <p className="text-xs text-zinc-600 italic col-span-full py-2">
+                Nenhum arquivo adicionado ao visual do projeto.
+              </p>
+            )}
           </div>
         </div>
 
@@ -1193,6 +1322,47 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
             )}
           </TabsContent>
         </Tabs>
+
+        <Dialog
+          open={previewShowcaseImage !== null}
+          onOpenChange={(open) => { if (!open) setPreviewShowcaseImage(null); }}
+        >
+          <DialogContent className="bg-zinc-950 border-zinc-700/50 max-w-5xl w-[min(95vw,900px)] p-3 sm:p-4">
+            <DialogTitle className="sr-only">
+              {previewShowcaseImage?.name ?? "Visualização da imagem"}
+            </DialogTitle>
+            {previewShowcaseImage && (
+              <div className="space-y-3">
+                <p className="text-xs text-zinc-400 truncate px-1">{previewShowcaseImage.name}</p>
+                <div className="flex items-center justify-center rounded-lg bg-zinc-900/80 border border-zinc-800/60 p-2 max-h-[80vh] overflow-auto">
+                  <img
+                    src={previewShowcaseImage.dataUrl}
+                    alt={previewShowcaseImage.name}
+                    className="max-w-full max-h-[72vh] w-auto h-auto object-contain rounded-md"
+                  />
+                </div>
+                <div className="flex justify-end gap-2 pt-1">
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => downloadDataUrl(previewShowcaseImage.dataUrl, previewShowcaseImage.name)}
+                    className="h-8 text-xs text-zinc-400 hover:text-zinc-200 gap-1"
+                  >
+                    <Download className="w-3.5 h-3.5" /> Baixar
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => setPreviewShowcaseImage(null)}
+                    className="h-8 text-xs text-zinc-400 hover:text-zinc-200"
+                  >
+                    Fechar
+                  </Button>
+                </div>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
       </div>
     </AppLayout>
   );
