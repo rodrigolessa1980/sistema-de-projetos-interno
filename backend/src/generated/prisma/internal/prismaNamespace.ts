@@ -401,7 +401,8 @@ export const ModelName = {
   AuditLog: 'AuditLog',
   StatusHistory: 'StatusHistory',
   TaskNote: 'TaskNote',
-  TaskAttachment: 'TaskAttachment'
+  TaskAttachment: 'TaskAttachment',
+  ModuleAttachment: 'ModuleAttachment'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -417,7 +418,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "company" | "user" | "userPermission" | "project" | "projectDeveloper" | "module" | "epic" | "epicDeveloper" | "task" | "subtask" | "taskDependency" | "timeLog" | "comment" | "notification" | "auditLog" | "statusHistory" | "taskNote" | "taskAttachment"
+    modelProps: "company" | "user" | "userPermission" | "project" | "projectDeveloper" | "module" | "epic" | "epicDeveloper" | "task" | "subtask" | "taskDependency" | "timeLog" | "comment" | "notification" | "auditLog" | "statusHistory" | "taskNote" | "taskAttachment" | "moduleAttachment"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1609,6 +1610,72 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    ModuleAttachment: {
+      payload: Prisma.$ModuleAttachmentPayload<ExtArgs>
+      fields: Prisma.ModuleAttachmentFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ModuleAttachmentFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ModuleAttachmentPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ModuleAttachmentFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ModuleAttachmentPayload>
+        }
+        findFirst: {
+          args: Prisma.ModuleAttachmentFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ModuleAttachmentPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ModuleAttachmentFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ModuleAttachmentPayload>
+        }
+        findMany: {
+          args: Prisma.ModuleAttachmentFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ModuleAttachmentPayload>[]
+        }
+        create: {
+          args: Prisma.ModuleAttachmentCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ModuleAttachmentPayload>
+        }
+        createMany: {
+          args: Prisma.ModuleAttachmentCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        delete: {
+          args: Prisma.ModuleAttachmentDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ModuleAttachmentPayload>
+        }
+        update: {
+          args: Prisma.ModuleAttachmentUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ModuleAttachmentPayload>
+        }
+        deleteMany: {
+          args: Prisma.ModuleAttachmentDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ModuleAttachmentUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        upsert: {
+          args: Prisma.ModuleAttachmentUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ModuleAttachmentPayload>
+        }
+        aggregate: {
+          args: Prisma.ModuleAttachmentAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateModuleAttachment>
+        }
+        groupBy: {
+          args: Prisma.ModuleAttachmentGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ModuleAttachmentGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ModuleAttachmentCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ModuleAttachmentCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -1730,6 +1797,9 @@ export const ModuleScalarFieldEnum = {
   description: 'description',
   order: 'order',
   progress: 'progress',
+  workDate: 'workDate',
+  loggedHours: 'loggedHours',
+  loggedByUserId: 'loggedByUserId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -1917,6 +1987,20 @@ export const TaskAttachmentScalarFieldEnum = {
 export type TaskAttachmentScalarFieldEnum = (typeof TaskAttachmentScalarFieldEnum)[keyof typeof TaskAttachmentScalarFieldEnum]
 
 
+export const ModuleAttachmentScalarFieldEnum = {
+  id: 'id',
+  moduleId: 'moduleId',
+  userId: 'userId',
+  name: 'name',
+  type: 'type',
+  size: 'size',
+  dataUrl: 'dataUrl',
+  createdAt: 'createdAt'
+} as const
+
+export type ModuleAttachmentScalarFieldEnum = (typeof ModuleAttachmentScalarFieldEnum)[keyof typeof ModuleAttachmentScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -2008,7 +2092,8 @@ export const ModuleOrderByRelevanceFieldEnum = {
   id: 'id',
   projectId: 'projectId',
   name: 'name',
-  description: 'description'
+  description: 'description',
+  loggedByUserId: 'loggedByUserId'
 } as const
 
 export type ModuleOrderByRelevanceFieldEnum = (typeof ModuleOrderByRelevanceFieldEnum)[keyof typeof ModuleOrderByRelevanceFieldEnum]
@@ -2158,6 +2243,18 @@ export const TaskAttachmentOrderByRelevanceFieldEnum = {
 } as const
 
 export type TaskAttachmentOrderByRelevanceFieldEnum = (typeof TaskAttachmentOrderByRelevanceFieldEnum)[keyof typeof TaskAttachmentOrderByRelevanceFieldEnum]
+
+
+export const ModuleAttachmentOrderByRelevanceFieldEnum = {
+  id: 'id',
+  moduleId: 'moduleId',
+  userId: 'userId',
+  name: 'name',
+  type: 'type',
+  dataUrl: 'dataUrl'
+} as const
+
+export type ModuleAttachmentOrderByRelevanceFieldEnum = (typeof ModuleAttachmentOrderByRelevanceFieldEnum)[keyof typeof ModuleAttachmentOrderByRelevanceFieldEnum]
 
 
 
@@ -2398,6 +2495,7 @@ export type GlobalOmitConfig = {
   statusHistory?: Prisma.StatusHistoryOmit
   taskNote?: Prisma.TaskNoteOmit
   taskAttachment?: Prisma.TaskAttachmentOmit
+  moduleAttachment?: Prisma.ModuleAttachmentOmit
 }
 
 /* Types for Logging */

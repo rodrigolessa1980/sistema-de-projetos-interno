@@ -1,7 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { IModuleRepository } from '../../../core/domain/repositories/module-repository.interface';
+import {
+  CreateModuleCompleteInput,
+  CreateModuleCompleteResult,
+  IModuleRepository,
+} from '../../../core/domain/repositories/module-repository.interface';
 import { Module } from '../../../core/domain/entities/module.entity';
+import { ModuleAttachment } from '../../../core/domain/entities/module-attachment.entity';
+import { Epic } from '../../../core/domain/entities/epic.entity';
+import { Task } from '../../../core/domain/entities/task.entity';
+import { TimeLog } from '../../../core/domain/entities/time-log.entity';
+import { ProjectStatus, TaskStatus, TimeLogSource } from '../../../core/domain/entities/enums';
 
 @Injectable()
 export class PrismaModuleRepository implements IModuleRepository {
@@ -15,8 +24,87 @@ export class PrismaModuleRepository implements IModuleRepository {
       description: raw.description,
       order: raw.order,
       progress: raw.progress,
+      workDate: raw.workDate ?? null,
+      loggedHours: raw.loggedHours != null ? Number(raw.loggedHours) : null,
+      loggedByUserId: raw.loggedByUserId ?? null,
       createdAt: raw.createdAt,
       updatedAt: raw.updatedAt,
+    });
+  }
+
+  private mapEpic(raw: any): Epic {
+    return new Epic({
+      id: raw.id,
+      projectId: raw.projectId,
+      moduleId: raw.moduleId,
+      name: raw.name,
+      description: raw.description,
+      status: raw.status as ProjectStatus,
+      startDate: raw.startDate,
+      endDate: raw.endDate ?? null,
+      progress: raw.progress,
+      developerIds: raw.developers?.map((d: any) => d.userId) ?? [],
+      createdAt: raw.createdAt,
+      updatedAt: raw.updatedAt,
+    });
+  }
+
+  private mapTask(raw: any): Task {
+    return new Task({
+      id: raw.id,
+      projectId: raw.projectId,
+      moduleId: raw.moduleId,
+      epicId: raw.epicId,
+      parentTaskId: raw.parentTaskId,
+      title: raw.title,
+      description: raw.description,
+      status: raw.status as TaskStatus,
+      complexity: raw.complexity,
+      assigneeId: raw.assigneeId,
+      reporterId: raw.reporterId,
+      estimatedHours: raw.estimatedHours,
+      actualHours: Number(raw.actualHours),
+      startDate: raw.startDate,
+      dueDate: raw.dueDate,
+      completedAt: raw.completedAt,
+      blockedReason: raw.blockedReason,
+      isUrgent: raw.isUrgent,
+      urgentBlockedById: raw.urgentBlockedById,
+      urgentPreviousStatus: raw.urgentPreviousStatus as TaskStatus | null,
+      order: raw.order,
+      createdAt: raw.createdAt,
+      updatedAt: raw.updatedAt,
+    });
+  }
+
+  private mapTimeLog(raw: any): TimeLog {
+    return new TimeLog({
+      id: raw.id,
+      projectId: raw.projectId,
+      taskId: raw.taskId,
+      userId: raw.userId,
+      hours: Number(raw.hours),
+      durationSeconds: raw.durationSeconds,
+      description: raw.description,
+      date: raw.date,
+      startedAt: raw.startedAt,
+      endedAt: raw.endedAt,
+      source: raw.source as TimeLogSource,
+      status: raw.status as TaskStatus,
+      createdAt: raw.createdAt,
+    });
+  }
+
+  private mapAttachment(raw: any): ModuleAttachment {
+    return new ModuleAttachment({
+      id: raw.id,
+      moduleId: raw.moduleId,
+      userId: raw.userId,
+      name: raw.name,
+      type: raw.type,
+      size: raw.size,
+      dataUrl: raw.dataUrl,
+      createdAt: raw.createdAt,
     });
   }
 
@@ -29,9 +117,125 @@ export class PrismaModuleRepository implements IModuleRepository {
         description: module.description,
         order: module.order,
         progress: module.progress,
+        workDate: module.workDate,
+        loggedHours: module.loggedHours,
+        loggedByUserId: module.loggedByUserId,
       },
     });
     return this.mapToDomain(raw);
+  }
+
+  async createComplete(input: CreateModuleCompleteInput): Promise<CreateModuleCompleteResult> {
+    const shouldLogTime = input.hours != null && input.hours > 0 && input.workDate != null;
+
+    return this.prisma.$transaction(async (tx) => {
+      const existingCount = await tx.module.count({ where: { projectId: input.projectId } });
+      const order = input.order ?? existingCount;
+
+      const moduleRaw = await tx.module.create({
+        data: {
+          projectId: input.projectId,
+          name: input.name,
+          description: input.description,
+          order,
+          workDate: shouldLogTime ? input.workDate : null,
+          loggedHours: shouldLogTime ? input.hours : null,
+          loggedByUserId: shouldLogTime ? input.userId : null,
+        },
+      });
+
+      let epicRaw: any;
+      let taskRaw: any;
+      let timeLogRaw: any;
+
+      if (shouldLogTime) {
+        const workDate = input.workDate!;
+        const hours = input.hours!;
+        const description = input.description || `Trabalho no módulo: ${input.name}`;
+
+        epicRaw = await tx.epic.create({
+          data: {
+            projectId: input.projectId,
+            moduleId: moduleRaw.id,
+            name: input.name,
+            description: input.description,
+            status: ProjectStatus.ATIVO,
+            startDate: workDate,
+            endDate: workDate,
+            developers: { create: [{ userId: input.userId }] },
+          },
+          include: { developers: true },
+        });
+
+        taskRaw = await tx.task.create({
+          data: {
+            projectId: input.projectId,
+            moduleId: moduleRaw.id,
+            epicId: epicRaw.id,
+            title: input.name,
+            description,
+            status: TaskStatus.CONCLUIDA,
+            complexity: 1,
+            assigneeId: input.userId,
+            reporterId: input.userId,
+            estimatedHours: Math.ceil(hours),
+            actualHours: 0,
+            order: 0,
+          },
+        });
+
+        timeLogRaw = await tx.timeLog.create({
+          data: {
+            projectId: input.projectId,
+            taskId: taskRaw.id,
+            userId: input.userId,
+            hours,
+            description,
+            date: workDate,
+            endedAt: new Date(),
+            source: TimeLogSource.MANUAL,
+            status: TaskStatus.CONCLUIDA,
+          },
+        });
+
+        await tx.task.update({
+          where: { id: taskRaw.id },
+          data: { actualHours: hours },
+        });
+
+        const projectHours = await tx.timeLog.aggregate({
+          where: { projectId: input.projectId, endedAt: { not: null } },
+          _sum: { hours: true },
+        });
+        await tx.project.update({
+          where: { id: input.projectId },
+          data: { actualHours: projectHours._sum.hours ?? 0 },
+        });
+      }
+
+      const attachmentRaws = [];
+      for (const att of input.attachments ?? []) {
+        const raw = await tx.moduleAttachment.create({
+          data: {
+            moduleId: moduleRaw.id,
+            userId: input.userId,
+            name: att.name,
+            type: att.type,
+            size: att.size,
+            dataUrl: att.dataUrl,
+          },
+        });
+        attachmentRaws.push(raw);
+      }
+
+      return {
+        module: this.mapToDomain(moduleRaw),
+        epic: epicRaw ? this.mapEpic(epicRaw) : undefined,
+        task: taskRaw ? this.mapTask(taskRaw) : undefined,
+        timeLog: timeLogRaw ? this.mapTimeLog(timeLogRaw) : undefined,
+        attachments: attachmentRaws.map((raw) => this.mapAttachment(raw)),
+      };
+    }, { timeout: 60_000 });
   }
 
   async findById(id: string): Promise<Module | null> {

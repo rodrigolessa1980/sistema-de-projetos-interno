@@ -2,9 +2,11 @@
 
 import { create } from "zustand";
 import type { Project, Module, Epic, Company } from "@/types";
+import type { Task, TimeLog, ModuleAttachment } from "@/types";
 // Module and Epic are fetched from API; types re-exported for clarity
 import { generateId, delay } from "@/lib/utils";
 import { api } from "@/lib/api";
+import { useTaskStore } from "./task-store";
 
 interface ProjectStore {
   projects: Project[];
@@ -27,9 +29,17 @@ interface ProjectStore {
   createProject: (data: Omit<Project, "id" | "createdAt" | "updatedAt">) => Promise<Project>;
   updateProject: (id: string, data: Partial<Project>) => Promise<Project>;
   deleteProject: (id: string) => Promise<void>;
-  createModule: (data: Omit<Module, "id" | "createdAt" | "updatedAt" | "progress">) => Promise<Module>;
+  createModule: (data: {
+    projectId: string;
+    name: string;
+    description: string;
+    order?: number;
+    hours?: number;
+    workDate?: string;
+    attachments?: { name: string; type: string; size: number; dataUrl: string }[];
+  }) => Promise<Module>;
   updateModule: (id: string, data: Partial<Module>) => Promise<Module>;
-  deleteModule: (id: string) => void;
+  deleteModule: (id: string) => Promise<void>;
   createModulesBulk: (projectId: string, modules: { name: string; description: string }[]) => Promise<Module[]>;
   createEpic: (data: Omit<Epic, "id" | "createdAt" | "updatedAt" | "status" | "progress">) => Promise<Epic>;
   updateEpic: (id: string, data: Partial<Epic>) => Promise<Epic>;
@@ -106,12 +116,15 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
 
       // Busca módulos e epics de todos os projetos em paralelo
       const projectIds = normalizedProjects.map((p) => p.id);
-      const [modulesResults, epicsResults] = await Promise.all([
+      const [modulesResults, epicsResults, attachmentsResults] = await Promise.all([
         Promise.all(projectIds.map((id) =>
           api.get<{ modules: Module[] }>(`projects/${id}/modules`).then((r) => r.modules).catch(() => [] as Module[])
         )),
         Promise.all(projectIds.map((id) =>
           api.get<{ epics: Epic[] }>(`projects/${id}/epics`).then((r) => r.epics).catch(() => [] as Epic[])
+        )),
+        Promise.all(projectIds.map((id) =>
+          api.get<{ attachments: ModuleAttachment[] }>(`projects/${id}/module-attachments`).then((r) => r.attachments).catch(() => [] as ModuleAttachment[])
         )),
       ]);
 
@@ -122,6 +135,7 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
         epics: epicsResults.flat(),
         isLoading: false,
       });
+      useTaskStore.setState({ moduleAttachments: attachmentsResults.flat() });
     } catch (error) {
       set({ isLoading: false });
       throw error;
@@ -169,18 +183,73 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
   },
 
   createModule: async (data) => {
-    const response = await api.post<{ module: Module }>("modules", data);
-    const projectModule = response.module;
+    const response = await api.post<{
+      module: Module;
+      epic?: Epic;
+      task?: Task;
+      timeLog?: TimeLog;
+      attachments?: ModuleAttachment[];
+    }>("modules", data);
+    const { module: projectModule, epic, task, timeLog, attachments } = response;
+
     set((state) => ({ modules: [...state.modules, projectModule] }));
+
+    if (epic) {
+      set((state) => ({ epics: [...state.epics, epic] }));
+    }
+
+    useTaskStore.setState((state) => {
+      const next = { ...state };
+      if (task) {
+        next.tasks = [...state.tasks.filter((t) => t.id !== task.id), {
+          ...task,
+          dependencyIds: task.dependencyIds ?? [],
+          tags: task.tags ?? [],
+        }];
+      }
+      if (timeLog) {
+        const normalizedLog = { ...timeLog, date: timeLog.date.split("T")[0] };
+        next.timeLogs = [...state.timeLogs.filter((tl) => tl.id !== normalizedLog.id), normalizedLog];
+      }
+      if (attachments?.length) {
+        const ids = new Set(attachments.map((a) => a.id));
+        next.moduleAttachments = [
+          ...state.moduleAttachments.filter((a) => !ids.has(a.id)),
+          ...attachments,
+        ];
+      }
+      return next;
+    });
+
     return projectModule;
   },
 
-  deleteModule: (id) => {
-    const previous = get().modules;
-    set((state) => ({ modules: state.modules.filter((m) => m.id !== id) }));
-    void api.delete(`modules/${id}`).catch(() => {
-      set({ modules: previous });
-    });
+  deleteModule: async (id) => {
+    const previous = {
+      modules: get().modules,
+      epics: get().epics,
+    };
+    const taskSnapshot = useTaskStore.getState();
+
+    set((state) => ({
+      modules: state.modules.filter((m) => m.id !== id),
+      epics: state.epics.filter((e) => e.moduleId !== id),
+    }));
+    useTaskStore.setState((state) => ({
+      tasks: state.tasks.filter((t) => t.moduleId !== id),
+      moduleAttachments: state.moduleAttachments.filter((a) => a.moduleId !== id),
+    }));
+
+    try {
+      await api.delete(`modules/${id}`);
+    } catch {
+      set(previous);
+      useTaskStore.setState({
+        tasks: taskSnapshot.tasks,
+        moduleAttachments: taskSnapshot.moduleAttachments,
+      });
+      throw new Error("Erro ao excluir módulo");
+    }
   },
 
   createModulesBulk: async (projectId, modulesData) => {

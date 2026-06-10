@@ -95,6 +95,9 @@ export interface Module {
   description: string;
   order: number;
   progress: number;
+  workDate?: string | null;
+  loggedHours?: number | null;
+  loggedByUserId?: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -108,7 +111,7 @@ export interface ModuleAttachment {
   type: string;
   /** Tamanho em bytes */
   size: number;
-  /** Base64 data URL para persistência local */
+  /** Base64 data URL */
   dataUrl: string;
   createdAt: string;
 }

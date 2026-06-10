@@ -68,7 +68,8 @@ export const ModelName = {
   AuditLog: 'AuditLog',
   StatusHistory: 'StatusHistory',
   TaskNote: 'TaskNote',
-  TaskAttachment: 'TaskAttachment'
+  TaskAttachment: 'TaskAttachment',
+  ModuleAttachment: 'ModuleAttachment'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -169,6 +170,9 @@ export const ModuleScalarFieldEnum = {
   description: 'description',
   order: 'order',
   progress: 'progress',
+  workDate: 'workDate',
+  loggedHours: 'loggedHours',
+  loggedByUserId: 'loggedByUserId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -356,6 +360,20 @@ export const TaskAttachmentScalarFieldEnum = {
 export type TaskAttachmentScalarFieldEnum = (typeof TaskAttachmentScalarFieldEnum)[keyof typeof TaskAttachmentScalarFieldEnum]
 
 
+export const ModuleAttachmentScalarFieldEnum = {
+  id: 'id',
+  moduleId: 'moduleId',
+  userId: 'userId',
+  name: 'name',
+  type: 'type',
+  size: 'size',
+  dataUrl: 'dataUrl',
+  createdAt: 'createdAt'
+} as const
+
+export type ModuleAttachmentScalarFieldEnum = (typeof ModuleAttachmentScalarFieldEnum)[keyof typeof ModuleAttachmentScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -447,7 +465,8 @@ export const ModuleOrderByRelevanceFieldEnum = {
   id: 'id',
   projectId: 'projectId',
   name: 'name',
-  description: 'description'
+  description: 'description',
+  loggedByUserId: 'loggedByUserId'
 } as const
 
 export type ModuleOrderByRelevanceFieldEnum = (typeof ModuleOrderByRelevanceFieldEnum)[keyof typeof ModuleOrderByRelevanceFieldEnum]
@@ -597,4 +616,16 @@ export const TaskAttachmentOrderByRelevanceFieldEnum = {
 } as const
 
 export type TaskAttachmentOrderByRelevanceFieldEnum = (typeof TaskAttachmentOrderByRelevanceFieldEnum)[keyof typeof TaskAttachmentOrderByRelevanceFieldEnum]
+
+
+export const ModuleAttachmentOrderByRelevanceFieldEnum = {
+  id: 'id',
+  moduleId: 'moduleId',
+  userId: 'userId',
+  name: 'name',
+  type: 'type',
+  dataUrl: 'dataUrl'
+} as const
+
+export type ModuleAttachmentOrderByRelevanceFieldEnum = (typeof ModuleAttachmentOrderByRelevanceFieldEnum)[keyof typeof ModuleAttachmentOrderByRelevanceFieldEnum]
 

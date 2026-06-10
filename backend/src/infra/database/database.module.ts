@@ -14,6 +14,8 @@ import { IUserPermissionRepositoryToken } from '../../core/domain/repositories/u
 import { PrismaUserPermissionRepository } from './repositories/prisma-user-permission.repository';
 import { IModuleRepositoryToken } from '../../core/domain/repositories/module-repository.interface';
 import { PrismaModuleRepository } from './repositories/prisma-module.repository';
+import { IModuleAttachmentRepositoryToken } from '../../core/domain/repositories/module-attachment-repository.interface';
+import { PrismaModuleAttachmentRepository } from './repositories/prisma-module-attachment.repository';
 import { IEpicRepositoryToken } from '../../core/domain/repositories/epic-repository.interface';
 import { PrismaEpicRepository } from './repositories/prisma-epic.repository';
 
@@ -28,6 +30,7 @@ import { PrismaEpicRepository } from './repositories/prisma-epic.repository';
     { provide: ITimeLogRepositoryToken, useClass: PrismaTimeLogRepository },
     { provide: IUserPermissionRepositoryToken, useClass: PrismaUserPermissionRepository },
     { provide: IModuleRepositoryToken, useClass: PrismaModuleRepository },
+    { provide: IModuleAttachmentRepositoryToken, useClass: PrismaModuleAttachmentRepository },
     { provide: IEpicRepositoryToken, useClass: PrismaEpicRepository },
   ],
   exports: [
@@ -38,6 +41,7 @@ import { PrismaEpicRepository } from './repositories/prisma-epic.repository';
     ITimeLogRepositoryToken,
     IUserPermissionRepositoryToken,
     IModuleRepositoryToken,
+    IModuleAttachmentRepositoryToken,
     IEpicRepositoryToken,
   ],
 })

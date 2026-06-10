@@ -10,19 +10,21 @@ import { Progress } from "@/components/ui/progress";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
-  ChevronLeft, Clock, CheckCircle2, AlertTriangle, Layers,
+  ChevronLeft, Clock, Layers,
   Crown, UserPlus, UserMinus, ExternalLink, Link2,
-  Plus, Pencil, Trash2, Check, X, Box, Paperclip, ChevronDown,
-  TrendingUp, Calendar, BarChart3, Target,
+  Plus, Pencil, Trash2, Check, X, Box,
+  TrendingUp, Calendar, BarChart3, Target, Eye,
 } from "lucide-react";
 import { ProjectAvatar } from "@/components/shared/project-avatar";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ReassignPopover } from "@/components/shared/reassign-popover";
 import { toast } from "sonner";
-import { ModuleAttachmentsPanel } from "@/features/modules/module-attachments-panel";
+import { ModuleDetailDialog } from "@/features/modules/module-detail-dialog";
+import { ModuleAttachmentUploadField, type PendingModuleFile } from "@/features/modules/module-attachment-upload-field";
 import { api } from "@/lib/api";
 
 interface DevStats {
@@ -43,19 +45,24 @@ interface ProjectSummary {
 export default function ProjectDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const { getProjectById, getModulesByProject, getEpicsByProject, updateProject, addDeveloperToProject, removeDeveloperFromProject, createModule, updateModule, deleteModule } = useProjectStore();
-  const { getTasksByProject, updateTask, getAttachmentsByModule } = useTaskStore();
+  const { getTasksByProject, updateTask, getAttachmentsByModule, fetchTimeLogsForProject, fetchModuleAttachmentsForProject, timeLogs } = useTaskStore();
   const { users } = useUserStore();
-  const { isAdmin } = useAuth();
+  const { user, isAdmin } = useAuth();
 
+  const today = new Date().toISOString().split("T")[0];
   const [newModuleName, setNewModuleName] = useState("");
   const [newModuleDesc, setNewModuleDesc] = useState("");
+  const [newModuleHours, setNewModuleHours] = useState("");
+  const [newModuleDate, setNewModuleDate] = useState(today);
+  const [pendingAttachments, setPendingAttachments] = useState<PendingModuleFile[]>([]);
   const [editingModuleId, setEditingModuleId] = useState<string | null>(null);
   const [editingName, setEditingName] = useState("");
   const [editingDesc, setEditingDesc] = useState("");
   const [addingModule, setAddingModule] = useState(false);
   const [savingModule, setSavingModule] = useState(false);
   const [savingEditId, setSavingEditId] = useState<string | null>(null);
-  const [openAttachmentsId, setOpenAttachmentsId] = useState<string | null>(null);
+  const [deletingModuleId, setDeletingModuleId] = useState<string | null>(null);
+  const [selectedModuleId, setSelectedModuleId] = useState<string | null>(null);
   const [summary, setSummary] = useState<ProjectSummary | null>(null);
   const [calendar, setCalendar] = useState<CalendarDay[]>([]);
   const [loadingReport, setLoadingReport] = useState(false);
@@ -63,15 +70,31 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
   const project = getProjectById(id);
   if (!project) notFound();
 
-  useEffect(() => {
+  const isProjectMember = !!user && (
+    project.ownerId === user.id || project.developerIds.includes(user.id)
+  );
+  const canAddModule = isAdmin || isProjectMember;
+
+  async function loadReport() {
     setLoadingReport(true);
-    Promise.all([
-      api.get<ProjectSummary>(`reports/projects/${id}/summary`).catch(() => null),
-      api.get<{ projectId: string; days: CalendarDay[] }>(`reports/projects/${id}/calendar`).catch(() => ({ projectId: id, days: [] })),
-    ]).then(([s, c]) => {
+    try {
+      const [s, c] = await Promise.all([
+        api.get<ProjectSummary>(`reports/projects/${id}/summary`).catch(() => null),
+        api.get<{ projectId: string; days: CalendarDay[] }>(`reports/projects/${id}/calendar`).catch(() => ({ projectId: id, days: [] })),
+      ]);
       if (s) setSummary(s);
       setCalendar(c?.days ?? []);
-    }).finally(() => setLoadingReport(false));
+      await Promise.all([
+        fetchTimeLogsForProject(id),
+        fetchModuleAttachmentsForProject(id, getModulesByProject(id).map((m) => m.id)),
+      ]);
+    } finally {
+      setLoadingReport(false);
+    }
+  }
+
+  useEffect(() => {
+    void loadReport();
   }, [id]);
 
   const modules = getModulesByProject(id);
@@ -106,17 +129,60 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
     toast.success("Membro removido do projeto");
   }
 
+  function resetModuleForm() {
+    setNewModuleName("");
+    setNewModuleDesc("");
+    setNewModuleHours("");
+    setNewModuleDate(today);
+    setPendingAttachments([]);
+    setAddingModule(false);
+  }
+
   async function handleAddModule() {
     const name = newModuleName.trim();
     if (!name) return;
+
+    const hours = parseFloat(newModuleHours.replace(",", "."));
+    if (!newModuleHours.trim() || Number.isNaN(hours) || hours <= 0) {
+      toast.error("Informe as horas trabalhadas (valor maior que zero)");
+      return;
+    }
+    if (!newModuleDate) {
+      toast.error("Informe a data do trabalho");
+      return;
+    }
+    if (!user) {
+      toast.error("Faça login para registrar horas");
+      return;
+    }
+
     setSavingModule(true);
     try {
       const existingCount = modules.length;
-      await createModule({ projectId: id, name, description: newModuleDesc.trim(), order: existingCount });
-      setNewModuleName("");
-      setNewModuleDesc("");
-      setAddingModule(false);
-      toast.success("Módulo adicionado");
+      const description = newModuleDesc.trim();
+
+      await createModule({
+        projectId: id,
+        name,
+        description,
+        order: existingCount,
+        hours,
+        workDate: newModuleDate,
+        attachments: pendingAttachments.map((file) => ({
+          name: file.name,
+          type: file.type,
+          size: file.size,
+          dataUrl: file.dataUrl,
+        })),
+      });
+
+      const attachmentCount = pendingAttachments.length;
+      resetModuleForm();
+      await loadReport();
+      const attachMsg = attachmentCount > 0
+        ? ` e ${attachmentCount} evidência(s) anexada(s)`
+        : "";
+      toast.success(`Módulo criado com ${hours}h registradas no banco de horas${attachMsg}`);
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Erro ao salvar módulo");
     } finally {
@@ -143,6 +209,28 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
     setEditingName(mod.name);
     setEditingDesc(mod.description);
   }
+
+  async function handleDeleteModule(module: { id: string; name: string }) {
+    const confirmed = window.confirm(
+      `Excluir o módulo "${module.name}"?\n\nEsta ação não pode ser desfeita. Tarefas e horas vinculadas também serão removidas.`,
+    );
+    if (!confirmed) return;
+
+    setDeletingModuleId(module.id);
+    try {
+      await deleteModule(module.id);
+      if (editingModuleId === module.id) setEditingModuleId(null);
+      await loadReport();
+      toast.success("Módulo excluído");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Erro ao excluir módulo");
+    } finally {
+      setDeletingModuleId(null);
+    }
+  }
+
+  const selectedModule = selectedModuleId ? modules.find((m) => m.id === selectedModuleId) ?? null : null;
+  const selectedModuleTasks = selectedModule ? tasks.filter((t) => t.moduleId === selectedModule.id) : [];
 
   return (
     <AppLayout>
@@ -217,14 +305,7 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-          <div className="bg-zinc-900/60 border border-zinc-800/50 rounded-xl p-4">
-            <div className="flex items-center gap-2 mb-2">
-              <CheckCircle2 className="w-4 h-4 text-zinc-500" />
-              <span className="text-xs text-zinc-500">Progresso</span>
-            </div>
-            <p className="text-xl font-bold text-zinc-100">{project.progress}%</p>
-          </div>
+        <div className="grid grid-cols-2 gap-4 mb-6">
           <div className="bg-zinc-900/60 border border-zinc-800/50 rounded-xl p-4">
             <div className="flex items-center gap-2 mb-1">
               <Clock className="w-4 h-4 text-zinc-500" />
@@ -246,15 +327,6 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
             </div>
             <p className="text-xl font-bold text-zinc-100">{tasks.length}</p>
           </div>
-          <div className="bg-zinc-900/60 border border-zinc-800/50 rounded-xl p-4">
-            <div className="flex items-center gap-2 mb-2">
-              <AlertTriangle className="w-4 h-4 text-zinc-500" />
-              <span className="text-xs text-zinc-500">Bloqueadas</span>
-            </div>
-            <p className="text-xl font-bold text-zinc-100">
-              {tasks.filter((t) => t.status === "BLOQUEADA").length}
-            </p>
-          </div>
         </div>
 
         <Tabs defaultValue="modules" className="space-y-4">
@@ -274,7 +346,7 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
             {/* Header da aba */}
             <div className="flex items-center justify-between">
               <p className="text-xs text-zinc-500">{modules.length} módulo{modules.length !== 1 ? "s" : ""} neste projeto</p>
-              {isAdmin && (
+              {canAddModule && (
                 <Button
                   size="sm"
                   onClick={() => { setAddingModule(true); setEditingModuleId(null); }}
@@ -298,26 +370,65 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
                     <Box className="w-4 h-4 text-violet-400" />
                     Novo Módulo
                   </div>
+                  <p className="text-[11px] text-zinc-500">
+                    Registre o trabalho realizado — as horas entram no banco de horas deste projeto para você.
+                  </p>
                   <input
                     autoFocus
                     value={newModuleName}
                     onChange={(e) => setNewModuleName(e.target.value)}
-                    onKeyDown={(e) => e.key === "Enter" && handleAddModule()}
-                    placeholder="Nome do módulo..."
+                    placeholder="Título..."
                     className="w-full h-8 text-sm bg-zinc-800 border border-zinc-700 rounded-lg px-3 text-zinc-200 placeholder-zinc-600 outline-none focus:border-violet-500/50 transition-colors"
                   />
                   <textarea
                     value={newModuleDesc}
                     onChange={(e) => setNewModuleDesc(e.target.value)}
-                    placeholder="Descrição (opcional)..."
+                    placeholder="Observação (opcional)..."
                     rows={2}
                     className="w-full text-sm bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-zinc-200 placeholder-zinc-600 outline-none focus:border-violet-500/50 transition-colors resize-none"
                   />
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-1">
+                      <label className="text-[11px] text-zinc-500 flex items-center gap-1">
+                        <Calendar className="w-3 h-3" /> Data
+                      </label>
+                      <Input
+                        type="date"
+                        value={newModuleDate}
+                        onChange={(e) => setNewModuleDate(e.target.value)}
+                        className="h-8 text-sm bg-zinc-800 border-zinc-700 text-zinc-200"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[11px] text-zinc-500 flex items-center gap-1">
+                        <Clock className="w-3 h-3" /> Horas
+                      </label>
+                      <Input
+                        type="number"
+                        min="0.01"
+                        step="0.25"
+                        value={newModuleHours}
+                        onChange={(e) => setNewModuleHours(e.target.value)}
+                        placeholder="Ex: 2.5"
+                        className="h-8 text-sm bg-zinc-800 border-zinc-700 text-zinc-200"
+                      />
+                    </div>
+                  </div>
+                  <ModuleAttachmentUploadField
+                    files={pendingAttachments}
+                    onChange={setPendingAttachments}
+                    disabled={savingModule}
+                  />
                   <div className="flex justify-end gap-2">
-                    <Button size="sm" variant="ghost" onClick={() => { setAddingModule(false); setNewModuleName(""); setNewModuleDesc(""); }} className="h-7 text-xs text-zinc-400" disabled={savingModule}>
+                    <Button size="sm" variant="ghost" onClick={resetModuleForm} className="h-7 text-xs text-zinc-400" disabled={savingModule}>
                       Cancelar
                     </Button>
-                    <Button size="sm" onClick={handleAddModule} disabled={!newModuleName.trim() || savingModule} className="h-7 text-xs bg-violet-600 hover:bg-violet-700 gap-1">
+                    <Button
+                      size="sm"
+                      onClick={handleAddModule}
+                      disabled={!newModuleName.trim() || !newModuleHours.trim() || savingModule}
+                      className="h-7 text-xs bg-violet-600 hover:bg-violet-700 gap-1"
+                    >
                       {savingModule ? <div className="w-3.5 h-3.5 border-2 border-white/40 border-t-white rounded-full animate-spin" /> : <Check className="w-3.5 h-3.5" />}
                       {savingModule ? "Salvando..." : "Salvar Módulo"}
                     </Button>
@@ -331,7 +442,7 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
                 <Box className="w-10 h-10 text-zinc-700 mb-3" />
                 <p className="text-sm text-zinc-500 mb-1">Nenhum módulo cadastrado</p>
                 <p className="text-xs text-zinc-600">Módulos organizam as funcionalidades do projeto</p>
-                {isAdmin && (
+                {canAddModule && (
                   <Button size="sm" onClick={() => setAddingModule(true)} className="mt-4 h-7 px-3 text-xs bg-violet-600/20 hover:bg-violet-600/40 text-violet-400 border border-violet-500/30 gap-1">
                     <Plus className="w-3.5 h-3.5" /> Adicionar primeiro módulo
                   </Button>
@@ -339,13 +450,20 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
               </div>
             )}
 
-            {tasksByModule.map(({ module, tasks: modTasks, epics: modEpics }, i) => (
+            {tasksByModule.map(({ module, tasks: modTasks }, i) => {
+              const modAttachments = getAttachmentsByModule(module.id);
+              const modTaskIds = new Set(modTasks.map((t) => t.id));
+              const modHours = timeLogs
+                .filter((log) => modTaskIds.has(log.taskId))
+                .reduce((sum, log) => sum + log.hours, 0);
+
+              return (
               <motion.div
                 key={module.id}
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.05 }}
-                className="bg-zinc-900/60 border border-zinc-800/50 rounded-xl p-5 group"
+                className="bg-zinc-900/60 border border-zinc-800/50 rounded-xl p-5 group hover:border-vinc-500/30 transition-colors"
               >
                 {editingModuleId === module.id ? (
                   /* Modo de edição */
@@ -375,71 +493,88 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
                     </div>
                   </div>
                 ) : (
-                  /* Modo de visualização */
-                  <>
+                  /* Modo de visualização — clique abre detalhes */
+                  <div
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => setSelectedModuleId(module.id)}
+                    onKeyDown={(e) => e.key === "Enter" && setSelectedModuleId(module.id)}
+                    className="cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-violet-500/40 rounded-lg -m-1 p-1"
+                  >
                     <div className="flex items-center justify-between mb-3">
-                      <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded-md bg-zinc-800 flex items-center justify-center">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <div className="w-6 h-6 rounded-md bg-zinc-800 flex items-center justify-center shrink-0">
                           <span className="text-[10px] font-bold text-zinc-400">{i + 1}</span>
                         </div>
-                        <h3 className="font-semibold text-zinc-100">{module.name}</h3>
+                        <h3 className="font-semibold text-zinc-100 truncate">{module.name}</h3>
                       </div>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 shrink-0" onClick={(e) => e.stopPropagation()}>
                         <span className="text-sm text-zinc-400">{module.progress}%</span>
-                        {isAdmin && (
-                          <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <button
-                              onClick={() => startEdit(module)}
-                              className="p-1 rounded text-zinc-500 hover:text-zinc-300 hover:bg-zinc-700/50 transition-colors"
+                        {canAddModule && (
+                          <div className="flex items-center gap-1">
+                            {isAdmin && (
+                              <button
+                                type="button"
+                                onClick={() => startEdit(module)}
+                                className="p-1.5 rounded-md text-zinc-500 hover:text-zinc-300 hover:bg-zinc-700/50 transition-colors"
+                                title="Editar módulo"
+                              >
+                                <Pencil className="w-3.5 h-3.5" />
+                              </button>
+                            )}
+                            <Button
+                              type="button"
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => handleDeleteModule(module)}
+                              disabled={deletingModuleId === module.id}
+                              className="h-7 px-2 text-xs text-red-400 hover:text-red-300 hover:bg-red-500/10 gap-1"
                             >
-                              <Pencil className="w-3.5 h-3.5" />
-                            </button>
-                            <button
-                              onClick={() => { deleteModule(module.id); toast.success("Módulo removido"); }}
-                              className="p-1 rounded text-zinc-500 hover:text-red-400 hover:bg-red-500/10 transition-colors"
-                            >
-                              <Trash2 className="w-3.5 h-3.5" />
-                            </button>
+                              {deletingModuleId === module.id ? (
+                                <div className="w-3.5 h-3.5 border-2 border-red-400/40 border-t-red-400 rounded-full animate-spin" />
+                              ) : (
+                                <Trash2 className="w-3.5 h-3.5" />
+                              )}
+                              Excluir
+                            </Button>
                           </div>
                         )}
                       </div>
                     </div>
                     <Progress value={module.progress} className="h-1.5 bg-zinc-800 mb-3" />
                     {module.description && (
-                      <p className="text-xs text-zinc-500 mb-3">{module.description}</p>
+                      <p className="text-xs text-zinc-500 mb-3 line-clamp-2">{module.description}</p>
                     )}
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-4 text-xs text-zinc-500">
-                        <span>{modEpics.length} épico{modEpics.length !== 1 ? "s" : ""}</span>
+                    <div className="flex items-center justify-between gap-2 flex-wrap">
+                      <div className="flex items-center gap-3 text-xs text-zinc-500">
+                        {modHours > 0 && (
+                          <span className="text-violet-400/80">{modHours.toFixed(1)}h registradas</span>
+                        )}
+                        {modAttachments.length > 0 && (
+                          <span>{modAttachments.length} anexo{modAttachments.length !== 1 ? "s" : ""}</span>
+                        )}
                         <span>{modTasks.length} tarefa{modTasks.length !== 1 ? "s" : ""}</span>
-                        <span>{modTasks.filter((t) => t.status === "CONCLUIDA").length} concluída{modTasks.filter((t) => t.status === "CONCLUIDA").length !== 1 ? "s" : ""}</span>
                       </div>
-                      <button
-                        type="button"
-                        onClick={() => setOpenAttachmentsId(openAttachmentsId === module.id ? null : module.id)}
-                        className="flex items-center gap-1 text-xs text-zinc-500 hover:text-zinc-300 transition-colors"
-                      >
-                        <Paperclip className="w-3 h-3" />
-                        <span>Anexos{getAttachmentsByModule(module.id).length > 0 ? ` (${getAttachmentsByModule(module.id).length})` : ""}</span>
-                        <ChevronDown className={`w-3 h-3 transition-transform ${openAttachmentsId === module.id ? "rotate-180" : ""}`} />
-                      </button>
+                      <span className="flex items-center gap-1 text-xs text-violet-400/80 group-hover:text-violet-400 transition-colors">
+                        <Eye className="w-3.5 h-3.5" /> Ver detalhes
+                      </span>
                     </div>
-                    <AnimatePresence>
-                      {openAttachmentsId === module.id && (
-                        <motion.div
-                          initial={{ opacity: 0, height: 0 }}
-                          animate={{ opacity: 1, height: "auto" }}
-                          exit={{ opacity: 0, height: 0 }}
-                          transition={{ duration: 0.2 }}
-                        >
-                          <ModuleAttachmentsPanel moduleId={module.id} />
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </>
+                  </div>
                 )}
               </motion.div>
-            ))}
+              );
+            })}
+
+            <ModuleDetailDialog
+              module={selectedModule}
+              tasks={selectedModuleTasks}
+              timeLogs={timeLogs}
+              attachments={selectedModule ? getAttachmentsByModule(selectedModule.id) : []}
+              users={users}
+              open={selectedModuleId !== null}
+              onOpenChange={(open) => { if (!open) setSelectedModuleId(null); }}
+              canUpload={canAddModule}
+            />
           </TabsContent>
 
           {/* Tasks */}

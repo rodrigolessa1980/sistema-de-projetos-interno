@@ -129,3 +129,8 @@ export type TaskNote = Prisma.TaskNoteModel
  * 
  */
 export type TaskAttachment = Prisma.TaskAttachmentModel
+/**
+ * Model ModuleAttachment
+ * 
+ */
+export type ModuleAttachment = Prisma.ModuleAttachmentModel

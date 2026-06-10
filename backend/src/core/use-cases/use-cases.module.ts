@@ -25,9 +25,13 @@ import { ReorderQueueUseCase } from './projects/reorder-queue.use-case';
 import { AddDeveloperUseCase } from './projects/add-developer.use-case';
 import { RemoveDeveloperUseCase } from './projects/remove-developer.use-case';
 import { CreateModuleUseCase } from './modules/create-module.use-case';
+import { CreateModuleWithTimeLogUseCase } from './modules/create-module-with-time-log.use-case';
 import { UpdateModuleUseCase } from './modules/update-module.use-case';
 import { DeleteModuleUseCase } from './modules/delete-module.use-case';
 import { ListModulesByProjectUseCase } from './modules/list-modules-by-project.use-case';
+import { ListModuleAttachmentsByProjectUseCase } from './modules/list-module-attachments-by-project.use-case';
+import { CreateModuleAttachmentUseCase } from './modules/create-module-attachment.use-case';
+import { DeleteModuleAttachmentUseCase } from './modules/delete-module-attachment.use-case';
 import { CreateEpicUseCase } from './epics/create-epic.use-case';
 import { ListEpicsByProjectUseCase } from './epics/list-epics-by-project.use-case';
 
@@ -84,9 +88,13 @@ const useCases = [
 
   // Modules
   CreateModuleUseCase,
+  CreateModuleWithTimeLogUseCase,
   UpdateModuleUseCase,
   DeleteModuleUseCase,
   ListModulesByProjectUseCase,
+  ListModuleAttachmentsByProjectUseCase,
+  CreateModuleAttachmentUseCase,
+  DeleteModuleAttachmentUseCase,
 
   // Epics
   CreateEpicUseCase,

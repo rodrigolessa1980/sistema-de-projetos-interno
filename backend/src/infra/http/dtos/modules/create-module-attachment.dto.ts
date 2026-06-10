@@ -1,0 +1,21 @@
+import { Type } from 'class-transformer';
+import { IsInt, IsNotEmpty, IsString, Min } from 'class-validator';
+
+export class CreateModuleAttachmentDto {
+  @IsString()
+  @IsNotEmpty()
+  name: string;
+
+  @IsString()
+  @IsNotEmpty()
+  type: string;
+
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  size: number;
+
+  @IsString()
+  @IsNotEmpty()
+  dataUrl: string;
+}

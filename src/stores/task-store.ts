@@ -78,6 +78,8 @@ interface TaskStore {
   logTime: (data: Omit<TimeLog, "id" | "createdAt">) => Promise<TimeLog>;
   appendTimeLog: (log: TimeLog) => void;
   fetchTimeLogsForTask: (taskId: string) => Promise<void>;
+  fetchTimeLogsForProject: (projectId: string) => Promise<void>;
+  fetchModuleAttachmentsForProject: (projectId: string, moduleIds: string[]) => Promise<void>;
   deleteTimeLog: (id: string, taskId: string) => Promise<void>;
   addComment: (data: Omit<Comment, "id" | "createdAt" | "updatedAt">) => Promise<Comment>;
   toggleSubtask: (subtaskId: string) => Promise<void>;
@@ -233,11 +235,41 @@ export const useTaskStore = create<TaskStore>()(
     set((state) => ({
       timeLogs: [
         ...state.timeLogs.filter((tl) => tl.taskId !== taskId),
-        ...finalized,
+        ...finalized.map((log) => ({
+          ...log,
+          date: log.date.split("T")[0],
+        })),
       ],
       tasks: state.tasks.map((t) =>
         t.id === taskId ? { ...t, actualHours: totalHours } : t
       ),
+    }));
+  },
+
+  fetchTimeLogsForProject: async (projectId) => {
+    const logs = await api.get<TimeLog[]>(`time-logs/project/${projectId}`).catch(() => [] as TimeLog[]);
+    const normalized = logs.map((log) => ({
+      ...log,
+      date: log.date.split("T")[0],
+    }));
+    set((state) => ({
+      timeLogs: [
+        ...state.timeLogs.filter((tl) => tl.projectId !== projectId),
+        ...normalized,
+      ],
+    }));
+  },
+
+  fetchModuleAttachmentsForProject: async (projectId, moduleIds) => {
+    const moduleIdSet = new Set(moduleIds);
+    const response = await api
+      .get<{ attachments: ModuleAttachment[] }>(`projects/${projectId}/module-attachments`)
+      .catch(() => ({ attachments: [] as ModuleAttachment[] }));
+    set((state) => ({
+      moduleAttachments: [
+        ...state.moduleAttachments.filter((a) => !moduleIdSet.has(a.moduleId)),
+        ...response.attachments,
+      ],
     }));
   },
 
@@ -448,19 +480,29 @@ export const useTaskStore = create<TaskStore>()(
       .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
 
   addModuleAttachment: async (data) => {
-    await delay(300);
-    const attachment: ModuleAttachment = {
-      ...data,
-      id: generateId("matt"),
-      createdAt: new Date().toISOString(),
-    };
+    const response = await api.post<{ attachment: ModuleAttachment }>(
+      `modules/${data.moduleId}/attachments`,
+      {
+        name: data.name,
+        type: data.type,
+        size: data.size,
+        dataUrl: data.dataUrl,
+      },
+    );
+    const attachment = response.attachment;
     set((state) => ({ moduleAttachments: [...state.moduleAttachments, attachment] }));
     return attachment;
   },
 
   deleteModuleAttachment: async (id) => {
-    await delay(150);
+    const previous = get().moduleAttachments;
     set((state) => ({ moduleAttachments: state.moduleAttachments.filter((a) => a.id !== id) }));
+    try {
+      await api.delete(`module-attachments/${id}`);
+    } catch {
+      set({ moduleAttachments: previous });
+      throw new Error("Erro ao remover anexo");
+    }
   },
   }),
   {
@@ -472,8 +514,7 @@ export const useTaskStore = create<TaskStore>()(
       auditLogs: state.auditLogs,
       notes: state.notes,
       attachments: state.attachments,
-      moduleAttachments: state.moduleAttachments,
-      // timeLogs não é persistido — sempre vem do backend
+      // moduleAttachments e timeLogs vêm do backend
     }),
   }
 ));

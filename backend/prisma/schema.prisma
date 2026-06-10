@@ -110,9 +110,11 @@ model User {
   notifications   Notification[]
   auditLogs       AuditLog[]
   statusHistories StatusHistory[]
-  taskNotes       TaskNote[]
-  attachments     TaskAttachment[]
-  permissions     UserPermission[]
+  taskNotes           TaskNote[]
+  attachments         TaskAttachment[]
+  moduleAttachments   ModuleAttachment[]
+  loggedModules       Module[]             @relation("ModuleLoggedBy")
+  permissions         UserPermission[]
 
   @@index([email])
   @@map("users")
@@ -178,19 +180,25 @@ model ProjectDeveloper {
 }
 
 model Module {
-  id          String   @id @default(uuid())
-  projectId   String
-  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  name        String   @db.VarChar(100)
-  description String   @db.Text
-  order       Int      @default(0)
-  progress    Int      @default(0)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  epics       Epic[]
-  tasks       Task[]
+  id             String             @id @default(uuid())
+  projectId      String
+  project        Project            @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  name           String             @db.VarChar(100)
+  description    String             @db.Text
+  order          Int                @default(0)
+  progress       Int                @default(0)
+  workDate       DateTime?          @db.Date
+  loggedHours    Float?
+  loggedByUserId String?
+  loggedBy       User?              @relation("ModuleLoggedBy", fields: [loggedByUserId], references: [id], onDelete: SetNull)
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+  epics          Epic[]
+  tasks          Task[]
+  attachments    ModuleAttachment[]
 
   @@index([projectId])
+  @@index([loggedByUserId])
   @@map("modules")
 }
 
@@ -428,4 +436,20 @@ model TaskAttachment {
 
   @@index([taskId])
   @@map("task_attachments")
+}
+
+model ModuleAttachment {
+  id        String   @id @default(uuid())
+  moduleId  String
+  module    Module   @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name      String   @db.VarChar(150)
+  type      String   @db.VarChar(100)
+  size      Int
+  dataUrl   String   @db.LongText
+  createdAt DateTime @default(now())
+
+  @@index([moduleId])
+  @@map("module_attachments")
 }
