@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import * as bcrypt from 'bcrypt';
 import {
+  AuditEntityType,
   NotificationType,
   PrismaClient,
   ProjectStatus,
@@ -248,9 +249,74 @@ async function ensureNotification(data: {
   });
 }
 
+async function cleanupPhantomDevelopers(emails: string[]) {
+  const users = await prisma.user.findMany({
+    where: { email: { in: emails } },
+    select: { id: true },
+  });
+  const userIds = users.map((user) => user.id);
+
+  if (userIds.length === 0) return;
+
+  const tasks = await prisma.task.findMany({
+    where: {
+      OR: [{ assigneeId: { in: userIds } }, { reporterId: { in: userIds } }],
+    },
+    select: { id: true },
+  });
+  const taskIds = tasks.map((task) => task.id);
+
+  if (taskIds.length > 0) {
+    await prisma.auditLog.deleteMany({
+      where: {
+        OR: [
+          { entityType: AuditEntityType.TASK, entityId: { in: taskIds } },
+          { userId: { in: userIds } },
+        ],
+      },
+    });
+    await prisma.notification.deleteMany({
+      where: {
+        OR: [{ userId: { in: userIds } }, { relatedTaskId: { in: taskIds } }],
+      },
+    });
+    await prisma.taskDependency.deleteMany({
+      where: {
+        OR: [{ taskId: { in: taskIds } }, { dependsOnTaskId: { in: taskIds } }],
+      },
+    });
+    await prisma.task.deleteMany({ where: { id: { in: taskIds } } });
+  }
+
+  await prisma.auditLog.deleteMany({
+    where: {
+      OR: [
+        { userId: { in: userIds } },
+        { entityType: AuditEntityType.USER, entityId: { in: userIds } },
+      ],
+    },
+  });
+  await prisma.notification.deleteMany({ where: { userId: { in: userIds } } });
+  await prisma.timeLog.deleteMany({ where: { userId: { in: userIds } } });
+  await prisma.comment.deleteMany({ where: { userId: { in: userIds } } });
+  await prisma.taskNote.deleteMany({ where: { userId: { in: userIds } } });
+  await prisma.taskAttachment.deleteMany({ where: { userId: { in: userIds } } });
+  await prisma.statusHistory.deleteMany({ where: { userId: { in: userIds } } });
+  await prisma.epicDeveloper.deleteMany({ where: { userId: { in: userIds } } });
+  await prisma.projectDeveloper.deleteMany({ where: { userId: { in: userIds } } });
+  await prisma.userPermission.deleteMany({ where: { userId: { in: userIds } } });
+  await prisma.subtask.updateMany({
+    where: { assigneeId: { in: userIds } },
+    data: { assigneeId: null },
+  });
+  await prisma.user.deleteMany({ where: { id: { in: userIds } } });
+}
+
 async function main() {
+  const phantomDeveloperEmails = ['ana@devflow.com', 'lucas@devflow.com', 'fernanda@devflow.com'];
+  await cleanupPhantomDevelopers(phantomDeveloperEmails);
+
   const passwordHash = await bcrypt.hash('admin123', 10);
-  const devPassword = await bcrypt.hash('dev123', 10);
 
   const admin = await prisma.user.upsert({
     where: { email: 'admin@devflow.com' },
@@ -272,45 +338,14 @@ async function main() {
     },
   });
 
-  const developerSeed = [
-    {
-      name: 'Ana Carolina Silva',
-      email: 'ana@devflow.com',
-      position: 'Senior Frontend Developer',
-      department: 'Engenharia',
+  const developers = await prisma.user.findMany({
+    where: {
+      role: UserRole.DEVELOPER,
+      isActive: true,
+      email: { notIn: phantomDeveloperEmails },
     },
-    {
-      name: 'Lucas Ferreira',
-      email: 'lucas@devflow.com',
-      position: 'Backend Engineer',
-      department: 'Engenharia',
-    },
-    {
-      name: 'Fernanda Lima',
-      email: 'fernanda@devflow.com',
-      position: 'Full Stack Developer',
-      department: 'Engenharia',
-    },
-  ];
-
-  const developers = [];
-  for (const dev of developerSeed) {
-    developers.push(
-      await prisma.user.upsert({
-        where: { email: dev.email },
-        update: {
-          ...dev,
-          role: UserRole.DEVELOPER,
-          isActive: true,
-        },
-        create: {
-          ...dev,
-          passwordHash: devPassword,
-          role: UserRole.DEVELOPER,
-        },
-      }),
-    );
-  }
+    orderBy: { createdAt: 'asc' },
+  });
 
   const companies = await Promise.all([
     ensureCompany({ name: 'Monkey Tech', shortName: 'MKT', color: '#8B5CF6', cnpj: null }),
@@ -426,6 +461,11 @@ async function main() {
       actualHours: 1,
     },
   ];
+
+  if (developers.length === 0) {
+    console.log('Seed concluido sem tarefas: nenhum desenvolvedor real ativo encontrado.');
+    return;
+  }
 
   for (const [projectIndex, project] of projectsToPopulate.entries()) {
     const assignedDeveloperIds = developers.map((dev) => dev.id);
