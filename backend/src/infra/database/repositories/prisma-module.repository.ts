@@ -129,8 +129,17 @@ export class PrismaModuleRepository implements IModuleRepository {
     const shouldLogTime = input.hours != null && input.hours > 0 && input.workDate != null;
 
     return this.prisma.$transaction(async (tx) => {
+      const project = await tx.project.findUnique({
+        where: { id: input.projectId },
+        select: { ownerId: true },
+      });
+      if (!project) {
+        throw new Error('Projeto não encontrado');
+      }
+
       const existingCount = await tx.module.count({ where: { projectId: input.projectId } });
       const order = input.order ?? existingCount;
+      const timeLogUserId = project.ownerId;
 
       const moduleRaw = await tx.module.create({
         data: {
@@ -140,7 +149,7 @@ export class PrismaModuleRepository implements IModuleRepository {
           order,
           workDate: shouldLogTime ? input.workDate : null,
           loggedHours: shouldLogTime ? input.hours : null,
-          loggedByUserId: shouldLogTime ? input.userId : null,
+          loggedByUserId: shouldLogTime ? timeLogUserId : null,
         },
       });
 
@@ -162,7 +171,7 @@ export class PrismaModuleRepository implements IModuleRepository {
             status: ProjectStatus.ATIVO,
             startDate: workDate,
             endDate: workDate,
-            developers: { create: [{ userId: input.userId }] },
+            developers: { create: [{ userId: timeLogUserId }] },
           },
           include: { developers: true },
         });
@@ -176,7 +185,7 @@ export class PrismaModuleRepository implements IModuleRepository {
             description,
             status: TaskStatus.CONCLUIDA,
             complexity: 1,
-            assigneeId: input.userId,
+            assigneeId: timeLogUserId,
             reporterId: input.userId,
             estimatedHours: Math.ceil(hours),
             actualHours: 0,
@@ -188,7 +197,7 @@ export class PrismaModuleRepository implements IModuleRepository {
           data: {
             projectId: input.projectId,
             taskId: taskRaw.id,
-            userId: input.userId,
+            userId: timeLogUserId,
             hours,
             description,
             date: workDate,
