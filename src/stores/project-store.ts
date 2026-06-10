@@ -1,7 +1,7 @@
 "use client";
 
 import { create } from "zustand";
-import type { Project, Module, Epic, Company } from "@/types";
+import type { Project, Module, Epic, Company, ModuleStatus, ProjectShowcaseAttachment } from "@/types";
 import type { Task, TimeLog, ModuleAttachment } from "@/types";
 // Module and Epic are fetched from API; types re-exported for clarity
 import { generateId, delay } from "@/lib/utils";
@@ -13,6 +13,7 @@ interface ProjectStore {
   modules: Module[];
   epics: Epic[];
   companies: Company[];
+  projectShowcaseAttachments: ProjectShowcaseAttachment[];
   selectedProjectId: string | null;
   isLoading: boolean;
 
@@ -26,6 +27,11 @@ interface ProjectStore {
   getModulesByProject: (projectId: string) => Module[];
   getEpicsByModule: (moduleId: string) => Epic[];
   getEpicsByProject: (projectId: string) => Epic[];
+  getShowcaseAttachmentsByProject: (projectId: string) => ProjectShowcaseAttachment[];
+  fetchProjectShowcaseAttachments: (projectId: string) => Promise<ProjectShowcaseAttachment[]>;
+  updateProjectShowcase: (projectId: string, technicalDescription: string) => Promise<Project>;
+  addProjectShowcaseAttachment: (projectId: string, data: { name: string; type: string; size: number; dataUrl: string }) => Promise<ProjectShowcaseAttachment>;
+  deleteProjectShowcaseAttachment: (id: string) => Promise<void>;
   createProject: (data: Omit<Project, "id" | "createdAt" | "updatedAt">) => Promise<Project>;
   updateProject: (id: string, data: Partial<Project>) => Promise<Project>;
   deleteProject: (id: string) => Promise<void>;
@@ -33,6 +39,7 @@ interface ProjectStore {
     projectId: string;
     name: string;
     description: string;
+    status?: ModuleStatus;
     order?: number;
     hours?: number;
     workDate?: string;
@@ -57,6 +64,7 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
   modules: [],
   epics: [],
   companies: [],
+  projectShowcaseAttachments: [],
   selectedProjectId: null,
   isLoading: false,
 
@@ -127,12 +135,16 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
           api.get<{ attachments: ModuleAttachment[] }>(`projects/${id}/module-attachments`).then((r) => r.attachments).catch(() => [] as ModuleAttachment[])
         )),
       ]);
+      const showcaseAttachmentResults = await Promise.all(projectIds.map((id) =>
+        api.get<{ attachments: ProjectShowcaseAttachment[] }>(`projects/${id}/showcase-attachments`).then((r) => r.attachments).catch(() => [] as ProjectShowcaseAttachment[])
+      ));
 
       set({
         projects: normalizedProjects,
         companies: companiesResponse.companies,
         modules: modulesResults.flat(),
         epics: epicsResults.flat(),
+        projectShowcaseAttachments: showcaseAttachmentResults.flat(),
         isLoading: false,
       });
       useTaskStore.setState({ moduleAttachments: attachmentsResults.flat() });
@@ -146,6 +158,60 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
   getModulesByProject: (projectId) => get().modules.filter((m) => m.projectId === projectId),
   getEpicsByModule: (moduleId) => get().epics.filter((e) => e.moduleId === moduleId),
   getEpicsByProject: (projectId) => get().epics.filter((e) => e.projectId === projectId),
+  getShowcaseAttachmentsByProject: (projectId) => get().projectShowcaseAttachments.filter((a) => a.projectId === projectId),
+
+  fetchProjectShowcaseAttachments: async (projectId) => {
+    const response = await api
+      .get<{ attachments: ProjectShowcaseAttachment[] }>(`projects/${projectId}/showcase-attachments`)
+      .catch(() => ({ attachments: [] as ProjectShowcaseAttachment[] }));
+    set((state) => ({
+      projectShowcaseAttachments: [
+        ...state.projectShowcaseAttachments.filter((a) => a.projectId !== projectId),
+        ...response.attachments,
+      ],
+    }));
+    return response.attachments;
+  },
+
+  updateProjectShowcase: async (projectId, technicalDescription) => {
+    const project = await api.put<Project>(`projects/${projectId}/showcase`, { technicalDescription });
+    const normalized: Project = {
+      ...project,
+      endDate: project.endDate ?? undefined,
+      queueOrder: project.queueOrder ?? undefined,
+      avatar: project.avatar ?? undefined,
+      testUrl: project.testUrl ?? undefined,
+      developerIds: project.developerIds ?? [],
+    };
+    set((state) => ({
+      projects: state.projects.map((p) => (p.id === projectId ? normalized : p)),
+    }));
+    return normalized;
+  },
+
+  addProjectShowcaseAttachment: async (projectId, data) => {
+    const response = await api.post<{ attachment: ProjectShowcaseAttachment }>(`projects/${projectId}/showcase-attachments`, data);
+    set((state) => ({
+      projectShowcaseAttachments: [
+        response.attachment,
+        ...state.projectShowcaseAttachments.filter((a) => a.id !== response.attachment.id),
+      ],
+    }));
+    return response.attachment;
+  },
+
+  deleteProjectShowcaseAttachment: async (id) => {
+    const previous = get().projectShowcaseAttachments;
+    set((state) => ({
+      projectShowcaseAttachments: state.projectShowcaseAttachments.filter((a) => a.id !== id),
+    }));
+    try {
+      await api.delete(`projects/showcase-attachments/${id}`);
+    } catch {
+      set({ projectShowcaseAttachments: previous });
+      throw new Error("Erro ao excluir arquivo do projeto");
+    }
+  },
 
   createProject: async (data) => {
     const project = await api.post<Project>("projects", data);

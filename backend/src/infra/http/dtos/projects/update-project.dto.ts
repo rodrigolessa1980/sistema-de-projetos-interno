@@ -4,11 +4,23 @@ import { ProjectStatus } from '../../../../core/domain/entities/enums';
 export class UpdateProjectDto {
   @IsOptional()
   @IsString()
+  companyId?: string | null;
+
+  @IsOptional()
+  @IsString()
   name?: string;
 
   @IsOptional()
   @IsString()
   description?: string;
+
+  @IsOptional()
+  @IsString()
+  technicalDescription?: string | null;
+
+  @IsOptional()
+  @IsString()
+  requestedBy?: string | null;
 
   @IsOptional()
   @IsEnum(ProjectStatus)
@@ -17,6 +29,10 @@ export class UpdateProjectDto {
   @IsOptional()
   @IsString()
   ownerId?: string;
+
+  @IsOptional()
+  @IsDateString()
+  startDate?: string;
 
   @IsOptional()
   @IsDateString()

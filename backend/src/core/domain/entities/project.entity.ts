@@ -5,6 +5,8 @@ export interface ProjectProps {
   companyId?: string | null;
   name: string;
   description: string;
+  technicalDescription?: string | null;
+  requestedBy?: string | null;
   status?: ProjectStatus;
   ownerId: string;
   startDate: Date;
@@ -29,6 +31,8 @@ export class Project {
       companyId: props.companyId ?? null,
       name: props.name,
       description: props.description,
+      technicalDescription: props.technicalDescription || null,
+      requestedBy: props.requestedBy || null,
       status: props.status || ProjectStatus.NA_FILA,
       ownerId: props.ownerId,
       startDate: props.startDate,
@@ -62,6 +66,8 @@ export class Project {
   public get companyId(): string | null { return this.props.companyId; }
   public get name(): string { return this.props.name; }
   public get description(): string { return this.props.description; }
+  public get technicalDescription(): string | null { return this.props.technicalDescription; }
+  public get requestedBy(): string | null { return this.props.requestedBy; }
   public get status(): ProjectStatus { return this.props.status; }
   public get ownerId(): string { return this.props.ownerId; }
   public get startDate(): Date { return this.props.startDate; }

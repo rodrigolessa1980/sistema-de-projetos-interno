@@ -134,3 +134,8 @@ export type TaskAttachment = Prisma.TaskAttachmentModel
  * 
  */
 export type ModuleAttachment = Prisma.ModuleAttachmentModel
+/**
+ * Model ProjectShowcaseAttachment
+ * 
+ */
+export type ProjectShowcaseAttachment = Prisma.ProjectShowcaseAttachmentModel

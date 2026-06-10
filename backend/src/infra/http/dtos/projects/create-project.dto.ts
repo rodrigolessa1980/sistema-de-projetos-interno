@@ -16,6 +16,14 @@ export class CreateProjectDto {
 
   @IsOptional()
   @IsString()
+  technicalDescription?: string | null;
+
+  @IsOptional()
+  @IsString()
+  requestedBy?: string | null;
+
+  @IsOptional()
+  @IsString()
   ownerId?: string;
 
   @IsOptional()

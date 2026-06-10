@@ -3,6 +3,7 @@ import { ModuleAttachment } from '../entities/module-attachment.entity';
 import { Epic } from '../entities/epic.entity';
 import { Task } from '../entities/task.entity';
 import { TimeLog } from '../entities/time-log.entity';
+import { ModuleStatus } from '../entities/enums';
 
 export interface ModuleAttachmentInput {
   name: string;
@@ -15,6 +16,7 @@ export interface CreateModuleCompleteInput {
   projectId: string;
   name: string;
   description: string;
+  status?: ModuleStatus;
   order?: number;
   userId: string;
   hours?: number;
@@ -35,7 +37,7 @@ export interface IModuleRepository {
   createComplete(input: CreateModuleCompleteInput): Promise<CreateModuleCompleteResult>;
   findById(id: string): Promise<Module | null>;
   listByProject(projectId: string): Promise<Module[]>;
-  update(id: string, data: { name?: string; description?: string }): Promise<Module>;
+  update(id: string, data: { name?: string; description?: string; status?: ModuleStatus }): Promise<Module>;
   delete(id: string): Promise<void>;
 }
 

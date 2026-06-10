@@ -8,6 +8,8 @@ export interface CreateProjectInput {
   companyId?: string | null;
   name?: string;
   description?: string;
+  technicalDescription?: string | null;
+  requestedBy?: string | null;
   ownerId: string;
   status?: ProjectStatus;
   startDate?: Date;
@@ -30,6 +32,8 @@ export class CreateProjectUseCase {
       companyId: input.companyId,
       name: input.name?.trim() || `Projeto ${new Date().toLocaleString('pt-BR')}`,
       description: input.description?.trim() || 'Projeto criado sem descricao.',
+      technicalDescription: input.technicalDescription?.trim() || null,
+      requestedBy: input.requestedBy?.trim() || null,
       ownerId: input.ownerId,
       status: input.status,
       startDate: input.startDate ?? new Date(),

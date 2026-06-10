@@ -5,19 +5,24 @@ import { AppModule } from './app.module';
 import { DomainExceptionFilter } from './infra/http/filters/domain-exception.filter';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, { bodyParser: true });
-  app.use(require('express').json({ limit: '10mb' }));
-  app.use(require('express').urlencoded({ limit: '10mb', extended: true }));
+  const app = await NestFactory.create(AppModule, { bodyParser: false });
 
   app.setGlobalPrefix('api');
-  const allowedOrigins = (process.env.CORS_ORIGIN ?? 'http://localhost:8022')
+  const configuredOrigins = (process.env.CORS_ORIGIN ?? '')
     .split(',')
-    .map((origin) => origin.trim())
+    .map((origin) => origin.trim().replace(/\/$/, ''))
     .filter(Boolean);
+  const allowedOrigins = new Set([
+    'http://localhost:8022',
+    'http://127.0.0.1:8022',
+    'http://143.198.155.216:8022',
+    ...configuredOrigins,
+  ]);
 
   app.enableCors({
     origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
-      if (!origin || allowedOrigins.includes(origin)) {
+      const normalizedOrigin = origin?.replace(/\/$/, '');
+      if (!normalizedOrigin || allowedOrigins.has(normalizedOrigin)) {
         callback(null, true);
         return;
       }
@@ -25,6 +30,11 @@ async function bootstrap() {
     },
     credentials: true,
   });
+
+  const express = require('express');
+  app.use(express.json({ limit: '25mb' }));
+  app.use(express.urlencoded({ limit: '25mb', extended: true }));
+
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,

@@ -72,6 +72,12 @@ enum TimeLogSource {
   MANUAL
 }
 
+enum ModuleStatus {
+  INICIADO
+  EM_PROCESSO
+  CONCLUIDO
+}
+
 model Company {
   id        String    @id @default(uuid())
   name      String    @db.VarChar(100)
@@ -113,6 +119,7 @@ model User {
   taskNotes           TaskNote[]
   attachments         TaskAttachment[]
   moduleAttachments   ModuleAttachment[]
+  projectShowcaseAttachments ProjectShowcaseAttachment[]
   loggedModules       Module[]             @relation("ModuleLoggedBy")
   permissions         UserPermission[]
 
@@ -141,6 +148,8 @@ model Project {
   company        Company?      @relation(fields: [companyId], references: [id], onDelete: Restrict)
   name           String        @db.VarChar(150)
   description    String        @db.Text
+  technicalDescription String? @db.Text
+  requestedBy    String?       @db.VarChar(150)
   status         ProjectStatus @default(NA_FILA)
   ownerId        String
   owner          User          @relation("ProjectOwner", fields: [ownerId], references: [id], onDelete: Restrict)
@@ -162,6 +171,7 @@ model Project {
   tasks         Task[]
   timeLogs      TimeLog[]
   notifications Notification[]
+  showcaseAttachments ProjectShowcaseAttachment[]
 
   @@index([companyId])
   @@index([ownerId])
@@ -185,6 +195,7 @@ model Module {
   project        Project            @relation(fields: [projectId], references: [id], onDelete: Cascade)
   name           String             @db.VarChar(100)
   description    String             @db.Text
+  status         ModuleStatus       @default(INICIADO)
   order          Int                @default(0)
   progress       Int                @default(0)
   workDate       DateTime?          @db.Date
@@ -452,4 +463,20 @@ model ModuleAttachment {
 
   @@index([moduleId])
   @@map("module_attachments")
+}
+
+model ProjectShowcaseAttachment {
+  id        String   @id @default(uuid())
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name      String   @db.VarChar(150)
+  type      String   @db.VarChar(100)
+  size      Int
+  dataUrl   String   @db.LongText
+  createdAt DateTime @default(now())
+
+  @@index([projectId])
+  @@map("project_showcase_attachments")
 }

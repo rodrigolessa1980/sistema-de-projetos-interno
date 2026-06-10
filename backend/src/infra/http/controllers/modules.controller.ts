@@ -11,15 +11,17 @@ import { CreateModuleAttachmentUseCase } from '../../../core/use-cases/modules/c
 import { DeleteModuleAttachmentUseCase } from '../../../core/use-cases/modules/delete-module-attachment.use-case';
 import { CreateEpicUseCase } from '../../../core/use-cases/epics/create-epic.use-case';
 import { ListEpicsByProjectUseCase } from '../../../core/use-cases/epics/list-epics-by-project.use-case';
-import { IsInt, IsNotEmpty, IsOptional, IsString, IsDateString, IsArray } from 'class-validator';
+import { IsInt, IsNotEmpty, IsOptional, IsString, IsDateString, IsArray, IsEnum } from 'class-validator';
 import { CreateModuleDto } from '../dtos/modules/create-module.dto';
 import { CreateModuleAttachmentDto } from '../dtos/modules/create-module-attachment.dto';
 import { TaskPresenter } from '../presenters/task.presenter';
 import { TimeLogPresenter } from '../presenters/time-log.presenter';
+import { ModuleStatus } from '../../../core/domain/entities/enums';
 
 class UpdateModuleDto {
   @IsOptional() @IsString() @IsNotEmpty() name?: string;
   @IsOptional() @IsString() description?: string;
+  @IsOptional() @IsEnum(ModuleStatus) status?: ModuleStatus;
 }
 
 class CreateEpicDto {
@@ -44,6 +46,7 @@ function moduleToHTTP(m: any) {
     projectId: m.projectId,
     name: m.name,
     description: m.description,
+    status: m.status ?? ModuleStatus.INICIADO,
     order: m.order,
     progress: m.progress,
     workDate: formatDateOnly(m.workDate),
@@ -122,6 +125,7 @@ export class ModulesController {
         projectId: body.projectId,
         name: body.name,
         description: body.description ?? '',
+        status: body.status,
         order: body.order,
         userId: req.userId,
         hours: body.hours,
@@ -141,6 +145,7 @@ export class ModulesController {
       projectId: body.projectId,
       name: body.name,
       description: body.description ?? '',
+      status: body.status,
       order: body.order,
     });
     return { module: moduleToHTTP(module), attachments: [] };
@@ -174,6 +179,7 @@ export class ModulesController {
     const module = await this.updateModuleUseCase.execute(id, {
       name: body.name,
       description: body.description,
+      status: body.status,
     });
     return { module: moduleToHTTP(module) };
   }

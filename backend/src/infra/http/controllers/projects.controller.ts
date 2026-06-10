@@ -1,4 +1,6 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Param, Post, Put, Req, UseGuards } from '@nestjs/common';
+import { Type } from 'class-transformer';
+import { IsInt, IsNotEmpty, IsOptional, IsString, Min } from 'class-validator';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { ListProjectsUseCase } from '../../../core/use-cases/projects/list-projects.use-case';
 import { GetProjectByIdUseCase } from '../../../core/use-cases/projects/get-project-by-id.use-case';
@@ -14,6 +16,32 @@ import { UpdateProjectDto } from '../dtos/projects/update-project.dto';
 import { ReorderQueueDto } from '../dtos/projects/reorder-queue.dto';
 import { ProjectPresenter, ProjectResponse } from '../presenters/project.presenter';
 import type { AuthenticatedRequest } from '../guards/jwt-auth.guard';
+import { PrismaService } from '../../database/prisma/prisma.service';
+
+class UpdateProjectShowcaseDto {
+  @IsOptional()
+  @IsString()
+  technicalDescription?: string | null;
+}
+
+class CreateProjectShowcaseAttachmentDto {
+  @IsString()
+  @IsNotEmpty()
+  name!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  type!: string;
+
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  size!: number;
+
+  @IsString()
+  @IsNotEmpty()
+  dataUrl!: string;
+}
 
 @Controller('projects')
 @UseGuards(JwtAuthGuard)
@@ -28,6 +56,7 @@ export class ProjectsController {
     private readonly reorderQueueUseCase: ReorderQueueUseCase,
     private readonly addDeveloperUseCase: AddDeveloperUseCase,
     private readonly removeDeveloperUseCase: RemoveDeveloperUseCase,
+    private readonly prisma: PrismaService,
   ) {}
 
   @Get()
@@ -57,6 +86,8 @@ export class ProjectsController {
       companyId: body.companyId,
       name: body.name,
       description: body.description,
+      technicalDescription: body.technicalDescription,
+      requestedBy: body.requestedBy,
       ownerId: body.ownerId || request.userId,
       status: body.status,
       startDate: body.startDate ? new Date(body.startDate) : undefined,
@@ -76,10 +107,14 @@ export class ProjectsController {
   ): Promise<ProjectResponse> {
     const project = await this.updateProjectUseCase.execute({
       id,
+      companyId: body.companyId !== undefined ? (body.companyId || null) : undefined,
       name: body.name,
       description: body.description,
+      technicalDescription: body.technicalDescription,
+      requestedBy: body.requestedBy,
       status: body.status,
       ownerId: body.ownerId,
+      startDate: body.startDate ? new Date(body.startDate) : undefined,
       endDate: body.endDate !== undefined ? (body.endDate ? new Date(body.endDate) : null) : undefined,
       estimatedHours: body.estimatedHours,
       color: body.color,
@@ -87,6 +122,52 @@ export class ProjectsController {
       progress: body.progress,
     });
     return ProjectPresenter.toHTTP(project);
+  }
+
+  @Put(':id/showcase')
+  async updateShowcase(
+    @Param('id') id: string,
+    @Body() body: UpdateProjectShowcaseDto,
+  ): Promise<ProjectResponse> {
+    const project = await this.updateProjectUseCase.execute({
+      id,
+      technicalDescription: body.technicalDescription ?? null,
+    });
+    return ProjectPresenter.toHTTP(project);
+  }
+
+  @Get(':id/showcase-attachments')
+  async getShowcaseAttachments(@Param('id') id: string) {
+    const attachments = await this.prisma.projectShowcaseAttachment.findMany({
+      where: { projectId: id },
+      orderBy: { createdAt: 'desc' },
+    });
+    return { attachments };
+  }
+
+  @Post(':id/showcase-attachments')
+  async createShowcaseAttachment(
+    @Param('id') id: string,
+    @Body() body: CreateProjectShowcaseAttachmentDto,
+    @Req() request: AuthenticatedRequest,
+  ) {
+    const attachment = await this.prisma.projectShowcaseAttachment.create({
+      data: {
+        projectId: id,
+        userId: request.userId,
+        name: body.name,
+        type: body.type,
+        size: body.size,
+        dataUrl: body.dataUrl,
+      },
+    });
+    return { attachment };
+  }
+
+  @Delete('showcase-attachments/:id')
+  @HttpCode(204)
+  async deleteShowcaseAttachment(@Param('id') id: string): Promise<void> {
+    await this.prisma.projectShowcaseAttachment.delete({ where: { id } });
   }
 
   @Delete(':id')

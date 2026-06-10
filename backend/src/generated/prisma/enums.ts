@@ -95,3 +95,12 @@ export const TimeLogSource = {
 } as const
 
 export type TimeLogSource = (typeof TimeLogSource)[keyof typeof TimeLogSource]
+
+
+export const ModuleStatus = {
+  INICIADO: 'INICIADO',
+  EM_PROCESSO: 'EM_PROCESSO',
+  CONCLUIDO: 'CONCLUIDO'
+} as const
+
+export type ModuleStatus = (typeof ModuleStatus)[keyof typeof ModuleStatus]

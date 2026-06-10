@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useState, useEffect } from "react";
+import { use, useState, useEffect, useRef } from "react";
 import { AppLayout } from "@/components/layout/app-layout";
 import { useProjectStore, useTaskStore, useUserStore } from "@/stores";
 import { useAuth } from "@/hooks/use-auth";
@@ -11,12 +11,20 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   ChevronLeft, Clock, Layers,
   Crown, UserPlus, UserMinus, ExternalLink, Link2,
   Plus, Pencil, Trash2, Check, X, Box,
   TrendingUp, Calendar, BarChart3, Target, Eye,
+  File, FileText, ImageIcon, Download,
 } from "lucide-react";
 import { ProjectAvatar } from "@/components/shared/project-avatar";
 import Link from "next/link";
@@ -26,6 +34,7 @@ import { toast } from "sonner";
 import { ModuleDetailDialog } from "@/features/modules/module-detail-dialog";
 import { ModuleAttachmentUploadField, type PendingModuleFile } from "@/features/modules/module-attachment-upload-field";
 import { api } from "@/lib/api";
+import type { ModuleStatus } from "@/types";
 
 interface DevStats {
   userId: string; name: string; avatar: string | null;
@@ -42,9 +51,63 @@ interface ProjectSummary {
   developers: DevStats[];
 }
 
+const moduleStatusLabels: Record<ModuleStatus, string> = {
+  INICIADO: "Iniciado",
+  EM_PROCESSO: "Em processo",
+  CONCLUIDO: "Concluído",
+};
+
+const moduleStatusClasses: Record<ModuleStatus, string> = {
+  INICIADO: "bg-blue-500/15 text-blue-300 border-blue-500/30",
+  EM_PROCESSO: "bg-amber-500/15 text-amber-300 border-amber-500/30",
+  CONCLUIDO: "bg-emerald-500/15 text-emerald-300 border-emerald-500/30",
+};
+
+const MAX_SHOWCASE_FILE_SIZE = 10 * 1024 * 1024;
+
+function formatBytes(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+function downloadDataUrl(dataUrl: string, name: string) {
+  const link = document.createElement("a");
+  link.href = dataUrl;
+  link.download = name;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+}
+
+function readFileAsDataUrl(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (event) => resolve(event.target?.result as string);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
 export default function ProjectDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
-  const { getProjectById, getModulesByProject, getEpicsByProject, updateProject, addDeveloperToProject, removeDeveloperFromProject, createModule, updateModule, deleteModule } = useProjectStore();
+  const showcaseFileInputRef = useRef<HTMLInputElement>(null);
+  const {
+    getProjectById,
+    getModulesByProject,
+    getEpicsByProject,
+    getShowcaseAttachmentsByProject,
+    fetchProjectShowcaseAttachments,
+    updateProjectShowcase,
+    addProjectShowcaseAttachment,
+    deleteProjectShowcaseAttachment,
+    updateProject,
+    addDeveloperToProject,
+    removeDeveloperFromProject,
+    createModule,
+    updateModule,
+    deleteModule,
+  } = useProjectStore();
   const { getTasksByProject, updateTask, getAttachmentsByModule, fetchTimeLogsForProject, fetchModuleAttachmentsForProject, timeLogs } = useTaskStore();
   const { users } = useUserStore();
   const { user, isAdmin } = useAuth();
@@ -52,9 +115,13 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
   const today = new Date().toISOString().split("T")[0];
   const [newModuleName, setNewModuleName] = useState("");
   const [newModuleDesc, setNewModuleDesc] = useState("");
+  const [newModuleStatus, setNewModuleStatus] = useState<ModuleStatus>("INICIADO");
   const [newModuleHours, setNewModuleHours] = useState("");
   const [newModuleDate, setNewModuleDate] = useState(today);
   const [pendingAttachments, setPendingAttachments] = useState<PendingModuleFile[]>([]);
+  const [technicalDraft, setTechnicalDraft] = useState("");
+  const [savingShowcase, setSavingShowcase] = useState(false);
+  const [deletingShowcaseFileId, setDeletingShowcaseFileId] = useState<string | null>(null);
   const [editingModuleId, setEditingModuleId] = useState<string | null>(null);
   const [editingName, setEditingName] = useState("");
   const [editingDesc, setEditingDesc] = useState("");
@@ -87,6 +154,7 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
       await Promise.all([
         fetchTimeLogsForProject(id),
         fetchModuleAttachmentsForProject(id, getModulesByProject(id).map((m) => m.id)),
+        fetchProjectShowcaseAttachments(id),
       ]);
     } finally {
       setLoadingReport(false);
@@ -97,9 +165,14 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
     void loadReport();
   }, [id]);
 
+  useEffect(() => {
+    setTechnicalDraft(project.technicalDescription ?? "");
+  }, [project.id, project.technicalDescription]);
+
   const modules = getModulesByProject(id);
   const epics = getEpicsByProject(id);
   const tasks = getTasksByProject(id);
+  const showcaseAttachments = getShowcaseAttachmentsByProject(id);
 
   const owner = users.find((u) => u.id === project.ownerId);
   const devs = users.filter((u) => project.developerIds.includes(u.id));
@@ -132,6 +205,7 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
   function resetModuleForm() {
     setNewModuleName("");
     setNewModuleDesc("");
+    setNewModuleStatus("INICIADO");
     setNewModuleHours("");
     setNewModuleDate(today);
     setPendingAttachments([]);
@@ -165,6 +239,7 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
         projectId: id,
         name,
         description,
+        status: newModuleStatus,
         order: existingCount,
         hours,
         workDate: newModuleDate,
@@ -226,6 +301,55 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
       toast.error(err instanceof Error ? err.message : "Erro ao excluir módulo");
     } finally {
       setDeletingModuleId(null);
+    }
+  }
+
+  async function handleSaveShowcase() {
+    setSavingShowcase(true);
+    try {
+      await updateProjectShowcase(id, technicalDraft);
+      toast.success("Visual do projeto salvo");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Erro ao salvar visual do projeto");
+    } finally {
+      setSavingShowcase(false);
+    }
+  }
+
+  async function handleShowcaseFileSelect(fileList: FileList | null) {
+    if (!fileList || fileList.length === 0) return;
+    setSavingShowcase(true);
+    try {
+      for (const file of Array.from(fileList)) {
+        if (file.size > MAX_SHOWCASE_FILE_SIZE) {
+          toast.error(`"${file.name}" excede o limite de 10MB`);
+          continue;
+        }
+        const dataUrl = await readFileAsDataUrl(file);
+        await addProjectShowcaseAttachment(id, {
+          name: file.name,
+          type: file.type || "application/octet-stream",
+          size: file.size,
+          dataUrl,
+        });
+      }
+      toast.success("Arquivo adicionado ao visual do projeto");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Erro ao enviar arquivo");
+    } finally {
+      setSavingShowcase(false);
+    }
+  }
+
+  async function handleDeleteShowcaseFile(attachmentId: string) {
+    setDeletingShowcaseFileId(attachmentId);
+    try {
+      await deleteProjectShowcaseAttachment(attachmentId);
+      toast.success("Arquivo removido do projeto");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Erro ao remover arquivo");
+    } finally {
+      setDeletingShowcaseFileId(null);
     }
   }
 
@@ -329,6 +453,144 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
           </div>
         </div>
 
+        {/* Visual do projeto */}
+        <div className="bg-zinc-900/60 border border-zinc-800/50 rounded-xl p-5 mb-6 space-y-4">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <div className="flex items-center gap-2">
+                <ImageIcon className="w-4 h-4 text-violet-400" />
+                <h2 className="text-sm font-semibold text-zinc-100">Visual do projeto</h2>
+              </div>
+              <p className="text-xs text-zinc-500 mt-1">
+                Telas, arquivos e explicacoes tecnicas do que foi implementado neste projeto.
+              </p>
+            </div>
+            <div className="flex items-center gap-2 shrink-0">
+              <Badge className="bg-zinc-800 text-zinc-400 border-zinc-700">
+                {showcaseAttachments.length} arquivo{showcaseAttachments.length !== 1 ? "s" : ""}
+              </Badge>
+              {canAddModule && (
+                <Button
+                  size="sm"
+                  onClick={handleSaveShowcase}
+                  disabled={savingShowcase}
+                  className="h-8 px-3 text-xs bg-violet-600 hover:bg-violet-700 gap-1"
+                >
+                  {savingShowcase ? <div className="w-3.5 h-3.5 border-2 border-white/40 border-t-white rounded-full animate-spin" /> : <Check className="w-3.5 h-3.5" />}
+                  {savingShowcase ? "Salvando..." : "Salvar"}
+                </Button>
+              )}
+            </div>
+          </div>
+
+          {canAddModule ? (
+            <div className="space-y-4">
+              <div className="rounded-xl border border-zinc-700/70 bg-zinc-950/35 p-3 space-y-2">
+                <label className="text-[11px] text-zinc-500 flex items-center gap-1">
+                  <FileText className="w-3 h-3" /> Explicacao tecnica
+                </label>
+                <textarea
+                  value={technicalDraft}
+                  onChange={(e) => setTechnicalDraft(e.target.value)}
+                  rows={6}
+                  placeholder="Descreva as telas, regras tecnicas, integracoes, arquivos alterados e pontos importantes para o usuario entender o projeto."
+                  className="w-full min-h-[150px] text-sm bg-transparent border-0 px-0 py-1 text-zinc-200 placeholder-zinc-600 outline-none resize-y"
+                />
+              </div>
+            </div>
+          ) : (
+            <div className="text-sm text-zinc-400 whitespace-pre-wrap rounded-lg bg-zinc-950/40 border border-zinc-800/60 p-3 min-h-[72px]">
+              {project.technicalDescription || "Nenhuma explicacao tecnica adicionada ainda."}
+            </div>
+          )}
+
+          <input
+            ref={showcaseFileInputRef}
+            type="file"
+            multiple
+            accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.zip,.rar,.txt,.png,.jpg,.jpeg,.webp,.gif"
+            className="hidden"
+            disabled={!canAddModule || savingShowcase}
+            onChange={(event) => {
+              void handleShowcaseFileSelect(event.target.files);
+              event.currentTarget.value = "";
+            }}
+          />
+
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {[
+              ...showcaseAttachments,
+              ...Array.from({ length: Math.max(0, 4 - showcaseAttachments.length) }, (_, index) => ({
+                id: `empty-${index}`,
+                empty: true as const,
+              })),
+            ].map((item) => {
+              if ("empty" in item) {
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => canAddModule && showcaseFileInputRef.current?.click()}
+                    disabled={!canAddModule || savingShowcase}
+                    className="aspect-square rounded-xl border-2 border-dashed border-zinc-700/80 bg-zinc-950/35 flex flex-col items-center justify-center gap-2 text-zinc-500 hover:border-violet-500/50 hover:text-violet-300 hover:bg-violet-500/10 transition-colors disabled:cursor-not-allowed disabled:opacity-50"
+                    title="Adicionar imagem ou arquivo"
+                  >
+                    <Plus className="w-6 h-6" />
+                    <span className="text-xs">Adicionar arquivo</span>
+                  </button>
+                );
+              }
+              const attachment = item;
+                const isImage = attachment.type.startsWith("image/");
+                return (
+                  <div key={attachment.id} className="rounded-xl border border-zinc-800/70 bg-zinc-950/35 overflow-hidden">
+                    {isImage ? (
+                      <button
+                        type="button"
+                        onClick={() => window.open(attachment.dataUrl, "_blank")}
+                        className="block w-full aspect-square bg-zinc-900 overflow-hidden"
+                        title="Abrir imagem"
+                      >
+                        <img src={attachment.dataUrl} alt={attachment.name} className="w-full h-full object-cover hover:scale-[1.02] transition-transform" />
+                      </button>
+                    ) : (
+                      <div className="aspect-square bg-zinc-900 flex items-center justify-center text-zinc-500">
+                        <File className="w-8 h-8" />
+                      </div>
+                    )}
+                    <div className="p-3 space-y-2">
+                      <div className="min-w-0">
+                        <p className="text-xs font-medium text-zinc-200 truncate">{attachment.name}</p>
+                        <p className="text-[10px] text-zinc-500">{formatBytes(attachment.size)}</p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => downloadDataUrl(attachment.dataUrl, attachment.name)}
+                          className="h-7 px-2 text-xs text-zinc-400 hover:text-zinc-200 gap-1"
+                        >
+                          <Download className="w-3.5 h-3.5" /> Baixar
+                        </Button>
+                        {canAddModule && (
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => handleDeleteShowcaseFile(attachment.id)}
+                            disabled={deletingShowcaseFileId === attachment.id}
+                            className="h-7 px-2 text-xs text-red-400 hover:text-red-300 hover:bg-red-500/10 gap-1 ml-auto"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" /> Excluir
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+          </div>
+        </div>
+
         <Tabs defaultValue="modules" className="space-y-4">
           <TabsList className="bg-zinc-900 border border-zinc-800">
             <TabsTrigger value="modules" className="data-[state=active]:bg-zinc-800">Módulos</TabsTrigger>
@@ -387,6 +649,26 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
                     rows={2}
                     className="w-full text-sm bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-zinc-200 placeholder-zinc-600 outline-none focus:border-violet-500/50 transition-colors resize-none"
                   />
+                  <div className="space-y-1">
+                    <label className="text-[11px] text-zinc-500 flex items-center gap-1">
+                      <Layers className="w-3 h-3" /> Status
+                    </label>
+                    <Select
+                      value={newModuleStatus}
+                      onValueChange={(value) => setNewModuleStatus(value as ModuleStatus)}
+                    >
+                      <SelectTrigger className="h-8 text-sm bg-zinc-800 border-zinc-700 text-zinc-200">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {Object.entries(moduleStatusLabels).map(([value, label]) => (
+                          <SelectItem key={value} value={value}>
+                            {label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                   <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-1">
                       <label className="text-[11px] text-zinc-500 flex items-center gap-1">
@@ -507,6 +789,9 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
                           <span className="text-[10px] font-bold text-zinc-400">{i + 1}</span>
                         </div>
                         <h3 className="font-semibold text-zinc-100 truncate">{module.name}</h3>
+                        <Badge className={`text-[9px] shrink-0 ${moduleStatusClasses[module.status ?? "INICIADO"]}`}>
+                          {moduleStatusLabels[module.status ?? "INICIADO"]}
+                        </Badge>
                       </div>
                       <div className="flex items-center gap-2 shrink-0" onClick={(e) => e.stopPropagation()}>
                         <span className="text-sm text-zinc-400">{module.progress}%</span>

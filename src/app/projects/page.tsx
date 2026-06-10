@@ -30,6 +30,7 @@ import { Form, FormControl, FormField, FormItem, FormMessage } from "@/component
 import { toast } from "sonner";
 import Link from "next/link";
 import type { ProjectStatus } from "@/types";
+import type { Project } from "@/types";
 import { ReassignPopover } from "@/components/shared/reassign-popover";
 
 const projectColors = ["#6366f1", "#22c55e", "#f59e0b", "#ef4444", "#8b5cf6", "#06b6d4", "#f97316"];
@@ -54,12 +55,14 @@ const createProjectSchema = z.object({
   companyId: z.string().optional(),
   name: z.string().optional(),
   description: z.string().optional(),
+  requestedBy: z.string().optional(),
+  ownerId: z.string().optional(),
   status: z.enum(["ATIVO", "PAUSADO", "CONCLUIDO", "CANCELADO", "NA_FILA"]).optional(),
   startDate: z.string().optional(),
   endDate: z.string().optional(),
   estimatedHours: z.number().optional(),
   color: z.string().optional(),
-  testUrl: z.string().url("URL inválida").optional().or(z.literal("")),
+  testUrl: z.string().optional(),
 });
 
 type CreateProjectForm = z.infer<typeof createProjectSchema>;
@@ -71,6 +74,7 @@ export default function ProjectsPage() {
   const { users } = useUserStore();
   const { user, isAdmin } = useAuth();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [moduleDrafts, setModuleDrafts] = useState<ModuleDraft[]>([]);
   const [newModuleName, setNewModuleName] = useState("");
@@ -85,6 +89,23 @@ export default function ProjectsPage() {
       startDate: new Date().toISOString().split("T")[0],
       endDate: "",
       estimatedHours: 160, color: projectColors[0], testUrl: "",
+    },
+  });
+
+  const editForm = useForm<CreateProjectForm>({
+    resolver: zodResolver(createProjectSchema),
+    defaultValues: {
+      companyId: "",
+      name: "",
+      description: "",
+      requestedBy: "",
+      ownerId: "",
+      status: "ATIVO",
+      startDate: "",
+      endDate: "",
+      estimatedHours: 0,
+      color: projectColors[0],
+      testUrl: "",
     },
   });
 
@@ -109,12 +130,38 @@ export default function ProjectsPage() {
     setNewModuleName("");
     form.reset({
       companyId: "",
-      name: "", description: "", status: "ATIVO",
+      name: "", description: "", requestedBy: "", ownerId: "", status: "ATIVO",
       startDate: new Date().toISOString().split("T")[0],
       endDate: "",
       estimatedHours: 160, color: projectColors[0], testUrl: "",
     });
     setIsCreateOpen(true);
+  }
+
+  function handleOpenEdit(project: Project) {
+    setEditingProject(project);
+    editForm.reset({
+      companyId: project.companyId ?? "",
+      name: project.name,
+      description: project.description,
+      requestedBy: project.requestedBy ?? "",
+      ownerId: project.ownerId,
+      status: project.status,
+      startDate: project.startDate.split("T")[0],
+      endDate: project.endDate ? project.endDate.split("T")[0] : "",
+      estimatedHours: project.estimatedHours,
+      color: project.color,
+      testUrl: project.testUrl ?? "",
+    });
+  }
+
+  async function handleDeleteProject(project: Project) {
+    const confirmed = window.confirm(
+      `Excluir o projeto "${project.name}"?\n\nEsta ação remove módulos, tarefas, anexos e horas vinculadas.`
+    );
+    if (!confirmed) return;
+    await deleteProject(project.id);
+    toast.success("Projeto removido");
   }
 
   function addModuleDraft() {
@@ -139,6 +186,7 @@ export default function ProjectsPage() {
       ...data,
       name: data.name?.trim() || fallbackName,
       description: data.description?.trim() || "Projeto criado sem descricao.",
+      requestedBy: data.requestedBy?.trim() || undefined,
       status: data.status ?? "ATIVO",
       companyId: data.companyId || undefined,
       ownerId: user?.id ?? "",
@@ -150,7 +198,7 @@ export default function ProjectsPage() {
       color: data.color || projectColors[0],
       startDate,
       testUrl: data.testUrl || undefined,
-      endDate: data.endDate || undefined,
+      endDate: data.endDate || null,
     });
     if (moduleDrafts.length > 0) {
       await createModulesBulk(newProject.id, moduleDrafts.map((m) => ({ name: m.name, description: m.description })));
@@ -161,6 +209,25 @@ export default function ProjectsPage() {
     setModuleDrafts([]);
     setNewModuleName("");
     form.reset();
+  };
+
+  const onEditSubmit = async (data: CreateProjectForm) => {
+    if (!editingProject) return;
+    await updateProject(editingProject.id, {
+      companyId: data.companyId || null,
+      name: data.name?.trim() || editingProject.name,
+      description: data.description?.trim() || "",
+      requestedBy: data.requestedBy?.trim() || null,
+      ownerId: data.ownerId || editingProject.ownerId,
+      status: data.status ?? editingProject.status,
+      startDate: data.startDate || editingProject.startDate.split("T")[0],
+      endDate: data.endDate || undefined,
+      estimatedHours: data.estimatedHours ?? editingProject.estimatedHours,
+      color: data.color || editingProject.color,
+      testUrl: data.testUrl || null,
+    });
+    setEditingProject(null);
+    toast.success("Projeto atualizado");
   };
 
   return (
@@ -247,6 +314,12 @@ export default function ProjectsPage() {
                           <>
                             <DropdownMenuItem
                               className="flex items-center gap-2 text-zinc-300 focus:bg-zinc-800"
+                              onClick={() => handleOpenEdit(project)}
+                            >
+                              <Edit className="w-3.5 h-3.5" /> Editar projeto
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              className="flex items-center gap-2 text-zinc-300 focus:bg-zinc-800"
                               onSelect={(e) => e.preventDefault()}
                             >
                               <Crown className="w-3.5 h-3.5 text-amber-400" />
@@ -280,7 +353,7 @@ export default function ProjectsPage() {
                             </DropdownMenuItem>
                             <DropdownMenuItem
                               className="flex items-center gap-2 text-red-400 focus:text-red-400 focus:bg-red-500/10"
-                              onClick={() => { deleteProject(project.id); toast.success("Projeto removido"); }}
+                              onClick={() => handleDeleteProject(project)}
                             >
                               <Trash2 className="w-3.5 h-3.5" /> Excluir
                             </DropdownMenuItem>
@@ -291,6 +364,11 @@ export default function ProjectsPage() {
                   </div>
 
                   <p className="text-xs text-zinc-500 mb-4 line-clamp-2 leading-relaxed">{project.description}</p>
+                  {project.requestedBy && (
+                    <p className="text-[11px] text-zinc-500 mb-3">
+                      Solicitado por <span className="text-zinc-300">{project.requestedBy}</span>
+                    </p>
+                  )}
 
                   <div className="mb-4">
                     <div className="flex items-center justify-between mb-1.5">
@@ -323,7 +401,7 @@ export default function ProjectsPage() {
                   {project.testUrl && (
                     <div className="mt-3 pt-3 border-t border-zinc-800/50">
                       <a
-                        href={project.testUrl}
+                        href={/^https?:\/\//i.test(project.testUrl) ? project.testUrl : `https://${project.testUrl}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         onClick={(e) => e.stopPropagation()}
@@ -449,6 +527,15 @@ export default function ProjectsPage() {
                 </FormItem>
               )} />
               {/* Prazo de entrega — define posição na fila */}
+              <FormField control={form.control} name="requestedBy" render={({ field }) => (
+                <FormItem>
+                  <Label className="text-zinc-300 text-sm">Solicitado por</Label>
+                  <FormControl>
+                    <Input {...field} placeholder="Nome de quem solicitou" className="bg-zinc-800 border-zinc-700 text-zinc-100" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
               <FormField control={form.control} name="endDate" render={({ field }) => (
                 <FormItem>
                   <Label className="text-zinc-300 text-sm flex items-center gap-1.5">
@@ -596,6 +683,186 @@ export default function ProjectsPage() {
                 <Button type="button" variant="ghost" onClick={() => setIsCreateOpen(false)} className="text-zinc-400">Cancelar</Button>
                 <Button type="submit" className="bg-violet-600 hover:bg-violet-700">
                   Criar Projeto{moduleDrafts.length > 0 ? ` + ${moduleDrafts.length} módulo${moduleDrafts.length > 1 ? "s" : ""}` : ""}
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={!!editingProject} onOpenChange={(open) => { if (!open) setEditingProject(null); }}>
+        <DialogContent className="bg-zinc-900 border-zinc-700/50 max-w-lg max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-zinc-100">Editar Projeto</DialogTitle>
+          </DialogHeader>
+          <Form {...editForm}>
+            <form onSubmit={editForm.handleSubmit(onEditSubmit)} className="space-y-4">
+              <FormField control={editForm.control} name="companyId" render={({ field }) => (
+                <FormItem>
+                  <Label className="text-zinc-300 text-sm flex items-center gap-1.5">
+                    <Building2 className="w-3.5 h-3.5 text-zinc-400" />
+                    Empresa do Grupo
+                  </Label>
+                  <Select value={field.value ?? ""} onValueChange={(v) => field.onChange(v === "__none__" ? "" : v)}>
+                    <FormControl>
+                      <SelectTrigger className="bg-zinc-800 border-zinc-700 text-zinc-100">
+                        <SelectValue placeholder="Nenhuma" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent className="bg-zinc-800 border-zinc-700">
+                      <SelectItem value="__none__" label="Nenhuma" className="text-zinc-500 focus:bg-zinc-700">
+                        Nenhuma
+                      </SelectItem>
+                      {companies.map((company) => (
+                        <SelectItem key={company.id} value={company.id} label={company.name} className="text-zinc-100 focus:bg-zinc-700">
+                          {company.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )} />
+
+              <FormField control={editForm.control} name="name" render={({ field }) => (
+                <FormItem>
+                  <Label className="text-zinc-300 text-sm">Título</Label>
+                  <FormControl>
+                    <Input {...field} placeholder="Nome do projeto" className="bg-zinc-800 border-zinc-700 text-zinc-100" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+
+              <FormField control={editForm.control} name="description" render={({ field }) => (
+                <FormItem>
+                  <Label className="text-zinc-300 text-sm">Explicação</Label>
+                  <FormControl>
+                    <Textarea {...field} placeholder="Explique o projeto" className="bg-zinc-800 border-zinc-700 text-zinc-100 resize-none" rows={3} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+
+              <FormField control={editForm.control} name="requestedBy" render={({ field }) => (
+                <FormItem>
+                  <Label className="text-zinc-300 text-sm">Quem fez a solicitação</Label>
+                  <FormControl>
+                    <Input {...field} placeholder="Nome do solicitante" className="bg-zinc-800 border-zinc-700 text-zinc-100" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+
+              <div className="grid grid-cols-2 gap-3">
+                <FormField control={editForm.control} name="ownerId" render={({ field }) => (
+                  <FormItem>
+                    <Label className="text-zinc-300 text-sm">Responsável</Label>
+                    <Select value={field.value ?? ""} onValueChange={field.onChange}>
+                      <FormControl>
+                        <SelectTrigger className="bg-zinc-800 border-zinc-700 text-zinc-100">
+                          <SelectValue placeholder="Responsável" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent className="bg-zinc-800 border-zinc-700">
+                        {users.map((item) => (
+                          <SelectItem key={item.id} value={item.id} label={item.name} className="text-zinc-100 focus:bg-zinc-700">
+                            {item.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+
+                <FormField control={editForm.control} name="status" render={({ field }) => (
+                  <FormItem>
+                    <Label className="text-zinc-300 text-sm">Status</Label>
+                    <Select value={field.value ?? "ATIVO"} onValueChange={field.onChange}>
+                      <FormControl>
+                        <SelectTrigger className="bg-zinc-800 border-zinc-700 text-zinc-100">
+                          <SelectValue />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent className="bg-zinc-800 border-zinc-700">
+                        {Object.entries(statusLabels).map(([value, label]) => (
+                          <SelectItem key={value} value={value} label={label} className="text-zinc-100 focus:bg-zinc-700">
+                            {label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <FormField control={editForm.control} name="startDate" render={({ field }) => (
+                  <FormItem>
+                    <Label className="text-zinc-300 text-sm">Data de Início</Label>
+                    <FormControl>
+                      <Input {...field} type="date" className="bg-zinc-800 border-zinc-700 text-zinc-100" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+                <FormField control={editForm.control} name="endDate" render={({ field }) => (
+                  <FormItem>
+                    <Label className="text-zinc-300 text-sm">Prazo</Label>
+                    <FormControl>
+                      <Input {...field} type="date" className="bg-zinc-800 border-zinc-700 text-zinc-100" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <FormField control={editForm.control} name="estimatedHours" render={({ field }) => (
+                  <FormItem>
+                    <Label className="text-zinc-300 text-sm">Horas Estimadas</Label>
+                    <FormControl>
+                      <Input {...field} type="number" onChange={(e) => field.onChange(Number(e.target.value))} className="bg-zinc-800 border-zinc-700 text-zinc-100" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+                <FormField control={editForm.control} name="testUrl" render={({ field }) => (
+                  <FormItem>
+                    <Label className="text-zinc-300 text-sm">URL de teste</Label>
+                    <FormControl>
+                      <Input {...field} placeholder="https://..." className="bg-zinc-800 border-zinc-700 text-zinc-100" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+              </div>
+
+              <FormField control={editForm.control} name="color" render={({ field }) => (
+                <FormItem>
+                  <Label className="text-zinc-300 text-sm">Cor de destaque</Label>
+                  <div className="flex gap-2 flex-wrap">
+                    {projectColors.map((c) => (
+                      <button
+                        key={c}
+                        type="button"
+                        onClick={() => field.onChange(c)}
+                        className={`w-7 h-7 rounded-lg transition-all ${field.value === c ? "ring-2 ring-white scale-110" : "opacity-70 hover:opacity-100"}`}
+                        style={{ background: c }}
+                      />
+                    ))}
+                  </div>
+                </FormItem>
+              )} />
+
+              <div className="flex justify-end gap-2 pt-2">
+                <Button type="button" variant="ghost" onClick={() => setEditingProject(null)} className="text-zinc-400">
+                  Cancelar
+                </Button>
+                <Button type="submit" className="bg-violet-600 hover:bg-violet-700">
+                  Salvar alterações
                 </Button>
               </div>
             </form>

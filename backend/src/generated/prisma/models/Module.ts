@@ -43,6 +43,7 @@ export type ModuleMinAggregateOutputType = {
   projectId: string | null
   name: string | null
   description: string | null
+  status: $Enums.ModuleStatus | null
   order: number | null
   progress: number | null
   workDate: Date | null
@@ -57,6 +58,7 @@ export type ModuleMaxAggregateOutputType = {
   projectId: string | null
   name: string | null
   description: string | null
+  status: $Enums.ModuleStatus | null
   order: number | null
   progress: number | null
   workDate: Date | null
@@ -71,6 +73,7 @@ export type ModuleCountAggregateOutputType = {
   projectId: number
   name: number
   description: number
+  status: number
   order: number
   progress: number
   workDate: number
@@ -99,6 +102,7 @@ export type ModuleMinAggregateInputType = {
   projectId?: true
   name?: true
   description?: true
+  status?: true
   order?: true
   progress?: true
   workDate?: true
@@ -113,6 +117,7 @@ export type ModuleMaxAggregateInputType = {
   projectId?: true
   name?: true
   description?: true
+  status?: true
   order?: true
   progress?: true
   workDate?: true
@@ -127,6 +132,7 @@ export type ModuleCountAggregateInputType = {
   projectId?: true
   name?: true
   description?: true
+  status?: true
   order?: true
   progress?: true
   workDate?: true
@@ -228,6 +234,7 @@ export type ModuleGroupByOutputType = {
   projectId: string
   name: string
   description: string
+  status: $Enums.ModuleStatus
   order: number
   progress: number
   workDate: Date | null
@@ -265,6 +272,7 @@ export type ModuleWhereInput = {
   projectId?: Prisma.StringFilter<"Module"> | string
   name?: Prisma.StringFilter<"Module"> | string
   description?: Prisma.StringFilter<"Module"> | string
+  status?: Prisma.EnumModuleStatusFilter<"Module"> | $Enums.ModuleStatus
   order?: Prisma.IntFilter<"Module"> | number
   progress?: Prisma.IntFilter<"Module"> | number
   workDate?: Prisma.DateTimeNullableFilter<"Module"> | Date | string | null
@@ -284,6 +292,7 @@ export type ModuleOrderByWithRelationInput = {
   projectId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
+  status?: Prisma.SortOrder
   order?: Prisma.SortOrder
   progress?: Prisma.SortOrder
   workDate?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -307,6 +316,7 @@ export type ModuleWhereUniqueInput = Prisma.AtLeast<{
   projectId?: Prisma.StringFilter<"Module"> | string
   name?: Prisma.StringFilter<"Module"> | string
   description?: Prisma.StringFilter<"Module"> | string
+  status?: Prisma.EnumModuleStatusFilter<"Module"> | $Enums.ModuleStatus
   order?: Prisma.IntFilter<"Module"> | number
   progress?: Prisma.IntFilter<"Module"> | number
   workDate?: Prisma.DateTimeNullableFilter<"Module"> | Date | string | null
@@ -326,6 +336,7 @@ export type ModuleOrderByWithAggregationInput = {
   projectId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
+  status?: Prisma.SortOrder
   order?: Prisma.SortOrder
   progress?: Prisma.SortOrder
   workDate?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -348,6 +359,7 @@ export type ModuleScalarWhereWithAggregatesInput = {
   projectId?: Prisma.StringWithAggregatesFilter<"Module"> | string
   name?: Prisma.StringWithAggregatesFilter<"Module"> | string
   description?: Prisma.StringWithAggregatesFilter<"Module"> | string
+  status?: Prisma.EnumModuleStatusWithAggregatesFilter<"Module"> | $Enums.ModuleStatus
   order?: Prisma.IntWithAggregatesFilter<"Module"> | number
   progress?: Prisma.IntWithAggregatesFilter<"Module"> | number
   workDate?: Prisma.DateTimeNullableWithAggregatesFilter<"Module"> | Date | string | null
@@ -361,6 +373,7 @@ export type ModuleCreateInput = {
   id?: string
   name: string
   description: string
+  status?: $Enums.ModuleStatus
   order?: number
   progress?: number
   workDate?: Date | string | null
@@ -379,6 +392,7 @@ export type ModuleUncheckedCreateInput = {
   projectId: string
   name: string
   description: string
+  status?: $Enums.ModuleStatus
   order?: number
   progress?: number
   workDate?: Date | string | null
@@ -395,6 +409,7 @@ export type ModuleUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumModuleStatusFieldUpdateOperationsInput | $Enums.ModuleStatus
   order?: Prisma.IntFieldUpdateOperationsInput | number
   progress?: Prisma.IntFieldUpdateOperationsInput | number
   workDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -413,6 +428,7 @@ export type ModuleUncheckedUpdateInput = {
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumModuleStatusFieldUpdateOperationsInput | $Enums.ModuleStatus
   order?: Prisma.IntFieldUpdateOperationsInput | number
   progress?: Prisma.IntFieldUpdateOperationsInput | number
   workDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -430,6 +446,7 @@ export type ModuleCreateManyInput = {
   projectId: string
   name: string
   description: string
+  status?: $Enums.ModuleStatus
   order?: number
   progress?: number
   workDate?: Date | string | null
@@ -443,6 +460,7 @@ export type ModuleUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumModuleStatusFieldUpdateOperationsInput | $Enums.ModuleStatus
   order?: Prisma.IntFieldUpdateOperationsInput | number
   progress?: Prisma.IntFieldUpdateOperationsInput | number
   workDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -456,6 +474,7 @@ export type ModuleUncheckedUpdateManyInput = {
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumModuleStatusFieldUpdateOperationsInput | $Enums.ModuleStatus
   order?: Prisma.IntFieldUpdateOperationsInput | number
   progress?: Prisma.IntFieldUpdateOperationsInput | number
   workDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -486,6 +505,7 @@ export type ModuleCountOrderByAggregateInput = {
   projectId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
+  status?: Prisma.SortOrder
   order?: Prisma.SortOrder
   progress?: Prisma.SortOrder
   workDate?: Prisma.SortOrder
@@ -506,6 +526,7 @@ export type ModuleMaxOrderByAggregateInput = {
   projectId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
+  status?: Prisma.SortOrder
   order?: Prisma.SortOrder
   progress?: Prisma.SortOrder
   workDate?: Prisma.SortOrder
@@ -520,6 +541,7 @@ export type ModuleMinOrderByAggregateInput = {
   projectId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
+  status?: Prisma.SortOrder
   order?: Prisma.SortOrder
   progress?: Prisma.SortOrder
   workDate?: Prisma.SortOrder
@@ -624,6 +646,10 @@ export type ModuleUncheckedUpdateManyWithoutProjectNestedInput = {
   deleteMany?: Prisma.ModuleScalarWhereInput | Prisma.ModuleScalarWhereInput[]
 }
 
+export type EnumModuleStatusFieldUpdateOperationsInput = {
+  set?: $Enums.ModuleStatus
+}
+
 export type NullableFloatFieldUpdateOperationsInput = {
   set?: number | null
   increment?: number
@@ -678,6 +704,7 @@ export type ModuleCreateWithoutLoggedByInput = {
   id?: string
   name: string
   description: string
+  status?: $Enums.ModuleStatus
   order?: number
   progress?: number
   workDate?: Date | string | null
@@ -695,6 +722,7 @@ export type ModuleUncheckedCreateWithoutLoggedByInput = {
   projectId: string
   name: string
   description: string
+  status?: $Enums.ModuleStatus
   order?: number
   progress?: number
   workDate?: Date | string | null
@@ -740,6 +768,7 @@ export type ModuleScalarWhereInput = {
   projectId?: Prisma.StringFilter<"Module"> | string
   name?: Prisma.StringFilter<"Module"> | string
   description?: Prisma.StringFilter<"Module"> | string
+  status?: Prisma.EnumModuleStatusFilter<"Module"> | $Enums.ModuleStatus
   order?: Prisma.IntFilter<"Module"> | number
   progress?: Prisma.IntFilter<"Module"> | number
   workDate?: Prisma.DateTimeNullableFilter<"Module"> | Date | string | null
@@ -753,6 +782,7 @@ export type ModuleCreateWithoutProjectInput = {
   id?: string
   name: string
   description: string
+  status?: $Enums.ModuleStatus
   order?: number
   progress?: number
   workDate?: Date | string | null
@@ -769,6 +799,7 @@ export type ModuleUncheckedCreateWithoutProjectInput = {
   id?: string
   name: string
   description: string
+  status?: $Enums.ModuleStatus
   order?: number
   progress?: number
   workDate?: Date | string | null
@@ -811,6 +842,7 @@ export type ModuleCreateWithoutEpicsInput = {
   id?: string
   name: string
   description: string
+  status?: $Enums.ModuleStatus
   order?: number
   progress?: number
   workDate?: Date | string | null
@@ -828,6 +860,7 @@ export type ModuleUncheckedCreateWithoutEpicsInput = {
   projectId: string
   name: string
   description: string
+  status?: $Enums.ModuleStatus
   order?: number
   progress?: number
   workDate?: Date | string | null
@@ -859,6 +892,7 @@ export type ModuleUpdateWithoutEpicsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumModuleStatusFieldUpdateOperationsInput | $Enums.ModuleStatus
   order?: Prisma.IntFieldUpdateOperationsInput | number
   progress?: Prisma.IntFieldUpdateOperationsInput | number
   workDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -876,6 +910,7 @@ export type ModuleUncheckedUpdateWithoutEpicsInput = {
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumModuleStatusFieldUpdateOperationsInput | $Enums.ModuleStatus
   order?: Prisma.IntFieldUpdateOperationsInput | number
   progress?: Prisma.IntFieldUpdateOperationsInput | number
   workDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -891,6 +926,7 @@ export type ModuleCreateWithoutTasksInput = {
   id?: string
   name: string
   description: string
+  status?: $Enums.ModuleStatus
   order?: number
   progress?: number
   workDate?: Date | string | null
@@ -908,6 +944,7 @@ export type ModuleUncheckedCreateWithoutTasksInput = {
   projectId: string
   name: string
   description: string
+  status?: $Enums.ModuleStatus
   order?: number
   progress?: number
   workDate?: Date | string | null
@@ -939,6 +976,7 @@ export type ModuleUpdateWithoutTasksInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumModuleStatusFieldUpdateOperationsInput | $Enums.ModuleStatus
   order?: Prisma.IntFieldUpdateOperationsInput | number
   progress?: Prisma.IntFieldUpdateOperationsInput | number
   workDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -956,6 +994,7 @@ export type ModuleUncheckedUpdateWithoutTasksInput = {
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumModuleStatusFieldUpdateOperationsInput | $Enums.ModuleStatus
   order?: Prisma.IntFieldUpdateOperationsInput | number
   progress?: Prisma.IntFieldUpdateOperationsInput | number
   workDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -971,6 +1010,7 @@ export type ModuleCreateWithoutAttachmentsInput = {
   id?: string
   name: string
   description: string
+  status?: $Enums.ModuleStatus
   order?: number
   progress?: number
   workDate?: Date | string | null
@@ -988,6 +1028,7 @@ export type ModuleUncheckedCreateWithoutAttachmentsInput = {
   projectId: string
   name: string
   description: string
+  status?: $Enums.ModuleStatus
   order?: number
   progress?: number
   workDate?: Date | string | null
@@ -1019,6 +1060,7 @@ export type ModuleUpdateWithoutAttachmentsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumModuleStatusFieldUpdateOperationsInput | $Enums.ModuleStatus
   order?: Prisma.IntFieldUpdateOperationsInput | number
   progress?: Prisma.IntFieldUpdateOperationsInput | number
   workDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1036,6 +1078,7 @@ export type ModuleUncheckedUpdateWithoutAttachmentsInput = {
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumModuleStatusFieldUpdateOperationsInput | $Enums.ModuleStatus
   order?: Prisma.IntFieldUpdateOperationsInput | number
   progress?: Prisma.IntFieldUpdateOperationsInput | number
   workDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1052,6 +1095,7 @@ export type ModuleCreateManyLoggedByInput = {
   projectId: string
   name: string
   description: string
+  status?: $Enums.ModuleStatus
   order?: number
   progress?: number
   workDate?: Date | string | null
@@ -1064,6 +1108,7 @@ export type ModuleUpdateWithoutLoggedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumModuleStatusFieldUpdateOperationsInput | $Enums.ModuleStatus
   order?: Prisma.IntFieldUpdateOperationsInput | number
   progress?: Prisma.IntFieldUpdateOperationsInput | number
   workDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1081,6 +1126,7 @@ export type ModuleUncheckedUpdateWithoutLoggedByInput = {
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumModuleStatusFieldUpdateOperationsInput | $Enums.ModuleStatus
   order?: Prisma.IntFieldUpdateOperationsInput | number
   progress?: Prisma.IntFieldUpdateOperationsInput | number
   workDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1097,6 +1143,7 @@ export type ModuleUncheckedUpdateManyWithoutLoggedByInput = {
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumModuleStatusFieldUpdateOperationsInput | $Enums.ModuleStatus
   order?: Prisma.IntFieldUpdateOperationsInput | number
   progress?: Prisma.IntFieldUpdateOperationsInput | number
   workDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1109,6 +1156,7 @@ export type ModuleCreateManyProjectInput = {
   id?: string
   name: string
   description: string
+  status?: $Enums.ModuleStatus
   order?: number
   progress?: number
   workDate?: Date | string | null
@@ -1122,6 +1170,7 @@ export type ModuleUpdateWithoutProjectInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumModuleStatusFieldUpdateOperationsInput | $Enums.ModuleStatus
   order?: Prisma.IntFieldUpdateOperationsInput | number
   progress?: Prisma.IntFieldUpdateOperationsInput | number
   workDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1138,6 +1187,7 @@ export type ModuleUncheckedUpdateWithoutProjectInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumModuleStatusFieldUpdateOperationsInput | $Enums.ModuleStatus
   order?: Prisma.IntFieldUpdateOperationsInput | number
   progress?: Prisma.IntFieldUpdateOperationsInput | number
   workDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1154,6 +1204,7 @@ export type ModuleUncheckedUpdateManyWithoutProjectInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumModuleStatusFieldUpdateOperationsInput | $Enums.ModuleStatus
   order?: Prisma.IntFieldUpdateOperationsInput | number
   progress?: Prisma.IntFieldUpdateOperationsInput | number
   workDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1217,6 +1268,7 @@ export type ModuleSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   projectId?: boolean
   name?: boolean
   description?: boolean
+  status?: boolean
   order?: boolean
   progress?: boolean
   workDate?: boolean
@@ -1239,6 +1291,7 @@ export type ModuleSelectScalar = {
   projectId?: boolean
   name?: boolean
   description?: boolean
+  status?: boolean
   order?: boolean
   progress?: boolean
   workDate?: boolean
@@ -1248,7 +1301,7 @@ export type ModuleSelectScalar = {
   updatedAt?: boolean
 }
 
-export type ModuleOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "projectId" | "name" | "description" | "order" | "progress" | "workDate" | "loggedHours" | "loggedByUserId" | "createdAt" | "updatedAt", ExtArgs["result"]["module"]>
+export type ModuleOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "projectId" | "name" | "description" | "status" | "order" | "progress" | "workDate" | "loggedHours" | "loggedByUserId" | "createdAt" | "updatedAt", ExtArgs["result"]["module"]>
 export type ModuleInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
   loggedBy?: boolean | Prisma.Module$loggedByArgs<ExtArgs>
@@ -1272,6 +1325,7 @@ export type $ModulePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
     projectId: string
     name: string
     description: string
+    status: $Enums.ModuleStatus
     order: number
     progress: number
     workDate: Date | null
@@ -1657,6 +1711,7 @@ export interface ModuleFieldRefs {
   readonly projectId: Prisma.FieldRef<"Module", 'String'>
   readonly name: Prisma.FieldRef<"Module", 'String'>
   readonly description: Prisma.FieldRef<"Module", 'String'>
+  readonly status: Prisma.FieldRef<"Module", 'ModuleStatus'>
   readonly order: Prisma.FieldRef<"Module", 'Int'>
   readonly progress: Prisma.FieldRef<"Module", 'Int'>
   readonly workDate: Prisma.FieldRef<"Module", 'DateTime'>

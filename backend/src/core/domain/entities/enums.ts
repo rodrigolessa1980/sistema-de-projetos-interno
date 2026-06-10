@@ -32,3 +32,9 @@ export enum TimeLogSource {
   TIMER = 'TIMER',
   MANUAL = 'MANUAL',
 }
+
+export enum ModuleStatus {
+  INICIADO = 'INICIADO',
+  EM_PROCESSO = 'EM_PROCESSO',
+  CONCLUIDO = 'CONCLUIDO',
+}

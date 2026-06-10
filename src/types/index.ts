@@ -14,6 +14,8 @@ export type TaskComplexity = 1 | 2 | 3 | 5 | 8;
 
 export type ProjectStatus = "ATIVO" | "PAUSADO" | "CONCLUIDO" | "CANCELADO" | "NA_FILA";
 
+export type ModuleStatus = "INICIADO" | "EM_PROCESSO" | "CONCLUIDO";
+
 export type NotificationType =
   | "TASK_ASSIGNED"
   | "TASK_UPDATED"
@@ -68,20 +70,22 @@ export interface User {
 export interface Project {
   id: string;
   /** Empresa do grupo à qual o projeto pertence */
-  companyId?: string;
+  companyId?: string | null;
   name: string;
   description: string;
+  technicalDescription?: string | null;
+  requestedBy?: string | null;
   status: ProjectStatus;
   ownerId: string;
   developerIds: string[];
   startDate: string;
-  endDate?: string;
+  endDate?: string | null;
   estimatedHours: number;
   actualHours: number;
   progress: number;
   color: string;
   avatar?: string;
-  testUrl?: string;
+  testUrl?: string | null;
   /** Posição na fila de desenvolvimento (1 = primeiro). Ausente = não está na fila. */
   queueOrder?: number;
   createdAt: string;
@@ -93,6 +97,7 @@ export interface Module {
   projectId: string;
   name: string;
   description: string;
+  status: ModuleStatus;
   order: number;
   progress: number;
   workDate?: string | null;
@@ -105,6 +110,20 @@ export interface Module {
 export interface ModuleAttachment {
   id: string;
   moduleId: string;
+  userId: string;
+  name: string;
+  /** MIME type */
+  type: string;
+  /** Tamanho em bytes */
+  size: number;
+  /** Base64 data URL */
+  dataUrl: string;
+  createdAt: string;
+}
+
+export interface ProjectShowcaseAttachment {
+  id: string;
+  projectId: string;
   userId: string;
   name: string;
   /** MIME type */

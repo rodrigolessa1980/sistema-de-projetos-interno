@@ -6,6 +6,8 @@ export interface ProjectResponse {
   companyId: string | null;
   name: string;
   description: string;
+  technicalDescription: string | null;
+  requestedBy: string | null;
   status: ProjectStatus;
   ownerId: string;
   developerIds: string[];
@@ -29,6 +31,8 @@ export class ProjectPresenter {
       companyId: project.companyId,
       name: project.name,
       description: project.description,
+      technicalDescription: project.technicalDescription,
+      requestedBy: project.requestedBy,
       status: project.status,
       ownerId: project.ownerId,
       developerIds: (project as any).developerIds ?? [],

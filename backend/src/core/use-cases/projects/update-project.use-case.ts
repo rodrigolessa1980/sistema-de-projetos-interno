@@ -6,10 +6,14 @@ import { ProjectStatus } from '../../domain/entities/enums';
 
 export interface UpdateProjectInput {
   id: string;
+  companyId?: string | null;
   name?: string;
   description?: string;
+  technicalDescription?: string | null;
+  requestedBy?: string | null;
   status?: ProjectStatus;
   ownerId?: string;
+  startDate?: Date;
   endDate?: Date | null;
   estimatedHours?: number;
   color?: string;
@@ -30,12 +34,14 @@ export class UpdateProjectUseCase {
 
     const updated = new Project({
       id: existing.id,
-      companyId: existing.companyId,
+      companyId: input.companyId !== undefined ? input.companyId : existing.companyId,
       name: input.name ?? existing.name,
       description: input.description ?? existing.description,
+      technicalDescription: input.technicalDescription !== undefined ? (input.technicalDescription?.trim() || null) : existing.technicalDescription,
+      requestedBy: input.requestedBy !== undefined ? (input.requestedBy?.trim() || null) : existing.requestedBy,
       status: input.status ?? existing.status,
       ownerId: input.ownerId ?? existing.ownerId,
-      startDate: existing.startDate,
+      startDate: input.startDate ?? existing.startDate,
       endDate: input.endDate !== undefined ? input.endDate : existing.endDate,
       estimatedHours: input.estimatedHours ?? existing.estimatedHours,
       actualHours: existing.actualHours,

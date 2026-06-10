@@ -402,7 +402,8 @@ export const ModelName = {
   StatusHistory: 'StatusHistory',
   TaskNote: 'TaskNote',
   TaskAttachment: 'TaskAttachment',
-  ModuleAttachment: 'ModuleAttachment'
+  ModuleAttachment: 'ModuleAttachment',
+  ProjectShowcaseAttachment: 'ProjectShowcaseAttachment'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -418,7 +419,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "company" | "user" | "userPermission" | "project" | "projectDeveloper" | "module" | "epic" | "epicDeveloper" | "task" | "subtask" | "taskDependency" | "timeLog" | "comment" | "notification" | "auditLog" | "statusHistory" | "taskNote" | "taskAttachment" | "moduleAttachment"
+    modelProps: "company" | "user" | "userPermission" | "project" | "projectDeveloper" | "module" | "epic" | "epicDeveloper" | "task" | "subtask" | "taskDependency" | "timeLog" | "comment" | "notification" | "auditLog" | "statusHistory" | "taskNote" | "taskAttachment" | "moduleAttachment" | "projectShowcaseAttachment"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1676,6 +1677,72 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    ProjectShowcaseAttachment: {
+      payload: Prisma.$ProjectShowcaseAttachmentPayload<ExtArgs>
+      fields: Prisma.ProjectShowcaseAttachmentFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ProjectShowcaseAttachmentFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectShowcaseAttachmentPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ProjectShowcaseAttachmentFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectShowcaseAttachmentPayload>
+        }
+        findFirst: {
+          args: Prisma.ProjectShowcaseAttachmentFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectShowcaseAttachmentPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ProjectShowcaseAttachmentFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectShowcaseAttachmentPayload>
+        }
+        findMany: {
+          args: Prisma.ProjectShowcaseAttachmentFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectShowcaseAttachmentPayload>[]
+        }
+        create: {
+          args: Prisma.ProjectShowcaseAttachmentCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectShowcaseAttachmentPayload>
+        }
+        createMany: {
+          args: Prisma.ProjectShowcaseAttachmentCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        delete: {
+          args: Prisma.ProjectShowcaseAttachmentDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectShowcaseAttachmentPayload>
+        }
+        update: {
+          args: Prisma.ProjectShowcaseAttachmentUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectShowcaseAttachmentPayload>
+        }
+        deleteMany: {
+          args: Prisma.ProjectShowcaseAttachmentDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ProjectShowcaseAttachmentUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        upsert: {
+          args: Prisma.ProjectShowcaseAttachmentUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectShowcaseAttachmentPayload>
+        }
+        aggregate: {
+          args: Prisma.ProjectShowcaseAttachmentAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateProjectShowcaseAttachment>
+        }
+        groupBy: {
+          args: Prisma.ProjectShowcaseAttachmentGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ProjectShowcaseAttachmentGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ProjectShowcaseAttachmentCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ProjectShowcaseAttachmentCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -1764,6 +1831,8 @@ export const ProjectScalarFieldEnum = {
   companyId: 'companyId',
   name: 'name',
   description: 'description',
+  technicalDescription: 'technicalDescription',
+  requestedBy: 'requestedBy',
   status: 'status',
   ownerId: 'ownerId',
   startDate: 'startDate',
@@ -1795,6 +1864,7 @@ export const ModuleScalarFieldEnum = {
   projectId: 'projectId',
   name: 'name',
   description: 'description',
+  status: 'status',
   order: 'order',
   progress: 'progress',
   workDate: 'workDate',
@@ -2001,6 +2071,20 @@ export const ModuleAttachmentScalarFieldEnum = {
 export type ModuleAttachmentScalarFieldEnum = (typeof ModuleAttachmentScalarFieldEnum)[keyof typeof ModuleAttachmentScalarFieldEnum]
 
 
+export const ProjectShowcaseAttachmentScalarFieldEnum = {
+  id: 'id',
+  projectId: 'projectId',
+  userId: 'userId',
+  name: 'name',
+  type: 'type',
+  size: 'size',
+  dataUrl: 'dataUrl',
+  createdAt: 'createdAt'
+} as const
+
+export type ProjectShowcaseAttachmentScalarFieldEnum = (typeof ProjectShowcaseAttachmentScalarFieldEnum)[keyof typeof ProjectShowcaseAttachmentScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -2071,6 +2155,8 @@ export const ProjectOrderByRelevanceFieldEnum = {
   companyId: 'companyId',
   name: 'name',
   description: 'description',
+  technicalDescription: 'technicalDescription',
+  requestedBy: 'requestedBy',
   ownerId: 'ownerId',
   color: 'color',
   avatar: 'avatar',
@@ -2257,6 +2343,18 @@ export const ModuleAttachmentOrderByRelevanceFieldEnum = {
 export type ModuleAttachmentOrderByRelevanceFieldEnum = (typeof ModuleAttachmentOrderByRelevanceFieldEnum)[keyof typeof ModuleAttachmentOrderByRelevanceFieldEnum]
 
 
+export const ProjectShowcaseAttachmentOrderByRelevanceFieldEnum = {
+  id: 'id',
+  projectId: 'projectId',
+  userId: 'userId',
+  name: 'name',
+  type: 'type',
+  dataUrl: 'dataUrl'
+} as const
+
+export type ProjectShowcaseAttachmentOrderByRelevanceFieldEnum = (typeof ProjectShowcaseAttachmentOrderByRelevanceFieldEnum)[keyof typeof ProjectShowcaseAttachmentOrderByRelevanceFieldEnum]
+
+
 
 /**
  * Field references
@@ -2309,6 +2407,13 @@ export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'In
  * Reference to a field of type 'Float'
  */
 export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
+    
+
+
+/**
+ * Reference to a field of type 'ModuleStatus'
+ */
+export type EnumModuleStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ModuleStatus'>
     
 
 
@@ -2496,6 +2601,7 @@ export type GlobalOmitConfig = {
   taskNote?: Prisma.TaskNoteOmit
   taskAttachment?: Prisma.TaskAttachmentOmit
   moduleAttachment?: Prisma.ModuleAttachmentOmit
+  projectShowcaseAttachment?: Prisma.ProjectShowcaseAttachmentOmit
 }
 
 /* Types for Logging */

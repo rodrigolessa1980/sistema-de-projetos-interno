@@ -10,7 +10,16 @@ import { ModuleAttachment } from '../../../core/domain/entities/module-attachmen
 import { Epic } from '../../../core/domain/entities/epic.entity';
 import { Task } from '../../../core/domain/entities/task.entity';
 import { TimeLog } from '../../../core/domain/entities/time-log.entity';
-import { ProjectStatus, TaskStatus, TimeLogSource } from '../../../core/domain/entities/enums';
+import { ModuleStatus, ProjectStatus, TaskStatus, TimeLogSource } from '../../../core/domain/entities/enums';
+
+function progressForStatus(status: ModuleStatus): number {
+  const progressByStatus: Record<ModuleStatus, number> = {
+    [ModuleStatus.INICIADO]: 0,
+    [ModuleStatus.EM_PROCESSO]: 50,
+    [ModuleStatus.CONCLUIDO]: 100,
+  };
+  return progressByStatus[status];
+}
 
 @Injectable()
 export class PrismaModuleRepository implements IModuleRepository {
@@ -22,6 +31,7 @@ export class PrismaModuleRepository implements IModuleRepository {
       projectId: raw.projectId,
       name: raw.name,
       description: raw.description,
+      status: raw.status as ModuleStatus,
       order: raw.order,
       progress: raw.progress,
       workDate: raw.workDate ?? null,
@@ -115,6 +125,7 @@ export class PrismaModuleRepository implements IModuleRepository {
         projectId: module.projectId,
         name: module.name,
         description: module.description,
+        status: module.status,
         order: module.order,
         progress: module.progress,
         workDate: module.workDate,
@@ -140,13 +151,16 @@ export class PrismaModuleRepository implements IModuleRepository {
       const existingCount = await tx.module.count({ where: { projectId: input.projectId } });
       const order = input.order ?? existingCount;
       const timeLogUserId = project.ownerId;
+      const moduleStatus = input.status ?? ModuleStatus.INICIADO;
 
       const moduleRaw = await tx.module.create({
         data: {
           projectId: input.projectId,
           name: input.name,
           description: input.description,
+          status: moduleStatus,
           order,
+          progress: progressForStatus(moduleStatus),
           workDate: shouldLogTime ? input.workDate : null,
           loggedHours: shouldLogTime ? input.hours : null,
           loggedByUserId: shouldLogTime ? timeLogUserId : null,
@@ -260,10 +274,14 @@ export class PrismaModuleRepository implements IModuleRepository {
     return raws.map((r) => this.mapToDomain(r));
   }
 
-  async update(id: string, data: { name?: string; description?: string }): Promise<Module> {
+  async update(id: string, data: { name?: string; description?: string; status?: ModuleStatus }): Promise<Module> {
     const raw = await this.prisma.module.update({
       where: { id },
-      data: { ...data, updatedAt: new Date() },
+      data: {
+        ...data,
+        ...(data.status ? { progress: progressForStatus(data.status) } : {}),
+        updatedAt: new Date(),
+      },
     });
     return this.mapToDomain(raw);
   }

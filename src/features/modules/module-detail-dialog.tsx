@@ -15,7 +15,20 @@ import {
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import type { Module, Task, TimeLog, ModuleAttachment, User } from "@/types";
+import type { ModuleStatus } from "@/types";
 import { ModuleAttachmentsPanel } from "./module-attachments-panel";
+
+const moduleStatusLabels: Record<ModuleStatus, string> = {
+  INICIADO: "Iniciado",
+  EM_PROCESSO: "Em processo",
+  CONCLUIDO: "Concluído",
+};
+
+const moduleStatusClasses: Record<ModuleStatus, string> = {
+  INICIADO: "bg-blue-500/15 text-blue-300 border-blue-500/30",
+  EM_PROCESSO: "bg-amber-500/15 text-amber-300 border-amber-500/30",
+  CONCLUIDO: "bg-emerald-500/15 text-emerald-300 border-emerald-500/30",
+};
 
 function formatBytes(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;
@@ -131,7 +144,15 @@ export function ModuleDetailDialog({
 
         <div className="space-y-5">
           {/* Resumo */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div className="bg-zinc-800/50 border border-zinc-700/40 rounded-lg p-3">
+              <div className="flex items-center gap-1.5 text-[11px] text-zinc-500 mb-1">
+                <Box className="w-3 h-3" /> Status
+              </div>
+              <Badge className={`text-[9px] ${moduleStatusClasses[module.status ?? "INICIADO"]}`}>
+                {moduleStatusLabels[module.status ?? "INICIADO"]}
+              </Badge>
+            </div>
             <div className="bg-zinc-800/50 border border-zinc-700/40 rounded-lg p-3">
               <div className="flex items-center gap-1.5 text-[11px] text-zinc-500 mb-1">
                 <Calendar className="w-3 h-3" /> Data do trabalho
