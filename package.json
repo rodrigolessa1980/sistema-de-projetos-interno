@@ -5,7 +5,8 @@
   "scripts": {
     "kill-ports": "node scripts/kill-ports.js",
     "predev": "node scripts/kill-ports.js 8022",
-    "dev": "next dev -p 8022",
+    "dev": "next dev --webpack -p 8022",
+    "dev:turbo": "next dev -p 8022",
     "build": "next build",
     "prestart": "node scripts/kill-ports.js 8022",
     "start": "next start -p 8022",
