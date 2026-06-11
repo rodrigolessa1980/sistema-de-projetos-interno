@@ -57,6 +57,7 @@ export default function TaskDetailPage({ params }: { params: Promise<{ id: strin
   const comments = getCommentsByTask(id);
   const timeLogs = getTimeLogsByTask(id);
   const completedSubtasks = subtasks.filter((s) => s.completed).length;
+  const tags = task.tags ?? [];
 
   // Dependências desta tarefa (o que ela depende) — type BLOCKED_BY
   const myDeps = getDependenciesByTask(id).filter((d) => d.taskId === id && d.type === "BLOCKED_BY");
@@ -171,7 +172,7 @@ export default function TaskDetailPage({ params }: { params: Promise<{ id: strin
                         <Flame className="w-3 h-3" /> URGENTE
                       </span>
                     )}
-                    {task.tags.map((tag) => (
+                    {tags.map((tag) => (
                       <span key={tag} className="text-[10px] px-1.5 py-0.5 bg-zinc-800 text-zinc-400 rounded">{tag}</span>
                     ))}
                   </div>

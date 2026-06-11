@@ -78,7 +78,7 @@ export const useWorkSessionStore = create<WorkSessionStore>()((set, get) => ({
     }
   },
 
-  startSession: async ({ taskId, userId, projectId, status = "EM_DESENVOLVIMENTO" }) => {
+  startSession: async ({ taskId, projectId, status = "EM_DESENVOLVIMENTO" }) => {
     const log = await api.post<TrackerTimeLog>("time-logs/tracker/start", {
       projectId,
       taskId,

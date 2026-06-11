@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -39,7 +39,7 @@ interface Props {
 }
 
 export function TaskCreateDialog({ open, onOpenChange }: Props) {
-  const { createTask, addDependency, tasks, getBlockersForTask, getUrgentTaskForDev } = useTaskStore();
+  const { createTask, addDependency, tasks, getUrgentTaskForDev } = useTaskStore();
   const { projects, modules, epics } = useProjectStore();
   const { users } = useUserStore();
   const { user } = useAuth();
@@ -53,12 +53,13 @@ export function TaskCreateDialog({ open, onOpenChange }: Props) {
     defaultValues: {
       title: "", description: "", projectId: "", moduleId: "", epicId: "",
       assigneeId: "", status: "BACKLOG", complexity: 3, estimatedHours: 8,
+      dueDate: "",
     },
   });
 
-  const projectId = form.watch("projectId");
-  const moduleId = form.watch("moduleId");
-  const assigneeId = form.watch("assigneeId");
+  const projectId = useWatch({ control: form.control, name: "projectId" }) ?? "";
+  const moduleId = useWatch({ control: form.control, name: "moduleId" }) ?? "";
+  const assigneeId = useWatch({ control: form.control, name: "assigneeId" }) ?? "";
 
   // Tarefa urgente ativa para o dev selecionado
   const existingUrgent = assigneeId ? getUrgentTaskForDev(assigneeId) : undefined;
@@ -176,7 +177,7 @@ export function TaskCreateDialog({ open, onOpenChange }: Props) {
               <FormField control={form.control} name="projectId" render={({ field }) => (
                 <FormItem>
                   <Label className="text-zinc-300 text-sm">Projeto</Label>
-                  <Select onValueChange={(v) => { field.onChange(v); form.setValue("moduleId", ""); form.setValue("epicId", ""); }}>
+                  <Select value={field.value ?? ""} onValueChange={(v) => { field.onChange(v); form.setValue("moduleId", ""); form.setValue("epicId", ""); }}>
                     <FormControl>
                       <SelectTrigger className="bg-zinc-800 border-zinc-700 text-zinc-300">
                         <SelectValue placeholder="Selecionar..." />
@@ -192,7 +193,7 @@ export function TaskCreateDialog({ open, onOpenChange }: Props) {
               <FormField control={form.control} name="moduleId" render={({ field }) => (
                 <FormItem>
                   <Label className="text-zinc-300 text-sm">Módulo</Label>
-                  <Select onValueChange={(v) => { field.onChange(v); form.setValue("epicId", ""); }} disabled={!projectId}>
+                  <Select value={field.value ?? ""} onValueChange={(v) => { field.onChange(v); form.setValue("epicId", ""); }} disabled={!projectId}>
                     <FormControl>
                       <SelectTrigger className="bg-zinc-800 border-zinc-700 text-zinc-300">
                         <SelectValue placeholder="Selecionar..." />
@@ -210,7 +211,7 @@ export function TaskCreateDialog({ open, onOpenChange }: Props) {
               <FormField control={form.control} name="epicId" render={({ field }) => (
                 <FormItem>
                   <Label className="text-zinc-300 text-sm">Epic</Label>
-                  <Select onValueChange={field.onChange} disabled={!moduleId}>
+                  <Select value={field.value ?? ""} onValueChange={field.onChange} disabled={!moduleId}>
                     <FormControl>
                       <SelectTrigger className="bg-zinc-800 border-zinc-700 text-zinc-300">
                         <SelectValue placeholder="Selecionar..." />
@@ -226,7 +227,7 @@ export function TaskCreateDialog({ open, onOpenChange }: Props) {
               <FormField control={form.control} name="assigneeId" render={({ field }) => (
                 <FormItem>
                   <Label className="text-zinc-300 text-sm">Responsável</Label>
-                  <Select onValueChange={field.onChange}>
+                  <Select value={field.value ?? ""} onValueChange={field.onChange}>
                     <FormControl>
                       <SelectTrigger className="bg-zinc-800 border-zinc-700 text-zinc-300">
                         <SelectValue placeholder="Selecionar..." />
@@ -244,7 +245,7 @@ export function TaskCreateDialog({ open, onOpenChange }: Props) {
               <FormField control={form.control} name="status" render={({ field }) => (
                 <FormItem>
                   <Label className="text-zinc-300 text-sm">Status</Label>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select value={field.value ?? "BACKLOG"} onValueChange={field.onChange}>
                     <FormControl>
                       <SelectTrigger className="bg-zinc-800 border-zinc-700 text-zinc-300">
                         <SelectValue />
@@ -260,7 +261,7 @@ export function TaskCreateDialog({ open, onOpenChange }: Props) {
               <FormField control={form.control} name="complexity" render={({ field }) => (
                 <FormItem>
                   <Label className="text-zinc-300 text-sm">Complexidade</Label>
-                  <Select onValueChange={(v) => field.onChange(Number(v))} defaultValue={String(field.value)}>
+                  <Select value={String(field.value ?? 3)} onValueChange={(v) => field.onChange(Number(v))}>
                     <FormControl>
                       <SelectTrigger className="bg-zinc-800 border-zinc-700 text-zinc-300">
                         <SelectValue />

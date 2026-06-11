@@ -6,6 +6,7 @@ import type { Task, Subtask, TimeLog, Comment, TaskDependency, StatusHistory, Ta
 import { generateId, delay } from "@/lib/utils";
 import type { AuditLog } from "@/types";
 import { api } from "@/lib/api";
+import { useWorkSessionStore } from "@/stores/work-session-store";
 
 type ApiTask = Omit<Task, "parentTaskId" | "startDate" | "dueDate" | "completedAt" | "blockedReason" | "urgentBlockedById" | "urgentPreviousStatus"> & {
   parentTaskId?: string | null;
@@ -18,6 +19,19 @@ type ApiTask = Omit<Task, "parentTaskId" | "startDate" | "dueDate" | "completedA
 };
 
 const TERMINAL_STATUSES: TaskStatus[] = ["CONCLUIDA", "CANCELADA"];
+
+const shouldStopTimerForStatus = (taskId: string, status: TaskStatus): boolean => {
+  const activeSession = useWorkSessionStore.getState().activeSession;
+  return TERMINAL_STATUSES.includes(status) && activeSession?.taskId === taskId;
+};
+
+const stopActiveTimerForTask = async (taskId: string, status: TaskStatus, description: string) => {
+  if (!shouldStopTimerForStatus(taskId, status)) return;
+  const result = await useWorkSessionStore.getState().stopSession(description);
+  if (result) {
+    useTaskStore.getState().appendTimeLog(result.timeLog);
+  }
+};
 
 const releaseUrgencyBlocksInStore = (tasks: Task[], urgentTaskId: string): Task[] =>
   tasks.map((task) => {
@@ -42,6 +56,26 @@ const normalizeTask = (task: ApiTask): Task => ({
   urgentPreviousStatus: task.urgentPreviousStatus ?? undefined,
   dependencyIds: task.dependencyIds ?? [],
   tags: task.tags ?? [],
+});
+
+export const toCreateTaskPayload = (data: Omit<Task, "id" | "createdAt" | "updatedAt">) => ({
+  projectId: data.projectId,
+  moduleId: data.moduleId,
+  epicId: data.epicId,
+  parentTaskId: data.parentTaskId,
+  title: data.title,
+  description: data.description,
+  status: data.status,
+  complexity: data.complexity,
+  assigneeId: data.assigneeId,
+  reporterId: data.reporterId,
+  estimatedHours: data.estimatedHours,
+  actualHours: data.actualHours,
+  startDate: data.startDate,
+  dueDate: data.dueDate,
+  order: data.order,
+  blockedReason: data.blockedReason,
+  isUrgent: data.isUrgent,
 });
 
 interface TaskStore {
@@ -166,7 +200,7 @@ export const useTaskStore = create<TaskStore>()(
   },
 
   createTask: async (data) => {
-    const task = normalizeTask(await api.post<ApiTask>("tasks", data));
+    const task = normalizeTask(await api.post<ApiTask>("tasks", toCreateTaskPayload(data)));
     set((state) => ({ tasks: [...state.tasks, task] }));
     return task;
   },
@@ -190,6 +224,7 @@ export const useTaskStore = create<TaskStore>()(
           )
         : state.tasks.map((task) => (task.id === id ? updated : task)),
     }));
+    await stopActiveTimerForTask(id, newStatus, "Tarefa finalizada");
   },
 
   deleteTask: async (id) => {
@@ -406,6 +441,8 @@ export const useTaskStore = create<TaskStore>()(
 
       return { tasks: nextTasks };
     });
+
+    void stopActiveTimerForTask(taskId, targetStatus, "Tarefa finalizada pelo Kanban");
   },
 
   // ── Notes ─────────────────────────────────────────────────────────────────

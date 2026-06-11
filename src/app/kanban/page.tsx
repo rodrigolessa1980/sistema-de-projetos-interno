@@ -57,6 +57,7 @@ function KanbanCard({ task, isDragging }: { task: Task; isDragging?: boolean }) 
   const isOverdue = task.dueDate && new Date(task.dueDate) < new Date() && task.status !== "CONCLUIDA";
   const isBeingWorked = activeSession?.taskId === task.id;
   const pendingBlockers = getBlockersForTask(task.id);
+  const tags = task.tags ?? [];
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging: isSortableDragging } = useSortable({ id: task.id });
   const style = {
@@ -125,7 +126,7 @@ function KanbanCard({ task, isDragging }: { task: Task; isDragging?: boolean }) 
         </p>
       </Link>
 
-      {task.tags.slice(0, 2).map((tag) => (
+      {tags.slice(0, 2).map((tag) => (
         <span key={tag} className="inline-block text-[9px] px-1.5 py-0.5 bg-zinc-800 text-zinc-500 rounded mr-1 mb-1">{tag}</span>
       ))}
 

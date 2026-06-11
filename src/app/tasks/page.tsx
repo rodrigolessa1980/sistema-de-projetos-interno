@@ -112,6 +112,7 @@ export default function TasksPage() {
                   const project = projects.find((p) => p.id === task.projectId);
                   const isOverdue = task.dueDate && new Date(task.dueDate) < new Date() && task.status !== "CONCLUIDA";
                   const isBeingWorked = activeSession?.taskId === task.id;
+                  const tags = task.tags ?? [];
 
                   return (
                     <motion.tr
@@ -167,9 +168,9 @@ export default function TasksPage() {
                               </span>
                             )}
                           </div>
-                          {task.tags.length > 0 && (
+                          {tags.length > 0 && (
                             <div className="flex gap-1 mt-1">
-                              {task.tags.slice(0, 2).map((tag) => (
+                              {tags.slice(0, 2).map((tag) => (
                                 <span key={tag} className="text-[9px] px-1.5 py-0.5 bg-zinc-800 text-zinc-500 rounded">{tag}</span>
                               ))}
                             </div>

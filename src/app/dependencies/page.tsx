@@ -22,7 +22,7 @@ export default function DependenciesPage() {
     return task?.projectId === projectFilter;
   });
 
-  const blockedTasksWithDeps = visibleTasks.filter((t) => t.dependencyIds.length > 0 || t.status === "BLOQUEADA");
+  const blockedTasksWithDeps = visibleTasks.filter((t) => (t.dependencyIds ?? []).length > 0 || t.status === "BLOQUEADA");
 
   return (
     <AppLayout>
