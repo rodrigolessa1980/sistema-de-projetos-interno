@@ -19,20 +19,28 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Setup Node.js (frontend)
         uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
+          cache-dependency-path: package-lock.json
 
       - name: Validar build do frontend
         run: npm ci --no-audit --no-fund && npm run build
         env:
           VITE_API_URL: http://localhost:4011/api
 
+      - name: Setup Node.js (backend)
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+
       - name: Validar build do backend
         working-directory: backend
-        run: npm ci --no-audit --no-fund && npm run build
+        run: npm ci --no-audit --no-fund --omit=optional && npm run build
         env:
           MYSQL_HOST: localhost
           MYSQL_PORT: 3306
