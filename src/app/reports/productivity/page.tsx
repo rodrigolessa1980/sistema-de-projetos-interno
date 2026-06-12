@@ -3,16 +3,13 @@
 import { AppLayout } from "@/components/layout/app-layout";
 import { useTaskStore, useProjectStore, useUserStore } from "@/stores";
 import { useAuth } from "@/hooks/use-auth";
-import { motion } from "framer-motion";
+import { motion } from "@/lib/motion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { TrendingUp, CheckCircle2, Clock, Zap, AlertTriangle, BarChart2 } from "lucide-react";
 import { PrintButton } from "@/components/shared/print-button";
-import {
-  ResponsiveContainer, BarChart, Bar, XAxis, YAxis,
-  CartesianGrid, Tooltip, Cell,
-} from "recharts";
+import { SimpleBarChart } from "@/components/shared/simple-charts";
 
 export default function ProductivityReportPage() {
   const { tasks, timeLogs } = useTaskStore();
@@ -81,20 +78,16 @@ export default function ProductivityReportPage() {
           className="bg-zinc-900/60 border border-zinc-800/50 rounded-xl p-5"
         >
           <h2 className="text-sm font-semibold text-zinc-200 mb-4">Distribuição de Tarefas por Desenvolvedor</h2>
-          <ResponsiveContainer width="100%" height={220}>
-            <BarChart data={chartData} barGap={4}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#27272a" vertical={false} />
-              <XAxis dataKey="name" tick={{ fill: "#71717a", fontSize: 11 }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fill: "#71717a", fontSize: 11 }} axisLine={false} tickLine={false} width={24} />
-              <Tooltip
-                contentStyle={{ background: "#18181b", border: "1px solid #3f3f46", borderRadius: "8px", fontSize: "12px" }}
-                labelStyle={{ color: "#a1a1aa" }}
-              />
-              <Bar dataKey="Concluídas" fill="#22c55e" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="Em Andamento" fill="#6366f1" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="Atrasadas" fill="#f97316" radius={[4, 4, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
+          <SimpleBarChart
+            data={chartData}
+            xKey="name"
+            height={220}
+            series={[
+              { key: "Concluídas", label: "Concluídas", color: "#22c55e" },
+              { key: "Em Andamento", label: "Em Andamento", color: "#6366f1" },
+              { key: "Atrasadas", label: "Atrasadas", color: "#f97316" },
+            ]}
+          />
         </motion.div>
 
         {/* Cards por desenvolvedor */}

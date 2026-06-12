@@ -8,7 +8,7 @@ import { useProjectStore } from "@/stores";
 import { useAuth } from "@/hooks/use-auth";
 import { useUserStore } from "@/stores";
 import { formatDate } from "@/lib/utils";
-import { motion } from "framer-motion";
+import { motion } from "@/lib/motion";
 import { FolderKanban, Plus, Users, Calendar, TrendingUp, MoreVertical, Edit, Trash2, Eye, Crown, UserCog, ImagePlus, X, Link2, ExternalLink, Box, GripVertical, ListOrdered, Flag, Building2 } from "lucide-react";
 import { ProjectAvatar } from "@/components/shared/project-avatar";
 import { Progress } from "@/components/ui/progress";

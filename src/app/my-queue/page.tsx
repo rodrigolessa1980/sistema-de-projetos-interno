@@ -6,7 +6,7 @@ import { useTaskStore, useProjectStore } from "@/stores";
 import { useAuth } from "@/hooks/use-auth";
 import { useWorkSessionStore } from "@/stores/work-session-store";
 import { StatusBadge } from "@/components/shared/task-badge";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "@/lib/motion";
 import Link from "@/lib/router";
 import {
   Inbox, Clock, CheckCircle2, AlertTriangle, Timer,

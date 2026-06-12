@@ -6,7 +6,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useTaskStore } from "@/stores";
 import { useUserStore } from "@/stores/ui-store";
 import { useProjectStore } from "@/stores";
-import { motion } from "framer-motion";
+import { motion } from "@/lib/motion";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";

@@ -4,7 +4,7 @@ import { AppLayout } from "@/components/layout/app-layout";
 import { useTaskStore, useProjectStore, useUserStore } from "@/stores";
 import { useAuth } from "@/hooks/use-auth";
 import { notFound } from "@/lib/router";
-import { motion } from "framer-motion";
+import { motion } from "@/lib/motion";
 import { Progress } from "@/components/ui/progress";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -12,10 +12,7 @@ import {
   CheckCircle2, AlertTriangle, Users, TrendingUp, Zap,
 } from "lucide-react";
 import { PrintButton } from "@/components/shared/print-button";
-import {
-  ResponsiveContainer, AreaChart, Area, XAxis, YAxis,
-  CartesianGrid, Tooltip, PieChart, Pie, Cell, Legend,
-} from "recharts";
+import { SimpleAreaChart, SimpleDistribution } from "@/components/shared/simple-charts";
 
 const STATUS_COLORS: Record<string, string> = {
   BACKLOG: "#52525b",
@@ -132,25 +129,12 @@ export default function OverviewReportPage() {
             className="bg-zinc-900/60 border border-zinc-800/50 rounded-xl p-5"
           >
             <h2 className="text-sm font-semibold text-zinc-200 mb-4">Horas Registradas — Últimos 14 dias</h2>
-            <ResponsiveContainer width="100%" height={200}>
-              <AreaChart data={dailyHours}>
-                <defs>
-                  <linearGradient id="hoursGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#6366f1" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#27272a" />
-                <XAxis dataKey="date" tick={{ fill: "#71717a", fontSize: 10 }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fill: "#71717a", fontSize: 10 }} axisLine={false} tickLine={false} width={24} />
-                <Tooltip
-                  contentStyle={{ background: "#18181b", border: "1px solid #3f3f46", borderRadius: "8px", fontSize: "12px" }}
-                  labelStyle={{ color: "#a1a1aa" }}
-                  formatter={(v: unknown) => [`${v}h`, "Horas"]}
-                />
-                <Area type="monotone" dataKey="horas" stroke="#6366f1" strokeWidth={2} fill="url(#hoursGrad)" />
-              </AreaChart>
-            </ResponsiveContainer>
+            <SimpleAreaChart
+              data={dailyHours}
+              xKey="date"
+              height={200}
+              series={[{ key: "horas", label: "Horas", color: "#6366f1" }]}
+            />
           </motion.div>
 
           {/* Distribuição por status */}
@@ -161,18 +145,13 @@ export default function OverviewReportPage() {
             className="bg-zinc-900/60 border border-zinc-800/50 rounded-xl p-5"
           >
             <h2 className="text-sm font-semibold text-zinc-200 mb-4">Distribuição por Status</h2>
-            <ResponsiveContainer width="100%" height={200}>
-              <PieChart>
-                <Pie data={statusDist} cx="50%" cy="50%" innerRadius={55} outerRadius={80} paddingAngle={2} dataKey="value">
-                  {statusDist.map((entry, i) => <Cell key={i} fill={entry.fill} />)}
-                </Pie>
-                <Tooltip
-                  contentStyle={{ background: "#18181b", border: "1px solid #3f3f46", borderRadius: "8px", fontSize: "12px" }}
-                  formatter={(v: unknown, name: unknown) => [v as number, name as string]}
-                />
-                <Legend iconType="circle" iconSize={8} wrapperStyle={{ fontSize: "10px", color: "#71717a" }} />
-              </PieChart>
-            </ResponsiveContainer>
+            <SimpleDistribution
+              items={statusDist.map((entry) => ({
+                label: entry.name,
+                value: entry.value,
+                color: entry.fill,
+              }))}
+            />
           </motion.div>
         </div>
 

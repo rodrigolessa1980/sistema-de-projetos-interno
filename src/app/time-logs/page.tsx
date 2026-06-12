@@ -6,7 +6,7 @@ import { PageHeader } from "@/components/shared/page-header";
 import { useTaskStore, useUserStore } from "@/stores";
 import { useAuth } from "@/hooks/use-auth";
 import { formatDate, formatHours } from "@/lib/utils";
-import { motion } from "framer-motion";
+import { motion } from "@/lib/motion";
 import { Clock, Timer, TrendingUp, User2 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";

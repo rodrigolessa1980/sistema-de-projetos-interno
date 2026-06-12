@@ -5,7 +5,7 @@ import { AppLayout } from "@/components/layout/app-layout";
 import { PageHeader } from "@/components/shared/page-header";
 import { useProjectStore, useTaskStore } from "@/stores";
 import { useAuth } from "@/hooks/use-auth";
-import { motion } from "framer-motion";
+import { motion } from "@/lib/motion";
 import { Box, Plus } from "lucide-react";
 import { ProjectAvatar } from "@/components/shared/project-avatar";
 import { Progress } from "@/components/ui/progress";

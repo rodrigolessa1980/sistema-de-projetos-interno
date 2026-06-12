@@ -6,7 +6,7 @@ import { PageHeader } from "@/components/shared/page-header";
 import { useProjectStore, useTaskStore, useUserStore } from "@/stores";
 import { useAuth } from "@/hooks/use-auth";
 import { formatDate } from "@/lib/utils";
-import { motion } from "framer-motion";
+import { motion } from "@/lib/motion";
 import { Layers, Users } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { EmptyState } from "@/components/shared/empty-state";

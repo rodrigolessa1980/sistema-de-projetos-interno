@@ -18,7 +18,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { toast } from "sonner";
-import { motion } from "framer-motion";
+import { motion } from "@/lib/motion";
 import {
   Building2, MoreVertical, Pencil, Trash2, FolderKanban, Plus, Hash,
 } from "lucide-react";

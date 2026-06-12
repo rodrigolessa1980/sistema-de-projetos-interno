@@ -2,7 +2,7 @@
 
 import { usePathname, useRouter } from "@/lib/router";
 import Link from "@/lib/router";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "@/lib/motion";
 import {
   LayoutDashboard, FolderKanban, ListTodo, Kanban, GitBranch,
   BarChart3, Clock, Network, Users, ChevronLeft, ChevronRight,

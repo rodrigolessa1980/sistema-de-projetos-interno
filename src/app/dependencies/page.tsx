@@ -3,7 +3,7 @@
 import { AppLayout } from "@/components/layout/app-layout";
 import { useTaskStore, useProjectStore } from "@/stores";
 import { StatusBadge, ComplexityBadge } from "@/components/shared/task-badge";
-import { motion } from "framer-motion";
+import { motion } from "@/lib/motion";
 import { Network, AlertTriangle, CheckCircle2, ArrowRight, Link2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import Link from "@/lib/router";

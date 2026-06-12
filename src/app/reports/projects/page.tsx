@@ -2,7 +2,7 @@
 
 import { AppLayout } from "@/components/layout/app-layout";
 import { useTaskStore, useProjectStore, useUserStore } from "@/stores";
-import { motion } from "framer-motion";
+import { motion } from "@/lib/motion";
 import { Progress } from "@/components/ui/progress";
 import { ClipboardList, CheckCircle2, Clock, AlertTriangle, Users, Box } from "lucide-react";
 import { PrintButton } from "@/components/shared/print-button";

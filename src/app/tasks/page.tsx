@@ -8,7 +8,7 @@ import { EmptyState } from "@/components/shared/empty-state";
 import { useTaskStore, useProjectStore, useUserStore } from "@/stores";
 import { useAuth } from "@/hooks/use-auth";
 import { formatDate, ALL_STATUSES, getStatusLabel, cn } from "@/lib/utils";
-import { motion } from "framer-motion";
+import { motion } from "@/lib/motion";
 import { ListTodo, Filter, Plus, Search, ChevronDown, Clock, AlertTriangle, Timer, Lock, Flame } from "lucide-react";
 import { useWorkSessionStore } from "@/stores/work-session-store";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";

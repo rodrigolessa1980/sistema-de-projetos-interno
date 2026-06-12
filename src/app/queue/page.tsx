@@ -41,7 +41,7 @@ import {
 import Link from "@/lib/router";
 import { toast } from "sonner";
 import type { Project } from "@/types";
-import { motion } from "framer-motion";
+import { motion } from "@/lib/motion";
 import { formatDate } from "@/lib/utils";
 
 const statusLabels: Record<string, string> = {

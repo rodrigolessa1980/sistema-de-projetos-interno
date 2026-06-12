@@ -353,7 +353,6 @@
   .bg-amber-500\/20, .bg-orange-500\/20        { opacity: 0.7; }
 
   /* Gráficos: preserva mas não quebra página */
-  .recharts-wrapper { break-inside: avoid; }
 
   /* Tabelas não quebram no meio da linha */
   tr { break-inside: avoid; }

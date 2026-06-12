@@ -5,7 +5,7 @@ import { AppLayout } from "@/components/layout/app-layout";
 import { useTaskStore, useProjectStore } from "@/stores";
 import { StatusBadge } from "@/components/shared/task-badge";
 import { formatDate } from "@/lib/utils";
-import { motion } from "framer-motion";
+import { motion } from "@/lib/motion";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import type { Task } from "@/types";

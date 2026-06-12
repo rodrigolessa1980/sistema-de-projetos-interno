@@ -6,7 +6,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useSyncWorkSession } from "@/hooks/use-work-session";
 import { useRouter, usePathname } from "@/lib/router";
 import { useEffect } from "react";
-import { motion } from "framer-motion";
+import { motion } from "@/lib/motion";
 import { useProjectStore, useTaskStore, useUIStore, useUserStore } from "@/stores";
 
 interface AppLayoutProps {

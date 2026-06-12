@@ -7,7 +7,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useUpdateKanbanOrder } from "@/hooks/use-tasks";
 import { ComplexityBadge } from "@/components/shared/task-badge";
 import { formatDate, getStatusLabel, getStatusDotColor } from "@/lib/utils";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "@/lib/motion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AlertTriangle, Clock, GripVertical, Plus, Lock, Flame } from "lucide-react";
