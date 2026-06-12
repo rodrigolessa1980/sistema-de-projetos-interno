@@ -60,5 +60,26 @@ docker network prune -f || true
 echo "Espaco em disco apos o deploy:"
 df -h || true
 
+echo "Verificando containers..."
+sleep 5
+"${COMPOSE[@]}" ps -a
+
+if ! docker ps --format '{{.Names}}' | grep -qx 'devflow_backend'; then
+  echo "ERRO: devflow_backend nao esta em execucao."
+  docker logs devflow_backend --tail 120 2>&1 || true
+  exit 1
+fi
+
+if ! curl -sf "http://127.0.0.1:4011/api/health" >/dev/null; then
+  echo "ERRO: backend nao responde em http://127.0.0.1:4011/api/health"
+  docker logs devflow_backend --tail 120 2>&1 || true
+  exit 1
+fi
+
+if grep -Eq 'VITE_API_URL=.*localhost' .env.production 2>/dev/null; then
+  echo "AVISO: VITE_API_URL aponta para localhost. No browser de producao a API ficara inacessivel."
+  echo "       Use http://143.198.155.216:4011/api (ou o dominio real) no secret ENV_FRONTEND."
+fi
+
 echo "Deploy concluido."
 "${COMPOSE[@]}" ps

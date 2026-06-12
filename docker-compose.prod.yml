@@ -8,13 +8,27 @@ services:
       secrets:
         - backend_env
     container_name: devflow_backend
-    restart: on-failure:5
+    restart: unless-stopped
     mem_limit: 512m
     cpus: 0.75
     env_file:
       - ./backend/.env
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     ports:
       - "4011:4011"
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:4011/api/health').then((r)=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 90s
     networks:
       - devflow
 
@@ -33,7 +47,8 @@ services:
     ports:
       - "8022:8022"
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
     networks:
       - devflow
 
