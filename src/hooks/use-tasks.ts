@@ -2,6 +2,7 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTaskStore } from "@/stores";
+import { normalizeTask } from "@/stores/task-store";
 import type { Task, TaskStatus, TimeLog } from "@/types";
 import { toast } from "sonner";
 import { api } from "@/lib/api";
@@ -28,8 +29,9 @@ export function useTasks(projectId?: string) {
         return store.tasks;
       }
       const tasks = await api.get<Task[]>(`tasks/project/${projectId}`);
-      useTaskStore.setState({ tasks });
-      return tasks;
+      const normalized = tasks.map(normalizeTask);
+      useTaskStore.setState({ tasks: normalized });
+      return normalized;
     },
   });
 
@@ -41,15 +43,16 @@ export function useTask(taskId: string) {
     queryKey: ["task", taskId],
     queryFn: async () => {
       const task = await api.get<Task>(`tasks/${taskId}`);
+      const normalized = normalizeTask(task);
       useTaskStore.setState((state) => {
-        const exists = state.tasks.some((item) => item.id === task.id);
+        const exists = state.tasks.some((item) => item.id === normalized.id);
         return {
           tasks: exists
-            ? state.tasks.map((item) => (item.id === task.id ? task : item))
-            : [...state.tasks, task],
+            ? state.tasks.map((item) => (item.id === normalized.id ? normalized : item))
+            : [...state.tasks, normalized],
         };
       });
-      return task;
+      return normalized;
     },
     enabled: !!taskId,
   });

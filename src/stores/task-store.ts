@@ -45,7 +45,7 @@ const releaseUrgencyBlocksInStore = (tasks: Task[], urgentTaskId: string): Task[
     };
   });
 
-const normalizeTask = (task: ApiTask): Task => ({
+export const normalizeTask = (task: ApiTask): Task => ({
   ...task,
   parentTaskId: task.parentTaskId ?? undefined,
   startDate: task.startDate ?? undefined,

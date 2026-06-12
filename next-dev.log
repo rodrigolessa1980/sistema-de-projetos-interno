@@ -1,0 +1,17 @@
+
+> devflow@0.1.0 predev
+> node scripts/kill-ports.js 8022
+
+Porta 8022: livre.
+
+> devflow@0.1.0 dev
+> next dev --webpack -p 8022
+
+▲ Next.js 16.2.6 (webpack)
+- Local:         http://localhost:8022
+- Network:       http://192.168.0.1:8022
+- Environments: .env.local, .env
+✓ Ready in 691ms
+
+○ Compiling /tasks/[id] ...
+ GET /tasks/test-id 404 in 10.1s (next.js: 9.8s, application-code: 341ms)
