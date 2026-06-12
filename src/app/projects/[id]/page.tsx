@@ -150,8 +150,9 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
   const [calendar, setCalendar] = useState<CalendarDay[]>([]);
   const [loadingReport, setLoadingReport] = useState(false);
 
-  const project = getProjectById(id);
-  if (!project) notFound();
+  const projectResult = getProjectById(id);
+  if (!projectResult) notFound();
+  const project = projectResult;
 
   const isProjectMember = !!user && (
     project.ownerId === user.id || project.developerIds.includes(user.id)
