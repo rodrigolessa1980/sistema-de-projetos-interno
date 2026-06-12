@@ -8,6 +8,22 @@ import { generateId, delay } from "@/lib/utils";
 import { api } from "@/lib/api";
 import { useTaskStore } from "./task-store";
 
+const asArray = <T,>(value: T[] | null | undefined): T[] => Array.isArray(value) ? value : [];
+
+const normalizeProject = (project: Project): Project => ({
+  ...project,
+  endDate: project.endDate ?? undefined,
+  queueOrder: project.queueOrder ?? undefined,
+  avatar: project.avatar ?? undefined,
+  testUrl: project.testUrl ?? undefined,
+  developerIds: asArray(project.developerIds),
+});
+
+const normalizeEpic = (epic: Epic): Epic => ({
+  ...epic,
+  developerIds: asArray(epic.developerIds),
+});
+
 interface ProjectStore {
   projects: Project[];
   modules: Module[];
@@ -113,35 +129,28 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
         api.get<Project[]>("projects"),
         api.get<{ companies: Company[] }>("companies"),
       ]);
-      const normalizedProjects = projects.map((project) => ({
-        ...project,
-        endDate: project.endDate ?? undefined,
-        queueOrder: project.queueOrder ?? undefined,
-        avatar: project.avatar ?? undefined,
-        testUrl: project.testUrl ?? undefined,
-        developerIds: project.developerIds ?? [],
-      }));
+      const normalizedProjects = asArray(projects).map(normalizeProject);
 
       // Busca módulos e epics de todos os projetos em paralelo
       const projectIds = normalizedProjects.map((p) => p.id);
       const [modulesResults, epicsResults, attachmentsResults] = await Promise.all([
         Promise.all(projectIds.map((id) =>
-          api.get<{ modules: Module[] }>(`projects/${id}/modules`).then((r) => r.modules).catch(() => [] as Module[])
+          api.get<{ modules: Module[] }>(`projects/${id}/modules`).then((r) => asArray(r.modules)).catch(() => [] as Module[])
         )),
         Promise.all(projectIds.map((id) =>
-          api.get<{ epics: Epic[] }>(`projects/${id}/epics`).then((r) => r.epics).catch(() => [] as Epic[])
+          api.get<{ epics: Epic[] }>(`projects/${id}/epics`).then((r) => asArray(r.epics).map(normalizeEpic)).catch(() => [] as Epic[])
         )),
         Promise.all(projectIds.map((id) =>
-          api.get<{ attachments: ModuleAttachment[] }>(`projects/${id}/module-attachments`).then((r) => r.attachments).catch(() => [] as ModuleAttachment[])
+          api.get<{ attachments: ModuleAttachment[] }>(`projects/${id}/module-attachments`).then((r) => asArray(r.attachments)).catch(() => [] as ModuleAttachment[])
         )),
       ]);
       const showcaseAttachmentResults = await Promise.all(projectIds.map((id) =>
-        api.get<{ attachments: ProjectShowcaseAttachment[] }>(`projects/${id}/showcase-attachments`).then((r) => r.attachments).catch(() => [] as ProjectShowcaseAttachment[])
+        api.get<{ attachments: ProjectShowcaseAttachment[] }>(`projects/${id}/showcase-attachments`).then((r) => asArray(r.attachments)).catch(() => [] as ProjectShowcaseAttachment[])
       ));
 
       set({
         projects: normalizedProjects,
-        companies: companiesResponse.companies,
+        companies: asArray(companiesResponse.companies),
         modules: modulesResults.flat(),
         epics: epicsResults.flat(),
         projectShowcaseAttachments: showcaseAttachmentResults.flat(),
@@ -167,22 +176,15 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
     set((state) => ({
       projectShowcaseAttachments: [
         ...state.projectShowcaseAttachments.filter((a) => a.projectId !== projectId),
-        ...response.attachments,
+        ...asArray(response.attachments),
       ],
     }));
-    return response.attachments;
+    return asArray(response.attachments);
   },
 
   updateProjectShowcase: async (projectId, technicalDescription) => {
     const project = await api.put<Project>(`projects/${projectId}/showcase`, { technicalDescription });
-    const normalized: Project = {
-      ...project,
-      endDate: project.endDate ?? undefined,
-      queueOrder: project.queueOrder ?? undefined,
-      avatar: project.avatar ?? undefined,
-      testUrl: project.testUrl ?? undefined,
-      developerIds: project.developerIds ?? [],
-    };
+    const normalized = normalizeProject(project);
     set((state) => ({
       projects: state.projects.map((p) => (p.id === projectId ? normalized : p)),
     }));
@@ -215,28 +217,14 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
 
   createProject: async (data) => {
     const project = await api.post<Project>("projects", data);
-    const normalized: Project = {
-      ...project,
-      endDate: project.endDate ?? undefined,
-      queueOrder: project.queueOrder ?? undefined,
-      avatar: project.avatar ?? undefined,
-      testUrl: project.testUrl ?? undefined,
-      developerIds: project.developerIds ?? [],
-    };
+    const normalized = normalizeProject(project);
     set((state) => ({ projects: [...state.projects, normalized] }));
     return normalized;
   },
 
   updateProject: async (id, data) => {
     const project = await api.put<Project>(`projects/${id}`, data);
-    const normalized: Project = {
-      ...project,
-      endDate: project.endDate ?? undefined,
-      queueOrder: project.queueOrder ?? undefined,
-      avatar: project.avatar ?? undefined,
-      testUrl: project.testUrl ?? undefined,
-      developerIds: project.developerIds ?? [],
-    };
+    const normalized = normalizeProject(project);
     set((state) => ({
       projects: state.projects.map((p) => (p.id === id ? normalized : p)),
     }));
@@ -261,7 +249,7 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
     set((state) => ({ modules: [...state.modules, projectModule] }));
 
     if (epic) {
-      set((state) => ({ epics: [...state.epics, epic] }));
+      set((state) => ({ epics: [...state.epics, normalizeEpic(epic)] }));
     }
 
     useTaskStore.setState((state) => {
@@ -346,8 +334,9 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
   createEpic: async (data) => {
     const response = await api.post<{ epic: Epic }>("epics", data);
     const epic = response.epic;
-    set((state) => ({ epics: [...state.epics, epic] }));
-    return epic;
+    const normalized = normalizeEpic(epic);
+    set((state) => ({ epics: [...state.epics, normalized] }));
+    return normalized;
   },
 
   updateEpic: async (id, data) => {

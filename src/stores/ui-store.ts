@@ -5,6 +5,14 @@ import { persist } from "zustand/middleware";
 import type { Notification, User, UserPermission } from "@/types";
 import { api } from "@/lib/api";
 
+const asArray = <T,>(value: T[] | null | undefined): T[] => Array.isArray(value) ? value : [];
+
+const normalizeUser = (user: User): User => ({
+  ...user,
+  projectIds: asArray(user.projectIds),
+  permissions: asArray(user.permissions),
+});
+
 interface UIStore {
   sidebarCollapsed: boolean;
   notifications: Notification[];
@@ -69,9 +77,10 @@ export const useUIStore = create<UIStore>()(
 
       fetchNotifications: async () => {
         const notifications = await api.get<Notification[]>("notifications");
+        const normalized = asArray(notifications);
         set({
-          notifications,
-          unreadCount: notifications.filter((notification) => !notification.read).length,
+          notifications: normalized,
+          unreadCount: normalized.filter((notification) => !notification.read).length,
         });
       },
 
@@ -105,7 +114,7 @@ export const useUserStore = create<UserStore>()(
       fetchUsers: async () => {
         const response = await api.get<(User & { permissions: UserPermission[]; permissionCount: number })[]>("users");
         set((state) => ({
-          users: response.map((u) => ({
+          users: asArray(response).map((u) => ({
             ...state.users.find((existing) => existing.id === u.id),
             id: u.id,
             name: u.name,
@@ -135,16 +144,17 @@ export const useUserStore = create<UserStore>()(
       },
 
       upsertUser: (user) => {
+        const normalized = normalizeUser(user);
         set((state) => {
-          const exists = state.users.some((u) => u.id === user.id || u.email === user.email);
+          const exists = state.users.some((u) => u.id === normalized.id || u.email === normalized.email);
           if (exists) {
             return {
               users: state.users.map((u) =>
-                u.id === user.id || u.email === user.email ? { ...u, ...user } : u
+                u.id === normalized.id || u.email === normalized.email ? { ...u, ...normalized } : u
               ),
             };
           }
-          return { users: [...state.users, user] };
+          return { users: [...state.users, normalized] };
         });
       },
 
