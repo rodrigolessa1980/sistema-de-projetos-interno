@@ -40,7 +40,7 @@ jobs:
 
       - name: Validar build do backend
         working-directory: backend
-        run: npm ci --no-audit --no-fund --omit=optional && npm run build
+        run: npm ci --no-audit --no-fund && npm run build
         env:
           MYSQL_HOST: localhost
           MYSQL_PORT: 3306
