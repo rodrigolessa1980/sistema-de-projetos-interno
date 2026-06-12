@@ -17,11 +17,11 @@ if [[ -z "${ENV_BACKEND:-}" || -z "${ENV_FRONTEND:-}" ]]; then
 fi
 
 if [[ ! -d "${DEPLOY_PATH}/.git" ]]; then
-  echo "Primeiro deploy: clonando repositório em ${DEPLOY_PATH}..."
+  echo "Primeiro deploy: clonando repositorio em ${DEPLOY_PATH}..."
   mkdir -p "$(dirname "${DEPLOY_PATH}")"
   git clone --branch "${BRANCH}" --single-branch "${REPO_URL}" "${DEPLOY_PATH}"
 else
-  echo "Atualizando repositório em ${DEPLOY_PATH}..."
+  echo "Atualizando repositorio em ${DEPLOY_PATH}..."
   cd "${DEPLOY_PATH}"
   git fetch origin "${BRANCH}"
   git reset --hard "origin/${BRANCH}"
@@ -35,16 +35,28 @@ printf '%s\n' "${ENV_BACKEND}" > backend/.env
 printf '%s\n' "${ENV_FRONTEND}" > .env.production
 chmod 600 backend/.env .env.production
 
-echo "Commit deployado: $(git rev-parse --short HEAD) — $(git log -1 --pretty=%s)"
+echo "Commit deployado: $(git rev-parse --short HEAD) - $(git log -1 --pretty=%s)"
 
 export DOCKER_BUILDKIT=1
 export COMPOSE_DOCKER_CLI_BUILD=1
 
-echo "Parando containers em execução..."
+echo "Parando containers em execucao..."
 "${COMPOSE[@]}" down --remove-orphans || true
 
-echo "Construindo e iniciando containers de produção..."
+echo "Espaco em disco antes da limpeza:"
+df -h || true
+
+echo "Limpando cache/artefatos Docker nao utilizados..."
+docker builder prune -af || true
+docker container prune -f || true
+docker image prune -af || true
+docker network prune -f || true
+
+echo "Espaco em disco apos a limpeza:"
+df -h || true
+
+echo "Construindo e iniciando containers de producao..."
 "${COMPOSE[@]}" up -d --build --remove-orphans
 
-echo "Deploy concluído."
+echo "Deploy concluido."
 "${COMPOSE[@]}" ps
