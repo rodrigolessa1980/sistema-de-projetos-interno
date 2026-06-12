@@ -4,7 +4,8 @@ WORKDIR /app
 
 FROM base AS deps
 COPY package.json package-lock.json .npmrc ./
-RUN npm ci --no-audit --no-fund
+# postinstall precisa de scripts/ e prisma/ — prisma generate roda no estágio builder
+RUN npm ci --no-audit --no-fund --ignore-scripts
 
 FROM base AS builder
 COPY --from=deps /app/node_modules ./node_modules
