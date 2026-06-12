@@ -20,7 +20,7 @@ import {
   ResponsiveContainer, AreaChart, Area, XAxis, YAxis,
   CartesianGrid, Tooltip, BarChart, Bar, PieChart, Pie, Cell,
 } from "recharts";
-import Link from "next/link";
+import Link from "@/lib/router";
 import { Badge } from "@/components/ui/badge";
 
 export default function DashboardPage() {

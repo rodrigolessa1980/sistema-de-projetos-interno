@@ -4,7 +4,7 @@ WORKDIR /app
 
 FROM base AS deps
 COPY package.json package-lock.json .npmrc ./
-RUN npm install --no-audit --no-fund
+RUN npm ci --no-audit --no-fund
 
 FROM base AS builder
 COPY --from=deps /app/node_modules ./node_modules
@@ -16,6 +16,8 @@ RUN --mount=type=secret,id=backend_env,target=/app/.env,required \
 
 RUN --mount=type=secret,id=backend_env,target=/app/.env,required \
     npm run build
+
+RUN npm prune --omit=dev --no-audit --no-fund
 
 FROM base AS runner
 ENV NODE_ENV=production

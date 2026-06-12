@@ -512,5 +512,5 @@ model TaskAttachment {
    ```
 2. **Use cases de Projects, Tasks e TimeLogs** — repositórios já existem, falta expor via HTTP.
 3. **Entidades restantes** — `Module`, `Epic`, `Subtask`, `TaskDependency`, `Comment`, `Notification`, `AuditLog`, `StatusHistory`, `TaskNote`, `TaskAttachment`.
-4. **Integração frontend** — substituir mocks em `use-auth` e stores por chamadas à API (`NEXT_PUBLIC_API_URL=http://localhost:4011/api`).
+4. **Integração frontend** — substituir mocks em `use-auth` e stores por chamadas à API (`VITE_API_URL=http://localhost:4011/api`).
 5. **WebSockets** — notificações em tempo real (fase posterior).

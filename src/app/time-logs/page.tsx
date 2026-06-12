@@ -13,7 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { StatusBadge } from "@/components/shared/task-badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { StatCard } from "@/components/shared/stat-card";
-import Link from "next/link";
+import Link from "@/lib/router";
 
 export default function TimeLogsPage() {
   const { timeLogs, tasks } = useTaskStore();

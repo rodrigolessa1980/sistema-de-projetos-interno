@@ -3,7 +3,7 @@
 import { AppLayout } from "@/components/layout/app-layout";
 import { useTaskStore, useProjectStore, useUserStore } from "@/stores";
 import { useAuth } from "@/hooks/use-auth";
-import { notFound } from "next/navigation";
+import { notFound } from "@/lib/router";
 import { motion } from "framer-motion";
 import { Progress } from "@/components/ui/progress";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";

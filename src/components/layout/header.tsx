@@ -1,9 +1,8 @@
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
-import dynamic from "next/dynamic";
-import { useRouter } from "next/navigation";
-import { Bell, Search, Sun, Command, X, Timer, AlertTriangle, Clock, CheckCheck } from "lucide-react";
+import { useRouter } from "@/lib/router";
+import { Bell, Search, Command, X, Timer, AlertTriangle, Clock, CheckCheck } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -17,26 +16,9 @@ import { formatRelativeTime } from "@/lib/utils";
 import { cn } from "@/lib/utils";
 import { useTaskStore, useProjectStore } from "@/stores";
 import { useActiveWorkSession } from "@/hooks/use-work-session";
-import Link from "next/link";
+import Link from "@/lib/router";
 import type { Notification } from "@/types";
-
-const ThemeToggle = dynamic(
-  () => import("./theme-toggle").then((module) => module.ThemeToggle),
-  {
-    ssr: false,
-    loading: () => (
-      <Button
-        aria-label="Alterar ambiente"
-        variant="ghost"
-        size="icon"
-        className="w-8 h-8 text-zinc-400"
-        disabled
-      >
-        <Sun className="w-4 h-4" />
-      </Button>
-    ),
-  }
-);
+import { ThemeToggle } from "./theme-toggle";
 
 export function Header({ title }: { title?: string }) {
   const { notifications, markNotificationRead, markAllRead } = useUIStore();

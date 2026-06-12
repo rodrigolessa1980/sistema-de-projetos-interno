@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DevFlow - Gestao de Desenvolvimento</title>
+    <meta name="description" content="Sistema enterprise de gestao de desenvolvimento de software" />
+    <script>
+      (() => {
+        const stored = localStorage.getItem("devflow_theme");
+        const theme = stored === "light" || stored === "dark" || stored === "system" ? stored : "dark";
+        const resolved = theme === "system" && matchMedia("(prefers-color-scheme: light)").matches ? "light" : theme === "system" ? "dark" : theme;
+        document.documentElement.classList.toggle("dark", resolved === "dark");
+        document.documentElement.classList.toggle("light", resolved === "light");
+        document.documentElement.style.colorScheme = resolved;
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

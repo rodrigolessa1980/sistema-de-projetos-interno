@@ -14,6 +14,7 @@ jobs:
   validate:
     name: Validar build
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -25,14 +26,27 @@ jobs:
           cache: npm
 
       - name: Validar build do frontend
-        run: npm install --no-audit --no-fund --include=optional && npm run build
+        run: npm ci --no-audit --no-fund && npm run build
         env:
-          NEXT_PUBLIC_API_URL: http://localhost:4011/api
+          VITE_API_URL: http://localhost:4011/api
+
+      - name: Validar build do backend
+        working-directory: backend
+        run: npm ci --no-audit --no-fund && npm run build
+        env:
+          MYSQL_HOST: localhost
+          MYSQL_PORT: 3306
+          MYSQL_USER: devflow_user
+          MYSQL_PASSWORD: devflow_password
+          MYSQL_DATABASE: devflow_db
+          JWT_SECRET: ci-build-secret
+          PORT: 4011
 
   deploy:
     name: Deploy via SSH
     runs-on: ubuntu-latest
     needs: validate
+    timeout-minutes: 45
 
     steps:
       - name: Checkout
@@ -66,6 +80,7 @@ jobs:
           password: ${{ secrets.SERVER_PASSWORD }}
           envs: ENV_BACKEND,ENV_FRONTEND,DEPLOY_PATH,REPO_URL,BRANCH
           script_stop: true
+          command_timeout: 40m
           script: |
             if [ -f /tmp/scripts/deploy-remote.sh ]; then
               mv /tmp/scripts/deploy-remote.sh /tmp/deploy-remote.sh
@@ -100,6 +115,7 @@ jobs:
           key: ${{ secrets.SERVER_SSH }}
           envs: ENV_BACKEND,ENV_FRONTEND,DEPLOY_PATH,REPO_URL,BRANCH
           script_stop: true
+          command_timeout: 40m
           script: |
             if [ -f /tmp/scripts/deploy-remote.sh ]; then
               mv /tmp/scripts/deploy-remote.sh /tmp/deploy-remote.sh

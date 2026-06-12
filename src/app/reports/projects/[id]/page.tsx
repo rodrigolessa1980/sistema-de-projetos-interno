@@ -1,13 +1,14 @@
 "use client";
 
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { AppLayout } from "@/components/layout/app-layout";
 import { useProjectStore, useUserStore } from "@/stores";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { api } from "@/lib/api";
-import Link from "next/link";
+import Link from "@/lib/router";
+import { useParams } from "@/lib/router";
 import {
   ChevronLeft, BarChart3, Clock, Target, TrendingUp,
   Calendar, Users, CheckCircle2, AlertTriangle,
@@ -33,8 +34,8 @@ interface ProjectSummary {
   startDate: string | null; developers: DevStats[];
 }
 
-export default function ProjectReportPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params);
+export default function ProjectReportPage() {
+  const { id } = useParams<{ id: string }>();
   const { getProjectById } = useProjectStore();
   const { users } = useUserStore();
   const project = getProjectById(id);

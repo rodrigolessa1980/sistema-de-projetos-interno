@@ -7,7 +7,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useWorkSessionStore } from "@/stores/work-session-store";
 import { StatusBadge } from "@/components/shared/task-badge";
 import { motion, AnimatePresence } from "framer-motion";
-import Link from "next/link";
+import Link from "@/lib/router";
 import {
   Inbox, Clock, CheckCircle2, AlertTriangle, Timer,
   Circle, Zap, ChevronDown, CalendarClock, Play,

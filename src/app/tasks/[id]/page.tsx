@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useState } from "react";
+import { useState } from "react";
 import { AppLayout } from "@/components/layout/app-layout";
 import { useTaskStore, useProjectStore, useUserStore } from "@/stores";
 import { useAuth } from "@/hooks/use-auth";
@@ -21,8 +21,8 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { notFound } from "next/navigation";
-import Link from "next/link";
+import { notFound, useParams } from "@/lib/router";
+import Link from "@/lib/router";
 import { toast } from "sonner";
 import type { TaskStatus } from "@/types";
 import { useTask, useUpdateTaskStatus, useLogTime } from "@/hooks/use-tasks";
@@ -30,8 +30,8 @@ import { WorkTimer } from "@/components/shared/work-timer";
 import { NotesPanel } from "@/features/tasks/notes-panel";
 import { AttachmentsPanel } from "@/features/tasks/attachments-panel";
 
-export default function TaskDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params);
+export default function TaskDetailPage() {
+  const { id } = useParams<{ id: string }>();
   const { getTaskById, getSubtasksByTask, getCommentsByTask, getTimeLogsByTask, addComment, toggleSubtask, addSubtask, getDependenciesByTask, updateTask, getBlockersForTask, tasks, addDependency, removeDependency, dependencies, setTaskUrgent } = useTaskStore();
   const { getProjectById } = useProjectStore();
   const { users } = useUserStore();

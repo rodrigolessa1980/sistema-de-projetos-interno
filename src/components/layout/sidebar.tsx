@@ -1,7 +1,7 @@
 "use client";
 
-import { usePathname, useRouter } from "next/navigation";
-import Link from "next/link";
+import { usePathname, useRouter } from "@/lib/router";
+import Link from "@/lib/router";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   LayoutDashboard, FolderKanban, ListTodo, Kanban, GitBranch,

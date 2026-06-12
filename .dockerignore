@@ -1,12 +1,16 @@
 node_modules
 .next
 out
+dist
+.npm-cache
 .git
 .github
 .env*
 !.env.example
 coverage
 *.md
+*.log
+*.tsbuildinfo
 e2e
 playwright-report
 test-results
@@ -15,3 +19,5 @@ test-results
 backend/dist
 backend/node_modules
 backend/coverage
+backend/*.log
+backend/*.tsbuildinfo

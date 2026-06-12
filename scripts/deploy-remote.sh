@@ -40,23 +40,25 @@ echo "Commit deployado: $(git rev-parse --short HEAD) - $(git log -1 --pretty=%s
 export DOCKER_BUILDKIT=1
 export COMPOSE_DOCKER_CLI_BUILD=1
 
-echo "Parando containers em execucao..."
-"${COMPOSE[@]}" down --remove-orphans || true
-
 echo "Espaco em disco antes da limpeza:"
 df -h || true
 
-echo "Limpando cache/artefatos Docker nao utilizados..."
-docker builder prune -af || true
+echo "Limpando apenas containers parados antes do build..."
 docker container prune -f || true
-docker image prune -af || true
+
+echo "Construindo imagens antes de trocar os containers..."
+timeout 35m "${COMPOSE[@]}" build
+
+echo "Iniciando containers de producao..."
+timeout 10m "${COMPOSE[@]}" up -d --remove-orphans
+
+echo "Limpando imagens antigas nao utilizadas apos deploy bem-sucedido..."
+docker image prune -f || true
+docker builder prune -f --filter "until=168h" || true
 docker network prune -f || true
 
-echo "Espaco em disco apos a limpeza:"
+echo "Espaco em disco apos o deploy:"
 df -h || true
-
-echo "Construindo e iniciando containers de producao..."
-"${COMPOSE[@]}" up -d --build --remove-orphans
 
 echo "Deploy concluido."
 "${COMPOSE[@]}" ps

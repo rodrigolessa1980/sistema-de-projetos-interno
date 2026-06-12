@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Timer, Clock, TrendingUp, TrendingDown, Minus } from "lucide-react";
 import { PrintButton } from "@/components/shared/print-button";
 import { StatusBadge } from "@/components/shared/task-badge";
-import Link from "next/link";
+import Link from "@/lib/router";
 
 export default function HoursReportPage() {
   const { tasks, timeLogs } = useTaskStore();

@@ -37,11 +37,11 @@ NODE_ENV=production
 ### Exemplo `ENV_FRONTEND`
 
 ```env
-NEXT_PUBLIC_API_URL=https://api.seu-dominio.com/api
+VITE_API_URL=https://api.seu-dominio.com/api
 PORT=8022
 ```
 
-> `NEXT_PUBLIC_API_URL` é embutida no build do Next.js. Se mudar a URL da API, dispare um novo deploy.
+> `VITE_API_URL` e embutida no build do Vite. Se mudar a URL da API, dispare um novo deploy.
 
 ## Fluxo do deploy
 

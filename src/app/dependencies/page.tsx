@@ -6,7 +6,7 @@ import { StatusBadge, ComplexityBadge } from "@/components/shared/task-badge";
 import { motion } from "framer-motion";
 import { Network, AlertTriangle, CheckCircle2, ArrowRight, Link2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import Link from "next/link";
+import Link from "@/lib/router";
 import { useState } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 

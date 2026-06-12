@@ -28,7 +28,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { toast } from "sonner";
-import Link from "next/link";
+import Link from "@/lib/router";
 import type { ProjectStatus } from "@/types";
 import type { Project } from "@/types";
 import { ReassignPopover } from "@/components/shared/reassign-popover";

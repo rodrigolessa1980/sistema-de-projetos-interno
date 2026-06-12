@@ -12,7 +12,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AlertTriangle, Clock, GripVertical, Plus, Lock, Flame } from "lucide-react";
 import { toast } from "sonner";
-import Link from "next/link";
+import Link from "@/lib/router";
 import type { TaskStatus, Task } from "@/types";
 import {
   DndContext, closestCorners, PointerSensor, useDroppable, useSensor, useSensors,

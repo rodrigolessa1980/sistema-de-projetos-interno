@@ -38,7 +38,7 @@ import {
   Calendar,
   ArrowRight,
 } from "lucide-react";
-import Link from "next/link";
+import Link from "@/lib/router";
 import { toast } from "sonner";
 import type { Project } from "@/types";
 import { motion } from "framer-motion";

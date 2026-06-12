@@ -8,7 +8,7 @@ O sistema ja esta autenticando corretamente entre frontend e backend. O erro de 
 
 Estado observado:
 
-- Frontend Next.js em `http://localhost:8022`.
+- Frontend React + Vite em `http://localhost:8022`.
 - Backend NestJS em `http://localhost:4011/api`.
 - Login admin funcionando.
 - API respondendo para usuarios, empresas e projetos.

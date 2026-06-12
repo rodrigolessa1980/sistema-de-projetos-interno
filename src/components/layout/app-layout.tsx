@@ -4,7 +4,7 @@ import { Sidebar } from "./sidebar";
 import { Header } from "./header";
 import { useAuth } from "@/hooks/use-auth";
 import { useSyncWorkSession } from "@/hooks/use-work-session";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter, usePathname } from "@/lib/router";
 import { useEffect } from "react";
 import { motion } from "framer-motion";
 import { useProjectStore, useTaskStore, useUIStore, useUserStore } from "@/stores";

@@ -18,7 +18,7 @@ import {
   ListTodo, Users, UserPlus, ShieldCheck, FolderKanban, Pencil,
   ArrowRight,
 } from "lucide-react";
-import Link from "next/link";
+import Link from "@/lib/router";
 import { UserDialog } from "@/features/users/user-dialog";
 import type { User } from "@/types";
 

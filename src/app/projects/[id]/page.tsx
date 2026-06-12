@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { AppLayout } from "@/components/layout/app-layout";
 import { useProjectStore, useTaskStore, useUserStore } from "@/stores";
 import { useAuth } from "@/hooks/use-auth";
@@ -40,8 +40,8 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ProjectAvatar } from "@/components/shared/project-avatar";
-import Link from "next/link";
-import { notFound } from "next/navigation";
+import Link from "@/lib/router";
+import { notFound, useParams } from "@/lib/router";
 import { ReassignPopover } from "@/components/shared/reassign-popover";
 import { toast } from "sonner";
 import { ModuleDetailDialog } from "@/features/modules/module-detail-dialog";
@@ -102,8 +102,8 @@ function readFileAsDataUrl(file: File): Promise<string> {
   });
 }
 
-export default function ProjectDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params);
+export default function ProjectDetailPage() {
+  const { id } = useParams<{ id: string }>();
   const showcaseFileInputRef = useRef<HTMLInputElement>(null);
   const {
     getProjectById,

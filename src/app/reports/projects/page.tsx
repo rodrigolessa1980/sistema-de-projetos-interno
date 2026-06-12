@@ -8,7 +8,7 @@ import { ClipboardList, CheckCircle2, Clock, AlertTriangle, Users, Box } from "l
 import { PrintButton } from "@/components/shared/print-button";
 import { StatusBadge } from "@/components/shared/task-badge";
 import { ProjectAvatar } from "@/components/shared/project-avatar";
-import Link from "next/link";
+import Link from "@/lib/router";
 
 export default function ProjectsReportPage() {
   const { tasks, timeLogs } = useTaskStore();

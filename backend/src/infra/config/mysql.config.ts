@@ -62,5 +62,7 @@ export function createPrismaMariaDbAdapter(config: MysqlConfig = getMysqlConfig(
     user: config.user,
     password: config.password,
     database: config.database,
+    connectTimeout: 10000,
+    acquireTimeout: 30000,
   });
 }
