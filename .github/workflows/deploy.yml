@@ -29,7 +29,7 @@ jobs:
       - name: Validar build do frontend
         run: npm ci --no-audit --no-fund && npm run build:check
         env:
-          VITE_API_URL: http://localhost:4011/api
+          NEXT_PUBLIC_API_URL: http://localhost:4011/api
 
       - name: Setup Node.js (backend)
         uses: actions/setup-node@v4

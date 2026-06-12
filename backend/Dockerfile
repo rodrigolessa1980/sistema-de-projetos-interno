@@ -33,8 +33,11 @@ COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/prisma.config.ts ./prisma.config.ts
 COPY --from=builder /app/src/infra/config ./src/infra/config
 COPY docker-entrypoint.sh ./docker-entrypoint.sh
+COPY healthcheck.js ./healthcheck.js
 RUN chmod +x docker-entrypoint.sh
 
 EXPOSE 4011
+HEALTHCHECK --interval=15s --timeout=5s --retries=8 --start-period=120s \
+  CMD ["node", "healthcheck.js"]
 
 ENTRYPOINT ["dumb-init", "--", "./docker-entrypoint.sh"]

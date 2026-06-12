@@ -17,18 +17,6 @@ services:
       - "host.docker.internal:host-gateway"
     ports:
       - "4011:4011"
-    healthcheck:
-      test:
-        [
-          "CMD",
-          "node",
-          "-e",
-          "fetch('http://127.0.0.1:4011/api/health').then((r)=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
-        ]
-      interval: 15s
-      timeout: 5s
-      retries: 5
-      start_period: 90s
     networks:
       - devflow
 
@@ -37,9 +25,9 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        VITE_API_URL: ${VITE_API_URL}
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
     container_name: devflow_frontend
-    restart: on-failure:5
+    restart: unless-stopped
     mem_limit: 512m
     cpus: 0.75
     environment:
@@ -48,7 +36,7 @@ services:
       - "8022:8022"
     depends_on:
       backend:
-        condition: service_healthy
+        condition: service_started
     networks:
       - devflow
 

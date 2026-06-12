@@ -13,8 +13,11 @@ Abra [http://localhost:8022](http://localhost:8022).
 
 ## Variaveis
 
+Copie `.env.local` e ajuste:
+
 ```env
-VITE_API_URL=http://localhost:4011/api
+PORT=8022
+NEXT_PUBLIC_API_URL=http://localhost:4011/api
 ```
 
 ## Build
