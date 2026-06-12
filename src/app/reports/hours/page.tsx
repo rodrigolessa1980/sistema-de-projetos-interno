@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { AppLayout } from "@/components/layout/app-layout";
 import { useTaskStore, useProjectStore, useUserStore } from "@/stores";
 import { useAuth } from "@/hooks/use-auth";
 import { motion } from "@/lib/motion";
@@ -69,7 +68,6 @@ export default function HoursReportPage() {
   const overBudget = taskRows.filter((r) => r.deviation > 10).length;
 
   return (
-    <AppLayout>
       <div className="p-6 w-full space-y-6" data-print-content
         data-print-footer
         data-date={new Date().toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" })}>
@@ -219,6 +217,5 @@ export default function HoursReportPage() {
           </div>
         </motion.div>
       </div>
-    </AppLayout>
   );
 }

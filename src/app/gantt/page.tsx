@@ -1,14 +1,14 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { AppLayout } from "@/components/layout/app-layout";
-import { useTaskStore, useProjectStore } from "@/stores";
+import { useTaskStore, useProjectStore, useUserStore } from "@/stores";
 import { StatusBadge } from "@/components/shared/task-badge";
-import { formatDate } from "@/lib/utils";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { formatDate, formatHours, getComplexityLabel, getStatusLabel } from "@/lib/utils";
 import { motion } from "@/lib/motion";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import type { Task } from "@/types";
+import type { Project, Task } from "@/types";
 
 const STATUS_COLORS: Record<string, string> = {
   BACKLOG: "#52525b",
@@ -23,9 +23,101 @@ const STATUS_COLORS: Record<string, string> = {
 
 const MONTH_NAMES = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
 
+function getTaskDurationDays(task: Task): number | null {
+  const start = task.startDate ? new Date(task.startDate) : new Date(task.createdAt);
+  const end = task.dueDate
+    ? new Date(task.dueDate)
+    : task.completedAt
+      ? new Date(task.completedAt)
+      : null;
+  if (!end) return null;
+  return Math.max(1, Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)));
+}
+
+function isTaskOverdue(task: Task): boolean {
+  if (!task.dueDate || task.status === "CONCLUIDA" || task.status === "CANCELADA") return false;
+  return new Date(task.dueDate) < new Date();
+}
+
+function GanttTaskTooltipContent({
+  task,
+  project,
+  assigneeName,
+}: {
+  task: Task;
+  project?: Project;
+  assigneeName?: string;
+}) {
+  const durationDays = getTaskDurationDays(task);
+  const overdue = isTaskOverdue(task);
+
+  return (
+    <div className="flex flex-col gap-1.5 py-0.5 text-left">
+      <p className="font-semibold leading-tight">{task.title}</p>
+      {project && (
+        <div className="flex items-center gap-1.5 opacity-90">
+          <span className="w-2 h-2 rounded-full shrink-0" style={{ background: project.color }} />
+          <span>{project.name}</span>
+        </div>
+      )}
+      <div className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-0.5 text-[11px] opacity-80">
+        <span>Status</span>
+        <span className="font-medium opacity-100">{getStatusLabel(task.status)}</span>
+        <span>Início</span>
+        <span>{formatDate(task.startDate ?? task.createdAt)}</span>
+        <span>Prazo</span>
+        <span className={overdue ? "text-red-300 font-medium" : undefined}>
+          {formatDate(task.dueDate)}
+          {overdue && " (atrasada)"}
+        </span>
+        {task.completedAt && (
+          <>
+            <span>Concluída</span>
+            <span>{formatDate(task.completedAt)}</span>
+          </>
+        )}
+        {durationDays !== null && (
+          <>
+            <span>Duração</span>
+            <span>{durationDays} dia{durationDays !== 1 ? "s" : ""}</span>
+          </>
+        )}
+        <span>Complexidade</span>
+        <span>{getComplexityLabel(task.complexity)}</span>
+        <span>Horas</span>
+        <span>
+          {formatHours(task.actualHours)} realizadas / {formatHours(task.estimatedHours)} estimadas
+        </span>
+        {assigneeName && (
+          <>
+            <span>Responsável</span>
+            <span>{assigneeName}</span>
+          </>
+        )}
+      </div>
+      {task.isUrgent && (
+        <span className="text-[10px] font-semibold text-red-300">Urgente — prioridade máxima</span>
+      )}
+      {task.blockedReason && (
+        <span className="text-[10px] text-red-300/90">Bloqueio: {task.blockedReason}</span>
+      )}
+      {task.tags.length > 0 && (
+        <div className="flex flex-wrap gap-1 pt-0.5">
+          {task.tags.map((tag) => (
+            <span key={tag} className="text-[9px] px-1.5 py-0.5 rounded bg-background/15">
+              {tag}
+            </span>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function GanttPage() {
   const { tasks } = useTaskStore();
   const { projects, getProjectById } = useProjectStore();
+  const { getUserById } = useUserStore();
   const [projectFilter, setProjectFilter] = useState("all");
   const [baseYear, setBaseYear] = useState(new Date().getFullYear());
 
@@ -73,7 +165,6 @@ export default function GanttPage() {
   })();
 
   return (
-    <AppLayout>
       <div className="flex flex-col h-full">
         <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-800/50">
           <div>
@@ -121,6 +212,14 @@ export default function GanttPage() {
               {visibleTasks.map((task, i) => {
                 const barPos = getBarPosition(task);
                 const project = getProjectById(task.projectId);
+                const assignee = getUserById(task.assigneeId);
+                const tooltipContent = (
+                  <GanttTaskTooltipContent
+                    task={task}
+                    project={project}
+                    assigneeName={assignee?.name}
+                  />
+                );
 
                 return (
                   <motion.div
@@ -130,17 +229,35 @@ export default function GanttPage() {
                     transition={{ delay: i * 0.02 }}
                     className="flex items-center hover:bg-zinc-900/40 transition-colors"
                   >
-                    <div className="w-64 shrink-0 px-4 py-3 border-r border-zinc-800/50">
-                      <div className="flex items-center gap-2 mb-1">
-                        {project && <div className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: project.color }} />}
-                        <span className="text-xs text-zinc-200 truncate">{task.title}</span>
-                      </div>
-                      <StatusBadge status={task.status} className="text-[9px] px-1 py-0" />
-                    </div>
+                    <Tooltip>
+                      <TooltipTrigger
+                        render={
+                          <div className="w-64 shrink-0 px-4 py-3 border-r border-zinc-800/50 cursor-default">
+                            <div className="flex items-center gap-2 mb-1">
+                              {project && (
+                                <div
+                                  className="w-1.5 h-1.5 rounded-full shrink-0"
+                                  style={{ background: project.color }}
+                                />
+                              )}
+                              <span className="text-xs text-zinc-200 truncate">{task.title}</span>
+                            </div>
+                            <StatusBadge status={task.status} className="text-[9px] px-1 py-0" />
+                          </div>
+                        }
+                      />
+                      <TooltipContent side="right" align="start" className="max-w-xs flex-col items-start px-3 py-2">
+                        {tooltipContent}
+                      </TooltipContent>
+                    </Tooltip>
 
                     <div className="flex-1 relative h-12 flex items-center">
                       {months.map((month) => (
-                        <div key={month.index} className="absolute h-full border-r border-zinc-800/20" style={{ left: `${(month.index / 12) * 100}%` }} />
+                        <div
+                          key={month.index}
+                          className="absolute h-full border-r border-zinc-800/20"
+                          style={{ left: `${(month.index / 12) * 100}%` }}
+                        />
                       ))}
 
                       {todayOffset !== null && (
@@ -150,24 +267,47 @@ export default function GanttPage() {
                         />
                       )}
 
-                      {barPos && (
-                        <motion.div
-                          initial={{ scaleX: 0 }}
-                          animate={{ scaleX: 1 }}
-                          transition={{ duration: 0.4, delay: i * 0.02 }}
-                          style={{
-                            position: "absolute",
-                            left: `${barPos.left}%`,
-                            width: `${barPos.width}%`,
-                            transformOrigin: "left",
-                            background: STATUS_COLORS[task.status] ?? "#6366f1",
-                            borderRadius: "6px",
-                            height: "24px",
-                          }}
-                          className="flex items-center px-2 overflow-hidden group"
-                        >
-                          <span className="text-[10px] text-white font-medium truncate opacity-80">{task.title}</span>
-                        </motion.div>
+                      {barPos ? (
+                        <Tooltip>
+                          <TooltipTrigger
+                            render={
+                              <motion.div
+                                initial={{ scaleX: 0 }}
+                                animate={{ scaleX: 1 }}
+                                transition={{ duration: 0.4, delay: i * 0.02 }}
+                                style={{
+                                  position: "absolute",
+                                  left: `${barPos.left}%`,
+                                  width: `${barPos.width}%`,
+                                  transformOrigin: "left",
+                                  background: STATUS_COLORS[task.status] ?? "#6366f1",
+                                  borderRadius: "6px",
+                                  height: "24px",
+                                }}
+                                className="flex items-center px-2 overflow-hidden cursor-default z-[1] hover:brightness-110 hover:ring-1 hover:ring-white/25 transition-[filter,box-shadow]"
+                              >
+                                <span className="text-[10px] text-white font-medium truncate opacity-90 pointer-events-none">
+                                  {task.title}
+                                </span>
+                              </motion.div>
+                            }
+                          />
+                          <TooltipContent side="top" className="max-w-xs flex-col items-start px-3 py-2">
+                            {tooltipContent}
+                          </TooltipContent>
+                        </Tooltip>
+                      ) : (
+                        <Tooltip>
+                          <TooltipTrigger
+                            render={
+                              <div className="absolute inset-0 cursor-default" aria-label={task.title} />
+                            }
+                          />
+                          <TooltipContent side="top" className="max-w-xs flex-col items-start px-3 py-2">
+                            <p className="text-[11px] opacity-80 mb-1">Fora do ano {baseYear}</p>
+                            {tooltipContent}
+                          </TooltipContent>
+                        </Tooltip>
                       )}
                     </div>
                   </motion.div>
@@ -196,6 +336,5 @@ export default function GanttPage() {
           </div>
         </div>
       </div>
-    </AppLayout>
   );
 }

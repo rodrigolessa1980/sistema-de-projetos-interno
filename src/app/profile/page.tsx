@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { AppLayout } from "@/components/layout/app-layout";
 import { useAuth } from "@/hooks/use-auth";
 import { useTaskStore } from "@/stores";
 import { useUserStore } from "@/stores/ui-store";
@@ -49,7 +48,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <AppLayout>
+    <>
       <div className="p-6 w-full">
         {/* Card do perfil */}
         <motion.div
@@ -273,6 +272,6 @@ export default function ProfilePage() {
         onOpenChange={setUserDialogOpen}
         editUser={editUser}
       />
-    </AppLayout>
+    </>
   );
 }

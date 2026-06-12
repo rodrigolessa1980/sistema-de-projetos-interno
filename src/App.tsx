@@ -1,5 +1,7 @@
 import { lazy, Suspense, type ComponentType } from "react";
 import { RouterProvider, usePathname } from "@/lib/router";
+import { AppLayout } from "@/components/layout/app-layout";
+import { pageLoaders } from "@/lib/page-loaders";
 
 function lazyPage<T extends ComponentType<unknown>>(
   loader: () => Promise<{ default: T }>,
@@ -7,31 +9,31 @@ function lazyPage<T extends ComponentType<unknown>>(
   return lazy(loader);
 }
 
-const RootPage = lazyPage(() => import("@/app/page"));
-const LoginPage = lazyPage(() => import("@/app/login/page"));
-const RegisterPage = lazyPage(() => import("@/app/register/page"));
-const DashboardPage = lazyPage(() => import("@/app/dashboard/page"));
-const CompaniesPage = lazyPage(() => import("@/app/companies/page"));
-const DependenciesPage = lazyPage(() => import("@/app/dependencies/page"));
-const EpicsPage = lazyPage(() => import("@/app/epics/page"));
-const GanttPage = lazyPage(() => import("@/app/gantt/page"));
-const KanbanPage = lazyPage(() => import("@/app/kanban/page"));
-const MetricsPage = lazyPage(() => import("@/app/metrics/page"));
-const ModulesPage = lazyPage(() => import("@/app/modules/page"));
-const MyQueuePage = lazyPage(() => import("@/app/my-queue/page"));
-const ProfilePage = lazyPage(() => import("@/app/profile/page"));
-const ProjectsPage = lazyPage(() => import("@/app/projects/page"));
-const ProjectDetailPage = lazyPage(() => import("@/app/projects/[id]/page"));
-const QueuePage = lazyPage(() => import("@/app/queue/page"));
-const HoursReportPage = lazyPage(() => import("@/app/reports/hours/page"));
-const OverviewReportPage = lazyPage(() => import("@/app/reports/overview/page"));
-const ProductivityReportPage = lazyPage(() => import("@/app/reports/productivity/page"));
-const ProjectsReportPage = lazyPage(() => import("@/app/reports/projects/page"));
-const ProjectReportDetailPage = lazyPage(() => import("@/app/reports/projects/[id]/page"));
-const TasksPage = lazyPage(() => import("@/app/tasks/page"));
-const TaskDetailPage = lazyPage(() => import("@/app/tasks/[id]/page"));
-const TimeLogsPage = lazyPage(() => import("@/app/time-logs/page"));
-const UsersPage = lazyPage(() => import("@/app/users/page"));
+const RootPage = lazyPage(pageLoaders.root);
+const LoginPage = lazyPage(pageLoaders.login);
+const RegisterPage = lazyPage(pageLoaders.register);
+const DashboardPage = lazyPage(pageLoaders.dashboard);
+const CompaniesPage = lazyPage(pageLoaders.companies);
+const DependenciesPage = lazyPage(pageLoaders.dependencies);
+const EpicsPage = lazyPage(pageLoaders.epics);
+const GanttPage = lazyPage(pageLoaders.gantt);
+const KanbanPage = lazyPage(pageLoaders.kanban);
+const MetricsPage = lazyPage(pageLoaders.metrics);
+const ModulesPage = lazyPage(pageLoaders.modules);
+const MyQueuePage = lazyPage(pageLoaders.myQueue);
+const ProfilePage = lazyPage(pageLoaders.profile);
+const ProjectsPage = lazyPage(pageLoaders.projects);
+const ProjectDetailPage = lazyPage(pageLoaders.projectDetail);
+const QueuePage = lazyPage(pageLoaders.queue);
+const HoursReportPage = lazyPage(pageLoaders.hoursReport);
+const OverviewReportPage = lazyPage(pageLoaders.overviewReport);
+const ProductivityReportPage = lazyPage(pageLoaders.productivityReport);
+const ProjectsReportPage = lazyPage(pageLoaders.projectsReport);
+const ProjectReportDetailPage = lazyPage(pageLoaders.projectReportDetail);
+const TasksPage = lazyPage(pageLoaders.tasks);
+const TaskDetailPage = lazyPage(pageLoaders.taskDetail);
+const TimeLogsPage = lazyPage(pageLoaders.timeLogs);
+const UsersPage = lazyPage(pageLoaders.users);
 
 const routes = [
   { pattern: /^\/$/, component: RootPage },
@@ -61,20 +63,35 @@ const routes = [
   { pattern: /^\/users\/?$/, component: UsersPage },
 ];
 
+const PUBLIC_ROUTE_PATTERN = /^\/(login|register)\/?$/;
+
 function PageFallback() {
   return <div className="min-h-screen bg-zinc-950" />;
+}
+
+function MainContentFallback() {
+  return (
+    <div className="flex flex-1 items-center justify-center bg-zinc-950">
+      <div className="w-6 h-6 border-2 border-violet-500 border-t-transparent rounded-full animate-spin" />
+    </div>
+  );
 }
 
 function RouteSwitch() {
   const pathname = usePathname();
   const route = routes.find((item) => item.pattern.test(pathname));
   const Page = route?.component ?? DashboardPage;
+  const isPublicRoute = PUBLIC_ROUTE_PATTERN.test(pathname);
 
-  return (
-    <Suspense fallback={<PageFallback />}>
+  const page = (
+    <Suspense fallback={isPublicRoute ? <PageFallback /> : <MainContentFallback />}>
       <Page />
     </Suspense>
   );
+
+  if (isPublicRoute) return page;
+
+  return <AppLayout>{page}</AppLayout>;
 }
 
 export function App() {

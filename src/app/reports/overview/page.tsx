@@ -1,18 +1,22 @@
 "use client";
 
-import { AppLayout } from "@/components/layout/app-layout";
+import { useState } from "react";
+import { eachDayOfInterval, parseISO, subDays } from "date-fns";
 import { useTaskStore, useProjectStore, useUserStore } from "@/stores";
 import { useAuth } from "@/hooks/use-auth";
 import { notFound } from "@/lib/router";
 import { motion } from "@/lib/motion";
 import { Progress } from "@/components/ui/progress";
+import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { toISODate } from "@/components/ui/date-picker";
 import {
   FileBarChart2, FolderKanban, ListTodo, Clock,
-  CheckCircle2, AlertTriangle, Users, TrendingUp, Zap,
+  AlertTriangle, Users, Zap,
 } from "lucide-react";
 import { PrintButton } from "@/components/shared/print-button";
-import { SimpleAreaChart, SimpleDistribution } from "@/components/shared/simple-charts";
+import { MetricsAreaChart, MetricsPieChart } from "@/components/shared/mui-charts";
+import { cn, formatDate } from "@/lib/utils";
 
 const STATUS_COLORS: Record<string, string> = {
   BACKLOG: "#52525b",
@@ -31,16 +35,67 @@ const STATUS_LABELS: Record<string, string> = {
   BLOQUEADA: "Bloqueada", CANCELADA: "Cancelada",
 };
 
+type HoursChartPreset = "7" | "14" | "30" | "90" | "custom";
+
+const HOURS_CHART_PRESETS: { value: HoursChartPreset; label: string; days?: number }[] = [
+  { value: "7", label: "7 dias", days: 7 },
+  { value: "14", label: "14 dias", days: 14 },
+  { value: "30", label: "30 dias", days: 30 },
+  { value: "90", label: "90 dias", days: 90 },
+];
+
+function getPresetRange(days: number): { start: string; end: string } {
+  const end = new Date();
+  const start = subDays(end, days - 1);
+  return { start: toISODate(start), end: toISODate(end) };
+}
+
+function buildDateRange(start: string, end: string): Date[] {
+  const from = parseISO(start);
+  const to = parseISO(end);
+  if (from > to) return eachDayOfInterval({ start: to, end: from });
+  return eachDayOfInterval({ start: from, end: to });
+}
+
 export default function OverviewReportPage() {
   const { tasks, timeLogs } = useTaskStore();
   const { projects } = useProjectStore();
   const { users } = useUserStore();
   const { isAdmin, isLoading } = useAuth();
 
+  const [hoursPreset, setHoursPreset] = useState<HoursChartPreset>("14");
+  const [hoursStart, setHoursStart] = useState(() => getPresetRange(14).start);
+  const [hoursEnd, setHoursEnd] = useState(() => getPresetRange(14).end);
+
   if (isLoading) return null;
   if (!isAdmin) notFound();
 
-  const today = new Date().toISOString().split("T")[0];
+  const today = toISODate(new Date());
+
+  function applyHoursPreset(preset: HoursChartPreset) {
+    const option = HOURS_CHART_PRESETS.find((p) => p.value === preset);
+    if (!option?.days) return;
+    const { start, end } = getPresetRange(option.days);
+    setHoursStart(start);
+    setHoursEnd(end);
+    setHoursPreset(preset);
+  }
+
+  function handleHoursStartChange(value: string) {
+    setHoursStart(value);
+    setHoursPreset("custom");
+    if (value > hoursEnd) setHoursEnd(value);
+  }
+
+  function handleHoursEndChange(value: string) {
+    setHoursEnd(value);
+    setHoursPreset("custom");
+    if (value < hoursStart) setHoursStart(value);
+  }
+
+  const hoursRangeLabel = hoursPreset === "custom"
+    ? `${formatDate(hoursStart)} — ${formatDate(hoursEnd)}`
+    : `Últimos ${hoursPreset} dias`;
 
   // Distribuição por status
   const statusDist = Object.entries(
@@ -50,16 +105,13 @@ export default function OverviewReportPage() {
     }, {})
   ).map(([status, count]) => ({ name: STATUS_LABELS[status] ?? status, value: count, fill: STATUS_COLORS[status] ?? "#6366f1" }));
 
-  // Horas diárias dos últimos 14 dias
-  const last14Days = Array.from({ length: 14 }, (_, i) => {
-    const d = new Date();
-    d.setDate(d.getDate() - (13 - i));
-    return d.toISOString().split("T")[0];
+  const dailyHours = buildDateRange(hoursStart, hoursEnd).map((day) => {
+    const iso = toISODate(day);
+    return {
+      date: iso.slice(5),
+      horas: timeLogs.filter((tl) => tl.date === iso).reduce((acc, tl) => acc + tl.hours, 0),
+    };
   });
-  const dailyHours = last14Days.map((date) => ({
-    date: date.slice(5), // MM-DD
-    horas: timeLogs.filter((tl) => tl.date === date).reduce((acc, tl) => acc + tl.hours, 0),
-  }));
 
   // Stats gerais
   const totalHours = timeLogs.reduce((acc, tl) => acc + tl.hours, 0);
@@ -80,7 +132,6 @@ export default function OverviewReportPage() {
     }));
 
   return (
-    <AppLayout>
       <div className="p-6 w-full space-y-6" data-print-content
         data-print-footer
         data-date={new Date().toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" })}>
@@ -128,8 +179,48 @@ export default function OverviewReportPage() {
             transition={{ delay: 0.2 }}
             className="bg-zinc-900/60 border border-zinc-800/50 rounded-xl p-5"
           >
-            <h2 className="text-sm font-semibold text-zinc-200 mb-4">Horas Registradas — Últimos 14 dias</h2>
-            <SimpleAreaChart
+            <div className="flex flex-wrap items-start justify-between gap-3 mb-4">
+              <div>
+                <h2 className="text-sm font-semibold text-zinc-200">Horas Registradas</h2>
+                <p className="text-[11px] text-zinc-500 mt-0.5">{hoursRangeLabel}</p>
+              </div>
+              <div className="flex flex-wrap items-center gap-2" data-print-hide>
+                {HOURS_CHART_PRESETS.map((preset) => (
+                  <button
+                    key={preset.value}
+                    type="button"
+                    onClick={() => applyHoursPreset(preset.value)}
+                    className={cn(
+                      "px-2.5 py-1 rounded-md text-[11px] font-medium transition-colors border",
+                      hoursPreset === preset.value
+                        ? "bg-violet-600/20 text-violet-300 border-violet-500/30"
+                        : "bg-zinc-800/50 text-zinc-400 border-zinc-700/50 hover:text-zinc-200",
+                    )}
+                  >
+                    {preset.label}
+                  </button>
+                ))}
+                <div className="flex items-center gap-1.5">
+                  <Input
+                    type="date"
+                    value={hoursStart}
+                    max={hoursEnd}
+                    onChange={(e) => handleHoursStartChange(e.target.value)}
+                    className="w-[132px] h-7 text-xs bg-zinc-800/50 border-zinc-700/50 text-zinc-300"
+                  />
+                  <span className="text-zinc-600 text-xs">—</span>
+                  <Input
+                    type="date"
+                    value={hoursEnd}
+                    min={hoursStart}
+                    max={today}
+                    onChange={(e) => handleHoursEndChange(e.target.value)}
+                    className="w-[132px] h-7 text-xs bg-zinc-800/50 border-zinc-700/50 text-zinc-300"
+                  />
+                </div>
+              </div>
+            </div>
+            <MetricsAreaChart
               data={dailyHours}
               xKey="date"
               height={200}
@@ -145,7 +236,8 @@ export default function OverviewReportPage() {
             className="bg-zinc-900/60 border border-zinc-800/50 rounded-xl p-5"
           >
             <h2 className="text-sm font-semibold text-zinc-200 mb-4">Distribuição por Status</h2>
-            <SimpleDistribution
+            <MetricsPieChart
+              height={240}
               items={statusDist.map((entry) => ({
                 label: entry.name,
                 value: entry.value,
@@ -250,6 +342,5 @@ export default function OverviewReportPage() {
           </div>
         </motion.div>
       </div>
-    </AppLayout>
   );
 }

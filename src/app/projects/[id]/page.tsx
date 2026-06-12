@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { AppLayout } from "@/components/layout/app-layout";
 import { useProjectStore, useTaskStore, useUserStore } from "@/stores";
 import { useAuth } from "@/hooks/use-auth";
 import { StatusBadge, ComplexityBadge } from "@/components/shared/task-badge";
@@ -36,7 +35,7 @@ import {
   Plus, Pencil, Trash2, Check, X, Box,
   TrendingUp, Calendar, BarChart3, Target, Eye,
   File, FileText, ImageIcon, Download, MoreVertical,
-  ChevronDown, ChevronUp,
+  ChevronDown, ChevronUp, ClipboardList,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ProjectAvatar } from "@/components/shared/project-avatar";
@@ -77,6 +76,7 @@ const moduleStatusClasses: Record<ModuleStatus, string> = {
 };
 
 const MAX_SHOWCASE_FILE_SIZE = 10 * 1024 * 1024;
+const MAX_DEMAND_FILE_SIZE = 10 * 1024 * 1024;
 
 function formatBytes(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;
@@ -105,6 +105,7 @@ function readFileAsDataUrl(file: File): Promise<string> {
 export default function ProjectDetailPage() {
   const { id } = useParams<{ id: string }>();
   const showcaseFileInputRef = useRef<HTMLInputElement>(null);
+  const demandFileInputRef = useRef<HTMLInputElement>(null);
   const {
     getProjectById,
     getModulesByProject,
@@ -114,6 +115,11 @@ export default function ProjectDetailPage() {
     updateProjectShowcase,
     addProjectShowcaseAttachment,
     deleteProjectShowcaseAttachment,
+    getDemandAttachmentsByProject,
+    fetchProjectDemandAttachments,
+    updateProjectDemand,
+    addProjectDemandAttachment,
+    deleteProjectDemandAttachment,
     updateProject,
     addDeveloperToProject,
     removeDeveloperFromProject,
@@ -133,11 +139,17 @@ export default function ProjectDetailPage() {
   const [newModuleDate, setNewModuleDate] = useState(today);
   const [pendingAttachments, setPendingAttachments] = useState<PendingModuleFile[]>([]);
   const [technicalDraft, setTechnicalDraft] = useState("");
+  const [demandDraft, setDemandDraft] = useState("");
   const [editingShowcase, setEditingShowcase] = useState(false);
+  const [editingDemand, setEditingDemand] = useState(false);
   const [showcaseDescExpanded, setShowcaseDescExpanded] = useState(false);
+  const [demandDescExpanded, setDemandDescExpanded] = useState(false);
   const [previewShowcaseImage, setPreviewShowcaseImage] = useState<{ dataUrl: string; name: string } | null>(null);
+  const [previewDemandImage, setPreviewDemandImage] = useState<{ dataUrl: string; name: string } | null>(null);
   const [savingShowcase, setSavingShowcase] = useState(false);
+  const [savingDemand, setSavingDemand] = useState(false);
   const [deletingShowcaseFileId, setDeletingShowcaseFileId] = useState<string | null>(null);
+  const [deletingDemandFileId, setDeletingDemandFileId] = useState<string | null>(null);
   const [editingModuleId, setEditingModuleId] = useState<string | null>(null);
   const [editingName, setEditingName] = useState("");
   const [editingDesc, setEditingDesc] = useState("");
@@ -172,6 +184,7 @@ export default function ProjectDetailPage() {
         fetchTimeLogsForProject(id),
         fetchModuleAttachmentsForProject(id, getModulesByProject(id).map((m) => m.id)),
         fetchProjectShowcaseAttachments(id),
+        fetchProjectDemandAttachments(id),
       ]);
     } finally {
       setLoadingReport(false);
@@ -187,15 +200,26 @@ export default function ProjectDetailPage() {
   }, [project.id, project.technicalDescription]);
 
   useEffect(() => {
+    setDemandDraft(project.demandDescription ?? "");
+  }, [project.id, project.demandDescription]);
+
+  useEffect(() => {
     setShowcaseDescExpanded(false);
   }, [id, project.technicalDescription]);
+
+  useEffect(() => {
+    setDemandDescExpanded(false);
+  }, [id, project.demandDescription]);
 
   const modules = getModulesByProject(id);
   const epics = getEpicsByProject(id);
   const tasks = getTasksByProject(id);
   const showcaseAttachments = getShowcaseAttachmentsByProject(id);
+  const demandAttachments = getDemandAttachmentsByProject(id);
   const technicalText = project.technicalDescription?.trim() ?? "";
+  const demandText = project.demandDescription?.trim() ?? "";
   const hasTechnicalText = technicalText.length > 0;
+  const hasDemandText = demandText.length > 0;
 
   const owner = users.find((u) => u.id === project.ownerId);
   const devs = users.filter((u) => project.developerIds.includes(u.id));
@@ -388,11 +412,71 @@ export default function ProjectDetailPage() {
     }
   }
 
+  async function handleSaveDemand() {
+    setSavingDemand(true);
+    try {
+      await updateProjectDemand(id, demandDraft);
+      setEditingDemand(false);
+      toast.success("Demanda salva");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Erro ao salvar demanda");
+    } finally {
+      setSavingDemand(false);
+    }
+  }
+
+  function startEditDemand() {
+    setDemandDraft(project.demandDescription ?? "");
+    setEditingDemand(true);
+  }
+
+  function cancelEditDemand() {
+    setDemandDraft(project.demandDescription ?? "");
+    setEditingDemand(false);
+  }
+
+  async function handleDemandFileSelect(fileList: FileList | null) {
+    if (!fileList || fileList.length === 0) return;
+    setSavingDemand(true);
+    try {
+      for (const file of Array.from(fileList)) {
+        if (file.size > MAX_DEMAND_FILE_SIZE) {
+          toast.error(`"${file.name}" excede o limite de 10MB`);
+          continue;
+        }
+        const dataUrl = await readFileAsDataUrl(file);
+        await addProjectDemandAttachment(id, {
+          name: file.name,
+          type: file.type || "application/octet-stream",
+          size: file.size,
+          dataUrl,
+        });
+      }
+      toast.success("Arquivo adicionado à demanda");
+      setEditingDemand(false);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Erro ao enviar arquivo");
+    } finally {
+      setSavingDemand(false);
+    }
+  }
+
+  async function handleDeleteDemandFile(attachmentId: string) {
+    setDeletingDemandFileId(attachmentId);
+    try {
+      await deleteProjectDemandAttachment(attachmentId);
+      toast.success("Arquivo removido da demanda");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Erro ao remover arquivo");
+    } finally {
+      setDeletingDemandFileId(null);
+    }
+  }
+
   const selectedModule = selectedModuleId ? modules.find((m) => m.id === selectedModuleId) ?? null : null;
   const selectedModuleTasks = selectedModule ? tasks.filter((t) => t.moduleId === selectedModule.id) : [];
 
   return (
-    <AppLayout>
       <div className="p-6 w-full">
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 mb-6">
@@ -548,7 +632,7 @@ export default function ProjectDetailPage() {
           </div>
 
           {editingShowcase && canAddModule ? (
-            <div className="rounded-xl border border-zinc-200 bg-white p-3 space-y-2">
+            <div className="rounded-xl border border-zinc-800/70 bg-zinc-950/35 p-3 space-y-2">
               <label className="text-[11px] text-zinc-500 flex items-center gap-1">
                 <FileText className="w-3 h-3" /> Explicação técnica
               </label>
@@ -557,15 +641,15 @@ export default function ProjectDetailPage() {
                 onChange={(e) => setTechnicalDraft(e.target.value)}
                 rows={6}
                 placeholder="Descreva as telas, regras técnicas, integrações, arquivos alterados e pontos importantes para o usuário entender o projeto."
-                className="w-full min-h-[150px] text-sm bg-transparent border-0 px-0 py-1 text-zinc-900 placeholder-zinc-400 outline-none resize-y"
+                className="w-full min-h-[150px] text-sm bg-transparent border-0 px-0 py-1 text-zinc-200 placeholder-zinc-500 outline-none resize-y"
               />
             </div>
           ) : (
-            <div className="rounded-lg bg-white border border-zinc-200 overflow-hidden">
+            <div className="rounded-lg bg-zinc-950/35 border border-zinc-800/70 overflow-hidden">
               <div
                 className={cn(
                   "text-sm whitespace-pre-wrap px-3 pt-3 leading-relaxed",
-                  hasTechnicalText ? "text-zinc-800" : "text-zinc-500",
+                  hasTechnicalText ? "text-zinc-300" : "text-zinc-500",
                   !showcaseDescExpanded && hasTechnicalText && "line-clamp-3 pb-1",
                   (showcaseDescExpanded || !hasTechnicalText) && "pb-3",
                 )}
@@ -578,7 +662,7 @@ export default function ProjectDetailPage() {
                 <button
                   type="button"
                   onClick={() => setShowcaseDescExpanded((prev) => !prev)}
-                  className="w-full flex items-center justify-center gap-1.5 py-2.5 text-xs text-zinc-600 hover:text-violet-600 hover:bg-zinc-50 border-t border-zinc-200 transition-colors"
+                  className="w-full flex items-center justify-center gap-1.5 py-2.5 text-xs text-zinc-500 hover:text-violet-400 hover:bg-zinc-800/50 border-t border-zinc-800/70 transition-colors"
                   aria-expanded={showcaseDescExpanded}
                 >
                   {showcaseDescExpanded ? (
@@ -716,6 +800,239 @@ export default function ProjectDetailPage() {
             ) : (
               <p className="text-xs text-zinc-600 italic col-span-full py-2">
                 Nenhum arquivo adicionado ao visual do projeto.
+              </p>
+            )}
+          </div>
+        </div>
+
+        {/* Demanda */}
+        <div className="bg-zinc-900/60 border border-zinc-800/50 rounded-xl p-5 mb-6 space-y-4">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <div className="flex items-center gap-2">
+                <ClipboardList className="w-4 h-4 text-amber-400" />
+                <h2 className="text-sm font-semibold text-zinc-100">Demanda</h2>
+              </div>
+              <p className="text-xs text-zinc-500 mt-1">
+                Documentos, telas e explicações sobre a demanda original deste projeto.
+              </p>
+            </div>
+            <div className="flex items-center gap-2 shrink-0">
+              <Badge className="bg-zinc-800 text-zinc-400 border-zinc-700">
+                {demandAttachments.length} arquivo{demandAttachments.length !== 1 ? "s" : ""}
+              </Badge>
+              {canAddModule && editingDemand ? (
+                <>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={cancelEditDemand}
+                    disabled={savingDemand}
+                    className="h-8 w-8 p-0 text-zinc-400 hover:text-zinc-200"
+                    title="Cancelar edição"
+                  >
+                    <X className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    size="sm"
+                    onClick={handleSaveDemand}
+                    disabled={savingDemand}
+                    className="h-8 px-3 text-xs bg-amber-600 hover:bg-amber-700 gap-1"
+                  >
+                    {savingDemand ? <div className="w-3.5 h-3.5 border-2 border-white/40 border-t-white rounded-full animate-spin" /> : <Check className="w-3.5 h-3.5" />}
+                    {savingDemand ? "Salvando..." : "Salvar"}
+                  </Button>
+                </>
+              ) : canAddModule ? (
+                <DropdownMenu>
+                  <DropdownMenuTrigger
+                    className="p-1.5 rounded-lg hover:bg-zinc-800 text-zinc-400 hover:text-zinc-200 transition-colors outline-none"
+                    title="Opções"
+                  >
+                    <MoreVertical className="w-4 h-4" />
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="bg-zinc-900 border-zinc-700/50 w-44">
+                    <DropdownMenuItem
+                      onClick={startEditDemand}
+                      className="text-zinc-300 focus:bg-zinc-800 focus:text-zinc-100 gap-2 cursor-pointer"
+                    >
+                      <Pencil className="w-3.5 h-3.5" /> Editar demanda
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ) : null}
+            </div>
+          </div>
+
+          {editingDemand && canAddModule ? (
+            <div className="rounded-xl border border-zinc-800/70 bg-zinc-950/35 p-3 space-y-2">
+              <label className="text-[11px] text-zinc-500 flex items-center gap-1">
+                <FileText className="w-3 h-3" /> Explicação técnica
+              </label>
+              <textarea
+                value={demandDraft}
+                onChange={(e) => setDemandDraft(e.target.value)}
+                rows={6}
+                placeholder="Descreva a demanda, requisitos, telas de referência, integrações e pontos importantes para entender o que foi solicitado."
+                className="w-full min-h-[150px] text-sm bg-transparent border-0 px-0 py-1 text-zinc-200 placeholder-zinc-500 outline-none resize-y"
+              />
+            </div>
+          ) : (
+            <div className="rounded-lg bg-zinc-950/35 border border-zinc-800/70 overflow-hidden">
+              <div
+                className={cn(
+                  "text-sm whitespace-pre-wrap px-3 pt-3 leading-relaxed",
+                  hasDemandText ? "text-zinc-300" : "text-zinc-500",
+                  !demandDescExpanded && hasDemandText && "line-clamp-3 pb-1",
+                  (demandDescExpanded || !hasDemandText) && "pb-3",
+                )}
+              >
+                {hasDemandText
+                  ? demandText
+                  : "Nenhuma explicação técnica adicionada ainda."}
+              </div>
+              {hasDemandText && (
+                <button
+                  type="button"
+                  onClick={() => setDemandDescExpanded((prev) => !prev)}
+                  className="w-full flex items-center justify-center gap-1.5 py-2.5 text-xs text-zinc-500 hover:text-amber-400 hover:bg-zinc-800/50 border-t border-zinc-800/70 transition-colors"
+                  aria-expanded={demandDescExpanded}
+                >
+                  {demandDescExpanded ? (
+                    <>
+                      <ChevronUp className="w-4 h-4" />
+                      Recolher explicação
+                    </>
+                  ) : (
+                    <>
+                      <ChevronDown className="w-4 h-4" />
+                      Ver explicação completa
+                    </>
+                  )}
+                </button>
+              )}
+            </div>
+          )}
+
+          <input
+            ref={demandFileInputRef}
+            type="file"
+            multiple
+            accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.zip,.rar,.txt,.png,.jpg,.jpeg,.webp,.gif"
+            className="hidden"
+            disabled={!editingDemand || !canAddModule || savingDemand}
+            onChange={(event) => {
+              void handleDemandFileSelect(event.target.files);
+              event.currentTarget.value = "";
+            }}
+          />
+
+          <div className="grid gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
+            {editingDemand && canAddModule ? (
+              [
+                ...demandAttachments,
+                ...Array.from({ length: Math.max(0, 4 - demandAttachments.length) }, (_, index) => ({
+                  id: `empty-demand-${index}`,
+                  empty: true as const,
+                })),
+              ].map((item) => {
+                if ("empty" in item) {
+                  return (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={() => demandFileInputRef.current?.click()}
+                      disabled={savingDemand}
+                      className="aspect-square rounded-xl border-2 border-dashed border-zinc-700/80 bg-zinc-950/35 flex flex-col items-center justify-center gap-2 text-zinc-500 hover:border-amber-500/50 hover:text-amber-300 hover:bg-amber-500/10 transition-colors disabled:cursor-not-allowed disabled:opacity-50"
+                      title="Adicionar imagem ou arquivo"
+                    >
+                      <Plus className="w-6 h-6" />
+                      <span className="text-xs">Adicionar arquivo</span>
+                    </button>
+                  );
+                }
+                const attachment = item;
+                const isImage = attachment.type.startsWith("image/");
+                return (
+                  <div key={attachment.id} className="rounded-xl border border-zinc-800/70 bg-zinc-950/35 overflow-hidden">
+                    {isImage ? (
+                      <button
+                        type="button"
+                        onClick={() => setPreviewDemandImage({ dataUrl: attachment.dataUrl, name: attachment.name })}
+                        className="block w-full aspect-square bg-zinc-900 overflow-hidden cursor-zoom-in"
+                        title="Ampliar imagem"
+                      >
+                        <img src={attachment.dataUrl} alt={attachment.name} className="w-full h-full object-cover hover:scale-[1.02] transition-transform" />
+                      </button>
+                    ) : (
+                      <div className="aspect-square bg-zinc-900 flex items-center justify-center text-zinc-500">
+                        <File className="w-8 h-8" />
+                      </div>
+                    )}
+                    <div className="p-3 space-y-2">
+                      <div className="min-w-0">
+                        <p className="text-xs font-medium text-zinc-200 truncate">{attachment.name}</p>
+                        <p className="text-[10px] text-zinc-500">{formatBytes(attachment.size)}</p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => downloadDataUrl(attachment.dataUrl, attachment.name)}
+                          className="h-7 px-2 text-xs text-zinc-400 hover:text-zinc-200 gap-1"
+                        >
+                          <Download className="w-3.5 h-3.5" /> Baixar
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => handleDeleteDemandFile(attachment.id)}
+                          disabled={deletingDemandFileId === attachment.id}
+                          className="h-7 px-2 text-xs text-red-400 hover:text-red-300 hover:bg-red-500/10 gap-1 ml-auto"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" /> Excluir
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })
+            ) : demandAttachments.length > 0 ? (
+              demandAttachments.map((attachment) => {
+                const isImage = attachment.type.startsWith("image/");
+                return (
+                  <div key={attachment.id} className="rounded-xl border border-zinc-800/70 bg-zinc-950/35 overflow-hidden group">
+                    {isImage ? (
+                      <button
+                        type="button"
+                        onClick={() => setPreviewDemandImage({ dataUrl: attachment.dataUrl, name: attachment.name })}
+                        className="block w-full aspect-square bg-zinc-900 overflow-hidden cursor-zoom-in group"
+                        title="Ampliar imagem"
+                      >
+                        <img src={attachment.dataUrl} alt={attachment.name} className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform" />
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => downloadDataUrl(attachment.dataUrl, attachment.name)}
+                        className="block w-full aspect-square bg-zinc-900 flex flex-col items-center justify-center gap-2 text-zinc-500 hover:text-amber-300 transition-colors"
+                        title="Baixar arquivo"
+                      >
+                        <File className="w-8 h-8" />
+                        <span className="text-[10px] px-2 text-center truncate max-w-full">{attachment.name}</span>
+                      </button>
+                    )}
+                    {isImage && (
+                      <div className="px-3 py-2 border-t border-zinc-800/60">
+                        <p className="text-[10px] text-zinc-500 truncate">{attachment.name}</p>
+                      </div>
+                    )}
+                  </div>
+                );
+              })
+            ) : (
+              <p className="text-xs text-zinc-600 italic col-span-full py-2">
+                Nenhum arquivo adicionado à demanda.
               </p>
             )}
           </div>
@@ -1364,7 +1681,47 @@ export default function ProjectDetailPage() {
             )}
           </DialogContent>
         </Dialog>
+
+        <Dialog
+          open={previewDemandImage !== null}
+          onOpenChange={(open) => { if (!open) setPreviewDemandImage(null); }}
+        >
+          <DialogContent className="bg-zinc-950 border-zinc-700/50 max-w-5xl w-[min(95vw,900px)] p-3 sm:p-4">
+            <DialogTitle className="sr-only">
+              {previewDemandImage?.name ?? "Visualização da imagem"}
+            </DialogTitle>
+            {previewDemandImage && (
+              <div className="space-y-3">
+                <p className="text-xs text-zinc-400 truncate px-1">{previewDemandImage.name}</p>
+                <div className="flex items-center justify-center rounded-lg bg-zinc-900/80 border border-zinc-800/60 p-2 max-h-[80vh] overflow-auto">
+                  <img
+                    src={previewDemandImage.dataUrl}
+                    alt={previewDemandImage.name}
+                    className="max-w-full max-h-[72vh] w-auto h-auto object-contain rounded-md"
+                  />
+                </div>
+                <div className="flex justify-end gap-2 pt-1">
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => downloadDataUrl(previewDemandImage.dataUrl, previewDemandImage.name)}
+                    className="h-8 text-xs text-zinc-400 hover:text-zinc-200 gap-1"
+                  >
+                    <Download className="w-3.5 h-3.5" /> Baixar
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => setPreviewDemandImage(null)}
+                    className="h-8 text-xs text-zinc-400 hover:text-zinc-200"
+                  >
+                    Fechar
+                  </Button>
+                </div>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
       </div>
-    </AppLayout>
   );
 }

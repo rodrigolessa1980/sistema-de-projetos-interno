@@ -120,6 +120,7 @@ model User {
   attachments         TaskAttachment[]
   moduleAttachments   ModuleAttachment[]
   projectShowcaseAttachments ProjectShowcaseAttachment[]
+  projectDemandAttachments   ProjectDemandAttachment[]
   loggedModules       Module[]             @relation("ModuleLoggedBy")
   permissions         UserPermission[]
 
@@ -149,6 +150,7 @@ model Project {
   name           String        @db.VarChar(150)
   description    String        @db.Text
   technicalDescription String? @db.Text
+  demandDescription    String? @db.Text
   requestedBy    String?       @db.VarChar(150)
   status         ProjectStatus @default(NA_FILA)
   ownerId        String
@@ -172,6 +174,7 @@ model Project {
   timeLogs      TimeLog[]
   notifications Notification[]
   showcaseAttachments ProjectShowcaseAttachment[]
+  demandAttachments   ProjectDemandAttachment[]
 
   @@index([companyId])
   @@index([ownerId])
@@ -479,4 +482,20 @@ model ProjectShowcaseAttachment {
 
   @@index([projectId])
   @@map("project_showcase_attachments")
+}
+
+model ProjectDemandAttachment {
+  id        String   @id @default(uuid())
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name      String   @db.VarChar(150)
+  type      String   @db.VarChar(100)
+  size      Int
+  dataUrl   String   @db.LongText
+  createdAt DateTime @default(now())
+
+  @@index([projectId])
+  @@map("project_demand_attachments")
 }

@@ -1,6 +1,5 @@
 "use client";
 
-import { AppLayout } from "@/components/layout/app-layout";
 import { StatCard } from "@/components/shared/stat-card";
 import { useMetrics } from "@/hooks/use-metrics";
 import { motion } from "@/lib/motion";
@@ -9,20 +8,27 @@ import {
   BarChart2, Activity, RefreshCw,
 } from "lucide-react";
 import {
-  SimpleAreaChart,
-  SimpleBarChart,
-  SimpleDistribution,
-  SimpleMetricBars,
-} from "@/components/shared/simple-charts";
+  MetricsAreaChart,
+  MetricsBarChart,
+  MetricsPieChart,
+  PerformanceRadarChart,
+} from "@/components/shared/mui-charts";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState } from "react";
 import { useProjectStore } from "@/stores";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { PerformanceRadarHelp } from "@/components/shared/performance-radar-help";
+import { BurndownHelp } from "@/components/shared/burndown-help";
 
 export default function MetricsPage() {
   const { projects } = useProjectStore();
   const [projectFilter, setProjectFilter] = useState("all");
   const { summary, burndownData, velocityData, complexityDistribution, hoursData, tasksByStatus } = useMetrics(projectFilter === "all" ? undefined : projectFilter);
+
+  const burndownScopeLabel =
+    projectFilter === "all"
+      ? "Todos os projetos"
+      : (projects.find((p) => p.id === projectFilter)?.name ?? "Projeto selecionado");
 
   const radarData = [
     { metric: "Estimativa", value: summary.estimationAccuracy },
@@ -33,7 +39,6 @@ export default function MetricsPage() {
   ];
 
   return (
-    <AppLayout>
       <div className="p-6 w-full space-y-6">
         <div className="flex items-center justify-between">
           <div>
@@ -71,7 +76,7 @@ export default function MetricsPage() {
                 className="bg-zinc-900/60 border border-zinc-800/50 rounded-xl p-5">
                 <h3 className="text-sm font-semibold text-zinc-100 mb-1">Horas por Dia</h3>
                 <p className="text-xs text-zinc-500 mb-4">Últimos 7 dias</p>
-                <SimpleBarChart
+                <MetricsBarChart
                   data={hoursData}
                   xKey="day"
                   height={200}
@@ -81,9 +86,13 @@ export default function MetricsPage() {
 
               <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
                 className="bg-zinc-900/60 border border-zinc-800/50 rounded-xl p-5">
-                <h3 className="text-sm font-semibold text-zinc-100 mb-1">Radar de Performance</h3>
+                <div className="flex items-center gap-1.5 mb-1">
+                  <h3 className="text-sm font-semibold text-zinc-100">Radar de Performance</h3>
+                  <PerformanceRadarHelp />
+                </div>
                 <p className="text-xs text-zinc-500 mb-4">Visão 360° da equipe</p>
-                <SimpleMetricBars
+                <PerformanceRadarChart
+                  height={240}
                   items={radarData.map((item) => ({
                     label: item.metric,
                     value: item.value,
@@ -94,9 +103,14 @@ export default function MetricsPage() {
 
             <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}
               className="bg-zinc-900/60 border border-zinc-800/50 rounded-xl p-5">
-              <h3 className="text-sm font-semibold text-zinc-100 mb-1">Burndown do Projeto</h3>
-              <p className="text-xs text-zinc-500 mb-4">Progresso estimado vs real</p>
-              <SimpleAreaChart
+              <div className="flex items-center gap-1.5 mb-1">
+                <h3 className="text-sm font-semibold text-zinc-100">Burndown</h3>
+                <BurndownHelp scopeLabel={burndownScopeLabel} />
+              </div>
+              <p className="text-xs text-zinc-500 mb-4">
+                {burndownScopeLabel} · últimos 7 dias · todas as tarefas do escopo
+              </p>
+              <MetricsAreaChart
                 data={burndownData}
                 xKey="date"
                 height={220}
@@ -113,7 +127,7 @@ export default function MetricsPage() {
               className="bg-zinc-900/60 border border-zinc-800/50 rounded-xl p-5">
               <h3 className="text-sm font-semibold text-zinc-100 mb-1">Velocidade por Sprint</h3>
               <p className="text-xs text-zinc-500 mb-4">Story points entregues vs meta</p>
-              <SimpleBarChart
+              <MetricsBarChart
                 data={velocityData}
                 xKey="sprint"
                 height={280}
@@ -130,7 +144,8 @@ export default function MetricsPage() {
               <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
                 className="bg-zinc-900/60 border border-zinc-800/50 rounded-xl p-5">
                 <h3 className="text-sm font-semibold text-zinc-100 mb-4">Por Complexidade</h3>
-                <SimpleDistribution
+                <MetricsPieChart
+                  height={240}
                   items={complexityDistribution.map((entry) => ({
                     label: entry.complexity,
                     value: entry.count,
@@ -170,6 +185,5 @@ export default function MetricsPage() {
           </TabsContent>
         </Tabs>
       </div>
-    </AppLayout>
   );
 }

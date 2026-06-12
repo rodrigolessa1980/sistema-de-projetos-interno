@@ -1,17 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import { AppLayout } from "@/components/layout/app-layout";
 import { PageHeader } from "@/components/shared/page-header";
 import { useProjectStore, useTaskStore, useUserStore } from "@/stores";
 import { useAuth } from "@/hooks/use-auth";
-import { formatDate } from "@/lib/utils";
+import { formatDate, cn } from "@/lib/utils";
 import { motion } from "@/lib/motion";
-import { Layers, Users } from "lucide-react";
+import { ChevronRight, ExternalLink, FolderKanban, Layers, ListTodo, Users } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { EmptyState } from "@/components/shared/empty-state";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -19,8 +19,18 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
-import type { ProjectStatus } from "@/types";
+import Link from "@/lib/router";
+import { StatusBadge } from "@/components/shared/task-badge";
+import type { Epic, ProjectStatus } from "@/types";
 import { z } from "zod";
+
+const statusLabels: Record<ProjectStatus, string> = {
+  ATIVO: "Ativo",
+  PAUSADO: "Pausado",
+  CONCLUIDO: "Concluído",
+  CANCELADO: "Cancelado",
+  NA_FILA: "Na Fila",
+};
 
 const statusColors: Record<ProjectStatus, string> = {
   ATIVO: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30",
@@ -48,6 +58,8 @@ export default function EpicsPage() {
   const { users } = useUserStore();
   const { isAdmin } = useAuth();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [selectedEpicId, setSelectedEpicId] = useState<string | null>(null);
+  const selectedEpic = epics.find((e) => e.id === selectedEpicId) ?? null;
   const form = useForm<EpicForm>({
     defaultValues: {
       projectId: "",
@@ -123,7 +135,7 @@ export default function EpicsPage() {
   };
 
   return (
-    <AppLayout>
+    <>
       <PageHeader
         title="Epics"
         description={`${epics.length} epics em andamento`}
@@ -150,17 +162,34 @@ export default function EpicsPage() {
                       const epicDevs = users.filter((u) => epic.developerIds?.includes(u.id));
                       return (
                         <motion.div
+                          role="button"
+                          tabIndex={0}
                           key={epic.id}
                           initial={{ opacity: 0, y: 8 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: i * 0.05 }}
-                          className="bg-zinc-900/60 border border-zinc-800/50 rounded-xl p-5 hover:border-zinc-700/50 transition-colors"
+                          onClick={() => setSelectedEpicId(epic.id)}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter" || e.key === " ") {
+                              e.preventDefault();
+                              setSelectedEpicId(epic.id);
+                            }
+                          }}
+                          className={cn(
+                            "group w-full text-left bg-zinc-900/60 border border-zinc-800/50 rounded-xl p-5",
+                            "cursor-pointer transition-all hover:border-violet-500/30 hover:bg-zinc-900/80",
+                            "hover:shadow-lg hover:shadow-violet-500/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/60",
+                            selectedEpicId === epic.id && "border-violet-500/40 bg-violet-500/5"
+                          )}
                         >
                           <div className="flex items-start justify-between gap-3 mb-2">
-                            <h3 className="text-sm font-semibold text-zinc-100">{epic.name}</h3>
-                            <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-medium border shrink-0 ${statusColors[epic.status]}`}>
-                              {epic.status}
-                            </span>
+                            <h3 className="text-sm font-semibold text-zinc-100 group-hover:text-white transition-colors">{epic.name}</h3>
+                            <div className="flex items-center gap-1.5 shrink-0">
+                              <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-medium border ${statusColors[epic.status]}`}>
+                                {statusLabels[epic.status]}
+                              </span>
+                              <ChevronRight className="w-4 h-4 text-zinc-600 group-hover:text-violet-400 group-hover:translate-x-0.5 transition-all" />
+                            </div>
                           </div>
                           <p className="text-xs text-zinc-500 mb-3 line-clamp-2">{epic.description}</p>
                             {projectModule && (
@@ -335,6 +364,173 @@ export default function EpicsPage() {
           </Form>
         </DialogContent>
       </Dialog>
-    </AppLayout>
+
+      <EpicDetailSheet
+        epic={selectedEpic}
+        open={!!selectedEpic}
+        onOpenChange={(open) => !open && setSelectedEpicId(null)}
+        projects={projects}
+        modules={modules}
+        tasks={tasks}
+        users={users}
+      />
+    </>
+  );
+}
+
+function EpicDetailSheet({
+  epic,
+  open,
+  onOpenChange,
+  projects,
+  modules,
+  tasks,
+  users,
+}: {
+  epic: Epic | null;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  projects: ReturnType<typeof useProjectStore.getState>["projects"];
+  modules: ReturnType<typeof useProjectStore.getState>["modules"];
+  tasks: ReturnType<typeof useTaskStore.getState>["tasks"];
+  users: ReturnType<typeof useUserStore.getState>["users"];
+}) {
+  if (!epic) return null;
+
+  const project = projects.find((p) => p.id === epic.projectId);
+  const projectModule = modules.find((m) => m.id === epic.moduleId);
+  const epicTasks = tasks.filter((t) => t.epicId === epic.id);
+  const epicDevs = users.filter((u) => epic.developerIds?.includes(u.id));
+  const completedTasks = epicTasks.filter((t) => t.status === "CONCLUIDA").length;
+  const inProgressTasks = epicTasks.filter((t) => t.status === "EM_DESENVOLVIMENTO").length;
+
+  return (
+    <Sheet open={open} onOpenChange={onOpenChange}>
+      <SheetContent className="bg-zinc-900 border-zinc-700/50 text-zinc-100 sm:max-w-lg overflow-y-auto">
+        <SheetHeader className="border-b border-zinc-800/50 pb-4">
+          <div className="flex items-start gap-3 pr-8">
+            <div className="w-10 h-10 rounded-xl bg-violet-500/15 border border-violet-500/25 flex items-center justify-center shrink-0">
+              <Layers className="w-5 h-5 text-violet-400" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <SheetTitle className="text-zinc-100 text-base leading-snug">{epic.name}</SheetTitle>
+              <SheetDescription className="text-zinc-500 mt-1">
+                {project?.name}{projectModule ? ` · ${projectModule.name}` : ""}
+              </SheetDescription>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 mt-3">
+            <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-medium border ${statusColors[epic.status]}`}>
+              {statusLabels[epic.status]}
+            </span>
+            <span className="text-xs text-zinc-500">
+              {formatDate(epic.startDate)} – {formatDate(epic.endDate)}
+            </span>
+          </div>
+        </SheetHeader>
+
+        <div className="space-y-5 py-4">
+          {epic.description && (
+            <div>
+              <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wide mb-2">Descrição</p>
+              <p className="text-sm text-zinc-300 leading-relaxed">{epic.description}</p>
+            </div>
+          )}
+
+          <div>
+            <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wide mb-2">Progresso</p>
+            <div className="flex items-center justify-between text-sm text-zinc-300 mb-2">
+              <span>{epic.progress}% concluído</span>
+              <span className="text-zinc-500">{completedTasks}/{epicTasks.length} tarefas</span>
+            </div>
+            <Progress value={epic.progress} className="h-2 bg-zinc-800" />
+            {inProgressTasks > 0 && (
+              <p className="text-xs text-violet-400 mt-2">{inProgressTasks} em desenvolvimento agora</p>
+            )}
+          </div>
+
+          {epicDevs.length > 0 && (
+            <div>
+              <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wide mb-2 flex items-center gap-1.5">
+                <Users className="w-3.5 h-3.5" />
+                Desenvolvedores
+              </p>
+              <div className="space-y-2">
+                {epicDevs.map((dev) => (
+                  <div key={dev.id} className="flex items-center gap-2.5 px-3 py-2 rounded-lg bg-zinc-800/50 border border-zinc-700/50">
+                    <div className="w-8 h-8 rounded-full bg-zinc-700 flex items-center justify-center text-xs font-semibold text-zinc-300 shrink-0">
+                      {dev.avatar ? (
+                        <img src={dev.avatar} alt={dev.name} className="w-8 h-8 rounded-full object-cover" />
+                      ) : (
+                        dev.name.charAt(0).toUpperCase()
+                      )}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium text-zinc-200 truncate">{dev.name}</p>
+                      <p className="text-xs text-zinc-500 truncate">{dev.position}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div>
+            <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wide mb-2 flex items-center gap-1.5">
+              <ListTodo className="w-3.5 h-3.5" />
+              Tarefas ({epicTasks.length})
+            </p>
+            {epicTasks.length === 0 ? (
+              <p className="text-sm text-zinc-500 py-4 text-center border border-dashed border-zinc-700/50 rounded-lg">
+                Nenhuma tarefa vinculada a este epic.
+              </p>
+            ) : (
+              <div className="space-y-1.5 max-h-64 overflow-y-auto pr-1">
+                {epicTasks.map((task) => {
+                  const assignee = users.find((u) => u.id === task.assigneeId);
+                  return (
+                    <Link
+                      key={task.id}
+                      href={`/tasks/${task.id}`}
+                      className="flex items-center gap-3 px-3 py-2.5 rounded-lg border border-zinc-700/50 bg-zinc-800/30 hover:bg-zinc-800/60 hover:border-violet-500/30 transition-colors group"
+                    >
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm text-zinc-200 truncate group-hover:text-violet-300 transition-colors">{task.title}</p>
+                        {assignee && (
+                          <p className="text-[10px] text-zinc-500 truncate mt-0.5">{assignee.name}</p>
+                        )}
+                      </div>
+                      <StatusBadge status={task.status} className="shrink-0 text-[10px] px-1.5 py-0" />
+                      <ChevronRight className="w-3.5 h-3.5 text-zinc-600 group-hover:text-violet-400 shrink-0" />
+                    </Link>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="flex flex-wrap gap-2 pt-2 border-t border-zinc-800/50">
+          {project && (
+            <Button
+              render={<Link href={`/projects/${project.id}`} className="inline-flex items-center gap-2" />}
+              variant="outline"
+              className="border-zinc-700 text-zinc-300 hover:bg-zinc-800 hover:text-zinc-100"
+            >
+              <FolderKanban className="w-3.5 h-3.5" />
+              Ver projeto
+            </Button>
+          )}
+          <Button
+            render={<Link href="/kanban" className="inline-flex items-center gap-2" />}
+            variant="outline"
+            className="border-zinc-700 text-zinc-300 hover:bg-zinc-800 hover:text-zinc-100"
+          >
+            <ExternalLink className="w-3.5 h-3.5" />
+            Abrir Kanban
+          </Button>
+        </div>
+      </SheetContent>
+    </Sheet>
   );
 }

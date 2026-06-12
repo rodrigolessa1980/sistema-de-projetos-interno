@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { AppLayout } from "@/components/layout/app-layout";
 import { StatCard } from "@/components/shared/stat-card";
 import { StatusBadge } from "@/components/shared/task-badge";
 import { useMetrics } from "@/hooks/use-metrics";
@@ -16,7 +15,7 @@ import {
 import { useWorkSessionStore } from "@/stores/work-session-store";
 import { Progress } from "@/components/ui/progress";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { SimpleAreaChart } from "@/components/shared/simple-charts";
+import { MetricsAreaChart } from "@/components/shared/mui-charts";
 import Link from "@/lib/router";
 import { Badge } from "@/components/ui/badge";
 
@@ -97,7 +96,6 @@ export default function DashboardPage() {
   const maxHours = devRanking[0]?.hours || 1;
 
   return (
-    <AppLayout>
       <div className="p-6 w-full space-y-6">
         <div className="flex items-center justify-between">
           <div>
@@ -152,7 +150,7 @@ export default function DashboardPage() {
               <h3 className="text-sm font-semibold text-zinc-100">Burndown</h3>
               <p className="text-xs text-zinc-500">Últimas 2 semanas</p>
             </div>
-            <SimpleAreaChart
+            <MetricsAreaChart
               data={burndownData}
               xKey="date"
               height={190}
@@ -442,6 +440,5 @@ export default function DashboardPage() {
           <StatCard title="Entregas / Semana" value={`${summary.throughput}`} subtitle="tarefas concluídas" icon={Users} color="violet" delay={0.6} />
         </div>
       </div>
-    </AppLayout>
   );
 }

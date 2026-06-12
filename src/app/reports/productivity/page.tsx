@@ -1,6 +1,5 @@
 "use client";
 
-import { AppLayout } from "@/components/layout/app-layout";
 import { useTaskStore, useProjectStore, useUserStore } from "@/stores";
 import { useAuth } from "@/hooks/use-auth";
 import { motion } from "@/lib/motion";
@@ -9,7 +8,7 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { TrendingUp, CheckCircle2, Clock, Zap, AlertTriangle, BarChart2 } from "lucide-react";
 import { PrintButton } from "@/components/shared/print-button";
-import { SimpleBarChart } from "@/components/shared/simple-charts";
+import { MetricsBarChart } from "@/components/shared/mui-charts";
 
 export default function ProductivityReportPage() {
   const { tasks, timeLogs } = useTaskStore();
@@ -56,7 +55,6 @@ export default function ProductivityReportPage() {
   }));
 
   return (
-    <AppLayout>
       <div className="p-6 w-full space-y-6" data-print-content
         data-print-footer
         data-date={new Date().toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" })}>
@@ -78,7 +76,7 @@ export default function ProductivityReportPage() {
           className="bg-zinc-900/60 border border-zinc-800/50 rounded-xl p-5"
         >
           <h2 className="text-sm font-semibold text-zinc-200 mb-4">Distribuição de Tarefas por Desenvolvedor</h2>
-          <SimpleBarChart
+          <MetricsBarChart
             data={chartData}
             xKey="name"
             height={220}
@@ -164,6 +162,5 @@ export default function ProductivityReportPage() {
           ))}
         </div>
       </div>
-    </AppLayout>
   );
 }

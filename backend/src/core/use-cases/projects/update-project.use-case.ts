@@ -10,6 +10,7 @@ export interface UpdateProjectInput {
   name?: string;
   description?: string;
   technicalDescription?: string | null;
+  demandDescription?: string | null;
   requestedBy?: string | null;
   status?: ProjectStatus;
   ownerId?: string;
@@ -38,6 +39,7 @@ export class UpdateProjectUseCase {
       name: input.name ?? existing.name,
       description: input.description ?? existing.description,
       technicalDescription: input.technicalDescription !== undefined ? (input.technicalDescription?.trim() || null) : existing.technicalDescription,
+      demandDescription: input.demandDescription !== undefined ? (input.demandDescription?.trim() || null) : existing.demandDescription,
       requestedBy: input.requestedBy !== undefined ? (input.requestedBy?.trim() || null) : existing.requestedBy,
       status: input.status ?? existing.status,
       ownerId: input.ownerId ?? existing.ownerId,

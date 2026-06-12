@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { AppLayout } from "@/components/layout/app-layout";
 import { PageHeader } from "@/components/shared/page-header";
 import { EmptyState } from "@/components/shared/empty-state";
 import { useProjectStore, useUserStore } from "@/stores";
@@ -257,7 +256,7 @@ export default function QueuePage() {
   const firstProject = orderedProjects[0];
 
   return (
-    <AppLayout>
+    <>
       <PageHeader
         title="Fila de Desenvolvimento"
         description={
@@ -368,6 +367,6 @@ export default function QueuePage() {
           </div>
         )}
       </div>
-    </AppLayout>
+    </>
   );
 }

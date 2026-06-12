@@ -7,6 +7,7 @@ export interface ProjectResponse {
   name: string;
   description: string;
   technicalDescription: string | null;
+  demandDescription: string | null;
   requestedBy: string | null;
   status: ProjectStatus;
   ownerId: string;
@@ -32,6 +33,7 @@ export class ProjectPresenter {
       name: project.name,
       description: project.description,
       technicalDescription: project.technicalDescription,
+      demandDescription: project.demandDescription,
       requestedBy: project.requestedBy,
       status: project.status,
       ownerId: project.ownerId,

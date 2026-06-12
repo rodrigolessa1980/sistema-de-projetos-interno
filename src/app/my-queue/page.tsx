@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { AppLayout } from "@/components/layout/app-layout";
 import { useTaskStore, useProjectStore } from "@/stores";
 import { useAuth } from "@/hooks/use-auth";
 import { useWorkSessionStore } from "@/stores/work-session-store";
@@ -232,7 +231,6 @@ export default function MyQueuePage() {
   const activeProject = activeTask ? projects.find((p) => p.id === activeTask.projectId) : null;
 
   return (
-    <AppLayout>
       <div className="p-6 w-full space-y-6">
         {/* Header */}
         <div className="flex items-start justify-between gap-4">
@@ -406,6 +404,5 @@ export default function MyQueuePage() {
           </div>
         )}
       </div>
-    </AppLayout>
   );
 }

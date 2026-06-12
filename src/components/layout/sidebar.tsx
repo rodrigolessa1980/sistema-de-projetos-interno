@@ -15,7 +15,8 @@ import { useAuth } from "@/hooks/use-auth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { useState } from "react";
+import { memo } from "react";
+import { preloadPageByHref } from "@/lib/page-loaders";
 
 const navItems = [
   { group: "Principal", items: [
@@ -50,18 +51,11 @@ const navItems = [
   ]},
 ];
 
-export function Sidebar() {
+export const Sidebar = memo(function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
-  const { sidebarCollapsed, toggleSidebar } = useUIStore();
+  const { sidebarCollapsed, sidebarExpandedGroups, toggleSidebar, toggleSidebarGroup } = useUIStore();
   const { user, logout, isAdmin } = useAuth();
-  const [expandedGroups, setExpandedGroups] = useState<string[]>(["Principal", "Projetos", "Trabalho", "Análise", "Relatórios", "Admin"]);
-
-  const toggleGroup = (group: string) => {
-    setExpandedGroups((prev) =>
-      prev.includes(group) ? prev.filter((g) => g !== group) : [...prev, group]
-    );
-  };
 
   const handleLogout = () => {
     logout();
@@ -124,17 +118,17 @@ export function Sidebar() {
             <div key={group.group} className="mb-1">
               {!sidebarCollapsed && (
                 <button
-                  onClick={() => toggleGroup(group.group)}
+                  onClick={() => toggleSidebarGroup(group.group)}
                   className="w-full flex items-center justify-between px-4 py-1.5 text-[10px] font-semibold text-zinc-500 uppercase tracking-wider hover:text-zinc-400 transition-colors"
                 >
                   <span>{group.group}</span>
                   <ChevronDown
-                    className={cn("w-3 h-3 transition-transform", expandedGroups.includes(group.group) && "rotate-180")}
+                    className={cn("w-3 h-3 transition-transform", sidebarExpandedGroups.includes(group.group) && "rotate-180")}
                   />
                 </button>
               )}
               <AnimatePresence>
-                {(sidebarCollapsed || expandedGroups.includes(group.group)) && (
+                {(sidebarCollapsed || sidebarExpandedGroups.includes(group.group)) && (
                   <motion.div
                     initial={{ height: 0, opacity: 0 }}
                     animate={{ height: "auto", opacity: 1 }}
@@ -152,6 +146,7 @@ export function Sidebar() {
                             <TooltipTrigger
                               render={<Link
                                 href={item.href}
+                                onMouseEnter={() => preloadPageByHref(item.href)}
                                 className={cn(
                                   "flex items-center justify-center w-10 h-10 mx-auto rounded-lg mb-0.5 transition-all",
                                   isActive
@@ -171,6 +166,7 @@ export function Sidebar() {
                         <Link
                           key={item.href}
                           href={item.href}
+                          onMouseEnter={() => preloadPageByHref(item.href)}
                           className={cn(
                             "flex items-center gap-3 px-3 py-2 mx-2 rounded-lg text-sm transition-all group",
                             isActive
@@ -247,4 +243,4 @@ export function Sidebar() {
       </div>
     </motion.aside>
   );
-}
+});

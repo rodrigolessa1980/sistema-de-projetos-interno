@@ -1,6 +1,5 @@
 "use client";
 
-import { AppLayout } from "@/components/layout/app-layout";
 import { useTaskStore, useProjectStore, useUserStore } from "@/stores";
 import { motion } from "@/lib/motion";
 import { Progress } from "@/components/ui/progress";
@@ -61,7 +60,6 @@ export default function ProjectsReportPage() {
   const projectsOnTrack = projectStats.filter((p) => p.overdue === 0 && p.project.status === "ATIVO").length;
 
   return (
-    <AppLayout>
       <div className="p-6 w-full space-y-6" data-print-content
         data-print-footer
         data-date={new Date().toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" })}>
@@ -172,6 +170,5 @@ export default function ProjectsReportPage() {
           ))}
         </div>
       </div>
-    </AppLayout>
   );
 }

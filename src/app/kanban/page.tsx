@@ -1,13 +1,11 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
-import { AppLayout } from "@/components/layout/app-layout";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import { useTaskStore, useProjectStore, useUserStore } from "@/stores";
 import { useAuth } from "@/hooks/use-auth";
 import { useUpdateKanbanOrder } from "@/hooks/use-tasks";
 import { ComplexityBadge } from "@/components/shared/task-badge";
 import { formatDate, getStatusLabel, getStatusDotColor } from "@/lib/utils";
-import { motion, AnimatePresence } from "@/lib/motion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AlertTriangle, Clock, GripVertical, Plus, Lock, Flame } from "lucide-react";
@@ -15,11 +13,22 @@ import { toast } from "sonner";
 import Link from "@/lib/router";
 import type { TaskStatus, Task } from "@/types";
 import {
-  DndContext, closestCorners, PointerSensor, useDroppable, useSensor, useSensors,
-  type DragEndEvent, DragOverlay, type DragStartEvent,
+  DndContext,
+  closestCorners,
+  PointerSensor,
+  useDroppable,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+  type DragOverEvent,
+  DragOverlay,
+  type DragStartEvent,
 } from "@dnd-kit/core";
 import {
-  SortableContext, useSortable, verticalListSortingStrategy,
+  SortableContext,
+  useSortable,
+  verticalListSortingStrategy,
+  arrayMove,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { cn } from "@/lib/utils";
@@ -31,6 +40,31 @@ const KANBAN_STATUSES: TaskStatus[] = [
   "BACKLOG", "PLANEJADA", "BLOQUEADA", "EM_DESENVOLVIMENTO",
   "EM_REVISAO", "HOMOLOGACAO", "CONCLUIDA", "CANCELADA",
 ];
+
+type ItemsByStatus = Record<TaskStatus, string[]>;
+
+function buildItemsByStatus(tasks: Task[]): ItemsByStatus {
+  const groups = {} as ItemsByStatus;
+  for (const status of KANBAN_STATUSES) {
+    groups[status] = tasks
+      .filter((t) => t.status === status)
+      .sort((a, b) => a.order - b.order || new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
+      .map((t) => t.id);
+  }
+  return groups;
+}
+
+function findContainer(items: ItemsByStatus, id: string): TaskStatus | null {
+  if (KANBAN_STATUSES.includes(id as TaskStatus)) return id as TaskStatus;
+  for (const status of KANBAN_STATUSES) {
+    if (items[status].includes(id)) return status;
+  }
+  return null;
+}
+
+function areItemsEqual(a: ItemsByStatus, b: ItemsByStatus) {
+  return KANBAN_STATUSES.every((status) => areSameOrder(a[status], b[status]));
+}
 
 /** Cronômetro inline leve — só renderiza quando a tarefa está ativa */
 function ActiveElapsed() {
@@ -59,11 +93,14 @@ function KanbanCard({ task, isDragging }: { task: Task; isDragging?: boolean }) 
   const pendingBlockers = getBlockersForTask(task.id);
   const tags = task.tags ?? [];
 
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging: isSortableDragging } = useSortable({ id: task.id });
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging: isSortableDragging } = useSortable({
+    id: task.id,
+    animateLayoutChanges: () => false,
+  });
   const style = {
     transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isSortableDragging ? 0.4 : 1,
+    transition: isSortableDragging ? undefined : transition,
+    opacity: isSortableDragging ? 0.35 : 1,
   };
 
   return (
@@ -72,7 +109,7 @@ function KanbanCard({ task, isDragging }: { task: Task; isDragging?: boolean }) 
       style={style}
       data-task-id={task.id}
       className={cn(
-        "border rounded-xl p-3 group cursor-grab active:cursor-grabbing transition-all",
+        "border rounded-xl p-3 group cursor-grab active:cursor-grabbing touch-none",
         task.isUrgent
           ? "bg-red-500/5 border-red-500/40 shadow-lg shadow-red-500/10"
           : isBeingWorked
@@ -83,7 +120,6 @@ function KanbanCard({ task, isDragging }: { task: Task; isDragging?: boolean }) 
       {...attributes}
       {...listeners}
     >
-      {/* Barra de sessão ativa */}
       {isBeingWorked && (
         <div className="flex items-center gap-1.5 mb-2 px-2 py-1 rounded-md bg-violet-500/15 border border-violet-500/20">
           <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse shrink-0" />
@@ -151,12 +187,24 @@ function KanbanCard({ task, isDragging }: { task: Task; isDragging?: boolean }) 
   );
 }
 
-function KanbanColumn({ status, tasks }: { status: TaskStatus; tasks: Task[] }) {
+function KanbanColumn({
+  status,
+  taskIds,
+  tasksById,
+}: {
+  status: TaskStatus;
+  taskIds: string[];
+  tasksById: Map<string, Task>;
+}) {
   const dotColor = getStatusDotColor(status);
   const { isOver, setNodeRef } = useDroppable({
     id: status,
     data: { type: "column", status },
   });
+
+  const columnTasks = taskIds
+    .map((id) => tasksById.get(id))
+    .filter((task): task is Task => Boolean(task));
 
   return (
     <div
@@ -172,27 +220,17 @@ function KanbanColumn({ status, tasks }: { status: TaskStatus; tasks: Task[] }) 
           <div className={cn("w-2 h-2 rounded-full", dotColor)} />
           <span className="text-xs font-semibold text-zinc-300">{getStatusLabel(status)}</span>
           <span className="w-5 h-5 rounded-full bg-zinc-800 flex items-center justify-center text-[10px] text-zinc-400 font-semibold">
-            {tasks.length}
+            {columnTasks.length}
           </span>
         </div>
       </div>
 
       <div className="flex-1 overflow-y-auto p-2 space-y-2">
-        <SortableContext id={status} items={tasks.map((t) => t.id)} strategy={verticalListSortingStrategy}>
-          <AnimatePresence>
-            {tasks.map((task) => (
-              <motion.div
-                key={task.id}
-                initial={{ opacity: 0, scale: 0.96 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.96 }}
-                transition={{ duration: 0.15 }}
-              >
-                <KanbanCard task={task} />
-              </motion.div>
-            ))}
-          </AnimatePresence>
-          {tasks.length === 0 && (
+        <SortableContext id={status} items={taskIds} strategy={verticalListSortingStrategy}>
+          {columnTasks.map((task) => (
+            <KanbanCard key={task.id} task={task} />
+          ))}
+          {columnTasks.length === 0 && (
             <div className="flex items-center justify-center h-16 border-2 border-dashed border-zinc-800/50 rounded-xl">
               <p className="text-[11px] text-zinc-600">Arraste aqui</p>
             </div>
@@ -205,33 +243,21 @@ function KanbanColumn({ status, tasks }: { status: TaskStatus; tasks: Task[] }) 
 
 const BLOCKED_TRANSITIONS: TaskStatus[] = ["EM_DESENVOLVIMENTO", "EM_REVISAO", "HOMOLOGACAO", "CONCLUIDA"];
 
-function insertAt<T>(items: T[], item: T, index: number) {
-  const next = [...items];
-  next.splice(Math.max(0, Math.min(index, next.length)), 0, item);
-  return next;
-}
-
 function areSameOrder(a: string[], b: string[]) {
   return a.length === b.length && a.every((id, index) => id === b[index]);
 }
 
-function getDropIndex(event: DragEndEvent, orderedIds: string[]) {
-  const { active, over } = event;
-  if (!over) return orderedIds.length;
-
-  const overId = String(over.id);
+function getInsertIndex(event: DragOverEvent | DragEndEvent, overId: string, orderedIds: string[]) {
   if (KANBAN_STATUSES.includes(overId as TaskStatus)) return orderedIds.length;
 
   const overIndex = orderedIds.indexOf(overId);
   if (overIndex === -1) return orderedIds.length;
 
-  const activeRect = active.rect.current.translated ?? active.rect.current.initial;
-  if (!activeRect) return overIndex;
+  const activeRect = event.active.rect.current.translated ?? event.active.rect.current.initial;
+  if (!activeRect || !event.over) return overIndex;
 
-  const overMiddle = over.rect.top + over.rect.height / 2;
-  const shouldInsertAfter = activeRect.top > overMiddle;
-
-  return overIndex + (shouldInsertAfter ? 1 : 0);
+  const overMiddle = event.over.rect.top + event.over.rect.height / 2;
+  return overIndex + (activeRect.top > overMiddle ? 1 : 0);
 }
 
 export default function KanbanPage() {
@@ -242,84 +268,145 @@ export default function KanbanPage() {
   const [projectFilter, setProjectFilter] = useState("all");
   const [activeTask, setActiveTask] = useState<Task | null>(null);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [localItems, setLocalItems] = useState<ItemsByStatus | null>(null);
 
   const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
   );
 
   const visibleTasks = useMemo(() => {
-    const base = tasks;
-    if (projectFilter !== "all") return base.filter((t) => t.projectId === projectFilter);
-    return base;
+    if (projectFilter !== "all") return tasks.filter((t) => t.projectId === projectFilter);
+    return tasks;
   }, [tasks, projectFilter]);
 
-  const tasksByStatus = useMemo(() => {
-    const groups: Record<TaskStatus, Task[]> = {} as Record<TaskStatus, Task[]>;
-    for (const status of KANBAN_STATUSES) {
-      groups[status] = visibleTasks
-        .filter((t) => t.status === status)
-        .sort((a, b) => a.order - b.order || new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
-    }
-    return groups;
-  }, [visibleTasks]);
+  const tasksById = useMemo(
+    () => new Map(visibleTasks.map((task) => [task.id, task])),
+    [visibleTasks]
+  );
+
+  const storeItems = useMemo(() => buildItemsByStatus(visibleTasks), [visibleTasks]);
+  const itemsByStatus = localItems ?? storeItems;
+
+  useEffect(() => {
+    setLocalItems(null);
+  }, [projectFilter]);
 
   const handleDragStart = (event: DragStartEvent) => {
-    const task = tasks.find((t) => t.id === event.active.id);
-    if (task) setActiveTask(task);
+    const task = tasksById.get(String(event.active.id));
+    if (task) {
+      setActiveTask(task);
+      setLocalItems((current) => current ?? storeItems);
+    }
   };
 
-  const handleDragEnd = async (event: DragEndEvent) => {
+  const handleDragOver = useCallback((event: DragOverEvent) => {
     const { active, over } = event;
-    setActiveTask(null);
-    if (!over) return;
+    if (!over || active.id === over.id) return;
 
     const activeId = String(active.id);
-    const activeTask = tasks.find((t) => t.id === activeId);
-    if (!activeTask) return;
-
     const overId = String(over.id);
-    const overTask = tasks.find((t) => t.id === overId);
-    const overColumn = KANBAN_STATUSES.includes(overId as TaskStatus) ? overId as TaskStatus : null;
-    const targetStatus = overColumn ?? overTask?.status ?? activeTask.status;
 
-    if (activeTask.status !== targetStatus) {
-      if (BLOCKED_TRANSITIONS.includes(targetStatus)) {
-        const blockers = getBlockersForTask(activeTask.id);
-        if (blockers.length > 0) {
-          const names = blockers.map((b) => `"${b.title}"`).join(", ");
-          toast.error(`Não é possível mover: bloqueada por ${names}`);
-          return;
-        }
+    setLocalItems((prev) => {
+      const items = prev ?? storeItems;
+      const activeContainer = findContainer(items, activeId);
+      const overContainer = findContainer(items, overId);
+      if (!activeContainer || !overContainer) return prev;
+
+      const activeItems = items[activeContainer];
+      const overItems = items[overContainer];
+      const activeIndex = activeItems.indexOf(activeId);
+      if (activeIndex === -1) return prev;
+
+      if (activeContainer === overContainer) {
+        const overIndex = overItems.indexOf(overId);
+        if (overIndex === -1 || activeIndex === overIndex) return prev;
+        return {
+          ...items,
+          [overContainer]: arrayMove(overItems, activeIndex, overIndex),
+        };
       }
-    }
 
-    const currentSourceIds = (tasksByStatus[activeTask.status] ?? []).map((task) => task.id);
-    const sourceTaskIds = currentSourceIds.filter((id) => id !== activeId);
-    const currentTargetIds = (tasksByStatus[targetStatus] ?? []).map((task) => task.id);
-    const targetIdsWithoutActive = currentTargetIds.filter((id) => id !== activeId);
-    const dropIndex = overId === activeId ? currentSourceIds.indexOf(activeId) : getDropIndex(event, targetIdsWithoutActive);
-    const targetTaskIds = insertAt(targetIdsWithoutActive, activeId, dropIndex);
+      const overIdsWithoutActive = overItems.filter((id) => id !== activeId);
+      const insertIndex = getInsertIndex(event, overId, overIdsWithoutActive);
+      const nextOverItems = [
+        ...overIdsWithoutActive.slice(0, insertIndex),
+        activeId,
+        ...overIdsWithoutActive.slice(insertIndex),
+      ];
 
-    if (activeTask.status === targetStatus && areSameOrder(currentSourceIds, targetTaskIds)) {
+      return {
+        ...items,
+        [activeContainer]: activeItems.filter((id) => id !== activeId),
+        [overContainer]: nextOverItems,
+      };
+    });
+  }, [storeItems]);
+
+  const handleDragCancel = () => {
+    setActiveTask(null);
+    setLocalItems(null);
+  };
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    const activeId = String(active.id);
+    const activeTaskData = tasksById.get(activeId);
+    setActiveTask(null);
+
+    if (!over || !activeTaskData) {
+      setLocalItems(null);
       return;
     }
 
-    const result = await updateKanbanOrder.mutateAsync({
-      taskId: activeId,
-      targetStatus,
-      targetTaskIds,
-      sourceStatus: activeTask.status !== targetStatus ? activeTask.status : undefined,
-      sourceTaskIds: activeTask.status !== targetStatus ? sourceTaskIds : undefined,
-    });
+    const currentItems = localItems ?? storeItems;
+    const sourceStatus = findContainer(storeItems, activeId);
+    const targetStatus = findContainer(currentItems, activeId);
 
-    toast.success("Posição da tarefa atualizada");
-    if (!result.persisted) {
-      toast.warning(result.message ?? "Movimento salvo localmente; backend indisponível");
+    if (!sourceStatus || !targetStatus) {
+      setLocalItems(null);
+      return;
     }
+
+    if (areItemsEqual(currentItems, storeItems)) {
+      setLocalItems(null);
+      return;
+    }
+
+    if (sourceStatus !== targetStatus && BLOCKED_TRANSITIONS.includes(targetStatus)) {
+      const blockers = getBlockersForTask(activeId);
+      if (blockers.length > 0) {
+        const names = blockers.map((b) => `"${b.title}"`).join(", ");
+        toast.error(`Não é possível mover: bloqueada por ${names}`);
+        setLocalItems(null);
+        return;
+      }
+    }
+
+    const targetTaskIds = currentItems[targetStatus];
+    const sourceTaskIds = sourceStatus !== targetStatus ? currentItems[sourceStatus] : undefined;
+
+    setLocalItems(null);
+
+    updateKanbanOrder.mutate(
+      {
+        taskId: activeId,
+        targetStatus,
+        targetTaskIds,
+        sourceStatus: sourceStatus !== targetStatus ? sourceStatus : undefined,
+        sourceTaskIds,
+      },
+      {
+        onSuccess: (result) => {
+          if (!result.persisted) {
+            toast.warning(result.message ?? "Movimento salvo localmente; backend indisponível");
+          }
+        },
+      }
+    );
   };
 
   return (
-    <AppLayout>
+    <>
       <div className="flex flex-col h-full w-full">
         <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-800/50">
           <div>
@@ -352,24 +439,30 @@ export default function KanbanPage() {
             sensors={sensors}
             collisionDetection={closestCorners}
             onDragStart={handleDragStart}
+            onDragOver={handleDragOver}
             onDragEnd={handleDragEnd}
+            onDragCancel={handleDragCancel}
           >
             <div className="flex gap-3 h-full min-h-[calc(100vh-200px)]" style={{ minWidth: `${KANBAN_STATUSES.length * 240}px` }}>
               {KANBAN_STATUSES.map((status) => (
                 <div key={status} className="flex-1 min-w-[220px] max-w-[280px]">
-                  <KanbanColumn status={status} tasks={tasksByStatus[status] ?? []} />
+                  <KanbanColumn
+                    status={status}
+                    taskIds={itemsByStatus[status] ?? []}
+                    tasksById={tasksById}
+                  />
                 </div>
               ))}
             </div>
 
-            <DragOverlay>
-              {activeTask && <KanbanCard task={activeTask} isDragging />}
+            <DragOverlay dropAnimation={null}>
+              {activeTask ? <KanbanCard task={activeTask} isDragging /> : null}
             </DragOverlay>
           </DndContext>
         </div>
       </div>
 
       {isAdmin && <TaskCreateDialog open={isCreateOpen} onOpenChange={setIsCreateOpen} />}
-    </AppLayout>
+    </>
   );
 }

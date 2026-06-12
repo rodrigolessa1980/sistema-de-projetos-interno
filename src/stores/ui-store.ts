@@ -13,8 +13,11 @@ const normalizeUser = (user: User): User => ({
   permissions: asArray(user.permissions),
 });
 
+const DEFAULT_SIDEBAR_GROUPS = ["Principal", "Projetos", "Trabalho", "Análise", "Relatórios", "Admin"];
+
 interface UIStore {
   sidebarCollapsed: boolean;
+  sidebarExpandedGroups: string[];
   notifications: Notification[];
   unreadCount: number;
   searchQuery: string;
@@ -22,6 +25,7 @@ interface UIStore {
 
   toggleSidebar: () => void;
   setSidebarCollapsed: (collapsed: boolean) => void;
+  toggleSidebarGroup: (group: string) => void;
   markNotificationRead: (id: string) => void;
   markAllRead: (userId?: string) => void;
   addNotification: (notif: Omit<Notification, "id" | "createdAt">) => void;
@@ -34,6 +38,7 @@ export const useUIStore = create<UIStore>()(
   persist(
     (set) => ({
       sidebarCollapsed: false,
+      sidebarExpandedGroups: DEFAULT_SIDEBAR_GROUPS,
       notifications: [],
       unreadCount: 0,
       searchQuery: "",
@@ -41,6 +46,12 @@ export const useUIStore = create<UIStore>()(
 
       toggleSidebar: () => set((state) => ({ sidebarCollapsed: !state.sidebarCollapsed })),
       setSidebarCollapsed: (collapsed) => set({ sidebarCollapsed: collapsed }),
+      toggleSidebarGroup: (group) =>
+        set((state) => ({
+          sidebarExpandedGroups: state.sidebarExpandedGroups.includes(group)
+            ? state.sidebarExpandedGroups.filter((g) => g !== group)
+            : [...state.sidebarExpandedGroups, group],
+        })),
 
       markNotificationRead: (id) =>
         set((state) => {
@@ -89,7 +100,10 @@ export const useUIStore = create<UIStore>()(
     }),
     {
       name: "devflow-ui",
-      partialize: (state) => ({ sidebarCollapsed: state.sidebarCollapsed }),
+      partialize: (state) => ({
+        sidebarCollapsed: state.sidebarCollapsed,
+        sidebarExpandedGroups: state.sidebarExpandedGroups,
+      }),
     }
   )
 );

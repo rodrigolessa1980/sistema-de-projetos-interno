@@ -74,6 +74,7 @@ export interface Project {
   name: string;
   description: string;
   technicalDescription?: string | null;
+  demandDescription?: string | null;
   requestedBy?: string | null;
   status: ProjectStatus;
   ownerId: string;
@@ -122,6 +123,20 @@ export interface ModuleAttachment {
 }
 
 export interface ProjectShowcaseAttachment {
+  id: string;
+  projectId: string;
+  userId: string;
+  name: string;
+  /** MIME type */
+  type: string;
+  /** Tamanho em bytes */
+  size: number;
+  /** Base64 data URL */
+  dataUrl: string;
+  createdAt: string;
+}
+
+export interface ProjectDemandAttachment {
   id: string;
   projectId: string;
   userId: string;

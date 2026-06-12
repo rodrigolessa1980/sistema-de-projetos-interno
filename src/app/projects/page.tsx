@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { AppLayout } from "@/components/layout/app-layout";
 import { PageHeader } from "@/components/shared/page-header";
 import { EmptyState } from "@/components/shared/empty-state";
 import { useProjectStore } from "@/stores";
@@ -231,7 +230,7 @@ export default function ProjectsPage() {
   };
 
   return (
-    <AppLayout>
+    <>
       <PageHeader
         title="Projetos"
         description={`${visibleProjects.length} projeto${visibleProjects.length !== 1 ? "s" : ""} encontrado${visibleProjects.length !== 1 ? "s" : ""}`}
@@ -869,6 +868,6 @@ export default function ProjectsPage() {
           </Form>
         </DialogContent>
       </Dialog>
-    </AppLayout>
+    </>
   );
 }

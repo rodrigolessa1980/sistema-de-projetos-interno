@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { AppLayout } from "@/components/layout/app-layout";
 import { PageHeader } from "@/components/shared/page-header";
 import { useTaskStore, useUserStore } from "@/stores";
 import { useAuth } from "@/hooks/use-auth";
@@ -38,7 +37,7 @@ export default function TimeLogsPage() {
   const sortedDates = Object.keys(groupedByDate).sort((a, b) => b.localeCompare(a));
 
   return (
-    <AppLayout>
+    <>
       <PageHeader title="Logs de Tempo" description="Registro de horas trabalhadas por tarefa" />
 
       <div className="p-6 w-full space-y-6">
@@ -115,6 +114,6 @@ export default function TimeLogsPage() {
           })}
         </div>
       </div>
-    </AppLayout>
+    </>
   );
 }

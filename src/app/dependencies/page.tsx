@@ -1,6 +1,5 @@
 "use client";
 
-import { AppLayout } from "@/components/layout/app-layout";
 import { useTaskStore, useProjectStore } from "@/stores";
 import { StatusBadge, ComplexityBadge } from "@/components/shared/task-badge";
 import { motion } from "@/lib/motion";
@@ -25,7 +24,6 @@ export default function DependenciesPage() {
   const blockedTasksWithDeps = visibleTasks.filter((t) => (t.dependencyIds ?? []).length > 0 || t.status === "BLOQUEADA");
 
   return (
-    <AppLayout>
       <div className="p-6 w-full">
         <div className="flex items-center justify-between mb-6">
           <div>
@@ -143,6 +141,5 @@ export default function DependenciesPage() {
           )}
         </div>
       </div>
-    </AppLayout>
   );
 }
