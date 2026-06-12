@@ -77,7 +77,15 @@ for attempt in $(seq 1 36); do
   fi
 
   echo "Tentativa ${attempt}/36: backend ainda indisponivel..."
-  docker logs devflow_backend --tail 20 2>&1 || true
+  backend_logs="$(docker logs devflow_backend --tail 40 2>&1 || true)"
+  echo "${backend_logs}"
+
+  if echo "${backend_logs}" | grep -qE 'MODULE_NOT_FOUND|Cannot find module|Falha ao iniciar a API|Error:'; then
+    echo "ERRO: backend falhou ao iniciar (nao adianta aguardar)."
+    docker logs devflow_backend --tail 200 2>&1 || true
+    exit 1
+  fi
+
   sleep 5
 done
 

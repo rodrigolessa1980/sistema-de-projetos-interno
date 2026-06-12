@@ -23,4 +23,4 @@ while [ "$attempt" -le "$MAX_RETRIES" ]; do
 done
 
 echo "Iniciando API..."
-exec node dist/src/main.js
+exec node dist/main.js
