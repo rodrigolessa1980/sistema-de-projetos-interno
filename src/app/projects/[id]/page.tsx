@@ -332,9 +332,9 @@ export default function ProjectDetailPage() {
     try {
       await updateProjectShowcase(id, technicalDraft);
       setEditingShowcase(false);
-      toast.success("Visual do projeto salvo");
+      toast.success("Demanda salva");
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erro ao salvar visual do projeto");
+      toast.error(err instanceof Error ? err.message : "Erro ao salvar demanda");
     } finally {
       setSavingShowcase(false);
     }
@@ -367,7 +367,7 @@ export default function ProjectDetailPage() {
           dataUrl,
         });
       }
-      toast.success("Arquivo adicionado ao visual do projeto");
+      toast.success("Arquivo adicionado à demanda");
       setEditingShowcase(false);
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Erro ao enviar arquivo");
@@ -488,13 +488,13 @@ export default function ProjectDetailPage() {
           </div>
         </div>
 
-        {/* Visual do projeto */}
+        {/* Demanda */}
         <div className="bg-zinc-900/60 border border-zinc-800/50 rounded-xl p-5 mb-6 space-y-4">
           <div className="flex items-start justify-between gap-3">
             <div>
               <div className="flex items-center gap-2">
                 <ImageIcon className="w-4 h-4 text-violet-400" />
-                <h2 className="text-sm font-semibold text-zinc-100">Visual do projeto</h2>
+                <h2 className="text-sm font-semibold text-zinc-100">Demanda</h2>
               </div>
               <p className="text-xs text-zinc-500 mt-1">
                 Telas, arquivos e explicações técnicas do que foi implementado neste projeto.
@@ -539,7 +539,7 @@ export default function ProjectDetailPage() {
                       onClick={startEditShowcase}
                       className="text-zinc-300 focus:bg-zinc-800 focus:text-zinc-100 gap-2 cursor-pointer"
                     >
-                      <Pencil className="w-3.5 h-3.5" /> Editar visual
+                      <Pencil className="w-3.5 h-3.5" /> Editar demanda
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -715,7 +715,7 @@ export default function ProjectDetailPage() {
               })
             ) : (
               <p className="text-xs text-zinc-600 italic col-span-full py-2">
-                Nenhum arquivo adicionado ao visual do projeto.
+                Nenhum arquivo adicionado à demanda.
               </p>
             )}
           </div>
