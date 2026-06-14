@@ -24,7 +24,32 @@ class UpdateProjectShowcaseDto {
   technicalDescription?: string | null;
 }
 
+class UpdateProjectDemandDto {
+  @IsOptional()
+  @IsString()
+  demandDescription?: string | null;
+}
+
 class CreateProjectShowcaseAttachmentDto {
+  @IsString()
+  @IsNotEmpty()
+  name!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  type!: string;
+
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  size!: number;
+
+  @IsString()
+  @IsNotEmpty()
+  dataUrl!: string;
+}
+
+class CreateProjectDemandAttachmentDto {
   @IsString()
   @IsNotEmpty()
   name!: string;
@@ -136,6 +161,18 @@ export class ProjectsController {
     return ProjectPresenter.toHTTP(project);
   }
 
+  @Put(':id/demand')
+  async updateDemand(
+    @Param('id') id: string,
+    @Body() body: UpdateProjectDemandDto,
+  ): Promise<ProjectResponse> {
+    const project = await this.updateProjectUseCase.execute({
+      id,
+      demandDescription: body.demandDescription ?? null,
+    });
+    return ProjectPresenter.toHTTP(project);
+  }
+
   @Get(':id/showcase-attachments')
   async getShowcaseAttachments(@Param('id') id: string) {
     const attachments = await this.prisma.projectShowcaseAttachment.findMany({
@@ -168,6 +205,40 @@ export class ProjectsController {
   @HttpCode(204)
   async deleteShowcaseAttachment(@Param('id') id: string): Promise<void> {
     await this.prisma.projectShowcaseAttachment.delete({ where: { id } });
+  }
+
+  @Get(':id/demand-attachments')
+  async getDemandAttachments(@Param('id') id: string) {
+    const attachments = await this.prisma.projectDemandAttachment.findMany({
+      where: { projectId: id },
+      orderBy: { createdAt: 'desc' },
+    });
+    return { attachments };
+  }
+
+  @Post(':id/demand-attachments')
+  async createDemandAttachment(
+    @Param('id') id: string,
+    @Body() body: CreateProjectDemandAttachmentDto,
+    @Req() request: AuthenticatedRequest,
+  ) {
+    const attachment = await this.prisma.projectDemandAttachment.create({
+      data: {
+        projectId: id,
+        userId: request.userId,
+        name: body.name,
+        type: body.type,
+        size: body.size,
+        dataUrl: body.dataUrl,
+      },
+    });
+    return { attachment };
+  }
+
+  @Delete('demand-attachments/:id')
+  @HttpCode(204)
+  async deleteDemandAttachment(@Param('id') id: string): Promise<void> {
+    await this.prisma.projectDemandAttachment.delete({ where: { id } });
   }
 
   @Delete(':id')

@@ -3,6 +3,7 @@ import react from "@vitejs/plugin-react";
 import path from "node:path";
 
 export default defineConfig({
+  envPrefix: ["NEXT_PUBLIC_"],
   plugins: [react()],
   server: {
     host: "0.0.0.0",
@@ -15,6 +16,15 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "src"),
+    },
+  },
+  build: {
+    sourcemap: false,
+    reportCompressedSize: false,
+    rolldownOptions: {
+      output: {
+        codeSplitting: true,
+      },
     },
   },
 });

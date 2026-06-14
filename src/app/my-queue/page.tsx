@@ -1,12 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { AppLayout } from "@/components/layout/app-layout";
 import { useTaskStore, useProjectStore } from "@/stores";
 import { useAuth } from "@/hooks/use-auth";
 import { useWorkSessionStore } from "@/stores/work-session-store";
 import { StatusBadge } from "@/components/shared/task-badge";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "@/lib/motion";
 import Link from "@/lib/router";
 import {
   Inbox, Clock, CheckCircle2, AlertTriangle, Timer,
@@ -232,7 +231,6 @@ export default function MyQueuePage() {
   const activeProject = activeTask ? projects.find((p) => p.id === activeTask.projectId) : null;
 
   return (
-    <AppLayout>
       <div className="p-6 w-full space-y-6">
         {/* Header */}
         <div className="flex items-start justify-between gap-4">
@@ -406,6 +404,5 @@ export default function MyQueuePage() {
           </div>
         )}
       </div>
-    </AppLayout>
   );
 }

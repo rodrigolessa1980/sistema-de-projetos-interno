@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { AppLayout } from "@/components/layout/app-layout";
 import { PageHeader } from "@/components/shared/page-header";
 import { EmptyState } from "@/components/shared/empty-state";
 import { useProjectStore } from "@/stores";
@@ -18,7 +17,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { toast } from "sonner";
-import { motion } from "framer-motion";
+import { motion } from "@/lib/motion";
 import {
   Building2, MoreVertical, Pencil, Trash2, FolderKanban, Plus, Hash,
 } from "lucide-react";
@@ -209,7 +208,7 @@ export default function CompaniesPage() {
   }
 
   return (
-    <AppLayout>
+    <>
       <PageHeader
         title="Empresas do Grupo"
         description={`${companies.length} empresa${companies.length !== 1 ? "s" : ""} cadastrada${companies.length !== 1 ? "s" : ""}`}
@@ -353,6 +352,6 @@ export default function CompaniesPage() {
           title="Editar Empresa"
         />
       )}
-    </AppLayout>
+    </>
   );
 }

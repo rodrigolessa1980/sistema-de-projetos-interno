@@ -6,8 +6,8 @@ import { useAuth } from "@/hooks/use-auth";
 import { useSyncWorkSession } from "@/hooks/use-work-session";
 import { useRouter, usePathname } from "@/lib/router";
 import { useEffect } from "react";
-import { motion } from "framer-motion";
 import { useProjectStore, useTaskStore, useUIStore, useUserStore } from "@/stores";
+import { preloadMainPages } from "@/lib/page-loaders";
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -32,6 +32,7 @@ export function AppLayout({ children, title }: AppLayoutProps) {
 
   useEffect(() => {
     if (isAuthenticated) {
+      void preloadMainPages();
       fetchProjects()
         .then(() => {
           const ids = useProjectStore.getState().projects.map((project) => project.id);
@@ -65,14 +66,9 @@ export function AppLayout({ children, title }: AppLayoutProps) {
         <div data-print-hide className="print:hidden">
           <Header title={title} />
         </div>
-        <motion.main
-          initial={{ opacity: 0, y: 4 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.2 }}
-          className="flex-1 overflow-y-auto bg-zinc-950 w-full min-w-0 print:overflow-visible print:h-auto"
-        >
+        <main className="flex-1 overflow-y-auto bg-zinc-950 w-full min-w-0 print:overflow-visible print:h-auto">
           {children}
-        </motion.main>
+        </main>
       </div>
     </div>
   );

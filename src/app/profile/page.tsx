@@ -1,12 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { AppLayout } from "@/components/layout/app-layout";
 import { useAuth } from "@/hooks/use-auth";
 import { useTaskStore } from "@/stores";
 import { useUserStore } from "@/stores/ui-store";
 import { useProjectStore } from "@/stores";
-import { motion } from "framer-motion";
+import { motion } from "@/lib/motion";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -49,7 +48,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <AppLayout>
+    <>
       <div className="p-6 w-full">
         {/* Card do perfil */}
         <motion.div
@@ -273,6 +272,6 @@ export default function ProfilePage() {
         onOpenChange={setUserDialogOpen}
         editUser={editUser}
       />
-    </AppLayout>
+    </>
   );
 }

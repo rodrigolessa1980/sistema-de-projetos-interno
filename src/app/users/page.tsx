@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
-import { AppLayout } from "@/components/layout/app-layout";
 import { useAuth } from "@/hooks/use-auth";
 import { useUserStore } from "@/stores";
 import { EmptyState } from "@/components/shared/empty-state";
@@ -202,14 +201,11 @@ export default function UsersPage() {
 
   if (!isAdmin) {
     return (
-      <AppLayout>
         <EmptyState icon={Users} title="Acesso Restrito" description="Apenas administradores podem gerenciar usuários." />
-      </AppLayout>
     );
   }
 
   return (
-    <AppLayout>
       <div className="flex h-[calc(100vh-64px)] overflow-hidden w-full">
         {/* ── Painel Esquerdo: Lista de Usuários ── */}
         <div className="w-80 min-w-[300px] border-r border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 overflow-y-auto flex flex-col">
@@ -444,6 +440,5 @@ export default function UsersPage() {
           )}
         </div>
       </div>
-    </AppLayout>
   );
 }

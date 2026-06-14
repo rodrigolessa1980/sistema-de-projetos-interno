@@ -1,29 +1,39 @@
-import RootPage from "@/app/page";
-import LoginPage from "@/app/login/page";
-import RegisterPage from "@/app/register/page";
-import DashboardPage from "@/app/dashboard/page";
-import CompaniesPage from "@/app/companies/page";
-import DependenciesPage from "@/app/dependencies/page";
-import EpicsPage from "@/app/epics/page";
-import GanttPage from "@/app/gantt/page";
-import KanbanPage from "@/app/kanban/page";
-import MetricsPage from "@/app/metrics/page";
-import ModulesPage from "@/app/modules/page";
-import MyQueuePage from "@/app/my-queue/page";
-import ProfilePage from "@/app/profile/page";
-import ProjectsPage from "@/app/projects/page";
-import ProjectDetailPage from "@/app/projects/[id]/page";
-import QueuePage from "@/app/queue/page";
-import HoursReportPage from "@/app/reports/hours/page";
-import OverviewReportPage from "@/app/reports/overview/page";
-import ProductivityReportPage from "@/app/reports/productivity/page";
-import ProjectsReportPage from "@/app/reports/projects/page";
-import ProjectReportDetailPage from "@/app/reports/projects/[id]/page";
-import TasksPage from "@/app/tasks/page";
-import TaskDetailPage from "@/app/tasks/[id]/page";
-import TimeLogsPage from "@/app/time-logs/page";
-import UsersPage from "@/app/users/page";
+import { lazy, Suspense, type ComponentType } from "react";
 import { RouterProvider, usePathname } from "@/lib/router";
+import { AppLayout } from "@/components/layout/app-layout";
+import { pageLoaders } from "@/lib/page-loaders";
+
+function lazyPage<T extends ComponentType<unknown>>(
+  loader: () => Promise<{ default: T }>,
+) {
+  return lazy(loader);
+}
+
+const RootPage = lazyPage(pageLoaders.root);
+const LoginPage = lazyPage(pageLoaders.login);
+const RegisterPage = lazyPage(pageLoaders.register);
+const DashboardPage = lazyPage(pageLoaders.dashboard);
+const CompaniesPage = lazyPage(pageLoaders.companies);
+const DependenciesPage = lazyPage(pageLoaders.dependencies);
+const EpicsPage = lazyPage(pageLoaders.epics);
+const GanttPage = lazyPage(pageLoaders.gantt);
+const KanbanPage = lazyPage(pageLoaders.kanban);
+const MetricsPage = lazyPage(pageLoaders.metrics);
+const ModulesPage = lazyPage(pageLoaders.modules);
+const MyQueuePage = lazyPage(pageLoaders.myQueue);
+const ProfilePage = lazyPage(pageLoaders.profile);
+const ProjectsPage = lazyPage(pageLoaders.projects);
+const ProjectDetailPage = lazyPage(pageLoaders.projectDetail);
+const QueuePage = lazyPage(pageLoaders.queue);
+const HoursReportPage = lazyPage(pageLoaders.hoursReport);
+const OverviewReportPage = lazyPage(pageLoaders.overviewReport);
+const ProductivityReportPage = lazyPage(pageLoaders.productivityReport);
+const ProjectsReportPage = lazyPage(pageLoaders.projectsReport);
+const ProjectReportDetailPage = lazyPage(pageLoaders.projectReportDetail);
+const TasksPage = lazyPage(pageLoaders.tasks);
+const TaskDetailPage = lazyPage(pageLoaders.taskDetail);
+const TimeLogsPage = lazyPage(pageLoaders.timeLogs);
+const UsersPage = lazyPage(pageLoaders.users);
 
 const routes = [
   { pattern: /^\/$/, component: RootPage },
@@ -53,12 +63,35 @@ const routes = [
   { pattern: /^\/users\/?$/, component: UsersPage },
 ];
 
+const PUBLIC_ROUTE_PATTERN = /^\/(login|register)\/?$/;
+
+function PageFallback() {
+  return <div className="min-h-screen bg-zinc-950" />;
+}
+
+function MainContentFallback() {
+  return (
+    <div className="flex flex-1 items-center justify-center bg-zinc-950">
+      <div className="w-6 h-6 border-2 border-violet-500 border-t-transparent rounded-full animate-spin" />
+    </div>
+  );
+}
+
 function RouteSwitch() {
   const pathname = usePathname();
   const route = routes.find((item) => item.pattern.test(pathname));
   const Page = route?.component ?? DashboardPage;
+  const isPublicRoute = PUBLIC_ROUTE_PATTERN.test(pathname);
 
-  return <Page />;
+  const page = (
+    <Suspense fallback={isPublicRoute ? <PageFallback /> : <MainContentFallback />}>
+      <Page />
+    </Suspense>
+  );
+
+  if (isPublicRoute) return page;
+
+  return <AppLayout>{page}</AppLayout>;
 }
 
 export function App() {

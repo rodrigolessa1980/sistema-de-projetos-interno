@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "@/lib/motion";
 import { Play, Square, X, Timer, ChevronDown, ChevronUp, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -60,16 +60,17 @@ export function WorkTimer({ taskId, taskTitle, disabled = false }: WorkTimerProp
               <svg className="w-10 h-10 -rotate-90" viewBox="0 0 36 36">
                 <circle cx="18" cy="18" r="15" fill="none" stroke="#27272a" strokeWidth="3" />
                 {isActive && (
-                  <motion.circle
+                  <circle
                     cx="18" cy="18" r="15"
                     fill="none"
                     stroke="#8b5cf6"
                     strokeWidth="3"
                     strokeLinecap="round"
                     strokeDasharray="94.25"
-                    initial={{ strokeDashoffset: 94.25 }}
-                    animate={{ strokeDashoffset: 94.25 - (ringProgress / 100) * 94.25 }}
-                    transition={{ duration: 0.8, ease: "easeOut" }}
+                    style={{
+                      strokeDashoffset: 94.25 - (ringProgress / 100) * 94.25,
+                      transition: "stroke-dashoffset 0.8s ease-out",
+                    }}
                   />
                 )}
               </svg>

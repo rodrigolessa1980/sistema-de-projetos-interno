@@ -1,42 +1,34 @@
 "use client";
 
-import { AppLayout } from "@/components/layout/app-layout";
 import { StatCard } from "@/components/shared/stat-card";
 import { useMetrics } from "@/hooks/use-metrics";
-import { motion } from "framer-motion";
+import { motion } from "@/lib/motion";
 import {
   TrendingUp, Target, Clock, Zap, AlertTriangle, CheckCircle2,
   BarChart2, Activity, RefreshCw,
 } from "lucide-react";
 import {
-  ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip,
-  BarChart, Bar, PieChart, Pie, Cell, Legend, RadarChart, Radar, PolarGrid,
-  PolarAngleAxis, LineChart, Line,
-} from "recharts";
-import type { PieLabelRenderProps } from "recharts";
+  MetricsAreaChart,
+  MetricsBarChart,
+  MetricsPieChart,
+  PerformanceRadarChart,
+} from "@/components/shared/mui-charts";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState } from "react";
 import { useProjectStore } from "@/stores";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
-const RADIAN = Math.PI / 180;
-const renderCustomLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent }: PieLabelRenderProps) => {
-  const angle = midAngle ?? 0;
-  const ratio = percent ?? 0;
-  const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
-  const x = cx + radius * Math.cos(-angle * RADIAN);
-  const y = cy + radius * Math.sin(-angle * RADIAN);
-  return ratio > 0.05 ? (
-    <text x={x} y={y} fill="white" textAnchor="middle" dominantBaseline="central" fontSize={11}>
-      {`${(ratio * 100).toFixed(0)}%`}
-    </text>
-  ) : null;
-};
+import { PerformanceRadarHelp } from "@/components/shared/performance-radar-help";
+import { BurndownHelp } from "@/components/shared/burndown-help";
 
 export default function MetricsPage() {
   const { projects } = useProjectStore();
   const [projectFilter, setProjectFilter] = useState("all");
   const { summary, burndownData, velocityData, complexityDistribution, hoursData, tasksByStatus } = useMetrics(projectFilter === "all" ? undefined : projectFilter);
+
+  const burndownScopeLabel =
+    projectFilter === "all"
+      ? "Todos os projetos"
+      : (projects.find((p) => p.id === projectFilter)?.name ?? "Projeto selecionado");
 
   const radarData = [
     { metric: "Estimativa", value: summary.estimationAccuracy },
@@ -46,13 +38,7 @@ export default function MetricsPage() {
     { metric: "Eficiência", value: Math.min(100, summary.totalHoursEstimated > 0 ? (summary.totalHoursEstimated / Math.max(summary.totalHoursActual, 1)) * 100 : 50) },
   ];
 
-  const tooltipStyle = { background: "#18181b", border: "1px solid #3f3f46", borderRadius: "8px", fontSize: "12px" };
-  const labelStyle = { color: "#a1a1aa" };
-  const tickStyle = { fill: "#71717a", fontSize: 11 };
-  const axisProps = { axisLine: false, tickLine: false };
-
   return (
-    <AppLayout>
       <div className="p-6 w-full space-y-6">
         <div className="flex items-center justify-between">
           <div>
@@ -90,56 +76,49 @@ export default function MetricsPage() {
                 className="bg-zinc-900/60 border border-zinc-800/50 rounded-xl p-5">
                 <h3 className="text-sm font-semibold text-zinc-100 mb-1">Horas por Dia</h3>
                 <p className="text-xs text-zinc-500 mb-4">Últimos 7 dias</p>
-                <ResponsiveContainer width="100%" height={200}>
-                  <BarChart data={hoursData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#27272a" />
-                    <XAxis dataKey="day" tick={tickStyle} {...axisProps} />
-                    <YAxis tick={tickStyle} {...axisProps} />
-                    <Tooltip contentStyle={tooltipStyle} labelStyle={labelStyle} />
-                    <Bar dataKey="horas" name="Horas" fill="#6366f1" radius={[4, 4, 0, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
+                <MetricsBarChart
+                  data={hoursData}
+                  xKey="day"
+                  height={200}
+                  series={[{ key: "horas", label: "Horas", color: "#6366f1" }]}
+                />
               </motion.div>
 
               <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
                 className="bg-zinc-900/60 border border-zinc-800/50 rounded-xl p-5">
-                <h3 className="text-sm font-semibold text-zinc-100 mb-1">Radar de Performance</h3>
+                <div className="flex items-center gap-1.5 mb-1">
+                  <h3 className="text-sm font-semibold text-zinc-100">Radar de Performance</h3>
+                  <PerformanceRadarHelp />
+                </div>
                 <p className="text-xs text-zinc-500 mb-4">Visão 360° da equipe</p>
-                <ResponsiveContainer width="100%" height={200}>
-                  <RadarChart data={radarData}>
-                    <PolarGrid stroke="#27272a" />
-                    <PolarAngleAxis dataKey="metric" tick={{ fill: "#71717a", fontSize: 11 }} />
-                    <Radar name="Performance" dataKey="value" stroke="#6366f1" fill="#6366f1" fillOpacity={0.3} />
-                  </RadarChart>
-                </ResponsiveContainer>
+                <PerformanceRadarChart
+                  height={240}
+                  items={radarData.map((item) => ({
+                    label: item.metric,
+                    value: item.value,
+                  }))}
+                />
               </motion.div>
             </div>
 
             <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}
               className="bg-zinc-900/60 border border-zinc-800/50 rounded-xl p-5">
-              <h3 className="text-sm font-semibold text-zinc-100 mb-1">Burndown do Projeto</h3>
-              <p className="text-xs text-zinc-500 mb-4">Progresso estimado vs real</p>
-              <ResponsiveContainer width="100%" height={220}>
-                <AreaChart data={burndownData}>
-                  <defs>
-                    <linearGradient id="gradEst" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#6366f1" stopOpacity={0.3} />
-                      <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
-                    </linearGradient>
-                    <linearGradient id="gradReal" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#22c55e" stopOpacity={0.3} />
-                      <stop offset="95%" stopColor="#22c55e" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#27272a" />
-                  <XAxis dataKey="date" tick={tickStyle} {...axisProps} />
-                  <YAxis tick={tickStyle} {...axisProps} />
-                  <Tooltip contentStyle={tooltipStyle} labelStyle={labelStyle} />
-                  <Legend wrapperStyle={{ fontSize: "11px", color: "#71717a" }} />
-                  <Area type="monotone" dataKey="estimado" name="Estimado" stroke="#6366f1" strokeWidth={2} fill="url(#gradEst)" />
-                  <Area type="monotone" dataKey="real" name="Real" stroke="#22c55e" strokeWidth={2} fill="url(#gradReal)" />
-                </AreaChart>
-              </ResponsiveContainer>
+              <div className="flex items-center gap-1.5 mb-1">
+                <h3 className="text-sm font-semibold text-zinc-100">Burndown</h3>
+                <BurndownHelp scopeLabel={burndownScopeLabel} />
+              </div>
+              <p className="text-xs text-zinc-500 mb-4">
+                {burndownScopeLabel} · últimos 7 dias · todas as tarefas do escopo
+              </p>
+              <MetricsAreaChart
+                data={burndownData}
+                xKey="date"
+                height={220}
+                series={[
+                  { key: "estimado", label: "Estimado", color: "#6366f1" },
+                  { key: "real", label: "Real", color: "#22c55e" },
+                ]}
+              />
             </motion.div>
           </TabsContent>
 
@@ -148,17 +127,15 @@ export default function MetricsPage() {
               className="bg-zinc-900/60 border border-zinc-800/50 rounded-xl p-5">
               <h3 className="text-sm font-semibold text-zinc-100 mb-1">Velocidade por Sprint</h3>
               <p className="text-xs text-zinc-500 mb-4">Story points entregues vs meta</p>
-              <ResponsiveContainer width="100%" height={280}>
-                <BarChart data={velocityData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#27272a" />
-                  <XAxis dataKey="sprint" tick={tickStyle} {...axisProps} />
-                  <YAxis tick={tickStyle} {...axisProps} />
-                  <Tooltip contentStyle={tooltipStyle} labelStyle={labelStyle} />
-                  <Legend wrapperStyle={{ fontSize: "11px", color: "#71717a" }} />
-                  <Bar dataKey="pontos" name="Pontos Entregues" fill="#6366f1" radius={[4, 4, 0, 0]} />
-                  <Line type="monotone" dataKey="meta" name="Meta" stroke="#f59e0b" strokeWidth={2} strokeDasharray="4 4" dot={false} />
-                </BarChart>
-              </ResponsiveContainer>
+              <MetricsBarChart
+                data={velocityData}
+                xKey="sprint"
+                height={280}
+                series={[
+                  { key: "pontos", label: "Pontos Entregues", color: "#6366f1" },
+                  { key: "meta", label: "Meta", color: "#f59e0b" },
+                ]}
+              />
             </motion.div>
           </TabsContent>
 
@@ -167,24 +144,14 @@ export default function MetricsPage() {
               <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
                 className="bg-zinc-900/60 border border-zinc-800/50 rounded-xl p-5">
                 <h3 className="text-sm font-semibold text-zinc-100 mb-4">Por Complexidade</h3>
-                <ResponsiveContainer width="100%" height={240}>
-                  <PieChart>
-                    <Pie
-                      data={complexityDistribution}
-                      cx="50%" cy="50%"
-                      outerRadius={90}
-                      labelLine={false}
-                      label={renderCustomLabel}
-                      dataKey="count"
-                    >
-                      {complexityDistribution.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.fill} />
-                      ))}
-                    </Pie>
-                    <Tooltip contentStyle={tooltipStyle} />
-                    <Legend wrapperStyle={{ fontSize: "11px", color: "#71717a" }} />
-                  </PieChart>
-                </ResponsiveContainer>
+                <MetricsPieChart
+                  height={240}
+                  items={complexityDistribution.map((entry) => ({
+                    label: entry.complexity,
+                    value: entry.count,
+                    color: entry.fill,
+                  }))}
+                />
               </motion.div>
 
               <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
@@ -218,6 +185,5 @@ export default function MetricsPage() {
           </TabsContent>
         </Tabs>
       </div>
-    </AppLayout>
   );
 }

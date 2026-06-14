@@ -1,7 +1,7 @@
 "use client";
 
 import { create } from "zustand";
-import type { Project, Module, Epic, Company, ModuleStatus, ProjectShowcaseAttachment } from "@/types";
+import type { Project, Module, Epic, Company, ModuleStatus, ProjectShowcaseAttachment, ProjectDemandAttachment } from "@/types";
 import type { Task, TimeLog, ModuleAttachment } from "@/types";
 // Module and Epic are fetched from API; types re-exported for clarity
 import { generateId, delay } from "@/lib/utils";
@@ -30,6 +30,7 @@ interface ProjectStore {
   epics: Epic[];
   companies: Company[];
   projectShowcaseAttachments: ProjectShowcaseAttachment[];
+  projectDemandAttachments: ProjectDemandAttachment[];
   selectedProjectId: string | null;
   isLoading: boolean;
 
@@ -48,6 +49,11 @@ interface ProjectStore {
   updateProjectShowcase: (projectId: string, technicalDescription: string) => Promise<Project>;
   addProjectShowcaseAttachment: (projectId: string, data: { name: string; type: string; size: number; dataUrl: string }) => Promise<ProjectShowcaseAttachment>;
   deleteProjectShowcaseAttachment: (id: string) => Promise<void>;
+  getDemandAttachmentsByProject: (projectId: string) => ProjectDemandAttachment[];
+  fetchProjectDemandAttachments: (projectId: string) => Promise<ProjectDemandAttachment[]>;
+  updateProjectDemand: (projectId: string, demandDescription: string) => Promise<Project>;
+  addProjectDemandAttachment: (projectId: string, data: { name: string; type: string; size: number; dataUrl: string }) => Promise<ProjectDemandAttachment>;
+  deleteProjectDemandAttachment: (id: string) => Promise<void>;
   createProject: (data: Omit<Project, "id" | "createdAt" | "updatedAt">) => Promise<Project>;
   updateProject: (id: string, data: Partial<Project>) => Promise<Project>;
   deleteProject: (id: string) => Promise<void>;
@@ -81,6 +87,7 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
   epics: [],
   companies: [],
   projectShowcaseAttachments: [],
+  projectDemandAttachments: [],
   selectedProjectId: null,
   isLoading: false,
 
@@ -147,6 +154,9 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
       const showcaseAttachmentResults = await Promise.all(projectIds.map((id) =>
         api.get<{ attachments: ProjectShowcaseAttachment[] }>(`projects/${id}/showcase-attachments`).then((r) => asArray(r.attachments)).catch(() => [] as ProjectShowcaseAttachment[])
       ));
+      const demandAttachmentResults = await Promise.all(projectIds.map((id) =>
+        api.get<{ attachments: ProjectDemandAttachment[] }>(`projects/${id}/demand-attachments`).then((r) => asArray(r.attachments)).catch(() => [] as ProjectDemandAttachment[])
+      ));
 
       set({
         projects: normalizedProjects,
@@ -154,6 +164,7 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
         modules: modulesResults.flat(),
         epics: epicsResults.flat(),
         projectShowcaseAttachments: showcaseAttachmentResults.flat(),
+        projectDemandAttachments: demandAttachmentResults.flat(),
         isLoading: false,
       });
       useTaskStore.setState({ moduleAttachments: attachmentsResults.flat() });
@@ -212,6 +223,54 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
     } catch {
       set({ projectShowcaseAttachments: previous });
       throw new Error("Erro ao excluir arquivo do projeto");
+    }
+  },
+
+  getDemandAttachmentsByProject: (projectId) => get().projectDemandAttachments.filter((a) => a.projectId === projectId),
+
+  fetchProjectDemandAttachments: async (projectId) => {
+    const response = await api
+      .get<{ attachments: ProjectDemandAttachment[] }>(`projects/${projectId}/demand-attachments`)
+      .catch(() => ({ attachments: [] as ProjectDemandAttachment[] }));
+    set((state) => ({
+      projectDemandAttachments: [
+        ...state.projectDemandAttachments.filter((a) => a.projectId !== projectId),
+        ...asArray(response.attachments),
+      ],
+    }));
+    return asArray(response.attachments);
+  },
+
+  updateProjectDemand: async (projectId, demandDescription) => {
+    const project = await api.put<Project>(`projects/${projectId}/demand`, { demandDescription });
+    const normalized = normalizeProject(project);
+    set((state) => ({
+      projects: state.projects.map((p) => (p.id === projectId ? normalized : p)),
+    }));
+    return normalized;
+  },
+
+  addProjectDemandAttachment: async (projectId, data) => {
+    const response = await api.post<{ attachment: ProjectDemandAttachment }>(`projects/${projectId}/demand-attachments`, data);
+    set((state) => ({
+      projectDemandAttachments: [
+        response.attachment,
+        ...state.projectDemandAttachments.filter((a) => a.id !== response.attachment.id),
+      ],
+    }));
+    return response.attachment;
+  },
+
+  deleteProjectDemandAttachment: async (id) => {
+    const previous = get().projectDemandAttachments;
+    set((state) => ({
+      projectDemandAttachments: state.projectDemandAttachments.filter((a) => a.id !== id),
+    }));
+    try {
+      await api.delete(`projects/demand-attachments/${id}`);
+    } catch {
+      set({ projectDemandAttachments: previous });
+      throw new Error("Erro ao excluir arquivo da demanda");
     }
   },
 

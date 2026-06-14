@@ -22,26 +22,29 @@ Configure em **Settings → Secrets and variables → Actions**:
 
 ### Exemplo `ENV_BACKEND`
 
+Mesmas variáveis de `backend/.env.example`:
+
 ```env
-MYSQL_HOST=143.198.155.216
+MYSQL_HOST=host.docker.internal
 MYSQL_PORT=3306
-MYSQL_USER=quality_
-MYSQL_PASSWORD=sua_senha
+MYSQL_USER=devflow_user
+MYSQL_PASSWORD=devflow_password
 MYSQL_DATABASE=devflow_db
-JWT_SECRET=segredo-forte-aqui
+JWT_SECRET=change-this-development-secret
 PORT=4011
-CORS_ORIGIN=https://seu-dominio.com
-NODE_ENV=production
+CORS_ORIGIN=http://localhost:8022,http://127.0.0.1:8022,http://143.198.155.216:8022
 ```
 
 ### Exemplo `ENV_FRONTEND`
 
+Mesmas variáveis de `.env.local` (produção):
+
 ```env
-VITE_API_URL=https://api.seu-dominio.com/api
 PORT=8022
+NEXT_PUBLIC_API_URL=http://143.198.155.216:4011/api
 ```
 
-> `VITE_API_URL` e embutida no build do Vite. Se mudar a URL da API, dispare um novo deploy.
+> `NEXT_PUBLIC_API_URL` é embutida no build do Vite. Se mudar a URL da API, dispare um novo deploy.
 
 ## Fluxo do deploy
 
@@ -69,7 +72,7 @@ Se o repositório for privado, configure no servidor uma das opções:
 
 ```bash
 export ENV_BACKEND="$(cat backend/.env.example)"   # substitua pelos valores reais
-export ENV_FRONTEND="$(cat .env.production.example)"
+export ENV_FRONTEND="$(cat env.production.example)"
 bash scripts/deploy-remote.sh
 ```
 
@@ -81,3 +84,23 @@ bash scripts/deploy-remote.sh
 | Backend API | 4011 | `http://servidor:4011/api` |
 
 O banco MySQL é externo (configurado via `ENV_BACKEND`). Não há container de banco no compose de produção.
+
+> **MySQL no mesmo servidor:** use `MYSQL_HOST=host.docker.internal` (ou o IP `143.198.155.216`). **Não** use `127.0.0.1` — dentro do container isso aponta para o próprio container, não para o host.
+
+## Diagnóstico rápido
+
+Se o frontend sobe mas o login falha com `localhost:4011`:
+
+```bash
+docker ps -a | grep devflow
+docker logs devflow_backend --tail 100
+curl -s http://127.0.0.1:4011/api/health
+cat /opt/devflow/.env.production
+```
+
+| Sintoma | Causa provável | Correção |
+|---------|----------------|----------|
+| Request para `localhost:4011` no browser | `ENV_FRONTEND` com `NEXT_PUBLIC_API_URL=http://localhost:4011/api` | Atualizar secret e redeploy |
+| `devflow_backend` ausente ou `Exited` | MySQL inacessível, migration falhou ou env incompleto | Ver `docker logs devflow_backend`; corrigir `ENV_BACKEND` |
+| Backend `Exited (1)` após 5 tentativas | Política antiga `on-failure:5` | Pull + redeploy (agora usa `unless-stopped`) |
+| `Can't connect to MySQL server` | `MYSQL_HOST=127.0.0.1` no container | Usar `host.docker.internal` ou IP do servidor |

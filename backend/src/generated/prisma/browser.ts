@@ -117,3 +117,8 @@ export type ModuleAttachment = Prisma.ModuleAttachmentModel
  * 
  */
 export type ProjectShowcaseAttachment = Prisma.ProjectShowcaseAttachmentModel
+/**
+ * Model ProjectDemandAttachment
+ * 
+ */
+export type ProjectDemandAttachment = Prisma.ProjectDemandAttachmentModel

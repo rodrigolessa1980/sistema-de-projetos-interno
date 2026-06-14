@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { motion } from "@/lib/motion";
 import type { LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 

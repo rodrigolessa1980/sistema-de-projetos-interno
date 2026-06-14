@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "@/lib/motion";
 import {
   Upload, Trash2, Download, FileText, FileImage,
   FileVideo, FileArchive, File, Paperclip,

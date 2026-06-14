@@ -44,8 +44,11 @@ async function bootstrap() {
   );
   app.useGlobalFilters(new DomainExceptionFilter());
 
-  const port = process.env.PORT ?? 4011;
-  await app.listen(port);
-  console.log(`DevFlow API rodando em http://localhost:${port}/api`);
+  const port = Number(process.env.PORT ?? 4011);
+  await app.listen(port, '0.0.0.0');
+  console.log(`DevFlow API rodando em http://0.0.0.0:${port}/api`);
 }
-bootstrap();
+bootstrap().catch((error) => {
+  console.error('Falha ao iniciar a API:', error);
+  process.exit(1);
+});

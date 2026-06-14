@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { AppLayout } from "@/components/layout/app-layout";
 import { useProjectStore, useUserStore } from "@/stores";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -59,7 +58,6 @@ export default function ProjectReportPage() {
   }, [id]);
 
   return (
-    <AppLayout>
       <div className="p-6 w-full space-y-6">
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 text-sm text-zinc-500">
@@ -265,6 +263,5 @@ export default function ProjectReportPage() {
           </div>
         )}
       </div>
-    </AppLayout>
   );
 }

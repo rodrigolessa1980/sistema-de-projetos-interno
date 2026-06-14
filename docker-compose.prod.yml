@@ -8,11 +8,13 @@ services:
       secrets:
         - backend_env
     container_name: devflow_backend
-    restart: on-failure:5
+    restart: unless-stopped
     mem_limit: 512m
     cpus: 0.75
     env_file:
       - ./backend/.env
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     ports:
       - "4011:4011"
     networks:
@@ -23,9 +25,9 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        VITE_API_URL: ${VITE_API_URL}
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
     container_name: devflow_frontend
-    restart: on-failure:5
+    restart: unless-stopped
     mem_limit: 512m
     cpus: 0.75
     environment:
@@ -33,7 +35,8 @@ services:
     ports:
       - "8022:8022"
     depends_on:
-      - backend
+      backend:
+        condition: service_started
     networks:
       - devflow
 

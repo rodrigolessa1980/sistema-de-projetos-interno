@@ -1,14 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { AppLayout } from "@/components/layout/app-layout";
 import { StatCard } from "@/components/shared/stat-card";
 import { StatusBadge } from "@/components/shared/task-badge";
 import { useMetrics } from "@/hooks/use-metrics";
 import { useProjectStore, useTaskStore, useUserStore, useAuthStore } from "@/stores";
 import { useAuth } from "@/hooks/use-auth";
 import { formatDate, formatRelativeTime, getStatusLabel } from "@/lib/utils";
-import { motion } from "framer-motion";
+import { motion } from "@/lib/motion";
 import {
   FolderKanban, ListTodo, CheckCircle2, AlertTriangle, Clock,
   TrendingUp, Users, Zap, ArrowRight, Circle, Medal, Trophy, Timer, CalendarX,
@@ -16,10 +15,7 @@ import {
 import { useWorkSessionStore } from "@/stores/work-session-store";
 import { Progress } from "@/components/ui/progress";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  ResponsiveContainer, AreaChart, Area, XAxis, YAxis,
-  CartesianGrid, Tooltip, BarChart, Bar, PieChart, Pie, Cell,
-} from "recharts";
+import { MetricsAreaChart } from "@/components/shared/mui-charts";
 import Link from "@/lib/router";
 import { Badge } from "@/components/ui/badge";
 
@@ -100,7 +96,6 @@ export default function DashboardPage() {
   const maxHours = devRanking[0]?.hours || 1;
 
   return (
-    <AppLayout>
       <div className="p-6 w-full space-y-6">
         <div className="flex items-center justify-between">
           <div>
@@ -155,29 +150,15 @@ export default function DashboardPage() {
               <h3 className="text-sm font-semibold text-zinc-100">Burndown</h3>
               <p className="text-xs text-zinc-500">Últimas 2 semanas</p>
             </div>
-            <ResponsiveContainer width="100%" height={190}>
-              <AreaChart data={burndownData}>
-                <defs>
-                  <linearGradient id="colorEstimado" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#6366f1" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
-                  </linearGradient>
-                  <linearGradient id="colorReal" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#22c55e" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="#22c55e" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#27272a" />
-                <XAxis dataKey="date" tick={{ fill: "#71717a", fontSize: 10 }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fill: "#71717a", fontSize: 10 }} axisLine={false} tickLine={false} width={28} />
-                <Tooltip
-                  contentStyle={{ background: "#18181b", border: "1px solid #3f3f46", borderRadius: "8px", fontSize: "12px" }}
-                  labelStyle={{ color: "#a1a1aa" }}
-                />
-                <Area type="monotone" dataKey="estimado" name="Estimado" stroke="#6366f1" strokeWidth={2} fill="url(#colorEstimado)" />
-                <Area type="monotone" dataKey="real" name="Real" stroke="#22c55e" strokeWidth={2} fill="url(#colorReal)" />
-              </AreaChart>
-            </ResponsiveContainer>
+            <MetricsAreaChart
+              data={burndownData}
+              xKey="date"
+              height={190}
+              series={[
+                { key: "estimado", label: "Estimado", color: "#6366f1" },
+                { key: "real", label: "Real", color: "#22c55e" },
+              ]}
+            />
           </motion.div>
 
           {/* Distribuição por Status */}
@@ -459,6 +440,5 @@ export default function DashboardPage() {
           <StatCard title="Entregas / Semana" value={`${summary.throughput}`} subtitle="tarefas concluídas" icon={Users} color="violet" delay={0.6} />
         </div>
       </div>
-    </AppLayout>
   );
 }

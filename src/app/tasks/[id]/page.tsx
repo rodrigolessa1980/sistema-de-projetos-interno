@@ -1,12 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { AppLayout } from "@/components/layout/app-layout";
 import { useTaskStore, useProjectStore, useUserStore } from "@/stores";
 import { useAuth } from "@/hooks/use-auth";
 import { StatusBadge, ComplexityBadge } from "@/components/shared/task-badge";
 import { formatDate, formatDateTime, formatRelativeTime, getStatusLabel, ALL_STATUSES } from "@/lib/utils";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "@/lib/motion";
 import {
   ChevronLeft, Clock, AlertTriangle, MessageSquare, CheckSquare,
   Square, Plus, Send, Calendar, User2, Layers, Timer, Activity,
@@ -149,7 +148,6 @@ export default function TaskDetailPage() {
   const progressPercent = task.estimatedHours > 0 ? Math.min(100, (task.actualHours / task.estimatedHours) * 100) : 0;
 
   return (
-    <AppLayout>
       <div className="p-6 w-full">
         <div className="flex items-center gap-2 mb-6">
           <Link href="/tasks" className="flex items-center gap-1 text-sm text-zinc-500 hover:text-zinc-300">
@@ -669,6 +667,5 @@ export default function TaskDetailPage() {
           </div>
         </div>
       </div>
-    </AppLayout>
   );
 }

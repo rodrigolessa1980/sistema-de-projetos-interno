@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { AppLayout } from "@/components/layout/app-layout";
 import { PageHeader } from "@/components/shared/page-header";
 import { EmptyState } from "@/components/shared/empty-state";
 import { useProjectStore, useUserStore } from "@/stores";
@@ -41,7 +40,7 @@ import {
 import Link from "@/lib/router";
 import { toast } from "sonner";
 import type { Project } from "@/types";
-import { motion } from "framer-motion";
+import { motion } from "@/lib/motion";
 import { formatDate } from "@/lib/utils";
 
 const statusLabels: Record<string, string> = {
@@ -257,7 +256,7 @@ export default function QueuePage() {
   const firstProject = orderedProjects[0];
 
   return (
-    <AppLayout>
+    <>
       <PageHeader
         title="Fila de Desenvolvimento"
         description={
@@ -368,6 +367,6 @@ export default function QueuePage() {
           </div>
         )}
       </div>
-    </AppLayout>
+    </>
   );
 }

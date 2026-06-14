@@ -78,7 +78,6 @@ export function useUpdateTaskStatus() {
 
 export function useUpdateKanbanOrder() {
   const store = useTaskStore();
-  const qc = useQueryClient();
 
   return useMutation({
     mutationFn: async (payload: KanbanOrderPayload) => {
@@ -93,9 +92,6 @@ export function useUpdateKanbanOrder() {
           message: error instanceof Error ? error.message : "Backend indisponível",
         };
       }
-    },
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["tasks"] });
     },
   });
 }

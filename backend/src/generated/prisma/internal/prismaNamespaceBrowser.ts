@@ -70,7 +70,8 @@ export const ModelName = {
   TaskNote: 'TaskNote',
   TaskAttachment: 'TaskAttachment',
   ModuleAttachment: 'ModuleAttachment',
-  ProjectShowcaseAttachment: 'ProjectShowcaseAttachment'
+  ProjectShowcaseAttachment: 'ProjectShowcaseAttachment',
+  ProjectDemandAttachment: 'ProjectDemandAttachment'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -139,6 +140,7 @@ export const ProjectScalarFieldEnum = {
   name: 'name',
   description: 'description',
   technicalDescription: 'technicalDescription',
+  demandDescription: 'demandDescription',
   requestedBy: 'requestedBy',
   status: 'status',
   ownerId: 'ownerId',
@@ -392,6 +394,20 @@ export const ProjectShowcaseAttachmentScalarFieldEnum = {
 export type ProjectShowcaseAttachmentScalarFieldEnum = (typeof ProjectShowcaseAttachmentScalarFieldEnum)[keyof typeof ProjectShowcaseAttachmentScalarFieldEnum]
 
 
+export const ProjectDemandAttachmentScalarFieldEnum = {
+  id: 'id',
+  projectId: 'projectId',
+  userId: 'userId',
+  name: 'name',
+  type: 'type',
+  size: 'size',
+  dataUrl: 'dataUrl',
+  createdAt: 'createdAt'
+} as const
+
+export type ProjectDemandAttachmentScalarFieldEnum = (typeof ProjectDemandAttachmentScalarFieldEnum)[keyof typeof ProjectDemandAttachmentScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -463,6 +479,7 @@ export const ProjectOrderByRelevanceFieldEnum = {
   name: 'name',
   description: 'description',
   technicalDescription: 'technicalDescription',
+  demandDescription: 'demandDescription',
   requestedBy: 'requestedBy',
   ownerId: 'ownerId',
   color: 'color',
@@ -660,4 +677,16 @@ export const ProjectShowcaseAttachmentOrderByRelevanceFieldEnum = {
 } as const
 
 export type ProjectShowcaseAttachmentOrderByRelevanceFieldEnum = (typeof ProjectShowcaseAttachmentOrderByRelevanceFieldEnum)[keyof typeof ProjectShowcaseAttachmentOrderByRelevanceFieldEnum]
+
+
+export const ProjectDemandAttachmentOrderByRelevanceFieldEnum = {
+  id: 'id',
+  projectId: 'projectId',
+  userId: 'userId',
+  name: 'name',
+  type: 'type',
+  dataUrl: 'dataUrl'
+} as const
+
+export type ProjectDemandAttachmentOrderByRelevanceFieldEnum = (typeof ProjectDemandAttachmentOrderByRelevanceFieldEnum)[keyof typeof ProjectDemandAttachmentOrderByRelevanceFieldEnum]
 
