@@ -805,13 +805,13 @@ export default function ProjectDetailPage() {
           </div>
         </div>
 
-        {/* Demanda */}
+        {/* Visual do Projeto */}
         <div className="bg-zinc-900/60 border border-zinc-800/50 rounded-xl p-5 mb-6 space-y-4">
           <div className="flex items-start justify-between gap-3">
             <div>
               <div className="flex items-center gap-2">
                 <ClipboardList className="w-4 h-4 text-amber-400" />
-                <h2 className="text-sm font-semibold text-zinc-100">Demanda</h2>
+                <h2 className="text-sm font-semibold text-zinc-100">Visual do Projeto</h2>
               </div>
               <p className="text-xs text-zinc-500 mt-1">
                 Documentos, telas e explicações sobre a demanda original deste projeto.
