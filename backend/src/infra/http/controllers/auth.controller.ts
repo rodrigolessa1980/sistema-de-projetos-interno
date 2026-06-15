@@ -6,7 +6,9 @@ import { LoginDto } from '../dtos/auth/login.dto';
 import { RegisterDto } from '../dtos/auth/register.dto';
 import { UserPresenter } from '../presenters/user.presenter';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
+import { PermissionsGuard } from '../guards/permissions.guard';
 import type { AuthenticatedRequest } from '../guards/jwt-auth.guard';
+import { UserRole } from '../../../core/domain/entities/enums';
 
 @Controller('auth')
 export class AuthController {
@@ -49,10 +51,22 @@ export class AuthController {
   }
 
   @Get('me')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
   async me(@Req() req: AuthenticatedRequest) {
     const user = await this.getCurrentUserUseCase.execute(req.userId);
     return { user: UserPresenter.toHTTP(user) };
+  }
+
+  @Get('me/permissions')
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  async myPermissions(@Req() req: AuthenticatedRequest) {
+    return {
+      userId: req.userId,
+      role: req.userRole,
+      authMethod: req.authMethod,
+      permissions: [...req.permissions].sort(),
+      isAdmin: req.userRole === UserRole.ADMIN,
+    };
   }
 }
 

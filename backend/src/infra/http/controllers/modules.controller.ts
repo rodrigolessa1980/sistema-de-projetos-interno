@@ -1,5 +1,7 @@
 import { Body, Controller, Delete, Get, HttpCode, Param, Patch, Post, Req, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
+import { PermissionsGuard } from '../guards/permissions.guard';
+import { RequirePermission } from '../decorators/require-permission.decorator';
 import type { AuthenticatedRequest } from '../guards/jwt-auth.guard';
 import { CreateModuleUseCase } from '../../../core/use-cases/modules/create-module.use-case';
 import { CreateModuleWithTimeLogUseCase } from '../../../core/use-cases/modules/create-module-with-time-log.use-case';
@@ -11,7 +13,7 @@ import { CreateModuleAttachmentUseCase } from '../../../core/use-cases/modules/c
 import { DeleteModuleAttachmentUseCase } from '../../../core/use-cases/modules/delete-module-attachment.use-case';
 import { CreateEpicUseCase } from '../../../core/use-cases/epics/create-epic.use-case';
 import { ListEpicsByProjectUseCase } from '../../../core/use-cases/epics/list-epics-by-project.use-case';
-import { IsInt, IsNotEmpty, IsOptional, IsString, IsDateString, IsArray, IsEnum } from 'class-validator';
+import { IsInt, IsNotEmpty, IsNumber, IsOptional, IsString, IsDateString, IsArray, IsEnum } from 'class-validator';
 import { CreateModuleDto } from '../dtos/modules/create-module.dto';
 import { CreateModuleAttachmentDto } from '../dtos/modules/create-module-attachment.dto';
 import { TaskPresenter } from '../presenters/task.presenter';
@@ -22,6 +24,8 @@ class UpdateModuleDto {
   @IsOptional() @IsString() @IsNotEmpty() name?: string;
   @IsOptional() @IsString() description?: string;
   @IsOptional() @IsEnum(ModuleStatus) status?: ModuleStatus;
+  @IsOptional() @IsDateString() workDate?: string;
+  @IsOptional() @IsNumber() hours?: number;
 }
 
 class CreateEpicDto {
@@ -88,7 +92,7 @@ function epicToHTTP(e: any) {
 }
 
 @Controller()
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, PermissionsGuard)
 export class ModulesController {
   constructor(
     private readonly createModuleUseCase: CreateModuleUseCase,
@@ -104,18 +108,21 @@ export class ModulesController {
   ) {}
 
   @Get('projects/:projectId/modules')
+  @RequirePermission('modules:read')
   async listModules(@Param('projectId') projectId: string) {
     const modules = await this.listModulesByProjectUseCase.execute(projectId);
     return { modules: modules.map(moduleToHTTP) };
   }
 
   @Get('projects/:projectId/module-attachments')
+  @RequirePermission('modules:read')
   async listModuleAttachments(@Param('projectId') projectId: string) {
     const attachments = await this.listModuleAttachmentsByProjectUseCase.execute(projectId);
     return { attachments: attachments.map(moduleAttachmentToHTTP) };
   }
 
   @Post('modules')
+  @RequirePermission('modules:create')
   async createModule(@Req() req: AuthenticatedRequest, @Body() body: CreateModuleDto) {
     const hasTimeLog = body.hours != null && body.hours > 0 && body.workDate;
     const hasAttachments = (body.attachments?.length ?? 0) > 0;
@@ -152,6 +159,7 @@ export class ModulesController {
   }
 
   @Post('modules/:moduleId/attachments')
+  @RequirePermission('modules:update')
   async createModuleAttachment(
     @Req() req: AuthenticatedRequest,
     @Param('moduleId') moduleId: string,
@@ -170,33 +178,40 @@ export class ModulesController {
 
   @Delete('module-attachments/:id')
   @HttpCode(204)
+  @RequirePermission('modules:delete')
   async deleteModuleAttachment(@Param('id') id: string) {
     await this.deleteModuleAttachmentUseCase.execute(id);
   }
 
   @Patch('modules/:id')
+  @RequirePermission('modules:update')
   async updateModule(@Param('id') id: string, @Body() body: UpdateModuleDto) {
     const module = await this.updateModuleUseCase.execute(id, {
       name: body.name,
       description: body.description,
       status: body.status,
+      workDate: body.workDate ? new Date(`${body.workDate}T12:00:00.000Z`) : undefined,
+      hours: body.hours,
     });
     return { module: moduleToHTTP(module) };
   }
 
   @Delete('modules/:id')
   @HttpCode(204)
+  @RequirePermission('modules:delete')
   async deleteModule(@Param('id') id: string) {
     await this.deleteModuleUseCase.execute(id);
   }
 
   @Get('projects/:projectId/epics')
+  @RequirePermission('epics:read')
   async listEpics(@Param('projectId') projectId: string) {
     const epics = await this.listEpicsByProjectUseCase.execute(projectId);
     return { epics: epics.map(epicToHTTP) };
   }
 
   @Post('epics')
+  @RequirePermission('epics:create')
   async createEpic(@Body() body: CreateEpicDto) {
     const epic = await this.createEpicUseCase.execute({
       projectId: body.projectId,

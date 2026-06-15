@@ -14,6 +14,8 @@
     "prisma:migrate": "prisma migrate dev",
     "prisma:seed": "prisma db seed",
     "prisma:seed:run": "npm run build --silent && node dist/prisma/seed.js",
+    "import:devlog": "npm run build --silent && node dist/scripts/import-devlog.js",
+    "import:relatorio": "node ../scripts/relatorio-to-devlog.mjs && npm run import:devlog",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "predev": "node ../scripts/kill-ports.js 4011",
     "dev": "nest start --watch",

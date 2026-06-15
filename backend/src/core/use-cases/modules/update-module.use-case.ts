@@ -8,6 +8,8 @@ export interface UpdateModuleInput {
   name?: string;
   description?: string;
   status?: ModuleStatus;
+  workDate?: Date | null;
+  hours?: number | null;
 }
 
 @Injectable()

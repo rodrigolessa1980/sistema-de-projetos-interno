@@ -4,6 +4,7 @@ export interface ITimeLogRepository {
   findById(id: string): Promise<TimeLog | null>;
   create(timeLog: TimeLog): Promise<TimeLog>;
   delete(id: string): Promise<void>;
+  findAll(): Promise<TimeLog[]>;
   findByTaskId(taskId: string): Promise<TimeLog[]>;
   findByUserId(userId: string): Promise<TimeLog[]>;
   findByProjectId(projectId: string): Promise<TimeLog[]>;

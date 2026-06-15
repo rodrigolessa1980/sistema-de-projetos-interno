@@ -1,5 +1,19 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Put, UseGuards } from '@nestjs/common';
-import { JwtAuthGuard } from '../guards/jwt-auth.guard';
+import {
+  Body,
+  Controller,
+  Delete,
+  ForbiddenException,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Put,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
+import { JwtAuthGuard, type AuthenticatedRequest } from '../guards/jwt-auth.guard';
+import { PermissionsGuard } from '../guards/permissions.guard';
+import { RequirePermission } from '../decorators/require-permission.decorator';
 import { CreateTaskUseCase } from '../../../core/use-cases/tasks/create-task.use-case';
 import { UpdateTaskUseCase } from '../../../core/use-cases/tasks/update-task.use-case';
 import { DeleteTaskUseCase } from '../../../core/use-cases/tasks/delete-task.use-case';
@@ -13,9 +27,10 @@ import { UpdateTaskDto } from '../dtos/tasks/update-task.dto';
 import { SetTaskUrgentDto } from '../dtos/tasks/set-task-urgent.dto';
 import { ReorderKanbanTasksDto } from '../dtos/tasks/reorder-kanban-tasks.dto';
 import { TaskPresenter, TaskResponse } from '../presenters/task.presenter';
+import { UserRole } from '../../../core/domain/entities/enums';
 
 @Controller('tasks')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, PermissionsGuard)
 export class TasksController {
   constructor(
     private readonly createTaskUseCase: CreateTaskUseCase,
@@ -29,6 +44,7 @@ export class TasksController {
   ) {}
 
   @Post()
+  @RequirePermission('tasks:create')
   async create(@Body() body: CreateTaskDto): Promise<TaskResponse> {
     const task = await this.createTaskUseCase.execute({
       projectId: body.projectId,
@@ -52,7 +68,53 @@ export class TasksController {
     return TaskPresenter.toHTTP(task);
   }
 
+  @Get('me')
+  @RequirePermission('tasks:read')
+  async listMine(@Req() req: AuthenticatedRequest): Promise<TaskResponse[]> {
+    const tasks = await this.listTasksByAssigneeUseCase.execute(req.userId);
+    return tasks.map(TaskPresenter.toHTTP);
+  }
+
+  @Get('project/:projectId')
+  @RequirePermission('tasks:read')
+  async listByProject(@Param('projectId') projectId: string): Promise<TaskResponse[]> {
+    const tasks = await this.listTasksByProjectUseCase.execute(projectId);
+    return tasks.map(TaskPresenter.toHTTP);
+  }
+
+  @Get('assignee/:assigneeId')
+  @RequirePermission('tasks:read')
+  async listByAssignee(
+    @Req() req: AuthenticatedRequest,
+    @Param('assigneeId') assigneeId: string,
+  ): Promise<TaskResponse[]> {
+    if (
+      assigneeId !== req.userId &&
+      req.userRole !== UserRole.ADMIN &&
+      !req.permissions.has('users:read')
+    ) {
+      throw new ForbiddenException('Você só pode listar suas próprias tarefas.');
+    }
+    const tasks = await this.listTasksByAssigneeUseCase.execute(assigneeId);
+    return tasks.map(TaskPresenter.toHTTP);
+  }
+
+  @Patch('kanban/order')
+  @RequirePermission('tasks:update')
+  async reorderKanban(@Body() body: ReorderKanbanTasksDto) {
+    await this.reorderKanbanTasksUseCase.execute(body);
+    return { success: true };
+  }
+
+  @Get(':id')
+  @RequirePermission('tasks:read')
+  async getById(@Param('id') id: string): Promise<TaskResponse> {
+    const task = await this.getTaskByIdUseCase.execute(id);
+    return TaskPresenter.toHTTP(task);
+  }
+
   @Put(':id')
+  @RequirePermission('tasks:update')
   async update(
     @Param('id') id: string,
     @Body() body: UpdateTaskDto,
@@ -79,31 +141,8 @@ export class TasksController {
     return TaskPresenter.toHTTP(task);
   }
 
-  @Delete(':id')
-  async delete(@Param('id') id: string): Promise<{ success: boolean }> {
-    await this.deleteTaskUseCase.execute(id);
-    return { success: true };
-  }
-
-  @Get(':id')
-  async getById(@Param('id') id: string): Promise<TaskResponse> {
-    const task = await this.getTaskByIdUseCase.execute(id);
-    return TaskPresenter.toHTTP(task);
-  }
-
-  @Get('project/:projectId')
-  async listByProject(@Param('projectId') projectId: string): Promise<TaskResponse[]> {
-    const tasks = await this.listTasksByProjectUseCase.execute(projectId);
-    return tasks.map(TaskPresenter.toHTTP);
-  }
-
-  @Get('assignee/:assigneeId')
-  async listByAssignee(@Param('assigneeId') assigneeId: string): Promise<TaskResponse[]> {
-    const tasks = await this.listTasksByAssigneeUseCase.execute(assigneeId);
-    return tasks.map(TaskPresenter.toHTTP);
-  }
-
   @Patch(':id/urgent')
+  @RequirePermission('tasks:update')
   async setUrgent(
     @Param('id') id: string,
     @Body() body: SetTaskUrgentDto,
@@ -112,9 +151,10 @@ export class TasksController {
     return TaskPresenter.toHTTP(task);
   }
 
-  @Patch('kanban/order')
-  async reorderKanban(@Body() body: ReorderKanbanTasksDto) {
-    await this.reorderKanbanTasksUseCase.execute(body);
+  @Delete(':id')
+  @RequirePermission('tasks:delete')
+  async delete(@Param('id') id: string): Promise<{ success: boolean }> {
+    await this.deleteTaskUseCase.execute(id);
     return { success: true };
   }
 }

@@ -37,7 +37,16 @@ export interface IModuleRepository {
   createComplete(input: CreateModuleCompleteInput): Promise<CreateModuleCompleteResult>;
   findById(id: string): Promise<Module | null>;
   listByProject(projectId: string): Promise<Module[]>;
-  update(id: string, data: { name?: string; description?: string; status?: ModuleStatus }): Promise<Module>;
+  update(
+    id: string,
+    data: {
+      name?: string;
+      description?: string;
+      status?: ModuleStatus;
+      workDate?: Date | null;
+      hours?: number | null;
+    },
+  ): Promise<Module>;
   delete(id: string): Promise<void>;
 }
 

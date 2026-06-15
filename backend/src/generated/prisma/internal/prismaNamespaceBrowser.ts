@@ -53,6 +53,7 @@ export const AnyNull = runtime.AnyNull
 export const ModelName = {
   Company: 'Company',
   User: 'User',
+  ApiToken: 'ApiToken',
   UserPermission: 'UserPermission',
   Project: 'Project',
   ProjectDeveloper: 'ProjectDeveloper',
@@ -119,6 +120,22 @@ export const UserScalarFieldEnum = {
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
+
+
+export const ApiTokenScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  name: 'name',
+  tokenHash: 'tokenHash',
+  tokenPrefix: 'tokenPrefix',
+  scopes: 'scopes',
+  expiresAt: 'expiresAt',
+  lastUsedAt: 'lastUsedAt',
+  revokedAt: 'revokedAt',
+  createdAt: 'createdAt'
+} as const
+
+export type ApiTokenScalarFieldEnum = (typeof ApiTokenScalarFieldEnum)[keyof typeof ApiTokenScalarFieldEnum]
 
 
 export const UserPermissionScalarFieldEnum = {
@@ -463,6 +480,34 @@ export const UserOrderByRelevanceFieldEnum = {
 export type UserOrderByRelevanceFieldEnum = (typeof UserOrderByRelevanceFieldEnum)[keyof typeof UserOrderByRelevanceFieldEnum]
 
 
+export const JsonNullValueFilter = {
+  DbNull: DbNull,
+  JsonNull: JsonNull,
+  AnyNull: AnyNull
+} as const
+
+export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
+
+
+export const QueryMode = {
+  default: 'default',
+  insensitive: 'insensitive'
+} as const
+
+export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
+
+
+export const ApiTokenOrderByRelevanceFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  name: 'name',
+  tokenHash: 'tokenHash',
+  tokenPrefix: 'tokenPrefix'
+} as const
+
+export type ApiTokenOrderByRelevanceFieldEnum = (typeof ApiTokenOrderByRelevanceFieldEnum)[keyof typeof ApiTokenOrderByRelevanceFieldEnum]
+
+
 export const UserPermissionOrderByRelevanceFieldEnum = {
   id: 'id',
   userId: 'userId',
@@ -573,23 +618,6 @@ export const TimeLogOrderByRelevanceFieldEnum = {
 } as const
 
 export type TimeLogOrderByRelevanceFieldEnum = (typeof TimeLogOrderByRelevanceFieldEnum)[keyof typeof TimeLogOrderByRelevanceFieldEnum]
-
-
-export const JsonNullValueFilter = {
-  DbNull: DbNull,
-  JsonNull: JsonNull,
-  AnyNull: AnyNull
-} as const
-
-export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
-
-
-export const QueryMode = {
-  default: 'default',
-  insensitive: 'insensitive'
-} as const
-
-export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
 
 
 export const CommentOrderByRelevanceFieldEnum = {

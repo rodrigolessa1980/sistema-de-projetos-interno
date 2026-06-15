@@ -1,0 +1,1486 @@
+{
+  "projects": [
+    {
+      "id": "b20326e6-ead1-4165-88bc-5abe8caaeb7e",
+      "name": "Agenda Sala de Reunião",
+      "status": "ATIVO",
+      "progress": 95,
+      "actualHours": 41.27,
+      "estimatedHours": 100,
+      "startDate": "2026-06-14",
+      "modules": [
+        {
+          "id": "99e337df-edb3-43ed-b7a4-1857604d1ffd",
+          "name": "2026-02-19 — base backend",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 8,
+          "workDate": "2026-02-19"
+        },
+        {
+          "id": "fe33980f-d314-458d-9e7d-57de50700370",
+          "name": "2026-02-20 — Enhance email sending functionality with error handling and increase mailer con…",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 8,
+          "workDate": "2026-02-20"
+        },
+        {
+          "id": "a55db49d-5bb0-48c7-8e28-9225a20d3bce",
+          "name": "2026-02-23 — Update index.html, replace assets, and enhance routing and styling in various c…",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 3,
+          "workDate": "2026-02-23"
+        },
+        {
+          "id": "1b2bfd29-64e3-466c-9e91-9741b21bd282",
+          "name": "2026-02-24 — Implement reservation deletion restrictions for non-admin users in MeetingsCale…",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 6.38,
+          "workDate": "2026-02-24"
+        },
+        {
+          "id": "c2e2b47e-2a62-40be-a5b2-f9a5f61deebd",
+          "name": "2026-03-03 — Refactor MeetingsCalendar to improve room color management and enhance DayDispl…",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 3.75,
+          "workDate": "2026-03-03"
+        },
+        {
+          "id": "a836b6b7-d066-4414-99bb-40495eaa3cb6",
+          "name": "2026-03-04 — Admins can schedule meetings for others and have no time or user limit",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 2.25,
+          "workDate": "2026-03-04"
+        },
+        {
+          "id": "467e21a3-161c-44aa-a5cc-530d5c475496",
+          "name": "2026-03-11 — countdown",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 8,
+          "workDate": "2026-03-11"
+        },
+        {
+          "id": "c0a78b1a-2ddb-491b-9099-b33c3206907f",
+          "name": "2026-03-12 — uhuhuhuh",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 0.38,
+          "workDate": "2026-03-12"
+        },
+        {
+          "id": "9fdcd250-6f66-40b3-bd51-97de1ea935b2",
+          "name": "2026-04-01 — Add showTimeRange prop to RoomColumn and update time display - Introduced showT…",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 0.38,
+          "workDate": "2026-04-01"
+        },
+        {
+          "id": "4c15e765-12b7-4392-a733-140eb09aba61",
+          "name": "2026-06-02 — Update deploy.yml to reflect new image names for frontend and backend - Changed…",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 0.38,
+          "workDate": "2026-06-02"
+        },
+        {
+          "id": "391db13e-29bf-4a05-ab38-567f0631a878",
+          "name": "2026-06-10 — Refactor deployment scripts to ensure ports are free before running containers",
+          "status": "EM_PROCESSO",
+          "progress": 50,
+          "loggedHours": 0.75,
+          "workDate": "2026-06-10"
+        }
+      ],
+      "_count": {
+        "tasks": 11,
+        "timeLogs": 11
+      },
+      "timeLogHours": 41.27
+    },
+    {
+      "id": "1cdfbc74-18d4-4c9c-82c5-38001b43d770",
+      "name": "Anomalias de Transporte",
+      "status": "ATIVO",
+      "progress": 100,
+      "actualHours": 9.75,
+      "estimatedHours": 40,
+      "startDate": "2026-06-14",
+      "modules": [
+        {
+          "id": "e7432d7d-c400-4e3d-bfdb-2b00744bf42b",
+          "name": "2026-01-13 — dashboard bug fix",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 2.25,
+          "workDate": "2026-01-13"
+        },
+        {
+          "id": "c30caf86-a6c7-4bd2-b130-b21a756c6dc6",
+          "name": "2026-01-23 — [Fix] Reports Date Persistence",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 7.5,
+          "workDate": "2026-01-23"
+        }
+      ],
+      "_count": {
+        "tasks": 2,
+        "timeLogs": 2
+      },
+      "timeLogHours": 9.75
+    },
+    {
+      "id": "b2b63e8f-c47d-4615-bf12-ddd948797f09",
+      "name": "Dashboard Transporte",
+      "status": "ATIVO",
+      "progress": 91,
+      "actualHours": 185.51999999999998,
+      "estimatedHours": 200,
+      "startDate": "2026-06-14",
+      "modules": [
+        {
+          "id": "705c5bf7-c5c9-40f8-abb3-0dc8a2ba57ad",
+          "name": "2026-03-09 — BASE",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 6,
+          "workDate": "2026-03-09"
+        },
+        {
+          "id": "86a1c6bf-89b9-49b1-9106-435c4738ceeb",
+          "name": "2026-03-12 — Update .gitignore to include environment files, enhance App component to handle…",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 8,
+          "workDate": "2026-03-12"
+        },
+        {
+          "id": "ea07cf49-85bb-4419-9d2e-ee8194f633fb",
+          "name": "2026-03-13 — Enhance Autotrac synchronization features by adding endpoints for authorized un…",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 6,
+          "workDate": "2026-03-13"
+        },
+        {
+          "id": "4ed727e9-e2d6-4b2e-887e-ddd9616eb9d1",
+          "name": "2026-04-01 — Implement enhanced synchronization features for Autotrac, including new endpoin…",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 6,
+          "workDate": "2026-04-01"
+        },
+        {
+          "id": "90adc1a8-a8f1-446c-b0d5-ecc1b383e092",
+          "name": "2026-04-02 — Update environment configuration and enhance synchronization logic. Change API …",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 6.5,
+          "workDate": "2026-04-02"
+        },
+        {
+          "id": "8f0e86c6-6e93-4082-b605-77de68433ab4",
+          "name": "2026-04-08 — Enhance fleet management features by integrating timezone support and trip coun…",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 8,
+          "workDate": "2026-04-08"
+        },
+        {
+          "id": "9d39f1ce-17db-4f61-8e88-97a4f86db5d3",
+          "name": "2026-04-10 — Enhance fleet management by adding logic to query the latest region event per v…",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 8,
+          "workDate": "2026-04-10"
+        },
+        {
+          "id": "3eba376b-08ad-474a-a34e-a2e475ad4cd3",
+          "name": "2026-04-11 — introduce truck complements management and enhance fleet data handling - Added …",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 7.5,
+          "workDate": "2026-04-11"
+        },
+        {
+          "id": "63377da4-92db-41ad-9129-7e82be089cd5",
+          "name": "2026-04-12 — enhance fleet and reconciliation data handling with trip history and caching - …",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 8,
+          "workDate": "2026-04-12"
+        },
+        {
+          "id": "430fd1aa-1dff-4324-a92d-f3b26d896fdc",
+          "name": "2026-04-13 — enhance mobile responsiveness and UI components for better user experience - Up…",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 8,
+          "workDate": "2026-04-13"
+        },
+        {
+          "id": "514d477c-a566-4400-adb2-0766e1178e71",
+          "name": "2026-04-15 — enhance LHG import processing and UI to support additional fields - Added optio…",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 5.63,
+          "workDate": "2026-04-15"
+        },
+        {
+          "id": "4d3f554f-967e-45c6-adb5-c99ae23529f5",
+          "name": "2026-04-19 — add missing NFs retrieval and enhance canhotos record schema - Introduced `canc…",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 8,
+          "workDate": "2026-04-19"
+        },
+        {
+          "id": "a60cca3d-f4cf-4b52-ba3e-9ab31db78ef9",
+          "name": "2026-04-20 — add crValorAReceber field and enhance reconciliation details - Introduced the `…",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 1.5,
+          "workDate": "2026-04-20"
+        },
+        {
+          "id": "fa09485a-30b8-445f-83ca-6a83972fb939",
+          "name": "2026-04-21 — enhance fleet and reconciliation features with new regions and statuses - Added…",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 3,
+          "workDate": "2026-04-21"
+        },
+        {
+          "id": "4e1c7edd-dce4-445c-bbd0-c8a8609c7592",
+          "name": "2026-04-24 — enhance ComplementsPage with collapsible add form and improved UI elements - Ad…",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 0.75,
+          "workDate": "2026-04-24"
+        },
+        {
+          "id": "affd2115-3bc3-418a-be6b-54c10b6a0b46",
+          "name": "2026-04-27 — simplify ComplementsPage layout and improve overflow handling - Removed unneces…",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 6.13,
+          "workDate": "2026-04-27"
+        },
+        {
+          "id": "a1029a32-86ac-4db2-a9de-afa7e0ddcbb5",
+          "name": "2026-04-28 — integrate CTASmart refuels synchronization and enhance reconciliation features …",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 6,
+          "workDate": "2026-04-28"
+        },
+        {
+          "id": "ae0fd2e5-530e-4562-880e-19589ccd3749",
+          "name": "2026-05-04 — implement user authentication and authorization features - Added user model and…",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 6.38,
+          "workDate": "2026-05-04"
+        },
+        {
+          "id": "893d4c4f-2bc6-4511-a631-eeb0078290ae",
+          "name": "2026-05-11 — enhance trip counting and reconciliation features with new regions and rules - …",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 8,
+          "workDate": "2026-05-11"
+        },
+        {
+          "id": "ae619ce1-c0ac-42b3-bc2c-afa68325bc59",
+          "name": "2026-05-12 — enhance reconciliation features with tariff management and spreadsheet integrat…",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 6,
+          "workDate": "2026-05-12"
+        },
+        {
+          "id": "64e47484-a212-4ee2-8857-6866557bf706",
+          "name": "2026-05-13 — enhance canhotos reconciliation with NF linkage and clustering - Introduced new…",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 5,
+          "workDate": "2026-05-13"
+        },
+        {
+          "id": "dc12cb12-0116-470d-a75c-bf681658de19",
+          "name": "2026-05-15 — enhance canhotos management with invalidation tracking and UI updates - Added s…",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 8,
+          "workDate": "2026-05-15"
+        },
+        {
+          "id": "c17978ec-9513-4f94-98b0-fb9a31ddf9d8",
+          "name": "2026-05-19 — enhance CTASmart integration with stock synchronization and refuel previews - A…",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 6,
+          "workDate": "2026-05-19"
+        },
+        {
+          "id": "44969d68-9000-4718-aed9-60bd3b4dc3cb",
+          "name": "2026-05-20 — add CTASmart environment variables for deployment - Included new environment va…",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 0.38,
+          "workDate": "2026-05-20"
+        },
+        {
+          "id": "12045653-8a84-42b7-b9e1-572a76c821e8",
+          "name": "2026-05-22 — add vehicle positions purge functionality and related tests - Introduced new AP…",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 8,
+          "workDate": "2026-05-22"
+        },
+        {
+          "id": "b94a81d4-40d9-4414-b94d-663ac95ce019",
+          "name": "2026-05-25 — enhance LHG import functionality with carrier sanitization and fleet ownership …",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 3,
+          "workDate": "2026-05-25"
+        },
+        {
+          "id": "2ce8086e-2504-48b6-accd-1df07b3ccddb",
+          "name": "2026-05-26 — add LHG export and reconciliation endpoints with XLSX support - Implemented new…",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 8,
+          "workDate": "2026-05-26"
+        },
+        {
+          "id": "30d92e68-a81f-408a-ad4c-228d62a351fb",
+          "name": "2026-06-05 — enhance fuel management with new tank monitoring and vehicle catalog features -…",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 6,
+          "workDate": "2026-06-05"
+        },
+        {
+          "id": "67b28518-f81e-4058-a5a1-e04d19329c31",
+          "name": "2026-06-09 — add Fuel Efficiency, Infraction Detail, Engine Hours, and Infractions Ranking c…",
+          "status": "EM_PROCESSO",
+          "progress": 50,
+          "loggedHours": 6.75,
+          "workDate": "2026-06-09"
+        },
+        {
+          "id": "b50c5ac1-0548-425d-9763-24c782757165",
+          "name": "2026-06-10 — refactor OverviewTab to integrate FleetSummaryTable and remove deprecated compo…",
+          "status": "EM_PROCESSO",
+          "progress": 50,
+          "loggedHours": 5,
+          "workDate": "2026-06-10"
+        },
+        {
+          "id": "6ff4a264-ec42-43dd-bda3-49483082362b",
+          "name": "2026-06-14 — add fuel tank period summary and reading classification - Introduced new types …",
+          "status": "EM_PROCESSO",
+          "progress": 50,
+          "loggedHours": 6,
+          "workDate": "2026-06-14"
+        }
+      ],
+      "_count": {
+        "tasks": 31,
+        "timeLogs": 31
+      },
+      "timeLogHours": 185.51999999999998
+    },
+    {
+      "id": "ba900788-db02-4783-ad2d-b58a358ee1cb",
+      "name": "Exportação de Madeira",
+      "status": "ATIVO",
+      "progress": 86,
+      "actualHours": 46.25,
+      "estimatedHours": 160,
+      "startDate": "2026-06-14",
+      "modules": [
+        {
+          "id": "e64b8d59-73bb-4daa-86d1-80691b0a4086",
+          "name": "2026-04-29 — Refactor project structure and update configurations. Changed project name from…",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 8,
+          "workDate": "2026-04-29"
+        },
+        {
+          "id": "b63bddb5-6bae-46a9-b261-53889d1b8f1b",
+          "name": "2026-04-30 — Refactor LoginPage component to improve token handling and user feedback. Remov…",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 7.5,
+          "workDate": "2026-04-30"
+        },
+        {
+          "id": "e9ed2089-dcfe-412a-883e-149c44939e1a",
+          "name": "2026-05-05 — Enhance Pedido model by adding 'dataPedido' field for improved order tracking. …",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 3,
+          "workDate": "2026-05-05"
+        },
+        {
+          "id": "bfd6a902-3ea5-4c69-8149-238ee088f980",
+          "name": "2026-05-06 — Add attachment functionality to Pedido model and related components. Introduce …",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 8,
+          "workDate": "2026-05-06"
+        },
+        {
+          "id": "8aae4c84-3f7b-440e-9301-cd4fb74de7ef",
+          "name": "2026-05-11 — implement interactive orders table with filtering and status management using t…",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 3.75,
+          "workDate": "2026-05-11"
+        },
+        {
+          "id": "5fc99949-2b0e-49a6-b7fb-103bcd7bbb99",
+          "name": "2026-05-15 — add infoFinalizado utility and enhance PedidosTable to display order status wit…",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 0.75,
+          "workDate": "2026-05-15"
+        },
+        {
+          "id": "f3f50822-ea74-47de-bf5b-6bc7075456e7",
+          "name": "2026-05-19 — add dataAgendamento field to Pedido model and enhance related components for im…",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 1.5,
+          "workDate": "2026-05-19"
+        },
+        {
+          "id": "906c2be7-59ab-4a4b-aec1-27a3e562fed1",
+          "name": "2026-05-21 — implement webhook notification for overdue orders and enhance order management …",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 8,
+          "workDate": "2026-05-21"
+        },
+        {
+          "id": "d78d2f2e-6d2c-4f5c-b921-37cba2bc08a5",
+          "name": "2026-05-22 — enhance App and PedidosTable components with internal deadline tracking and vis…",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 5.75,
+          "workDate": "2026-05-22"
+        }
+      ],
+      "_count": {
+        "tasks": 9,
+        "timeLogs": 9
+      },
+      "timeLogHours": 46.25
+    },
+    {
+      "id": "aea8edc1-568e-4ac5-8b72-8bd960f0a865",
+      "name": "FiscalMind / Fluxograma de Produto",
+      "status": "ATIVO",
+      "progress": 16,
+      "actualHours": 154,
+      "estimatedHours": 200,
+      "startDate": "2026-06-14",
+      "modules": [
+        {
+          "id": "2651ed0c-ae0a-4086-a86b-67ecae559de3",
+          "name": "FiscalMind Início do projeto (First Commit)",
+          "status": "INICIADO",
+          "progress": 0,
+          "loggedHours": 8,
+          "workDate": "2026-05-20"
+        },
+        {
+          "id": "5fe570fe-6a87-48d0-a0f7-4b3218859bf7",
+          "name": "semana de fundação",
+          "status": "INICIADO",
+          "progress": 0,
+          "loggedHours": 8,
+          "workDate": "2026-05-21"
+        },
+        {
+          "id": "e1df7207-962a-43bd-b816-7b5c448d7d91",
+          "name": "Consolidação do fluxo e deploy",
+          "status": "INICIADO",
+          "progress": 0,
+          "loggedHours": 8,
+          "workDate": "2026-05-22"
+        },
+        {
+          "id": "6bac86cc-d8af-4f33-b349-9e5d636f9b7f",
+          "name": "Catálogo e filtros avançados",
+          "status": "INICIADO",
+          "progress": 0,
+          "loggedHours": 8,
+          "workDate": "2026-05-23"
+        },
+        {
+          "id": "bc451317-fcea-4062-a02c-a1a74f4eb98d",
+          "name": "2026-05-26 — integrate OpenFiscal as third service in deploy stack - Add openfiscal/ directo…",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 8,
+          "workDate": "2026-05-26"
+        },
+        {
+          "id": "d3041155-d643-4a89-959b-af5b96af780f",
+          "name": "Workflow fiscal e precificação",
+          "status": "INICIADO",
+          "progress": 0,
+          "loggedHours": 4,
+          "workDate": "2026-05-24"
+        },
+        {
+          "id": "92537969-9736-4338-a77b-ac6c62bd9cd2",
+          "name": "Catálogo público + Siscomex + Arquivos no banco",
+          "status": "INICIADO",
+          "progress": 0,
+          "loggedHours": 7,
+          "workDate": "2026-05-25"
+        },
+        {
+          "id": "cf25b799-80a9-413a-a08c-34c4886ed218",
+          "name": "2026-05-28 — add API fallbacks documentation and update .env.example - Introduced comprehens…",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 8,
+          "workDate": "2026-05-28"
+        },
+        {
+          "id": "4a5042bf-58f3-4109-9e76-7f9c44126eaf",
+          "name": "Motor Petkov: Integração do n8n (Fases 0–5)",
+          "status": "INICIADO",
+          "progress": 0,
+          "loggedHours": 8,
+          "workDate": "2026-05-27"
+        },
+        {
+          "id": "c723c085-de51-401e-a8cc-c906d71d1723",
+          "name": "Motor IA via n8n substituindo Anthropic SDK diretamente",
+          "status": "INICIADO",
+          "progress": 0,
+          "loggedHours": 7,
+          "workDate": "2026-06-08"
+        },
+        {
+          "id": "15ce8999-fa68-45ad-8c47-8496d1dbac00",
+          "name": "2026-06-05 — tabelas fiscais DB-only + painel de bases em Configuracoes - Tabelas oficiais (…",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 8,
+          "workDate": "2026-06-05"
+        },
+        {
+          "id": "9b88d7f7-594f-4e57-8491-b12b6eab7cab",
+          "name": "Refinamento de pesquisas e Catálogo",
+          "status": "INICIADO",
+          "progress": 0,
+          "loggedHours": 5,
+          "workDate": "2026-05-30"
+        },
+        {
+          "id": "f58e5e67-2f48-4b9a-a8f1-6b78bae34aa1",
+          "name": "Componentes de campo para o Catálogo",
+          "status": "INICIADO",
+          "progress": 0,
+          "loggedHours": 6,
+          "workDate": "2026-05-31"
+        },
+        {
+          "id": "5f853173-36cd-4abd-98de-4a7a6747d431",
+          "name": "ST, Proveniência e Catálogo",
+          "status": "INICIADO",
+          "progress": 0,
+          "loggedHours": 8,
+          "workDate": "2026-06-01"
+        },
+        {
+          "id": "dbdd1468-6144-4702-ba0c-50de3c2a4169",
+          "name": "2026-06-14 — implement import simulation functionality with detailed calculations and UI for…",
+          "status": "EM_PROCESSO",
+          "progress": 50,
+          "loggedHours": 6,
+          "workDate": "2026-06-14"
+        },
+        {
+          "id": "3d3bc2d6-64a8-4612-8eba-d89f5d7b9e65",
+          "name": "Proveniência completa + Embalagem + Relatórios",
+          "status": "INICIADO",
+          "progress": 0,
+          "loggedHours": 8,
+          "workDate": "2026-06-02"
+        },
+        {
+          "id": "0e3f496b-ea8a-46c4-815a-ed2c39191e24",
+          "name": "Catálogo completo + deploy",
+          "status": "INICIADO",
+          "progress": 0,
+          "loggedHours": 8,
+          "workDate": "2026-06-03"
+        },
+        {
+          "id": "4116c9f4-62ab-4f5f-88b8-52095cb72abf",
+          "name": "Ownership, ST determinística e tabelas DB-only",
+          "status": "INICIADO",
+          "progress": 0,
+          "loggedHours": 8,
+          "workDate": "2026-06-06"
+        },
+        {
+          "id": "6e517961-0af6-4919-bf7f-7c4a65389c6e",
+          "name": "Validação NCM/CEST e dados atacadistas",
+          "status": "INICIADO",
+          "progress": 0,
+          "loggedHours": 3,
+          "workDate": "2026-06-07"
+        },
+        {
+          "id": "8bdc0adb-08dd-417a-9110-8dfe828bded7",
+          "name": "Grande release do Catálogo + Deleção + IA unificada",
+          "status": "INICIADO",
+          "progress": 0,
+          "loggedHours": 8,
+          "workDate": "2026-06-08"
+        },
+        {
+          "id": "675a86d6-8860-41c7-80d4-864dc080d380",
+          "name": "Motor de regras fiscais",
+          "status": "INICIADO",
+          "progress": 0,
+          "loggedHours": 6,
+          "workDate": "2026-06-09"
+        },
+        {
+          "id": "2f30d817-6384-4c1e-95fb-51ccacdb418f",
+          "name": "Tour guiado e FAQ do Catálogo/Solicitaçao, Validação",
+          "status": "INICIADO",
+          "progress": 0,
+          "loggedHours": 6,
+          "workDate": "2026-06-10"
+        }
+      ],
+      "_count": {
+        "tasks": 23,
+        "timeLogs": 22
+      },
+      "timeLogHours": 154
+    },
+    {
+      "id": "46017602-5c7d-479a-b266-3a6a08a8fdf5",
+      "name": "Gerenciamento Corumbá",
+      "status": "ATIVO",
+      "progress": 0,
+      "actualHours": 20,
+      "estimatedHours": 500,
+      "startDate": "2026-03-01",
+      "endDate": "2027-01-01",
+      "modules": [
+        {
+          "id": "afa1dbb5-ea87-4559-ac18-7eebbc68abfc",
+          "name": "manutenção e borracharia",
+          "status": "INICIADO",
+          "progress": 0,
+          "loggedHours": 15,
+          "workDate": "2026-06-11"
+        },
+        {
+          "id": "16f6721e-da39-442e-92ee-854a01492c33",
+          "name": "estoque",
+          "status": "INICIADO",
+          "progress": 0,
+          "loggedHours": 5,
+          "workDate": "2026-06-11"
+        }
+      ],
+      "_count": {
+        "tasks": 2,
+        "timeLogs": 2
+      },
+      "timeLogHours": 20
+    },
+    {
+      "id": "a8266323-6c66-480d-bb73-1c31d6b15fb6",
+      "name": "Gerenciamento de RH",
+      "status": "ATIVO",
+      "progress": 0,
+      "actualHours": 39.3064,
+      "estimatedHours": 199,
+      "startDate": "2026-06-12",
+      "endDate": "2026-07-11",
+      "modules": [
+        {
+          "id": "2d595f41-3930-4ce4-9417-97ab99c544ea",
+          "name": "Documentação",
+          "status": "INICIADO",
+          "progress": 0,
+          "loggedHours": null,
+          "workDate": null
+        },
+        {
+          "id": "f11472cf-b731-43aa-9098-5fe664953b3f",
+          "name": "O projeto nasceu. Neste primeiro commit foram adicionados:",
+          "status": "INICIADO",
+          "progress": 0,
+          "loggedHours": 3,
+          "workDate": "2026-06-11"
+        },
+        {
+          "id": "4995e794-bd7d-4233-874f-f033b52dbeeb",
+          "name": "Três horas e meia depois do primeiro commit, o backend inteiro foi construído do zero:",
+          "status": "INICIADO",
+          "progress": 0,
+          "loggedHours": 3,
+          "workDate": "2026-06-11"
+        }
+      ],
+      "_count": {
+        "tasks": 2,
+        "timeLogs": 2
+      },
+      "timeLogHours": 6
+    },
+    {
+      "id": "422638e7-8e5f-4e13-8073-5c920a6715b7",
+      "name": "Linha de Produção Petkov",
+      "status": "ATIVO",
+      "progress": 100,
+      "actualHours": 146.13,
+      "estimatedHours": 200,
+      "startDate": "2026-06-14",
+      "modules": [
+        {
+          "id": "58088412-939f-4e85-ac0f-d1963f24d35f",
+          "name": "2026-01-16 — base v1",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 8,
+          "workDate": "2026-01-16"
+        },
+        {
+          "id": "cb052ac8-df06-42ff-89e9-7c5cdf34e565",
+          "name": "2026-01-19 — V1 - Implement Excel data extraction feature and enhance document handling. Add…",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 8,
+          "workDate": "2026-01-19"
+        },
+        {
+          "id": "dc41141b-cf43-4321-8b0f-38d97596933f",
+          "name": "2026-01-20 — V1 - Restructure production flow and enhance document handling. Updated the pro…",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 7.5,
+          "workDate": "2026-01-20"
+        },
+        {
+          "id": "16b41186-8b01-45b2-a002-df9f9020fe9e",
+          "name": "2026-01-21 — V1 - Enhance inventory management and order processing features. Added new func…",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 6,
+          "workDate": "2026-01-21"
+        },
+        {
+          "id": "5f33c8ab-c867-4d0b-938a-fb8941389f71",
+          "name": "2026-01-22 — V1 - Refactor inventory and order processing logic. Updated the saldo calculati…",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 8,
+          "workDate": "2026-01-22"
+        },
+        {
+          "id": "be1e3d1c-8bc6-4b5c-8d98-1910393b17d8",
+          "name": "2026-01-23 — V1 - [Feature] Implement functionality to view and manage historical invoices a…",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 8,
+          "workDate": "2026-01-23"
+        },
+        {
+          "id": "f985e03c-929c-4571-a66d-06f1de44fd73",
+          "name": "2026-01-26 — V1 - Colunas e teste deploy",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 8,
+          "workDate": "2026-01-26"
+        },
+        {
+          "id": "e1755e4a-be1d-466c-b3aa-7dd16268c4ff",
+          "name": "2026-01-27 — V1 - prototipo extra├º├úo",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 6,
+          "workDate": "2026-01-27"
+        },
+        {
+          "id": "4a0348e7-2e3c-4235-9616-ef6581a02c8b",
+          "name": "2026-01-28 — V1 - Performance improvement",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 8,
+          "workDate": "2026-01-28"
+        },
+        {
+          "id": "c0387b36-7df6-4cf5-83d7-09ef601b4444",
+          "name": "2026-01-29 — V1 - feat: Implement Kanban system for production order management, including d…",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 8,
+          "workDate": "2026-01-29"
+        },
+        {
+          "id": "30131a18-2ad9-4aab-b7ad-e009e97a5669",
+          "name": "2026-01-30 — V1 - feat: Implement Kanban-based order management system including dashboard, …",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 8,
+          "workDate": "2026-01-30"
+        },
+        {
+          "id": "6e61a979-3c38-466d-9904-bc768454cf67",
+          "name": "2026-01-31 — V1 - SSE",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 3,
+          "workDate": "2026-01-31"
+        },
+        {
+          "id": "b01fc542-1711-445f-927d-30334b510c56",
+          "name": "2026-02-02 — V1.1 - feat: Add PDF to image conversion functionality in upload and compressio…",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 8,
+          "workDate": "2026-02-02"
+        },
+        {
+          "id": "7d9ae7aa-32d1-4b1b-b36d-f1d0dcd17721",
+          "name": "2026-02-03 — V1 - Excell better image resolution and data format, keep alive , avoid discone…",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 7.5,
+          "workDate": "2026-02-03"
+        },
+        {
+          "id": "322a121b-ba0d-4ca4-b1b0-6c82e0e75bf3",
+          "name": "2026-02-04 — V1.2 - Implement SSE notifications for document and pedido updates, enhancing r…",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 2.25,
+          "workDate": "2026-02-04"
+        },
+        {
+          "id": "0df9aaa1-24e5-4054-98df-1d75df964cfe",
+          "name": "2026-02-06 — V1.2 - Implement product duplication check in order creation, enhancing user fe…",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 3,
+          "workDate": "2026-02-06"
+        },
+        {
+          "id": "049751d1-384d-43b2-af64-1d5641bc7076",
+          "name": "2026-02-09 — V1.2 - Null user to advance on the Production",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 8,
+          "workDate": "2026-02-09"
+        },
+        {
+          "id": "b3d18340-2bf4-4b30-8d24-def73e2672a6",
+          "name": "2026-02-10 — V1.3 - Update Regra de neg├│cio",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 6.38,
+          "workDate": "2026-02-10"
+        },
+        {
+          "id": "ce10330e-60a7-4ddb-8cd1-739635613c46",
+          "name": "2026-02-11 — V1.3 - Diretoria 2 vistos",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 5,
+          "workDate": "2026-02-11"
+        },
+        {
+          "id": "a673c35c-16b8-4753-9bda-623c54b2387a",
+          "name": "2026-02-12 — V1.3",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 1.5,
+          "workDate": "2026-02-12"
+        },
+        {
+          "id": "c503d493-1e4c-48c9-9046-94a7591a770d",
+          "name": "2026-02-14 — V1.3 - Optimize dashboard and Kanban flow with performance enhancements. Added …",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 5,
+          "workDate": "2026-02-14"
+        },
+        {
+          "id": "fcd80f78-871b-4c5a-9800-8dbb8a4c04c2",
+          "name": "2026-02-19 — V1.3 - prod BL",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 8,
+          "workDate": "2026-02-19"
+        },
+        {
+          "id": "7ff1f06d-c3e7-4c49-b51c-1f5cfece1725",
+          "name": "2026-04-22 — Enhance Excel data handling in NovoPedidoModal and excelExtractor. Added lote m…",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 5,
+          "workDate": "2026-04-22"
+        }
+      ],
+      "_count": {
+        "tasks": 23,
+        "timeLogs": 23
+      },
+      "timeLogHours": 146.13
+    },
+    {
+      "id": "bde2a782-cf68-4285-ba87-2592b4b212f0",
+      "name": "Planilha Dashboard",
+      "status": "ATIVO",
+      "progress": 100,
+      "actualHours": 1.5,
+      "estimatedHours": 20,
+      "startDate": "2026-06-14",
+      "modules": [
+        {
+          "id": "f713e222-b65b-4e3f-9d04-2c7f21639879",
+          "name": "2026-05-21 — Add deployment section to README with Docker and CI/CD details",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 1.5,
+          "workDate": "2026-05-21"
+        }
+      ],
+      "_count": {
+        "tasks": 1,
+        "timeLogs": 1
+      },
+      "timeLogHours": 1.5
+    },
+    {
+      "id": "c7c412cc-1166-480a-b1ac-b700bca73b01",
+      "name": "QUIET ART",
+      "status": "ATIVO",
+      "progress": 80,
+      "actualHours": 24.259999999999998,
+      "estimatedHours": 40,
+      "startDate": "2026-06-14",
+      "modules": [
+        {
+          "id": "5a7450ad-6251-435a-9cfc-e45a7ea6ba10",
+          "name": "Modificação do Site, solicitação de Felipe Marketing",
+          "status": "INICIADO",
+          "progress": 0,
+          "loggedHours": 4.26,
+          "workDate": "2026-06-05"
+        },
+        {
+          "id": "9c7423b3-3e98-4878-8753-ff28202e60fc",
+          "name": "2026-04-22 — Primeiro commit do site QuietArt Made-with: Cursor",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 6,
+          "workDate": "2026-04-22"
+        },
+        {
+          "id": "f4de3117-709c-4606-999c-40248044f2c2",
+          "name": "2026-04-30 — first commit",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 6,
+          "workDate": "2026-04-30"
+        },
+        {
+          "id": "8a85548a-f84d-4b03-9f19-26cdd6e9cbb3",
+          "name": "2026-05-04 — Ajusta layout da se├â┬º├â┬úo de inf├â┬óncia e card de localiza├â┬º├â┬úo. Move a…",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 5,
+          "workDate": "2026-05-04"
+        },
+        {
+          "id": "656ff7ae-64f8-4edb-8bc8-17cebc243343",
+          "name": "2026-05-05 — Refactor specifications section layout to use a grid format with tables for bet…",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 3,
+          "workDate": "2026-05-05"
+        }
+      ],
+      "_count": {
+        "tasks": 5,
+        "timeLogs": 5
+      },
+      "timeLogHours": 24.259999999999998
+    },
+    {
+      "id": "f8fca7a1-97b4-4ded-9ea4-ecbefc8b3477",
+      "name": "Rastreio de Container",
+      "status": "ATIVO",
+      "progress": 100,
+      "actualHours": 14.14,
+      "estimatedHours": 40,
+      "startDate": "2026-06-14",
+      "modules": [
+        {
+          "id": "3a8aecaa-2395-4080-bf02-292caa92d0fa",
+          "name": "2026-01-07 — Adiciona atualiza├º├úo autom├ítica a cada 30 segundos para containers e cota├º├…",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 1.5,
+          "workDate": "2026-01-07"
+        },
+        {
+          "id": "9143b939-e8cc-43ba-a16e-d936c0cb427b",
+          "name": "2026-01-09 — abas",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 6.88,
+          "workDate": "2026-01-09"
+        },
+        {
+          "id": "efcf2c5c-1c97-46d6-b20a-0462229a1c7d",
+          "name": "2026-02-04 — pm2 container name",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 0.38,
+          "workDate": "2026-02-04"
+        },
+        {
+          "id": "897946b1-f451-4ccc-95f8-196bba1ceac6",
+          "name": "2026-05-13 — Adiciona l├│gica para alterar o layout da aplica├º├úo com base na rota atual, m…",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 0.38,
+          "workDate": "2026-05-13"
+        },
+        {
+          "id": "bc212c98-0a2d-4093-ae6b-0ac9958ad257",
+          "name": "2026-05-19 — Adiciona campo de data de atualiza├º├úo e l├│gica para normalizar IDs de contai…",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 5,
+          "workDate": "2026-05-19"
+        }
+      ],
+      "_count": {
+        "tasks": 5,
+        "timeLogs": 5
+      },
+      "timeLogHours": 14.14
+    },
+    {
+      "id": "a7481259-84b3-4f44-9658-e4288727d982",
+      "name": "Sala de Reunião (Monkey-Branch)",
+      "status": "ATIVO",
+      "progress": 88,
+      "actualHours": 12.129999999999999,
+      "estimatedHours": 40,
+      "startDate": "2026-06-14",
+      "modules": [
+        {
+          "id": "2abbcee2-d34e-4dc8-aa63-03cdc6165861",
+          "name": "2026-04-28 — Update environment configurations and deployment settings for new port numbers …",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 1.5,
+          "workDate": "2026-04-28"
+        },
+        {
+          "id": "d4d5c2c8-5d7b-4d2e-bb9e-1a9ab1a911b3",
+          "name": "2026-05-26 — Enhance deployment workflow with Nginx reverse proxy and Docker Compose configu…",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 8,
+          "workDate": "2026-05-26"
+        },
+        {
+          "id": "6f1c0093-4b86-47f5-a940-3549d306f26b",
+          "name": "2026-06-02 — Update environment and deployment documentation for API configuration - Added a…",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 1.13,
+          "workDate": "2026-06-02"
+        },
+        {
+          "id": "9c6230c7-f016-4a73-9253-e63ca573ec85",
+          "name": "2026-06-08 — Implement admin notification for new user registrations - Added functionality t…",
+          "status": "EM_PROCESSO",
+          "progress": 50,
+          "loggedHours": 1.5,
+          "workDate": "2026-06-08"
+        }
+      ],
+      "_count": {
+        "tasks": 4,
+        "timeLogs": 4
+      },
+      "timeLogHours": 12.129999999999999
+    },
+    {
+      "id": "e3830f03-4238-4b62-b00f-9189ea28f355",
+      "name": "Sistema Controle de EPI",
+      "status": "ATIVO",
+      "progress": 93,
+      "actualHours": 178.13,
+      "estimatedHours": 160,
+      "startDate": "2026-06-14",
+      "modules": [
+        {
+          "id": "ce0834a3-6429-4ac6-b213-698f32c404c3",
+          "name": "2026-03-19 — Update",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 8,
+          "workDate": "2026-03-19"
+        },
+        {
+          "id": "d71c2fc8-9331-4401-be57-dd5f275ac613",
+          "name": "2026-03-20 — Add quantity field to Employee model; implement batch employee creation and upd…",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 5,
+          "workDate": "2026-03-20"
+        },
+        {
+          "id": "c7b2f6fe-f500-433f-96dd-1cc8ad81fdb6",
+          "name": "2026-03-23 — Refactor loading state in App component; extract LoadingScreen component for be…",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 8,
+          "workDate": "2026-03-23"
+        },
+        {
+          "id": "cbee4dec-a712-450d-953d-ee4ee5d300d4",
+          "name": "2026-03-24 — Implement purchase management features including schema updates, CRUD operation…",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 8,
+          "workDate": "2026-03-24"
+        },
+        {
+          "id": "5310250f-84dd-4927-8850-bff63b51d0ff",
+          "name": "2026-03-25 — Refactor backend routes to enhance query handling with new optional parameters …",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 8,
+          "workDate": "2026-03-25"
+        },
+        {
+          "id": "f03298df-e566-4835-ae10-0c19b5dd8747",
+          "name": "2026-03-26 — Enhance data synchronization in App and Dashboard components by introducing a n…",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 8,
+          "workDate": "2026-03-26"
+        },
+        {
+          "id": "4fa09540-63d0-43de-abd8-db74c0361f5b",
+          "name": "2026-03-27 — Implement server-sent events (SSE) for tenant change notifications in backend r…",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 3,
+          "workDate": "2026-03-27"
+        },
+        {
+          "id": "8e1299f2-1c0b-494e-a7c8-c928cd0712b8",
+          "name": "2026-03-30 — Refactor tenant selection in Login component by removing automatic tenant ID se…",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 8,
+          "workDate": "2026-03-30"
+        },
+        {
+          "id": "489082a0-e1db-427f-8af6-00e6278eb3f3",
+          "name": "2026-04-07 — Implement date handling utilities and enhance form validation in Compras and EP…",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 5.75,
+          "workDate": "2026-04-07"
+        },
+        {
+          "id": "46d01101-df43-450b-beed-431c169433fe",
+          "name": "2026-04-09 — Enhance EPI and Purchase models, and improve form handling in frontend componen…",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 8,
+          "workDate": "2026-04-09"
+        },
+        {
+          "id": "65cfd170-7ea1-47fa-a238-f6c34b759fd4",
+          "name": "2026-04-15 — enhance user experience with CPF handling and access scope display - Added CpfI…",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 6,
+          "workDate": "2026-04-15"
+        },
+        {
+          "id": "2c91362d-5e33-4cf6-aac3-fa7f61d0a648",
+          "name": "2026-04-16 — enhance EPI management with new models and permissions - Introduced CaRegistry …",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 6.75,
+          "workDate": "2026-04-16"
+        },
+        {
+          "id": "f7c5e3aa-6b01-4f7b-8d10-5e873f0e2447",
+          "name": "2026-04-20 — enhance CA import functionality and user experience - Added support for importi…",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 8,
+          "workDate": "2026-04-20"
+        },
+        {
+          "id": "2a82be75-ea8a-4669-9b3f-b6ecdaa755e9",
+          "name": "2026-04-22 — enhance delivery signature process with IP capture and required fields - Added …",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 8,
+          "workDate": "2026-04-22"
+        },
+        {
+          "id": "2bd76683-cf5e-482b-9a04-236033ba0408",
+          "name": "2026-04-23 — add purchaseBatchId to Purchase model and enhance related functionalities - Int…",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 8,
+          "workDate": "2026-04-23"
+        },
+        {
+          "id": "0c793d17-7c88-49b5-a016-29bfa34aa210",
+          "name": "2026-04-24 — update EPI model to remove tenantId and simplify unique constraints - Removed t…",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 8,
+          "workDate": "2026-04-24"
+        },
+        {
+          "id": "3d16d244-30d4-41b8-b9c2-1ae07058200b",
+          "name": "2026-04-28 — enhance user permission checks for listagem without obra scope - Added new test…",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 6,
+          "workDate": "2026-04-28"
+        },
+        {
+          "id": "7c53ea7a-eb7b-4ed1-84b9-c3f033b9cd2b",
+          "name": "2026-04-29 — enhance delivery and purchase management with new document attachment and stock…",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 6.75,
+          "workDate": "2026-04-29"
+        },
+        {
+          "id": "7d4fc14b-6a58-456d-a38e-cb9b1052c7d1",
+          "name": "2026-05-06 — implement polling endpoint for resource updates and enhance delivery handling -…",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 8,
+          "workDate": "2026-05-06"
+        },
+        {
+          "id": "77854b46-e765-43dd-995e-450a6b51b59f",
+          "name": "2026-05-11 — enhance permission handling with canInAnyScope function and expand tests - Intr…",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 5,
+          "workDate": "2026-05-11"
+        },
+        {
+          "id": "21a6ea12-4d15-4351-b652-a59471f7fd63",
+          "name": "2026-05-12 — add obraIds support to user routes and enhance Obras component - Implemented ge…",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 3.75,
+          "workDate": "2026-05-12"
+        },
+        {
+          "id": "11d6fd8f-82f3-43e7-865a-1d9985d732bc",
+          "name": "2026-05-13 — enhance sorting and pagination in various components - Introduced sorting funct…",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 6,
+          "workDate": "2026-05-13"
+        },
+        {
+          "id": "d2bdf787-37cb-466b-8da3-212b123d8885",
+          "name": "2026-05-14 — enhance delivery photo handling in FichaEPIModelo and Entregas components - Add…",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 3,
+          "workDate": "2026-05-14"
+        },
+        {
+          "id": "1c13edb1-9c44-407f-b88f-e12fe90ac66b",
+          "name": "2026-05-19 — improve dialog layout and responsiveness in Solicitacoes component - Updated th…",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 0.38,
+          "workDate": "2026-05-19"
+        },
+        {
+          "id": "ea3295e6-0597-4506-ac36-b3e622cf8e86",
+          "name": "2026-05-20 — add clipboard copy functionality in Solicitacoes component - Integrated a new u…",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 0.75,
+          "workDate": "2026-05-20"
+        },
+        {
+          "id": "dfdab092-418d-4566-90ca-65c5706eab01",
+          "name": "2026-05-22 — enhance EPI handling and filtering across components - Updated EPI data structu…",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 8,
+          "workDate": "2026-05-22"
+        },
+        {
+          "id": "c723fa54-4d3c-400b-bb70-f3ca5f871935",
+          "name": "2026-05-29 — enhance permission checks and EPI handling in Compras component - Updated permi…",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 8,
+          "workDate": "2026-05-29"
+        },
+        {
+          "id": "c6e55d12-80ea-4fd4-af4a-3ec672a3b46d",
+          "name": "2026-06-11 — enhance EPI management and improve user experience in the application - Updated…",
+          "status": "EM_PROCESSO",
+          "progress": 50,
+          "loggedHours": 8,
+          "workDate": "2026-06-11"
+        }
+      ],
+      "_count": {
+        "tasks": 28,
+        "timeLogs": 28
+      },
+      "timeLogHours": 178.13
+    },
+    {
+      "id": "b7f00c60-04c0-4dab-8011-4c588b5ed619",
+      "name": "Sistema Interno de Tecnologia",
+      "status": "ATIVO",
+      "progress": 64,
+      "actualHours": 27.585,
+      "estimatedHours": 160,
+      "startDate": "2026-06-14",
+      "modules": [
+        {
+          "id": "2b4c0dcd-007e-49b9-af3b-080e30eefa3d",
+          "name": "2026-05-25 — Update package-lock.json: Added \"peer\" property to several dependencies and rem…",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 6,
+          "workDate": "2026-05-25"
+        },
+        {
+          "id": "cab19ba6-def0-480e-a28c-e1a602182ca9",
+          "name": "2026-05-29 — clean up dist directory by removing generated files and updating .gitignore - D…",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 8,
+          "workDate": "2026-05-29"
+        },
+        {
+          "id": "39483960-9538-4453-9bb1-5ccbc5ead246",
+          "name": "2026-06-05 — update .gitignore to explicitly include .env file and exclude .env* pattern",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 0.38,
+          "workDate": "2026-06-05"
+        },
+        {
+          "id": "a6f750bd-2f46-42dd-a21c-62679c2c86bc",
+          "name": "2026-06-09 — enhance task management with urgency block handling and session synchronization…",
+          "status": "EM_PROCESSO",
+          "progress": 50,
+          "loggedHours": 5,
+          "workDate": "2026-06-09"
+        },
+        {
+          "id": "1c4643bf-93f2-4993-a707-6a9180c76e7d",
+          "name": "2026-06-12 — Remove biome configuration and Playwright setup; update package.json scripts fo…",
+          "status": "EM_PROCESSO",
+          "progress": 50,
+          "loggedHours": 8,
+          "workDate": "2026-06-12"
+        }
+      ],
+      "_count": {
+        "tasks": 5,
+        "timeLogs": 5
+      },
+      "timeLogHours": 27.380000000000003
+    },
+    {
+      "id": "30bcd0bf-0598-4c46-bd25-8354495d2976",
+      "name": "Sistema Resultado Passado - Edson",
+      "status": "ATIVO",
+      "progress": 0,
+      "actualHours": 0,
+      "estimatedHours": 160,
+      "startDate": "2026-06-01",
+      "endDate": "2026-12-01",
+      "modules": [],
+      "_count": {
+        "tasks": 0,
+        "timeLogs": 0
+      },
+      "timeLogHours": 0
+    },
+    {
+      "id": "c5b8519d-b6b7-47b2-a182-f00232aa4651",
+      "name": "Voda App",
+      "status": "ATIVO",
+      "progress": 100,
+      "actualHours": 3,
+      "estimatedHours": 20,
+      "startDate": "2026-06-14",
+      "modules": [
+        {
+          "id": "25d65b6f-7263-41e3-bc99-96ccf513cdb9",
+          "name": "2026-01-08 — resolvido background branco em algumas telas",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 1.5,
+          "workDate": "2026-01-08"
+        },
+        {
+          "id": "24a1484b-9dcd-4d46-8255-c29534ba9a11",
+          "name": "2026-01-14 — Revert \"resolvido background branco em algumas telas\" This reverts commit ef044…",
+          "status": "CONCLUIDO",
+          "progress": 100,
+          "loggedHours": 1.5,
+          "workDate": "2026-01-14"
+        }
+      ],
+      "_count": {
+        "tasks": 2,
+        "timeLogs": 2
+      },
+      "timeLogHours": 3
+    }
+  ]
+}

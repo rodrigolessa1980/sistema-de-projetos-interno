@@ -1,0 +1,46 @@
+{
+  "ownerEmail": "seu-email@empresa.com",
+  "projects": [
+    {
+      "name": "Meu App Mobile",
+      "description": "Aplicativo React Native com backend Supabase",
+      "status": "ATIVO",
+      "color": "#6366f1",
+      "estimatedHours": 120,
+      "startDate": "2026-06-01",
+      "modules": [
+        {
+          "name": "Autenticação",
+          "description": "Login, registro e sessão JWT",
+          "status": "CONCLUIDO",
+          "hours": 6,
+          "workDate": "2026-06-10"
+        },
+        {
+          "name": "Feed social",
+          "description": "Timeline e interações",
+          "status": "EM_PROCESSO",
+          "hours": 4,
+          "workDate": "2026-06-12"
+        },
+        {
+          "name": "Notificações push",
+          "description": "Firebase Cloud Messaging",
+          "status": "INICIADO"
+        }
+      ]
+    },
+    {
+      "name": "Dashboard Interno",
+      "description": "Painel de métricas e relatórios",
+      "status": "ATIVO",
+      "color": "#22c55e",
+      "modules": [
+        {
+          "name": "Gráficos de horas",
+          "status": "EM_PROCESSO"
+        }
+      ]
+    }
+  ]
+}

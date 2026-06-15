@@ -8,6 +8,7 @@ import {
   BarChart3, Clock, Network, Users, ChevronLeft, ChevronRight,
   Zap, Settings, LogOut, ChevronDown, Box, Layers,
   FileBarChart2, ClipboardList, Timer, TrendingUp, ListOrdered, Building2, Inbox,
+  CalendarDays,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useUIStore } from "@/stores";
@@ -43,6 +44,7 @@ const navItems = [
   { group: "Relatórios", items: [
     { href: "/reports/productivity", label: "Produtividade", icon: TrendingUp, adminOnly: false },
     { href: "/reports/hours", label: "Horas por Tarefa", icon: Timer, adminOnly: false },
+    { href: "/reports/daily", label: "Horas por Dia", icon: CalendarDays, adminOnly: false },
     { href: "/reports/projects", label: "Progresso Projetos", icon: ClipboardList, adminOnly: false },
     { href: "/reports/overview", label: "Visão Geral", icon: FileBarChart2, adminOnly: true },
   ]},

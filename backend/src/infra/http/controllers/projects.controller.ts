@@ -2,6 +2,8 @@ import { Body, Controller, Delete, Get, HttpCode, Param, Post, Put, Req, UseGuar
 import { Type } from 'class-transformer';
 import { IsInt, IsNotEmpty, IsOptional, IsString, Min } from 'class-validator';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
+import { PermissionsGuard } from '../guards/permissions.guard';
+import { RequirePermission } from '../decorators/require-permission.decorator';
 import { ListProjectsUseCase } from '../../../core/use-cases/projects/list-projects.use-case';
 import { GetProjectByIdUseCase } from '../../../core/use-cases/projects/get-project-by-id.use-case';
 import { CreateProjectUseCase } from '../../../core/use-cases/projects/create-project.use-case';
@@ -69,7 +71,7 @@ class CreateProjectDemandAttachmentDto {
 }
 
 @Controller('projects')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, PermissionsGuard)
 export class ProjectsController {
   constructor(
     private readonly listProjectsUseCase: ListProjectsUseCase,
@@ -85,24 +87,28 @@ export class ProjectsController {
   ) {}
 
   @Get()
+  @RequirePermission('projects:read')
   async listAll(): Promise<ProjectResponse[]> {
     const projects = await this.listProjectsUseCase.execute();
     return projects.map(ProjectPresenter.toHTTP);
   }
 
   @Get('queued')
+  @RequirePermission('projects:read')
   async getQueued(): Promise<ProjectResponse[]> {
     const projects = await this.getQueuedProjectsUseCase.execute();
     return projects.map(ProjectPresenter.toHTTP);
   }
 
   @Get(':id')
+  @RequirePermission('projects:read')
   async getById(@Param('id') id: string): Promise<ProjectResponse> {
     const project = await this.getProjectByIdUseCase.execute(id);
     return ProjectPresenter.toHTTP(project);
   }
 
   @Post()
+  @RequirePermission('projects:create')
   async create(
     @Body() body: CreateProjectDto,
     @Req() request: AuthenticatedRequest,
@@ -126,6 +132,7 @@ export class ProjectsController {
   }
 
   @Put(':id')
+  @RequirePermission('projects:update')
   async update(
     @Param('id') id: string,
     @Body() body: UpdateProjectDto,
@@ -150,6 +157,7 @@ export class ProjectsController {
   }
 
   @Put(':id/showcase')
+  @RequirePermission('projects:update')
   async updateShowcase(
     @Param('id') id: string,
     @Body() body: UpdateProjectShowcaseDto,
@@ -162,6 +170,7 @@ export class ProjectsController {
   }
 
   @Put(':id/demand')
+  @RequirePermission('projects:update')
   async updateDemand(
     @Param('id') id: string,
     @Body() body: UpdateProjectDemandDto,
@@ -174,6 +183,7 @@ export class ProjectsController {
   }
 
   @Get(':id/showcase-attachments')
+  @RequirePermission('projects:read')
   async getShowcaseAttachments(@Param('id') id: string) {
     const attachments = await this.prisma.projectShowcaseAttachment.findMany({
       where: { projectId: id },
@@ -183,6 +193,7 @@ export class ProjectsController {
   }
 
   @Post(':id/showcase-attachments')
+  @RequirePermission('projects:update')
   async createShowcaseAttachment(
     @Param('id') id: string,
     @Body() body: CreateProjectShowcaseAttachmentDto,
@@ -203,11 +214,13 @@ export class ProjectsController {
 
   @Delete('showcase-attachments/:id')
   @HttpCode(204)
+  @RequirePermission('projects:update')
   async deleteShowcaseAttachment(@Param('id') id: string): Promise<void> {
     await this.prisma.projectShowcaseAttachment.delete({ where: { id } });
   }
 
   @Get(':id/demand-attachments')
+  @RequirePermission('projects:read')
   async getDemandAttachments(@Param('id') id: string) {
     const attachments = await this.prisma.projectDemandAttachment.findMany({
       where: { projectId: id },
@@ -217,6 +230,7 @@ export class ProjectsController {
   }
 
   @Post(':id/demand-attachments')
+  @RequirePermission('projects:update')
   async createDemandAttachment(
     @Param('id') id: string,
     @Body() body: CreateProjectDemandAttachmentDto,
@@ -237,23 +251,27 @@ export class ProjectsController {
 
   @Delete('demand-attachments/:id')
   @HttpCode(204)
+  @RequirePermission('projects:update')
   async deleteDemandAttachment(@Param('id') id: string): Promise<void> {
     await this.prisma.projectDemandAttachment.delete({ where: { id } });
   }
 
   @Delete(':id')
+  @RequirePermission('projects:delete')
   async delete(@Param('id') id: string): Promise<{ success: boolean }> {
     await this.deleteProjectUseCase.execute(id);
     return { success: true };
   }
 
   @Post('queue/reorder')
+  @RequirePermission('projects:update')
   async reorderQueue(@Body() body: ReorderQueueDto): Promise<{ success: boolean }> {
     await this.reorderQueueUseCase.execute(body.orderedIds);
     return { success: true };
   }
 
   @Post(':id/developers/:userId')
+  @RequirePermission('projects:update')
   async addDeveloper(
     @Param('id') id: string,
     @Param('userId') userId: string,
@@ -263,6 +281,7 @@ export class ProjectsController {
   }
 
   @Delete(':id/developers/:userId')
+  @RequirePermission('projects:update')
   async removeDeveloper(
     @Param('id') id: string,
     @Param('userId') userId: string,

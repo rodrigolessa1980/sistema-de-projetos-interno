@@ -386,6 +386,7 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 export const ModelName = {
   Company: 'Company',
   User: 'User',
+  ApiToken: 'ApiToken',
   UserPermission: 'UserPermission',
   Project: 'Project',
   ProjectDeveloper: 'ProjectDeveloper',
@@ -420,7 +421,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "company" | "user" | "userPermission" | "project" | "projectDeveloper" | "module" | "epic" | "epicDeveloper" | "task" | "subtask" | "taskDependency" | "timeLog" | "comment" | "notification" | "auditLog" | "statusHistory" | "taskNote" | "taskAttachment" | "moduleAttachment" | "projectShowcaseAttachment" | "projectDemandAttachment"
+    modelProps: "company" | "user" | "apiToken" | "userPermission" | "project" | "projectDeveloper" | "module" | "epic" | "epicDeveloper" | "task" | "subtask" | "taskDependency" | "timeLog" | "comment" | "notification" | "auditLog" | "statusHistory" | "taskNote" | "taskAttachment" | "moduleAttachment" | "projectShowcaseAttachment" | "projectDemandAttachment"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -553,6 +554,72 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.UserCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.UserCountAggregateOutputType> | number
+        }
+      }
+    }
+    ApiToken: {
+      payload: Prisma.$ApiTokenPayload<ExtArgs>
+      fields: Prisma.ApiTokenFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ApiTokenFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApiTokenPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ApiTokenFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApiTokenPayload>
+        }
+        findFirst: {
+          args: Prisma.ApiTokenFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApiTokenPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ApiTokenFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApiTokenPayload>
+        }
+        findMany: {
+          args: Prisma.ApiTokenFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApiTokenPayload>[]
+        }
+        create: {
+          args: Prisma.ApiTokenCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApiTokenPayload>
+        }
+        createMany: {
+          args: Prisma.ApiTokenCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        delete: {
+          args: Prisma.ApiTokenDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApiTokenPayload>
+        }
+        update: {
+          args: Prisma.ApiTokenUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApiTokenPayload>
+        }
+        deleteMany: {
+          args: Prisma.ApiTokenDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ApiTokenUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        upsert: {
+          args: Prisma.ApiTokenUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApiTokenPayload>
+        }
+        aggregate: {
+          args: Prisma.ApiTokenAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateApiToken>
+        }
+        groupBy: {
+          args: Prisma.ApiTokenGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ApiTokenGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ApiTokenCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ApiTokenCountAggregateOutputType> | number
         }
       }
     }
@@ -1880,6 +1947,22 @@ export const UserScalarFieldEnum = {
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
 
 
+export const ApiTokenScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  name: 'name',
+  tokenHash: 'tokenHash',
+  tokenPrefix: 'tokenPrefix',
+  scopes: 'scopes',
+  expiresAt: 'expiresAt',
+  lastUsedAt: 'lastUsedAt',
+  revokedAt: 'revokedAt',
+  createdAt: 'createdAt'
+} as const
+
+export type ApiTokenScalarFieldEnum = (typeof ApiTokenScalarFieldEnum)[keyof typeof ApiTokenScalarFieldEnum]
+
+
 export const UserPermissionScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
@@ -2222,6 +2305,34 @@ export const UserOrderByRelevanceFieldEnum = {
 export type UserOrderByRelevanceFieldEnum = (typeof UserOrderByRelevanceFieldEnum)[keyof typeof UserOrderByRelevanceFieldEnum]
 
 
+export const JsonNullValueFilter = {
+  DbNull: DbNull,
+  JsonNull: JsonNull,
+  AnyNull: AnyNull
+} as const
+
+export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
+
+
+export const QueryMode = {
+  default: 'default',
+  insensitive: 'insensitive'
+} as const
+
+export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
+
+
+export const ApiTokenOrderByRelevanceFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  name: 'name',
+  tokenHash: 'tokenHash',
+  tokenPrefix: 'tokenPrefix'
+} as const
+
+export type ApiTokenOrderByRelevanceFieldEnum = (typeof ApiTokenOrderByRelevanceFieldEnum)[keyof typeof ApiTokenOrderByRelevanceFieldEnum]
+
+
 export const UserPermissionOrderByRelevanceFieldEnum = {
   id: 'id',
   userId: 'userId',
@@ -2332,23 +2443,6 @@ export const TimeLogOrderByRelevanceFieldEnum = {
 } as const
 
 export type TimeLogOrderByRelevanceFieldEnum = (typeof TimeLogOrderByRelevanceFieldEnum)[keyof typeof TimeLogOrderByRelevanceFieldEnum]
-
-
-export const JsonNullValueFilter = {
-  DbNull: DbNull,
-  JsonNull: JsonNull,
-  AnyNull: AnyNull
-} as const
-
-export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
-
-
-export const QueryMode = {
-  default: 'default',
-  insensitive: 'insensitive'
-} as const
-
-export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
 
 
 export const CommentOrderByRelevanceFieldEnum = {
@@ -2485,6 +2579,20 @@ export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel,
 
 
 /**
+ * Reference to a field of type 'Json'
+ */
+export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
+    
+
+
+/**
+ * Reference to a field of type 'QueryMode'
+ */
+export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
+    
+
+
+/**
  * Reference to a field of type 'ProjectStatus'
  */
 export type EnumProjectStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ProjectStatus'>
@@ -2530,20 +2638,6 @@ export type EnumDependencyTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$P
  * Reference to a field of type 'TimeLogSource'
  */
 export type EnumTimeLogSourceFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TimeLogSource'>
-    
-
-
-/**
- * Reference to a field of type 'Json'
- */
-export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
-    
-
-
-/**
- * Reference to a field of type 'QueryMode'
- */
-export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
     
 
 
@@ -2679,6 +2773,7 @@ export type PrismaClientOptions = ({
 export type GlobalOmitConfig = {
   company?: Prisma.CompanyOmit
   user?: Prisma.UserOmit
+  apiToken?: Prisma.ApiTokenOmit
   userPermission?: Prisma.UserPermissionOmit
   project?: Prisma.ProjectOmit
   projectDeveloper?: Prisma.ProjectDeveloperOmit

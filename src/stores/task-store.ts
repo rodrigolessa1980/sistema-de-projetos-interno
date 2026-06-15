@@ -113,6 +113,7 @@ interface TaskStore {
   appendTimeLog: (log: TimeLog) => void;
   fetchTimeLogsForTask: (taskId: string) => Promise<void>;
   fetchTimeLogsForProject: (projectId: string) => Promise<void>;
+  fetchAllTimeLogs: () => Promise<void>;
   fetchModuleAttachmentsForProject: (projectId: string, moduleIds: string[]) => Promise<void>;
   deleteTimeLog: (id: string, taskId: string) => Promise<void>;
   addComment: (data: Omit<Comment, "id" | "createdAt" | "updatedAt">) => Promise<Comment>;
@@ -293,6 +294,13 @@ export const useTaskStore = create<TaskStore>()(
         ...normalized,
       ],
     }));
+  },
+
+  fetchAllTimeLogs: async () => {
+    // Admin recebe todos os registros; demais usuários, só os próprios (regra do backend).
+    const logs = await api.get<TimeLog[]>("time-logs").catch(() => [] as TimeLog[]);
+    const normalized = logs.map((log) => ({ ...log, date: log.date.split("T")[0] }));
+    set({ timeLogs: normalized });
   },
 
   fetchModuleAttachmentsForProject: async (projectId, moduleIds) => {

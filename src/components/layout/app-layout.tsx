@@ -20,6 +20,7 @@ export function AppLayout({ children, title }: AppLayoutProps) {
   const pathname = usePathname();
   const fetchProjects = useProjectStore((s) => s.fetchProjects);
   const fetchTasksForProjects = useTaskStore((s) => s.fetchTasksForProjects);
+  const fetchAllTimeLogs = useTaskStore((s) => s.fetchAllTimeLogs);
   const fetchNotifications = useUIStore((s) => s.fetchNotifications);
   const fetchUsers = useUserStore((s) => s.fetchUsers);
   useSyncWorkSession(isAuthenticated);
@@ -39,10 +40,11 @@ export function AppLayout({ children, title }: AppLayoutProps) {
           return fetchTasksForProjects(ids);
         })
         .catch(() => {});
+      fetchAllTimeLogs().catch(() => {});
       fetchUsers().catch(() => {});
       fetchNotifications().catch(() => {});
     }
-  }, [isAuthenticated, fetchNotifications, fetchProjects, fetchTasksForProjects, fetchUsers]);
+  }, [isAuthenticated, fetchNotifications, fetchProjects, fetchTasksForProjects, fetchAllTimeLogs, fetchUsers]);
 
   if (isLoading) {
     return (

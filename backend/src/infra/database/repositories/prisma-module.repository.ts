@@ -274,16 +274,81 @@ export class PrismaModuleRepository implements IModuleRepository {
     return raws.map((r) => this.mapToDomain(r));
   }
 
-  async update(id: string, data: { name?: string; description?: string; status?: ModuleStatus }): Promise<Module> {
-    const raw = await this.prisma.module.update({
-      where: { id },
-      data: {
-        ...data,
-        ...(data.status ? { progress: progressForStatus(data.status) } : {}),
-        updatedAt: new Date(),
-      },
+  async update(
+    id: string,
+    data: {
+      name?: string;
+      description?: string;
+      status?: ModuleStatus;
+      workDate?: Date | null;
+      hours?: number | null;
+    },
+  ): Promise<Module> {
+    const touchesTimeLog = data.workDate !== undefined || data.hours !== undefined;
+    if (!touchesTimeLog) {
+      const raw = await this.prisma.module.update({
+        where: { id },
+        data: {
+          name: data.name,
+          description: data.description,
+          status: data.status,
+          ...(data.status ? { progress: progressForStatus(data.status) } : {}),
+          updatedAt: new Date(),
+        },
+      });
+      return this.mapToDomain(raw);
+    }
+
+    return this.prisma.$transaction(async (tx) => {
+      const raw = await tx.module.update({
+        where: { id },
+        data: {
+          name: data.name,
+          description: data.description,
+          status: data.status,
+          ...(data.status ? { progress: progressForStatus(data.status) } : {}),
+          ...(data.workDate !== undefined ? { workDate: data.workDate } : {}),
+          ...(data.hours !== undefined ? { loggedHours: data.hours } : {}),
+          updatedAt: new Date(),
+        },
+      });
+
+      // Sincroniza o(s) time log(s)/task(s) vinculados ao módulo (1 por módulo no fluxo padrão).
+      const moduleTasks = await tx.task.findMany({
+        where: { moduleId: id },
+        select: { id: true },
+      });
+      const taskIds = moduleTasks.map((t) => t.id);
+      if (taskIds.length > 0) {
+        const timeLogData: { date?: Date; hours?: number } = {};
+        if (data.workDate != null) timeLogData.date = data.workDate;
+        if (data.hours != null) timeLogData.hours = data.hours;
+        if (Object.keys(timeLogData).length > 0) {
+          await tx.timeLog.updateMany({ where: { taskId: { in: taskIds } }, data: timeLogData });
+        }
+        if (data.hours != null) {
+          await tx.task.updateMany({ where: { id: { in: taskIds } }, data: { actualHours: data.hours } });
+        }
+        // Mantém as datas do épico coerentes com a nova data de trabalho.
+        if (data.workDate != null) {
+          await tx.epic.updateMany({
+            where: { moduleId: id },
+            data: { startDate: data.workDate, endDate: data.workDate },
+          });
+        }
+      }
+
+      const projectHours = await tx.timeLog.aggregate({
+        where: { projectId: raw.projectId, endedAt: { not: null } },
+        _sum: { hours: true },
+      });
+      await tx.project.update({
+        where: { id: raw.projectId },
+        data: { actualHours: projectHours._sum.hours ?? 0 },
+      });
+
+      return this.mapToDomain(raw);
     });
-    return this.mapToDomain(raw);
   }
 
   async delete(id: string): Promise<void> {
