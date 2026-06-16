@@ -18,7 +18,10 @@ export interface CreateModuleCompleteInput {
   description: string;
   status?: ModuleStatus;
   order?: number;
+  /** Quem está registrando (reporter). */
   userId: string;
+  /** A quem as horas são atribuídas (assignee/time log). Default: dono do projeto. */
+  assignedUserId?: string;
   hours?: number;
   workDate?: Date;
   attachments?: ModuleAttachmentInput[];
@@ -37,7 +40,17 @@ export interface IModuleRepository {
   createComplete(input: CreateModuleCompleteInput): Promise<CreateModuleCompleteResult>;
   findById(id: string): Promise<Module | null>;
   listByProject(projectId: string): Promise<Module[]>;
-  update(id: string, data: { name?: string; description?: string; status?: ModuleStatus }): Promise<Module>;
+  update(
+    id: string,
+    data: {
+      name?: string;
+      description?: string;
+      status?: ModuleStatus;
+      workDate?: Date | null;
+      hours?: number | null;
+      assignedUserId?: string;
+    },
+  ): Promise<Module>;
   delete(id: string): Promise<void>;
 }
 

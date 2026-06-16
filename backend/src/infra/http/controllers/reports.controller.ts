@@ -1,5 +1,7 @@
 import { Controller, Get, Param, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
+import { PermissionsGuard } from '../guards/permissions.guard';
+import { RequirePermission } from '../decorators/require-permission.decorator';
 import { PrismaService } from '../../database/prisma/prisma.service';
 
 interface DeveloperStats {
@@ -44,11 +46,12 @@ interface ProjectCalendar {
 }
 
 @Controller('reports')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, PermissionsGuard)
 export class ReportsController {
   constructor(private readonly prisma: PrismaService) {}
 
   @Get('projects/:id/summary')
+  @RequirePermission('metrics:read')
   async getProjectSummary(@Param('id') projectId: string): Promise<ProjectSummary> {
     const project = await this.prisma.project.findUniqueOrThrow({
       where: { id: projectId },
@@ -134,6 +137,7 @@ export class ReportsController {
   }
 
   @Get('projects/:id/calendar')
+  @RequirePermission('metrics:read')
   async getProjectCalendar(@Param('id') projectId: string): Promise<ProjectCalendar> {
     const logs = await this.prisma.timeLog.findMany({
       where: { projectId, endedAt: { not: null } },

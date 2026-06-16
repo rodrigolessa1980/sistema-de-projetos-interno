@@ -10,9 +10,14 @@ import { UsersController } from './controllers/users.controller';
 import { ModulesController } from './controllers/modules.controller';
 import { NotificationsController } from './controllers/notifications.controller';
 import { ReportsController } from './controllers/reports.controller';
+import { DevlogController } from './controllers/devlog.controller';
+import { ApiTokensController } from './controllers/api-tokens.controller';
+import { PermissionsGuard } from './guards/permissions.guard';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 @Module({
   imports: [UseCasesModule],
+  providers: [PermissionsGuard, JwtAuthGuard],
   controllers: [
     HealthController,
     AuthController,
@@ -24,6 +29,8 @@ import { ReportsController } from './controllers/reports.controller';
     ModulesController,
     NotificationsController,
     ReportsController,
+    DevlogController,
+    ApiTokensController,
   ],
 })
 export class HttpModule {}

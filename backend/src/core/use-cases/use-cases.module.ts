@@ -54,12 +54,19 @@ import { GetActiveSessionUseCase } from './time-logs/get-active-session.use-case
 import { ListTimeLogsByTaskUseCase } from './time-logs/list-time-logs-by-task.use-case';
 import { ListTimeLogsByUserUseCase } from './time-logs/list-time-logs-by-user.use-case';
 import { ListTimeLogsByProjectUseCase } from './time-logs/list-time-logs-by-project.use-case';
+import { ListAllTimeLogsUseCase } from './time-logs/list-all-time-logs.use-case';
 import { DeleteTimeLogUseCase } from './time-logs/delete-time-log.use-case';
 
 // User Use Cases
 import { ListUsersUseCase } from './users/list-users.use-case';
 import { GetUserPermissionsUseCase } from './users/get-user-permissions.use-case';
 import { UpdateUserPermissionsUseCase } from './users/update-user-permissions.use-case';
+import { CreateApiTokenUseCase } from './api-tokens/create-api-token.use-case';
+import {
+  ListApiTokensUseCase,
+  RevokeApiTokenUseCase,
+} from './api-tokens/manage-api-tokens.use-case';
+import { PermissionService } from '../permissions/permission.service';
 
 const useCases = [
   // Auth
@@ -119,12 +126,16 @@ const useCases = [
   ListTimeLogsByTaskUseCase,
   ListTimeLogsByUserUseCase,
   ListTimeLogsByProjectUseCase,
+  ListAllTimeLogsUseCase,
   DeleteTimeLogUseCase,
 
   // Users & Permissions
   ListUsersUseCase,
   GetUserPermissionsUseCase,
   UpdateUserPermissionsUseCase,
+  CreateApiTokenUseCase,
+  ListApiTokensUseCase,
+  RevokeApiTokenUseCase,
 ];
 
 @Module({
@@ -138,7 +149,7 @@ const useCases = [
       }),
     }),
   ],
-  providers: [...useCases],
-  exports: [...useCases, JwtModule],
+  providers: [...useCases, PermissionService],
+  exports: [...useCases, JwtModule, PermissionService],
 })
 export class UseCasesModule {}

@@ -12,7 +12,12 @@
     "build:check": "npm run typecheck && npm run build",
     "prestart": "node scripts/kill-ports.js 8022",
     "start": "vite preview --host 0.0.0.0 --port 8022",
-    "lint": "eslint"
+    "lint": "eslint",
+    "import:devlog": "npm run import:devlog --prefix backend",
+    "relatorio:preview": "node scripts/relatorio-to-devlog.mjs --dry-run",
+    "relatorio:build": "node scripts/relatorio-to-devlog.mjs",
+    "relatorio:import": "node scripts/relatorio-to-devlog.mjs && node scripts/import-devlog-batch.mjs",
+    "relatorio:import:fast": "node scripts/relatorio-to-devlog.mjs && npm run import:devlog"
   },
   "dependencies": {
     "@base-ui/react": "^1.4.1",

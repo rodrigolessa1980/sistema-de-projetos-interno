@@ -153,6 +153,7 @@ export default function ProjectDetailPage() {
   const [editingModuleId, setEditingModuleId] = useState<string | null>(null);
   const [editingName, setEditingName] = useState("");
   const [editingDesc, setEditingDesc] = useState("");
+  const [editingStatus, setEditingStatus] = useState<ModuleStatus>("INICIADO");
   const [addingModule, setAddingModule] = useState(false);
   const [savingModule, setSavingModule] = useState(false);
   const [savingEditId, setSavingEditId] = useState<string | null>(null);
@@ -316,7 +317,7 @@ export default function ProjectDetailPage() {
     if (!editingName.trim()) return;
     setSavingEditId(moduleId);
     try {
-      await updateModule(moduleId, { name: editingName.trim(), description: editingDesc.trim() });
+      await updateModule(moduleId, { name: editingName.trim(), description: editingDesc.trim(), status: editingStatus });
       setEditingModuleId(null);
       toast.success("Módulo atualizado");
     } catch (err) {
@@ -326,10 +327,11 @@ export default function ProjectDetailPage() {
     }
   }
 
-  function startEdit(mod: { id: string; name: string; description: string }) {
+  function startEdit(mod: { id: string; name: string; description: string; status?: ModuleStatus }) {
     setEditingModuleId(mod.id);
     setEditingName(mod.name);
     setEditingDesc(mod.description);
+    setEditingStatus(mod.status ?? "INICIADO");
   }
 
   async function handleDeleteModule(module: { id: string; name: string }) {
@@ -1211,6 +1213,26 @@ export default function ProjectDetailPage() {
                       rows={2}
                       className="w-full text-sm bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-zinc-200 placeholder-zinc-600 outline-none focus:border-violet-500/50 transition-colors resize-none"
                     />
+                    <div className="space-y-1">
+                      <label className="text-[11px] text-zinc-500 flex items-center gap-1">
+                        <Layers className="w-3 h-3" /> Status
+                      </label>
+                      <Select
+                        value={editingStatus}
+                        onValueChange={(value) => setEditingStatus(value as ModuleStatus)}
+                      >
+                        <SelectTrigger className="h-8 text-sm bg-zinc-800 border-zinc-700 text-zinc-200">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {Object.entries(moduleStatusLabels).map(([value, label]) => (
+                            <SelectItem key={value} value={value}>
+                              {label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
                     <div className="flex justify-end gap-2">
                       <Button size="sm" variant="ghost" onClick={() => setEditingModuleId(null)} className="h-7 text-xs text-zinc-400" disabled={savingEditId === module.id}>
                         <X className="w-3.5 h-3.5 mr-1" /> Cancelar

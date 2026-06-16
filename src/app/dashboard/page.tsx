@@ -18,6 +18,13 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { MetricsAreaChart } from "@/components/shared/mui-charts";
 import Link from "@/lib/router";
 import { Badge } from "@/components/ui/badge";
+import {
+  PeriodFilter,
+  rangeFromPreset,
+  isInRange,
+  type DateRange,
+  type PresetKey,
+} from "@/components/shared/period-filter";
 
 export default function DashboardPage() {
   const { user, isAdmin } = useAuth();
@@ -28,6 +35,12 @@ export default function DashboardPage() {
 
   const { activeSession, getElapsedSeconds } = useWorkSessionStore();
 
+  // Filtro de período do dashboard
+  const [preset, setPreset] = useState<PresetKey>("30d");
+  const [range, setRange] = useState<DateRange>(() => rangeFromPreset("30d"));
+  const hoursColLabel = preset === "hoje" ? "Horas hoje" : "Horas no período";
+  const totalLabel = preset === "hoje" ? "Total do dia" : "Total do período";
+
   // Tick a cada segundo para atualizar o cronômetro ativo
   const [, setTick] = useState(0);
   useEffect(() => {
@@ -37,42 +50,45 @@ export default function DashboardPage() {
   }, [activeSession]);
 
   const today = new Date().toISOString().split("T")[0];
+  const todayInRange = isInRange(today, range);
 
-  // Tarefas atrasadas: têm prazo definido, não concluídas/canceladas, prazo < hoje
+  // Tarefas atrasadas: têm prazo definido, não concluídas/canceladas, prazo < hoje (estado atual — global)
   const overdueTasks = tasks.filter(
     (t) => t.dueDate && t.dueDate < today && !["CONCLUIDA", "CANCELADA"].includes(t.status)
   );
   const overdueCount = overdueTasks.length;
   const overdueProjects = new Set(overdueTasks.map((t) => t.projectId)).size;
 
-  // Horas registradas hoje por taskId
-  const todayLogsByTask = timeLogs
-    .filter((tl) => tl.date === today)
-    .reduce<Record<string, number>>((acc, tl) => {
-      acc[tl.taskId] = (acc[tl.taskId] ?? 0) + tl.hours;
-      return acc;
-    }, {});
+  // Tarefas concluídas dentro do período (por completedAt)
+  const completedInPeriod = tasks.filter((t) => isInRange(t.completedAt, range)).length;
 
-  // Soma horas da sessão ativa (em tempo real)
-  const activeTaskHoursToday = (taskId: string): number => {
-    const logged = todayLogsByTask[taskId] ?? 0;
-    if (activeSession?.taskId === taskId) return logged + getElapsedSeconds() / 3600;
+  // Horas registradas no período por taskId
+  const periodLogs = timeLogs.filter((tl) => isInRange(tl.date, range));
+  const periodLogsByTask = periodLogs.reduce<Record<string, number>>((acc, tl) => {
+    acc[tl.taskId] = (acc[tl.taskId] ?? 0) + tl.hours;
+    return acc;
+  }, {});
+
+  // Horas por task incluindo a sessão ativa (só conta o cronômetro se hoje está no período)
+  const taskHoursInPeriod = (taskId: string): number => {
+    const logged = periodLogsByTask[taskId] ?? 0;
+    if (todayInRange && activeSession?.taskId === taskId) return logged + getElapsedSeconds() / 3600;
     return logged;
   };
 
-  // Total de horas hoje por projectId (incluindo sessão ativa)
-  const todayHoursByProject = { ...Object.entries(todayLogsByTask).reduce<Record<string, number>>(
+  // Total de horas no período por projectId (inclui sessão ativa quando hoje ∈ período)
+  const periodHoursByProject = { ...Object.entries(periodLogsByTask).reduce<Record<string, number>>(
     (acc, [taskId, hours]) => {
       const task = tasks.find((t) => t.id === taskId);
       if (task) acc[task.projectId] = (acc[task.projectId] ?? 0) + hours;
       return acc;
     }, {}
   ) };
-  if (activeSession) {
+  if (todayInRange && activeSession) {
     const activeTask = tasks.find((t) => t.id === activeSession.taskId);
     if (activeTask) {
-      todayHoursByProject[activeTask.projectId] =
-        (todayHoursByProject[activeTask.projectId] ?? 0) + getElapsedSeconds() / 3600;
+      periodHoursByProject[activeTask.projectId] =
+        (periodHoursByProject[activeTask.projectId] ?? 0) + getElapsedSeconds() / 3600;
     }
   }
 
@@ -80,10 +96,10 @@ export default function DashboardPage() {
     ? tasks.filter((t) => ["EM_DESENVOLVIMENTO", "EM_REVISAO"].includes(t.status)).slice(0, 5)
     : tasks.filter((t) => t.assigneeId === user?.id).slice(0, 5);
 
-  // Ranking de desenvolvedores por horas registradas
+  // Ranking de desenvolvedores por horas registradas no período
   const devRanking = users
     .map((u) => {
-      const hours = timeLogs.filter((tl) => tl.userId === u.id).reduce((acc, tl) => acc + tl.hours, 0);
+      const hours = periodLogs.filter((tl) => tl.userId === u.id).reduce((acc, tl) => acc + tl.hours, 0);
       const activeTasks = tasks.filter((t) => t.assigneeId === u.id && t.status === "EM_DESENVOLVIMENTO").length;
       const totalTasks = tasks.filter((t) => t.assigneeId === u.id).length;
       const projectCount = projects.filter((p) => p.developerIds.includes(u.id) || p.ownerId === u.id).length;
@@ -106,9 +122,17 @@ export default function DashboardPage() {
               {new Date().toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" })}
             </p>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
-            <span className="text-xs text-zinc-500">Sistema operacional</span>
+          <div className="flex items-center gap-3 flex-wrap justify-end">
+            <PeriodFilter
+              value={range}
+              onChange={setRange}
+              activePreset={preset}
+              onPresetChange={setPreset}
+            />
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
+              <span className="text-xs text-zinc-500">Sistema operacional</span>
+            </div>
           </div>
         </div>
 
@@ -123,9 +147,9 @@ export default function DashboardPage() {
             icon={ListTodo} color="blue" delay={0.1}
           />
           <StatCard
-            title="Concluídas" value={summary.completedTasks}
-            subtitle={`${Math.round((summary.completedTasks / Math.max(summary.totalTasks, 1)) * 100)}% do total`}
-            icon={CheckCircle2} color="emerald" delay={0.15} trend={12}
+            title="Concluídas" value={completedInPeriod}
+            subtitle={`${range.label.toLowerCase()} · ${summary.completedTasks} no total`}
+            icon={CheckCircle2} color="emerald" delay={0.15}
           />
           <StatCard
             title="Atrasadas" value={overdueCount}
@@ -200,7 +224,7 @@ export default function DashboardPage() {
                   <Trophy className="w-4 h-4 text-amber-400" />
                   Ranking de Horas
                 </h3>
-                <p className="text-xs text-zinc-500">Horas registradas por desenvolvedor</p>
+                <p className="text-xs text-zinc-500">Horas registradas · {range.label.toLowerCase()}</p>
               </div>
             </div>
             <div className="space-y-3">
@@ -236,7 +260,7 @@ export default function DashboardPage() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between mb-1">
                         <span className="text-xs font-medium text-zinc-200 truncate">{dev.name.split(" ")[0]}</span>
-                        <span className="text-xs font-bold text-zinc-300 shrink-0 ml-1">{hours}h</span>
+                        <span className="text-xs font-bold text-zinc-300 shrink-0 ml-1">{hours.toFixed(1)}h</span>
                       </div>
                       <div className="h-1.5 bg-zinc-800 rounded-full overflow-hidden">
                         <motion.div
@@ -283,7 +307,7 @@ export default function DashboardPage() {
             <div className="flex items-center justify-between mb-2 pb-2 border-b border-zinc-800/50">
               <span className="text-[10px] text-zinc-600 uppercase tracking-wide">Tarefa</span>
               <span className="text-[10px] text-zinc-600 uppercase tracking-wide flex items-center gap-1">
-                <Clock className="w-3 h-3" /> Horas hoje
+                <Clock className="w-3 h-3" /> {hoursColLabel}
               </span>
             </div>
             <div className="space-y-1.5">
@@ -292,7 +316,7 @@ export default function DashboardPage() {
               )}
               {myTasks.map((task) => {
                 const assignee = users.find((u) => u.id === task.assigneeId);
-                const hoursToday = activeTaskHoursToday(task.id);
+                const hoursToday = taskHoursInPeriod(task.id);
                 const isActive = activeSession?.taskId === task.id;
                 const hoursDisplay = hoursToday >= 0.017
                   ? hoursToday >= 1 ? `${hoursToday.toFixed(1)}h` : `${Math.round(hoursToday * 60)}m`
@@ -342,10 +366,10 @@ export default function DashboardPage() {
             </div>
             {myTasks.length > 0 && (
               <div className="flex items-center justify-between mt-3 pt-2 border-t border-zinc-800/50">
-                <span className="text-[10px] text-zinc-600">Total do dia</span>
+                <span className="text-[10px] text-zinc-600">{totalLabel}</span>
                 <span className="text-xs font-bold text-zinc-300 tabular-nums">
                   {(() => {
-                    const total = myTasks.reduce((acc, t) => acc + activeTaskHoursToday(t.id), 0);
+                    const total = myTasks.reduce((acc, t) => acc + taskHoursInPeriod(t.id), 0);
                     return total >= 1 ? `${total.toFixed(1)}h` : total > 0 ? `${Math.round(total * 60)}m` : "0h";
                   })()}
                 </span>
@@ -369,12 +393,12 @@ export default function DashboardPage() {
             <div className="flex items-center justify-between mb-2 pb-2 border-b border-zinc-800/50">
               <span className="text-[10px] text-zinc-600 uppercase tracking-wide">Projeto</span>
               <span className="text-[10px] text-zinc-600 uppercase tracking-wide flex items-center gap-1">
-                <Clock className="w-3 h-3" /> Horas hoje
+                <Clock className="w-3 h-3" /> {hoursColLabel}
               </span>
             </div>
             <div className="space-y-2">
               {projects.slice(0, 4).map((project) => {
-                const hoursToday = todayHoursByProject[project.id] ?? 0;
+                const hoursToday = periodHoursByProject[project.id] ?? 0;
                 const hasActiveTask = !!(activeSession && tasks.find(
                   (t) => t.id === activeSession.taskId && t.projectId === project.id
                 ));
@@ -382,7 +406,7 @@ export default function DashboardPage() {
                   ? hoursToday >= 1 ? `${hoursToday.toFixed(1)}h` : `${Math.round(hoursToday * 60)}m`
                   : null;
                 const projectTasksTodayCount = tasks.filter(
-                  (t) => t.projectId === project.id && (todayLogsByTask[t.id] || (hasActiveTask && t.id === activeSession?.taskId))
+                  (t) => t.projectId === project.id && (periodLogsByTask[t.id] || (hasActiveTask && t.id === activeSession?.taskId))
                 ).length;
                 return (
                   <Link
@@ -419,12 +443,12 @@ export default function DashboardPage() {
                 );
               })}
             </div>
-            {Object.keys(todayHoursByProject).length > 0 && (
+            {Object.keys(periodHoursByProject).length > 0 && (
               <div className="flex items-center justify-between mt-3 pt-2 border-t border-zinc-800/50">
-                <span className="text-[10px] text-zinc-600">Total do dia</span>
+                <span className="text-[10px] text-zinc-600">{totalLabel}</span>
                 <span className="text-xs font-bold text-zinc-300 tabular-nums">
                   {(() => {
-                    const total = Object.values(todayHoursByProject).reduce((a, b) => a + b, 0);
+                    const total = Object.values(periodHoursByProject).reduce((a, b) => a + b, 0);
                     return total >= 1 ? `${total.toFixed(1)}h` : `${Math.round(total * 60)}m`;
                   })()}
                 </span>

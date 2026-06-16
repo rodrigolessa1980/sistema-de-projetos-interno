@@ -26,6 +26,7 @@ const ProjectsPage = lazyPage(pageLoaders.projects);
 const ProjectDetailPage = lazyPage(pageLoaders.projectDetail);
 const QueuePage = lazyPage(pageLoaders.queue);
 const HoursReportPage = lazyPage(pageLoaders.hoursReport);
+const DailyHoursReportPage = lazyPage(pageLoaders.dailyHoursReport);
 const OverviewReportPage = lazyPage(pageLoaders.overviewReport);
 const ProductivityReportPage = lazyPage(pageLoaders.productivityReport);
 const ProjectsReportPage = lazyPage(pageLoaders.projectsReport);
@@ -53,6 +54,7 @@ const routes = [
   { pattern: /^\/projects\/([^/]+)\/?$/, component: ProjectDetailPage },
   { pattern: /^\/queue\/?$/, component: QueuePage },
   { pattern: /^\/reports\/hours\/?$/, component: HoursReportPage },
+  { pattern: /^\/reports\/daily\/?$/, component: DailyHoursReportPage },
   { pattern: /^\/reports\/overview\/?$/, component: OverviewReportPage },
   { pattern: /^\/reports\/productivity\/?$/, component: ProductivityReportPage },
   { pattern: /^\/reports\/projects\/?$/, component: ProjectsReportPage },

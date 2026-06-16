@@ -1,0 +1,21 @@
+{
+  "maxHoursPerDay": 8,
+  "globalMultiplier": 1,
+  "minCommitLinesToCount": 3,
+  "ignoreIfLinesBelow": 5,
+  "ignoreCommitPatterns": [
+    "package-lock.json",
+    "package-lock",
+    "@emnapi/core",
+    "@emnapi/runtime",
+    "peer property to several dependencies"
+  ],
+  "periodStart": "2026-01-07",
+  "periodEnd": "2026-06-14",
+  "recentDaysInProgress": 7,
+  "defaultProjectStatus": "ATIVO",
+  "summaryMaxLength": 80,
+  "reportPath": "relatorio.md",
+  "outputPath": "devlog.json",
+  "previewPath": "import-preview.md"
+}

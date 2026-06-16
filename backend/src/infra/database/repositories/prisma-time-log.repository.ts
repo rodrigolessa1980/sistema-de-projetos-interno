@@ -55,6 +55,13 @@ export class PrismaTimeLogRepository implements ITimeLogRepository {
     await this.prisma.timeLog.delete({ where: { id } });
   }
 
+  async findAll(): Promise<TimeLog[]> {
+    const raws = await this.prisma.timeLog.findMany({
+      orderBy: { date: 'desc' },
+    });
+    return raws.map((raw) => this.mapToDomain(raw));
+  }
+
   async findByTaskId(taskId: string): Promise<TimeLog[]> {
     const raws = await this.prisma.timeLog.findMany({ where: { taskId } });
     return raws.map((raw) => this.mapToDomain(raw));

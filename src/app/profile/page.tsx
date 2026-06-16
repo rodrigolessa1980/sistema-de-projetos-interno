@@ -15,10 +15,11 @@ import { formatDate, formatRelativeTime } from "@/lib/utils";
 import {
   Mail, Briefcase, Building, Clock, CheckCircle2, AlertTriangle,
   ListTodo, Users, UserPlus, ShieldCheck, FolderKanban, Pencil,
-  ArrowRight,
+  ArrowRight, KeyRound,
 } from "lucide-react";
 import Link from "@/lib/router";
 import { UserDialog } from "@/features/users/user-dialog";
+import { ApiTokensPanel } from "@/features/api-tokens/api-tokens-panel";
 import type { User } from "@/types";
 
 export default function ProfilePage() {
@@ -122,6 +123,9 @@ export default function ProfilePage() {
               </TabsTrigger>
             )}
             <TabsTrigger value="tasks" className="data-[state=active]:bg-zinc-800">Minhas Tarefas</TabsTrigger>
+            <TabsTrigger value="api" className="data-[state=active]:bg-zinc-800 gap-1.5">
+              <KeyRound className="w-3.5 h-3.5" /> API
+            </TabsTrigger>
             <TabsTrigger value="activity" className="data-[state=active]:bg-zinc-800">Atividade Recente</TabsTrigger>
           </TabsList>
 
@@ -243,6 +247,10 @@ export default function ProfilePage() {
                 <span className="text-xs text-zinc-500 hidden md:block">{formatDate(task.dueDate)}</span>
               </Link>
             ))}
+          </TabsContent>
+
+          <TabsContent value="api" className="mt-4">
+            <ApiTokensPanel />
           </TabsContent>
 
           {/* Atividade Recente */}

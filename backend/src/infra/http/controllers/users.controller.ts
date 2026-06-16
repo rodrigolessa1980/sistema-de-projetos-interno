@@ -1,5 +1,7 @@
 import { Body, Controller, Get, Param, Put, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
+import { PermissionsGuard } from '../guards/permissions.guard';
+import { RequireAdmin, RequirePermission } from '../decorators/require-permission.decorator';
 import { ListUsersUseCase } from '../../../core/use-cases/users/list-users.use-case';
 import { GetUserPermissionsUseCase } from '../../../core/use-cases/users/get-user-permissions.use-case';
 import { UpdateUserPermissionsUseCase } from '../../../core/use-cases/users/update-user-permissions.use-case';
@@ -7,7 +9,7 @@ import { UpdatePermissionsDto } from '../dtos/users/update-permissions.dto';
 import { UserPresenter } from '../presenters/user.presenter';
 
 @Controller('users')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, PermissionsGuard)
 export class UsersController {
   constructor(
     private readonly listUsersUseCase: ListUsersUseCase,
@@ -16,6 +18,7 @@ export class UsersController {
   ) {}
 
   @Get()
+  @RequirePermission('users:read')
   async listUsers() {
     const result = await this.listUsersUseCase.execute();
     return result.map(({ user, permissions }) => ({
@@ -30,6 +33,7 @@ export class UsersController {
   }
 
   @Get(':id/permissions')
+  @RequirePermission('users:read')
   async getPermissions(@Param('id') id: string) {
     const permissions = await this.getUserPermissionsUseCase.execute(id);
     return permissions.map((p) => ({
@@ -40,6 +44,8 @@ export class UsersController {
   }
 
   @Put(':id/permissions')
+  @RequirePermission('users:update')
+  @RequireAdmin()
   async updatePermissions(@Param('id') id: string, @Body() body: UpdatePermissionsDto) {
     await this.updateUserPermissionsUseCase.execute(id, body.permissions);
     return { success: true };

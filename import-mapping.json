@@ -1,0 +1,98 @@
+{
+  "aliases": {
+    "ExpediÃ§Ã£o": "Expedição",
+    "Expedição": "Expedição",
+    "Linha de ProduÃ§Ã£o Petkov": "Linha de Produção Petkov",
+    "Linha de Produção Petkov": "Linha de Produção Petkov"
+  },
+  "mappings": {
+    "FiscalMind (IA fiscal)": {
+      "devflowName": "FiscalMind / Fluxograma de Produto",
+      "status": "ATIVO",
+      "color": "#8b5cf6",
+      "estimatedHours": 200
+    },
+    "Sistema de Projetos Interno": {
+      "devflowName": "Sistema Interno de Tecnologia",
+      "status": "ATIVO",
+      "color": "#6366f1",
+      "estimatedHours": 160
+    },
+    "Controle de EPI": {
+      "devflowName": "Sistema Controle de EPI",
+      "status": "ATIVO",
+      "color": "#f59e0b",
+      "estimatedHours": 160
+    },
+    "Dashboard de Transporte / Frota": {
+      "devflowName": "Dashboard Transporte",
+      "status": "ATIVO",
+      "color": "#3b82f6",
+      "estimatedHours": 200
+    },
+    "Expedição": {
+      "devflowName": "Exportação de Madeira",
+      "status": "ATIVO",
+      "color": "#10b981",
+      "estimatedHours": 160
+    },
+    "Site QuietArt (marketing)": {
+      "devflowName": "QUIET ART",
+      "status": "ATIVO",
+      "color": "#ec4899",
+      "estimatedHours": 40
+    },
+    "Linha de Produção Petkov": {
+      "devflowName": "Linha de Produção Petkov",
+      "status": "ATIVO",
+      "color": "#14b8a6",
+      "estimatedHours": 200,
+      "create": true
+    },
+    "Agenda Sala de Reuniao (rodrigolessa1980)": {
+      "devflowName": "Agenda Sala de Reunião",
+      "status": "ATIVO",
+      "color": "#a855f7",
+      "estimatedHours": 100,
+      "create": true
+    },
+    "Sala de Reuniao (Monkey-Branch)": {
+      "devflowName": "Sala de Reunião (Monkey-Branch)",
+      "status": "ATIVO",
+      "color": "#9333ea",
+      "estimatedHours": 40,
+      "create": true
+    },
+    "Rastreio de Container": {
+      "devflowName": "Rastreio de Container",
+      "status": "ATIVO",
+      "color": "#0ea5e9",
+      "estimatedHours": 40,
+      "create": true
+    },
+    "Anomalias de Transporte": {
+      "devflowName": "Anomalias de Transporte",
+      "status": "ATIVO",
+      "color": "#64748b",
+      "estimatedHours": 40,
+      "create": true
+    },
+    "Voda App": {
+      "devflowName": "Voda App",
+      "status": "ATIVO",
+      "color": "#06b6d4",
+      "estimatedHours": 20,
+      "create": true
+    },
+    "Planilha Dashboard": {
+      "devflowName": "Planilha Dashboard",
+      "status": "ATIVO",
+      "color": "#78716c",
+      "estimatedHours": 20,
+      "create": true
+    }
+  },
+  "skipReportProjects": [],
+  "cleanupProjects": ["[TEST] Import Devlog"],
+  "removeSeedModules": true
+}

@@ -150,7 +150,7 @@ export class PrismaModuleRepository implements IModuleRepository {
 
       const existingCount = await tx.module.count({ where: { projectId: input.projectId } });
       const order = input.order ?? existingCount;
-      const timeLogUserId = project.ownerId;
+      const timeLogUserId = input.assignedUserId ?? project.ownerId;
       const moduleStatus = input.status ?? ModuleStatus.INICIADO;
 
       const moduleRaw = await tx.module.create({
@@ -274,16 +274,108 @@ export class PrismaModuleRepository implements IModuleRepository {
     return raws.map((r) => this.mapToDomain(r));
   }
 
-  async update(id: string, data: { name?: string; description?: string; status?: ModuleStatus }): Promise<Module> {
-    const raw = await this.prisma.module.update({
-      where: { id },
-      data: {
-        ...data,
-        ...(data.status ? { progress: progressForStatus(data.status) } : {}),
-        updatedAt: new Date(),
-      },
-    });
-    return this.mapToDomain(raw);
+  async update(
+    id: string,
+    data: {
+      name?: string;
+      description?: string;
+      status?: ModuleStatus;
+      workDate?: Date | null;
+      hours?: number | null;
+      assignedUserId?: string;
+    },
+  ): Promise<Module> {
+    const touchesTimeLog =
+      data.workDate !== undefined || data.hours !== undefined || data.assignedUserId !== undefined;
+    if (!touchesTimeLog) {
+      const raw = await this.prisma.module.update({
+        where: { id },
+        data: {
+          name: data.name,
+          description: data.description,
+          status: data.status,
+          ...(data.status ? { progress: progressForStatus(data.status) } : {}),
+          updatedAt: new Date(),
+        },
+      });
+      return this.mapToDomain(raw);
+    }
+
+    return this.prisma.$transaction(async (tx) => {
+      const raw = await tx.module.update({
+        where: { id },
+        data: {
+          name: data.name,
+          description: data.description,
+          status: data.status,
+          ...(data.status ? { progress: progressForStatus(data.status) } : {}),
+          ...(data.workDate !== undefined ? { workDate: data.workDate } : {}),
+          ...(data.hours !== undefined ? { loggedHours: data.hours } : {}),
+          ...(data.assignedUserId ? { loggedByUserId: data.assignedUserId } : {}),
+          updatedAt: new Date(),
+        },
+      });
+
+      // Sincroniza o(s) time log(s)/task(s) vinculados ao módulo (1 por módulo no fluxo padrão).
+      const moduleTasks = await tx.task.findMany({
+        where: { moduleId: id },
+        select: { id: true },
+      });
+      const taskIds = moduleTasks.map((t) => t.id);
+      if (taskIds.length > 0) {
+        const timeLogData: { date?: Date; hours?: number; userId?: string } = {};
+        if (data.workDate != null) timeLogData.date = data.workDate;
+        if (data.hours != null) timeLogData.hours = data.hours;
+        if (data.assignedUserId) timeLogData.userId = data.assignedUserId;
+        if (Object.keys(timeLogData).length > 0) {
+          await tx.timeLog.updateMany({ where: { taskId: { in: taskIds } }, data: timeLogData });
+        }
+        if (data.hours != null) {
+          await tx.task.updateMany({ where: { id: { in: taskIds } }, data: { actualHours: data.hours } });
+        }
+        if (data.assignedUserId) {
+          await tx.task.updateMany({ where: { id: { in: taskIds } }, data: { assigneeId: data.assignedUserId } });
+        }
+        // Mantém as datas do épico coerentes com a nova data de trabalho.
+        if (data.workDate != null) {
+          await tx.epic.updateMany({
+            where: { moduleId: id },
+            data: { startDate: data.workDate, endDate: data.workDate },
+          });
+        }
+        // Reatribui o desenvolvedor do(s) épico(s) do módulo.
+        if (data.assignedUserId) {
+          const epics = await tx.epic.findMany({ where: { moduleId: id }, select: { id: true } });
+          for (const e of epics) {
+            await tx.epicDeveloper.deleteMany({ where: { epicId: e.id } });
+            await tx.epicDeveloper
+              .create({ data: { epicId: e.id, userId: data.assignedUserId } })
+              .catch(() => undefined);
+          }
+        }
+
+        // Auto-cura: garante 1 time log por módulo (colapsa duplicatas, se houver).
+        const allLogs = await tx.timeLog.findMany({
+          where: { taskId: { in: taskIds } },
+          orderBy: { createdAt: 'asc' },
+          select: { id: true },
+        });
+        if (allLogs.length > 1) {
+          await tx.timeLog.deleteMany({ where: { id: { in: allLogs.slice(1).map((l) => l.id) } } });
+        }
+      }
+
+      const projectHours = await tx.timeLog.aggregate({
+        where: { projectId: raw.projectId, endedAt: { not: null } },
+        _sum: { hours: true },
+      });
+      await tx.project.update({
+        where: { id: raw.projectId },
+        data: { actualHours: projectHours._sum.hours ?? 0 },
+      });
+
+      return this.mapToDomain(raw);
+    }, { timeout: 60_000, maxWait: 30_000 });
   }
 
   async delete(id: string): Promise<void> {

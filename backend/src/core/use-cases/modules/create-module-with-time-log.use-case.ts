@@ -14,6 +14,7 @@ export interface CreateModuleWithTimeLogInput {
   status?: ModuleStatus;
   order?: number;
   userId: string;
+  assignedUserId?: string;
   hours?: number;
   workDate?: Date;
   attachments?: ModuleAttachmentInput[];
@@ -42,6 +43,7 @@ export class CreateModuleWithTimeLogUseCase {
       status: input.status,
       order: input.order,
       userId: input.userId,
+      assignedUserId: input.assignedUserId,
       hours: input.hours,
       workDate: input.workDate,
       attachments: input.attachments,

@@ -101,7 +101,7 @@ export function useLogTime() {
   const qc = useQueryClient();
 
   return useMutation({
-    mutationFn: async (data: Omit<TimeLog, "id" | "createdAt">) => {
+    mutationFn: async (data: Omit<TimeLog, "id" | "createdAt" | "userId">) => {
       return store.logTime(data);
     },
     onSuccess: () => {
