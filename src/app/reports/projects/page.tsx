@@ -156,7 +156,7 @@ export default function ProjectsReportPage() {
                 </div>
                 <div className="flex items-center gap-3">
                   {ps.owner && (
-                    <span>Responsável: <span className="text-zinc-400">{ps.owner.name.split(" ")[0]}</span></span>
+                    <span>Demanda: <span className="text-zinc-400">{ps.owner.name.split(" ")[0]}</span></span>
                   )}
                   <Link
                     href={`/reports/projects/${ps.project.id}`}
