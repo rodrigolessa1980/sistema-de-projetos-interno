@@ -109,7 +109,7 @@ interface TaskStore {
   updateTask: (id: string, data: Partial<Task>) => Promise<Task>;
   updateTaskStatus: (id: string, newStatus: TaskStatus, userId: string) => Promise<void>;
   deleteTask: (id: string) => Promise<void>;
-  logTime: (data: Omit<TimeLog, "id" | "createdAt">) => Promise<TimeLog>;
+  logTime: (data: Omit<TimeLog, "id" | "createdAt" | "userId">) => Promise<TimeLog>;
   appendTimeLog: (log: TimeLog) => void;
   fetchTimeLogsForTask: (taskId: string) => Promise<void>;
   fetchTimeLogsForProject: (projectId: string) => Promise<void>;
@@ -239,9 +239,13 @@ export const useTaskStore = create<TaskStore>()(
       throw new Error("Task não encontrada para registrar tempo");
     }
     const log = await api.post<TimeLog>("time-logs", {
-      ...data,
       projectId: task.projectId,
-      source: "MANUAL",
+      taskId: data.taskId,
+      hours: data.hours,
+      description: data.description,
+      date: data.date,
+      status: data.status,
+      source: data.source ?? "MANUAL",
     });
     get().appendTimeLog(log);
     // Atualiza actualHours da task com o valor retornado pelo backend

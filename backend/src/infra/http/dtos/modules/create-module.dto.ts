@@ -64,6 +64,11 @@ export class CreateModuleDto {
   @IsDateString()
   workDate?: string;
 
+  /** A quem atribuir as horas (só admin pode definir outro usuário). */
+  @IsOptional()
+  @IsString()
+  assignedUserId?: string;
+
   @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })

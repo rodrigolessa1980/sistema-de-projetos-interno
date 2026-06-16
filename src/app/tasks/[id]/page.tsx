@@ -139,8 +139,12 @@ export default function TaskDetailPage() {
     const hours = parseFloat(logHours);
     if (!hours || hours <= 0) { toast.error("Informe um valor válido de horas"); return; }
     await logTimeMutation.mutateAsync({
-      taskId: id, projectId: task.projectId, userId: user?.id ?? "", hours, description: logDesc,
-      date: new Date().toISOString().split("T")[0], status: task.status,
+      taskId: id,
+      projectId: task.projectId,
+      hours,
+      description: logDesc,
+      date: new Date().toISOString().split("T")[0],
+      status: task.status,
     });
     setLogHours(""); setLogDesc("");
   };

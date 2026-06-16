@@ -10,6 +10,7 @@ export interface UpdateModuleInput {
   status?: ModuleStatus;
   workDate?: Date | null;
   hours?: number | null;
+  assignedUserId?: string;
 }
 
 @Injectable()

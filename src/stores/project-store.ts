@@ -65,9 +65,10 @@ interface ProjectStore {
     order?: number;
     hours?: number;
     workDate?: string;
+    assignedUserId?: string;
     attachments?: { name: string; type: string; size: number; dataUrl: string }[];
   }) => Promise<Module>;
-  updateModule: (id: string, data: Partial<Module> & { hours?: number }) => Promise<Module>;
+  updateModule: (id: string, data: Partial<Module> & { hours?: number; assignedUserId?: string }) => Promise<Module>;
   deleteModule: (id: string) => Promise<void>;
   createModulesBulk: (projectId: string, modules: { name: string; description: string }[]) => Promise<Module[]>;
   createEpic: (data: Omit<Epic, "id" | "createdAt" | "updatedAt" | "status" | "progress">) => Promise<Epic>;

@@ -223,6 +223,7 @@ export function ActivityCalendar({ range, hiddenProjects = EMPTY_SET, hiddenDevs
                     projectName={project?.name}
                     projectColor={project?.color}
                     devName={dev?.name}
+                    userId={l.userId}
                     hours={l.hours}
                   />
                 );
@@ -246,7 +247,7 @@ export function ActivityCalendar({ range, hiddenProjects = EMPTY_SET, hiddenDevs
 
 /** Linha de um registro existente, com edição inline de nome/descrição/status do módulo. */
 function EntryRow({
-  moduleId, taskId, dayIso, title, projectName, projectColor, devName, hours, onNavigate,
+  moduleId, taskId, dayIso, title, projectName, projectColor, devName, userId, hours, onNavigate,
 }: {
   moduleId: string | null;
   taskId: string;
@@ -255,10 +256,13 @@ function EntryRow({
   projectName?: string;
   projectColor?: string;
   devName?: string;
+  userId: string;
   hours: number;
   onNavigate?: () => void;
 }) {
   const { modules, updateModule } = useProjectStore();
+  const { users } = useUserStore();
+  const { isAdmin } = useAuth();
   const moduleObj = moduleId ? modules.find((m) => m.id === moduleId) : null;
   const [editing, setEditing] = useState(false);
   const [name, setName] = useState(title);
@@ -266,6 +270,7 @@ function EntryRow({
   const [status, setStatus] = useState<ModuleStatus>(moduleObj?.status ?? "CONCLUIDO");
   const [workDate, setWorkDate] = useState(moduleObj?.workDate ?? dayIso);
   const [hrs, setHrs] = useState(String(hours));
+  const [assignedUserId, setAssignedUserId] = useState(userId);
   const [saving, setSaving] = useState(false);
 
   async function save() {
@@ -274,7 +279,10 @@ function EntryRow({
     if (!h || h <= 0) { toast.error("Informe as horas (maior que 0)"); return; }
     setSaving(true);
     try {
-      await updateModule(moduleId, { name: name.trim(), description: desc.trim(), status, workDate, hours: h });
+      await updateModule(moduleId, {
+        name: name.trim(), description: desc.trim(), status, workDate, hours: h,
+        assignedUserId: isAdmin && assignedUserId !== userId ? assignedUserId : undefined,
+      });
       await useTaskStore.getState().fetchAllTimeLogs();
       toast.success("Registro atualizado");
       setEditing(false);
@@ -301,6 +309,17 @@ function EntryRow({
             <Input type="number" min="0" step="0.25" value={hrs} onChange={(e) => setHrs(e.target.value)} className="h-8 bg-zinc-950 border-zinc-700 text-sm" />
           </div>
         </div>
+        {isAdmin && (
+          <div className="space-y-1">
+            <label className="text-[10px] uppercase tracking-wide text-zinc-500">Desenvolvedor</label>
+            <Select value={assignedUserId} onValueChange={(v) => v && setAssignedUserId(v)}>
+              <SelectTrigger className="h-8 text-xs bg-zinc-950 border-zinc-700 w-full"><SelectValue /></SelectTrigger>
+              <SelectContent className="max-h-64">
+                {users.map((u) => <SelectItem key={u.id} value={u.id}>{u.name}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
         <div className="flex items-center gap-2">
           <Select value={status} onValueChange={(v) => v && setStatus(v as ModuleStatus)}>
             <SelectTrigger className="h-8 text-xs bg-zinc-950 border-zinc-700 flex-1"><SelectValue /></SelectTrigger>
@@ -339,8 +358,11 @@ function EntryRow({
 /** Formulário para adicionar trabalho no dia: projeto (selecionar/criar) → módulo (selecionar/editar ou novo). */
 function DayEditor({ day, ownerId }: { day: string; ownerId: string }) {
   const { projects, modules, createProject, createModule, updateModule, getModulesByProject } = useProjectStore();
+  const { users } = useUserStore();
+  const { isAdmin } = useAuth();
 
   const [open, setOpen] = useState(false);
+  const [assignedUserId, setAssignedUserId] = useState(ownerId);
   const [projChoice, setProjChoice] = useState("");
   const [newProjName, setNewProjName] = useState("");
   const [modChoice, setModChoice] = useState("");
@@ -372,6 +394,7 @@ function DayEditor({ day, ownerId }: { day: string; ownerId: string }) {
   function reset() {
     setProjChoice(""); setNewProjName(""); setModChoice("");
     setName(""); setDesc(""); setHours(""); setWd(day); setStatus("CONCLUIDO");
+    setAssignedUserId(ownerId);
     setOpen(false);
   }
 
@@ -415,8 +438,11 @@ function DayEditor({ day, ownerId }: { day: string; ownerId: string }) {
           status,
           hours: h,
           workDate: wd,
+          assignedUserId: isAdmin ? assignedUserId : undefined,
         });
-        toast.success(`Módulo adicionado com ${h}h em ${wd.split("-").reverse().join("/")}`);
+        await useTaskStore.getState().fetchAllTimeLogs();
+        const who = users.find((u) => u.id === assignedUserId)?.name;
+        toast.success(`Módulo adicionado com ${h}h em ${wd.split("-").reverse().join("/")}${isAdmin && who ? ` para ${who.split(" ")[0]}` : ""}`);
       }
       reset();
     } catch (e) {
@@ -441,6 +467,19 @@ function DayEditor({ day, ownerId }: { day: string; ownerId: string }) {
         <p className="text-xs font-semibold text-zinc-300">Adicionar trabalho</p>
         <button type="button" onClick={reset} className="text-zinc-500 hover:text-zinc-300"><X className="w-4 h-4" /></button>
       </div>
+
+      {/* 0) Desenvolvedor (só admin pode lançar para outro) */}
+      {isAdmin && (
+        <div className="space-y-1">
+          <label className="text-[10px] uppercase tracking-wide text-zinc-500">Desenvolvedor</label>
+          <Select value={assignedUserId} onValueChange={(v) => v && setAssignedUserId(v)}>
+            <SelectTrigger className="h-8 text-xs bg-zinc-900 border-zinc-700"><SelectValue placeholder="Selecione o desenvolvedor" /></SelectTrigger>
+            <SelectContent className="bg-zinc-900 border-zinc-700/50 max-h-64">
+              {users.map((u) => <SelectItem key={u.id} value={u.id}>{u.name}</SelectItem>)}
+            </SelectContent>
+          </Select>
+        </div>
+      )}
 
       {/* 1) Projeto */}
       <div className="space-y-1">

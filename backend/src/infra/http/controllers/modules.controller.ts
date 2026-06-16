@@ -18,7 +18,7 @@ import { CreateModuleDto } from '../dtos/modules/create-module.dto';
 import { CreateModuleAttachmentDto } from '../dtos/modules/create-module-attachment.dto';
 import { TaskPresenter } from '../presenters/task.presenter';
 import { TimeLogPresenter } from '../presenters/time-log.presenter';
-import { ModuleStatus } from '../../../core/domain/entities/enums';
+import { ModuleStatus, UserRole } from '../../../core/domain/entities/enums';
 
 class UpdateModuleDto {
   @IsOptional() @IsString() @IsNotEmpty() name?: string;
@@ -26,6 +26,7 @@ class UpdateModuleDto {
   @IsOptional() @IsEnum(ModuleStatus) status?: ModuleStatus;
   @IsOptional() @IsDateString() workDate?: string;
   @IsOptional() @IsNumber() hours?: number;
+  @IsOptional() @IsString() assignedUserId?: string;
 }
 
 class CreateEpicDto {
@@ -128,6 +129,10 @@ export class ModulesController {
     const hasAttachments = (body.attachments?.length ?? 0) > 0;
 
     if (hasTimeLog || hasAttachments) {
+      // Só admin pode atribuir a outro usuário; demais registram para si mesmos.
+      const assignedUserId = req.userRole === UserRole.ADMIN && body.assignedUserId
+        ? body.assignedUserId
+        : req.userId;
       const result = await this.createModuleWithTimeLogUseCase.execute({
         projectId: body.projectId,
         name: body.name,
@@ -135,6 +140,7 @@ export class ModulesController {
         status: body.status,
         order: body.order,
         userId: req.userId,
+        assignedUserId,
         hours: body.hours,
         workDate: body.workDate ? new Date(body.workDate) : undefined,
         attachments: body.attachments,
@@ -185,13 +191,19 @@ export class ModulesController {
 
   @Patch('modules/:id')
   @RequirePermission('modules:update')
-  async updateModule(@Param('id') id: string, @Body() body: UpdateModuleDto) {
+  async updateModule(
+    @Req() req: AuthenticatedRequest,
+    @Param('id') id: string,
+    @Body() body: UpdateModuleDto,
+  ) {
     const module = await this.updateModuleUseCase.execute(id, {
       name: body.name,
       description: body.description,
       status: body.status,
       workDate: body.workDate ? new Date(`${body.workDate}T12:00:00.000Z`) : undefined,
       hours: body.hours,
+      // Só admin pode trocar o usuário dono do registro.
+      assignedUserId: req.userRole === UserRole.ADMIN ? body.assignedUserId : undefined,
     });
     return { module: moduleToHTTP(module) };
   }

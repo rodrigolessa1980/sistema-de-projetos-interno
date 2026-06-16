@@ -10,8 +10,7 @@ import { motion } from "@/lib/motion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { MultiSelectFilter } from "@/components/shared/multi-select-filter";
-import { CalendarDays, Clock, LayoutGrid, CalendarRange, Download } from "lucide-react";
-import { PrintButton } from "@/components/shared/print-button";
+import { CalendarDays, Clock, LayoutGrid, CalendarRange, Download, FileText } from "lucide-react";
 import {
   PeriodFilter,
   rangeFromPreset,
@@ -34,7 +33,7 @@ function fmtHours(h: number): string {
 
 export default function DailyHoursReportPage() {
   const { tasks, timeLogs } = useTaskStore();
-  const { projects, modules } = useProjectStore();
+  const { projects } = useProjectStore();
   const { users } = useUserStore();
   const { isAdmin, user } = useAuth();
 
@@ -117,35 +116,99 @@ export default function DailyHoursReportPage() {
 
   const todayIso = toISODate(new Date());
 
-  // Exporta os registros ativos no filtro (período + projetos + devs) como CSV.
-  function exportCsv() {
-    const sep = ";";
-    const esc = (v: string | number) => `"${String(v ?? "").replace(/"/g, '""')}"`;
-    const header = ["Data", "Desenvolvedor", "Projeto", "Atividade", "Descrição", "Horas", "Status"];
-    const sorted = [...visibleLogs].sort((a, b) => a.date.localeCompare(b.date));
-    const lines = sorted.map((l) => {
+  const fmtBr = (iso: string) => iso.split("-").reverse().join("/");
+  const dur = (h: number) => `${h.toFixed(1)}h`;
+
+  // Modelo do relatório: agrupado por data + totais por projeto (respeita os filtros ativos).
+  function buildReport() {
+    const byDateMap = new Map<string, { dev: string; project: string; title: string; hours: number }[]>();
+    const projTotals = new Map<string, number>();
+    for (const l of visibleLogs) {
       const task = tasks.find((t) => t.id === l.taskId);
-      const project = task ? projects.find((p) => p.id === task.projectId) : null;
+      // o time log já carrega projectId — mais confiável que resolver via tarefa
+      const project = projects.find((p) => p.id === l.projectId);
       const dev = users.find((u) => u.id === l.userId);
-      const mod = task?.moduleId ? modules.find((m) => m.id === task.moduleId) : null;
-      return [
-        l.date.split("T")[0],
-        dev?.name ?? "",
-        project?.name ?? "",
-        task?.title ?? "",
-        l.description ?? "",
-        String(l.hours).replace(".", ","),
-        mod?.status ?? task?.status ?? "",
-      ].map(esc).join(sep);
-    });
-    const csv = String.fromCharCode(0xFEFF) + [header.map(esc).join(sep), ...lines].join("\r\n");
+      const date = l.date.split("T")[0];
+      const pname = project?.name ?? "—";
+      if (!byDateMap.has(date)) byDateMap.set(date, []);
+      byDateMap.get(date)!.push({
+        dev: dev?.name ?? "Usuário",
+        project: pname,
+        title: task?.title ?? l.description ?? "Registro",
+        hours: l.hours,
+      });
+      projTotals.set(pname, (projTotals.get(pname) ?? 0) + l.hours);
+    }
+    const byDate = [...byDateMap.keys()].sort().map((date) => ({
+      date,
+      entries: byDateMap.get(date)!.sort((a, b) => a.dev.localeCompare(b.dev)),
+    }));
+    const projectTotals = [...projTotals.entries()]
+      .map(([name, hours]) => ({ name, hours }))
+      .sort((a, b) => b.hours - a.hours);
+    const grand = projectTotals.reduce((s, p) => s + p.hours, 0);
+    return { byDate, projectTotals, grand };
+  }
+
+  // Excel (CSV) — agrupado por data, com totais por projeto no fim.
+  function exportCsv() {
+    const { byDate, projectTotals, grand } = buildReport();
+    const sep = ";";
+    const esc = (v: string) => `"${String(v ?? "").replace(/"/g, '""')}"`;
+    const lines: string[] = [];
+    lines.push(esc("Relatório de Horas"));
+    lines.push(esc(`Período: ${range.label}`));
+    lines.push("");
+    lines.push(["", esc("Usuário"), esc("Projeto"), esc("Mensagem"), esc("Tempo")].join(sep));
+    for (const { date, entries } of byDate) {
+      lines.push([esc(fmtBr(date)), "", "", "", ""].join(sep));
+      for (const e of entries) lines.push(["", esc(e.dev), esc(e.project), esc(e.title), esc(dur(e.hours))].join(sep));
+    }
+    lines.push("");
+    lines.push([esc("Totais por projeto"), "", "", "", ""].join(sep));
+    for (const p of projectTotals) lines.push([esc(p.name), "", "", "", esc(dur(p.hours))].join(sep));
+    lines.push([esc("TOTAL"), "", "", "", esc(dur(grand))].join(sep));
+    const csv = String.fromCharCode(0xFEFF) + lines.join("\r\n");
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `horas_${range.start ?? "inicio"}_${range.end ?? "tudo"}.csv`;
+    a.download = `relatorio_horas_${range.start ?? "inicio"}_${range.end ?? "tudo"}.csv`;
     a.click();
     URL.revokeObjectURL(url);
+  }
+
+  // PDF — abre uma janela formatada e dispara a impressão (salvar como PDF).
+  function exportPdf() {
+    const { byDate, projectTotals, grand } = buildReport();
+    const escHtml = (s: string) => s.replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c] ?? c));
+    const dateBlocks = byDate.map(({ date, entries }) => `
+      <div class="day">${escHtml(format(parseISO(date), "EEEE, dd 'de' MMMM 'de' yyyy", { locale: ptBR }))}</div>
+      ${entries.map((e) => `<div class="entry"><span class="who">${escHtml(e.dev)}</span> — <span class="proj">${escHtml(e.project)}</span> — <span class="title">${escHtml(e.title)}</span> — <span class="dur">${dur(e.hours)}</span></div>`).join("")}
+    `).join("");
+    const totals = projectTotals.map((p) => `<div class="trow"><span>${escHtml(p.name)}</span><span>${dur(p.hours)}</span></div>`).join("");
+    const html = `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>Relatório de Horas</title>
+      <style>
+        *{box-sizing:border-box} body{font-family:Arial,Helvetica,sans-serif;color:#111;margin:0;padding:32px;font-size:12px}
+        h1{font-size:18px;margin:0 0 4px} .sub{color:#666;margin:0 0 20px;font-size:11px}
+        .day{font-weight:700;margin:16px 0 6px;padding-bottom:3px;border-bottom:1px solid #ccc;text-transform:capitalize}
+        .entry{padding:2px 0 2px 8px} .who{font-weight:600} .proj{color:#2563eb;font-weight:600} .dur{color:#5b21b6;font-weight:600}
+        .totals{margin-top:28px;border-top:2px solid #333;padding-top:10px} .totals h2{font-size:14px;margin:0 0 8px}
+        .trow{display:flex;justify-content:space-between;max-width:340px;padding:3px 0;border-bottom:1px dotted #ddd}
+        .grand{font-weight:700;border-top:1px solid #333;margin-top:4px}
+        @media print{body{padding:0}}
+      </style></head><body>
+      <h1>Relatório de Horas</h1>
+      <p class="sub">Período: ${escHtml(range.label)} · ${grand.toFixed(1)}h no total</p>
+      ${dateBlocks || "<p>Nenhum registro no período.</p>"}
+      <div class="totals"><h2>Totais por projeto</h2>${totals}
+      <div class="trow grand"><span>TOTAL</span><span>${dur(grand)}</span></div></div>
+      <script>window.onload=function(){window.print()}</script>
+      </body></html>`;
+    const w = window.open("", "_blank");
+    if (!w) return;
+    w.document.write(html);
+    w.document.close();
   }
 
   return (
@@ -162,10 +225,12 @@ export default function DailyHoursReportPage() {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Button onClick={exportCsv} variant="outline" size="sm" className="gap-1.5 h-8 text-xs border-zinc-700 bg-zinc-800/50 text-zinc-200 hover:bg-zinc-800">
-            <Download className="w-3.5 h-3.5" /> Exportar CSV
+          <Button onClick={exportPdf} variant="outline" size="sm" className="gap-1.5 h-8 text-xs border-zinc-700 bg-zinc-800/50 text-zinc-200 hover:bg-zinc-800">
+            <FileText className="w-3.5 h-3.5" /> Exportar PDF
           </Button>
-          <PrintButton />
+          <Button onClick={exportCsv} variant="outline" size="sm" className="gap-1.5 h-8 text-xs border-zinc-700 bg-zinc-800/50 text-zinc-200 hover:bg-zinc-800">
+            <Download className="w-3.5 h-3.5" /> Exportar Excel
+          </Button>
         </div>
       </div>
 
