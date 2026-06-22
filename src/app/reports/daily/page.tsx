@@ -31,6 +31,49 @@ function fmtHours(h: number): string {
   return h >= 1 ? h.toFixed(1) : `${Math.round(h * 60)}m`;
 }
 
+function activityPct(hours: number, total: number): number {
+  if (total <= 0) return 0;
+  return Math.round((hours / total) * 1000) / 10;
+}
+
+const REPORT_DOC_BASE = "Relatório de Horas";
+
+function isoToDdmmaaaa(iso: string): string {
+  const [y, m, d] = iso.split("-");
+  return `${d}${m}${y}`;
+}
+
+function resolveReportDates(
+  range: DateRange,
+  logs: { date: string }[],
+): { start: string; end: string } {
+  let startIso = range.start;
+  let endIso = range.end;
+  if (!startIso || !endIso) {
+    if (logs.length === 0) {
+      const today = toISODate(new Date());
+      return { start: today, end: today };
+    }
+    const dates = logs.map((l) => l.date.split("T")[0]).sort();
+    startIso = startIso ?? dates[0];
+    endIso = endIso ?? dates[dates.length - 1];
+  }
+  return { start: startIso, end: endIso };
+}
+
+function reportDocName(range: DateRange, logs: { date: string }[]): string {
+  const { start, end } = resolveReportDates(range, logs);
+  return `${REPORT_DOC_BASE} - ${isoToDdmmaaaa(start)} - ${isoToDdmmaaaa(end)}`;
+}
+
+function safeFileName(name: string): string {
+  return name.replace(/[/\\?%*:|"<>]/g, "-");
+}
+
+function withActivityPct<T extends { hours: number }>(items: T[], grand: number) {
+  return items.map((item) => ({ ...item, pct: activityPct(item.hours, grand) }));
+}
+
 export default function DailyHoursReportPage() {
   const { tasks, timeLogs } = useTaskStore();
   const { projects } = useProjectStore();
@@ -119,10 +162,11 @@ export default function DailyHoursReportPage() {
   const fmtBr = (iso: string) => iso.split("-").reverse().join("/");
   const dur = (h: number) => `${h.toFixed(1)}h`;
 
-  // Modelo do relatório: agrupado por data + totais por projeto (respeita os filtros ativos).
+  // Modelo do relatório: agrupado por data + totais por funcionário e projeto (respeita os filtros ativos).
   function buildReport() {
     const byDateMap = new Map<string, { dev: string; project: string; title: string; hours: number }[]>();
     const projTotals = new Map<string, number>();
+    const devTotals = new Map<string, number>();
     for (const l of visibleLogs) {
       const task = tasks.find((t) => t.id === l.taskId);
       // o time log já carrega projectId — mais confiável que resolver via tarefa
@@ -130,14 +174,16 @@ export default function DailyHoursReportPage() {
       const dev = users.find((u) => u.id === l.userId);
       const date = l.date.split("T")[0];
       const pname = project?.name ?? "—";
+      const dname = dev?.name ?? "Usuário";
       if (!byDateMap.has(date)) byDateMap.set(date, []);
       byDateMap.get(date)!.push({
-        dev: dev?.name ?? "Usuário",
+        dev: dname,
         project: pname,
         title: task?.title ?? l.description ?? "Registro",
         hours: l.hours,
       });
       projTotals.set(pname, (projTotals.get(pname) ?? 0) + l.hours);
+      devTotals.set(dname, (devTotals.get(dname) ?? 0) + l.hours);
     }
     const byDate = [...byDateMap.keys()].sort().map((date) => ({
       date,
@@ -146,17 +192,26 @@ export default function DailyHoursReportPage() {
     const projectTotals = [...projTotals.entries()]
       .map(([name, hours]) => ({ name, hours }))
       .sort((a, b) => b.hours - a.hours);
+    const devTotalsList = [...devTotals.entries()]
+      .map(([name, hours]) => ({ name, hours }))
+      .sort((a, b) => b.hours - a.hours);
     const grand = projectTotals.reduce((s, p) => s + p.hours, 0);
-    return { byDate, projectTotals, grand };
+    return {
+      byDate,
+      devTotals: withActivityPct(devTotalsList, grand),
+      projectTotals: withActivityPct(projectTotals, grand),
+      grand,
+      docName: reportDocName(range, visibleLogs),
+    };
   }
 
-  // Excel (CSV) — agrupado por data, com totais por projeto no fim.
+  // Excel (CSV) — agrupado por data, com totais por funcionário e projeto no fim.
   function exportCsv() {
-    const { byDate, projectTotals, grand } = buildReport();
+    const { byDate, devTotals, projectTotals, grand, docName } = buildReport();
     const sep = ";";
     const esc = (v: string) => `"${String(v ?? "").replace(/"/g, '""')}"`;
     const lines: string[] = [];
-    lines.push(esc("Relatório de Horas"));
+    lines.push(esc(docName));
     lines.push(esc(`Período: ${range.label}`));
     lines.push("");
     lines.push(["", esc("Usuário"), esc("Projeto"), esc("Mensagem"), esc("Tempo")].join(sep));
@@ -165,44 +220,76 @@ export default function DailyHoursReportPage() {
       for (const e of entries) lines.push(["", esc(e.dev), esc(e.project), esc(e.title), esc(dur(e.hours))].join(sep));
     }
     lines.push("");
-    lines.push([esc("Totais por projeto"), "", "", "", ""].join(sep));
-    for (const p of projectTotals) lines.push([esc(p.name), "", "", "", esc(dur(p.hours))].join(sep));
+    lines.push([esc("Totais por funcionário"), "", "", "", esc("Tempo"), esc("% Atividade")].join(sep));
+    for (const d of devTotals) {
+      lines.push([esc(d.name), "", "", "", esc(dur(d.hours)), esc(`${d.pct.toFixed(1)}%`)].join(sep));
+    }
+    lines.push("");
+    lines.push([esc("Totais por projeto"), "", "", "", esc("Tempo"), esc("% Atividade")].join(sep));
+    for (const p of projectTotals) {
+      lines.push([esc(p.name), "", "", "", esc(dur(p.hours)), esc(`${p.pct.toFixed(1)}%`)].join(sep));
+    }
     lines.push([esc("TOTAL"), "", "", "", esc(dur(grand))].join(sep));
     const csv = String.fromCharCode(0xFEFF) + lines.join("\r\n");
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `relatorio_horas_${range.start ?? "inicio"}_${range.end ?? "tudo"}.csv`;
+    a.download = `${safeFileName(docName)}.csv`;
     a.click();
     URL.revokeObjectURL(url);
   }
 
   // PDF — abre uma janela formatada e dispara a impressão (salvar como PDF).
   function exportPdf() {
-    const { byDate, projectTotals, grand } = buildReport();
+    const { byDate, devTotals, projectTotals, grand, docName } = buildReport();
     const escHtml = (s: string) => s.replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c] ?? c));
+    const summaryRow = (name: string, pct: number, hours: number) => `
+      <div class="trow">
+        <span class="tname">${escHtml(name)}</span>
+        <span class="tpct">${pct.toFixed(1)}%</span>
+        <span class="tdur">${dur(hours)}</span>
+      </div>`;
     const dateBlocks = byDate.map(({ date, entries }) => `
       <div class="day">${escHtml(format(parseISO(date), "EEEE, dd 'de' MMMM 'de' yyyy", { locale: ptBR }))}</div>
       ${entries.map((e) => `<div class="entry"><span class="who">${escHtml(e.dev)}</span> — <span class="proj">${escHtml(e.project)}</span> — <span class="title">${escHtml(e.title)}</span> — <span class="dur">${dur(e.hours)}</span></div>`).join("")}
     `).join("");
-    const totals = projectTotals.map((p) => `<div class="trow"><span>${escHtml(p.name)}</span><span>${dur(p.hours)}</span></div>`).join("");
-    const html = `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>Relatório de Horas</title>
+    const devSummary = devTotals.map((d) => summaryRow(d.name, d.pct, d.hours)).join("");
+    const projectSummary = projectTotals.map((p) => summaryRow(p.name, p.pct, p.hours)).join("");
+    const html = `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>${escHtml(docName)}</title>
       <style>
         *{box-sizing:border-box} body{font-family:Arial,Helvetica,sans-serif;color:#111;margin:0;padding:32px;font-size:12px}
         h1{font-size:18px;margin:0 0 4px} .sub{color:#666;margin:0 0 20px;font-size:11px}
         .day{font-weight:700;margin:16px 0 6px;padding-bottom:3px;border-bottom:1px solid #ccc;text-transform:capitalize}
         .entry{padding:2px 0 2px 8px} .who{font-weight:600} .proj{color:#2563eb;font-weight:600} .dur{color:#5b21b6;font-weight:600}
-        .totals{margin-top:28px;border-top:2px solid #333;padding-top:10px} .totals h2{font-size:14px;margin:0 0 8px}
-        .trow{display:flex;justify-content:space-between;max-width:340px;padding:3px 0;border-bottom:1px dotted #ddd}
-        .grand{font-weight:700;border-top:1px solid #333;margin-top:4px}
-        @media print{body{padding:0}}
+        .totals{margin-top:28px;border-top:2px solid #333;padding-top:10px;break-inside:avoid;page-break-inside:avoid}
+        .summary-start{break-before:page;page-break-before:always;margin-top:0;border-top:none;padding-top:0}
+        .summary-head{margin:0 0 16px;padding-bottom:10px;border-bottom:1px solid #ccc}
+        .summary-doc{font-size:14px;font-weight:700;margin:0 0 2px}
+        .summary-sub{font-size:11px;color:#666;margin:0}
+        .totals h2{font-size:14px;margin:0 0 8px}
+        .thead{display:flex;justify-content:space-between;max-width:420px;padding:0 0 4px;font-size:10px;font-weight:700;color:#666;text-transform:uppercase;letter-spacing:.03em}
+        .trow{display:flex;justify-content:space-between;align-items:center;max-width:420px;padding:3px 0;border-bottom:1px dotted #ddd;gap:12px}
+        .tname{flex:1} .tpct{min-width:52px;text-align:right;color:#444} .tdur{min-width:52px;text-align:right;color:#5b21b6;font-weight:600}
+        .grand{font-weight:700;border-top:1px solid #333;margin-top:4px} .grand .tpct{color:#111}
+        @media print{body{padding:0}.summary-start{padding-top:24px}}
       </style></head><body>
-      <h1>Relatório de Horas</h1>
+      <h1>${escHtml(docName)}</h1>
       <p class="sub">Período: ${escHtml(range.label)} · ${grand.toFixed(1)}h no total</p>
       ${dateBlocks || "<p>Nenhum registro no período.</p>"}
-      <div class="totals"><h2>Totais por projeto</h2>${totals}
-      <div class="trow grand"><span>TOTAL</span><span>${dur(grand)}</span></div></div>
+      <div class="totals summary-start">
+      <div class="summary-head">
+        <p class="summary-doc">${escHtml(docName)}</p>
+        <p class="summary-sub">Período: ${escHtml(range.label)} · ${grand.toFixed(1)}h no total</p>
+      </div>
+      <h2>Resumo por funcionário</h2>
+      <div class="thead"><span>Funcionário</span><span>% Atividade</span><span>Horas</span></div>
+      ${devSummary || '<div class="trow"><span class="tname">—</span><span class="tpct">—</span><span class="tdur">0.0h</span></div>'}
+      <div class="trow grand"><span class="tname">TOTAL</span><span class="tpct">${grand > 0 ? "100%" : "—"}</span><span class="tdur">${dur(grand)}</span></div></div>
+      <div class="totals"><h2>Totais por projeto</h2>
+      <div class="thead"><span>Projeto</span><span>% Atividade</span><span>Horas</span></div>
+      ${projectSummary}
+      <div class="trow grand"><span class="tname">TOTAL</span><span class="tpct">${grand > 0 ? "100%" : "—"}</span><span class="tdur">${dur(grand)}</span></div></div>
       <script>window.onload=function(){window.print()}</script>
       </body></html>`;
     const w = window.open("", "_blank");
