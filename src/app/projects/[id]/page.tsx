@@ -237,7 +237,7 @@ export default function ProjectDetailPage() {
   async function handleChangeOwner(userId: string | null) {
     if (!userId) return;
     await updateProject(id, { ownerId: userId });
-    toast.success("Responsável do projeto atualizado");
+    toast.success("Dev que recebeu a demanda atualizado");
   }
 
   function handleAddMember(userId: string) {
@@ -1389,7 +1389,7 @@ export default function ProjectDetailPage() {
               {/* Dono do projeto */}
               <div>
                 <p className="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                  <Crown className="w-3.5 h-3.5 text-amber-400" /> Responsável pelo Projeto
+                  <Crown className="w-3.5 h-3.5 text-amber-400" /> Dev que recebeu a demanda
                 </p>
                 {owner && (
                   <div className="flex items-center gap-3 p-4 bg-amber-500/5 border border-amber-500/20 rounded-xl">
@@ -1404,7 +1404,7 @@ export default function ProjectDetailPage() {
                       <p className="text-xs text-zinc-500">{owner.position} · {owner.department}</p>
                     </div>
                     <Badge className="text-[9px] bg-amber-500/20 text-amber-400 border-amber-500/30">
-                      <Crown className="w-2.5 h-2.5 mr-1" /> Dono
+                      <Crown className="w-2.5 h-2.5 mr-1" /> Demanda
                     </Badge>
                     {isAdmin && (
                       <ReassignPopover

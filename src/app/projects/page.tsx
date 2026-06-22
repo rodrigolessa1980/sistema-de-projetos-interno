@@ -322,14 +322,14 @@ export default function ProjectsPage() {
                               onSelect={(e) => e.preventDefault()}
                             >
                               <Crown className="w-3.5 h-3.5 text-amber-400" />
-                              <span className="flex-1">Trocar responsável</span>
+                              <span className="flex-1">Trocar dev que recebeu a demanda</span>
                               <ReassignPopover
                                 currentUserId={project.ownerId}
                                 label=""
                                 onReassign={async (userId) => {
                                   if (!userId) return;
                                   await updateProject(project.id, { ownerId: userId });
-                                  toast.success("Responsável atualizado");
+                                  toast.success("Dev que recebeu a demanda atualizado");
                                 }}
                               />
                             </DropdownMenuItem>
@@ -756,11 +756,11 @@ export default function ProjectsPage() {
               <div className="grid grid-cols-2 gap-3">
                 <FormField control={editForm.control} name="ownerId" render={({ field }) => (
                   <FormItem>
-                    <Label className="text-zinc-300 text-sm">Responsável</Label>
+                    <Label className="text-zinc-300 text-sm">Dev que recebeu a demanda</Label>
                     <Select value={field.value ?? ""} onValueChange={field.onChange}>
                       <FormControl>
                         <SelectTrigger className="bg-zinc-800 border-zinc-700 text-zinc-100">
-                          <SelectValue placeholder="Responsável" />
+                          <SelectValue placeholder="Dev que recebeu a demanda" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent className="bg-zinc-800 border-zinc-700">
