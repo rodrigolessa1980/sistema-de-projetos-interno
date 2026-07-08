@@ -13,7 +13,7 @@ const normalizeUser = (user: User): User => ({
   permissions: asArray(user.permissions),
 });
 
-const DEFAULT_SIDEBAR_GROUPS = ["Principal", "Projetos", "Trabalho", "Análise", "Relatórios", "Admin"];
+const DEFAULT_SIDEBAR_GROUPS = ["Principal", "Projetos", "Trabalho", "Tempo & Horas", "Relatórios", "Administração"];
 
 interface UIStore {
   sidebarCollapsed: boolean;
@@ -100,6 +100,18 @@ export const useUIStore = create<UIStore>()(
     }),
     {
       name: "devflow-ui",
+      version: 1,
+      // v1: os grupos da sidebar foram reorganizados/renomeados. Reexpande com os
+      // novos nomes para não deixar seções novas colapsadas em quem já usava o app.
+      migrate: (persisted, version) => {
+        const state = (persisted ?? {}) as { sidebarCollapsed?: boolean; sidebarExpandedGroups?: string[] };
+        return {
+          sidebarCollapsed: state.sidebarCollapsed ?? false,
+          // Antes da v1 os grupos tinham outros nomes; reexpande com os novos.
+          sidebarExpandedGroups:
+            version < 1 ? DEFAULT_SIDEBAR_GROUPS : state.sidebarExpandedGroups ?? DEFAULT_SIDEBAR_GROUPS,
+        };
+      },
       partialize: (state) => ({
         sidebarCollapsed: state.sidebarCollapsed,
         sidebarExpandedGroups: state.sidebarExpandedGroups,
