@@ -185,10 +185,14 @@ export class PrismaModuleRepository implements IModuleRepository {
             status: ProjectStatus.ATIVO,
             startDate: workDate,
             endDate: workDate,
-            developers: { create: [{ userId: timeLogUserId }] },
           },
-          include: { developers: true },
         });
+        // EpicDeveloper é tenant-scoped; criado via chamada top-level para a
+        // extensão injetar o tenantId (writes aninhados não passam pela extensão
+        // e cairiam no @default(uuid()) do schema -> FK inválida).
+        epicRaw.developers = [
+          await tx.epicDeveloper.create({ data: { epicId: epicRaw.id, userId: timeLogUserId } }),
+        ];
 
         taskRaw = await tx.task.create({
           data: {

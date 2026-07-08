@@ -26,24 +26,29 @@ export class PrismaEpicRepository implements IEpicRepository {
   }
 
   async create(epic: Epic): Promise<Epic> {
-    const raw = await this.prisma.epic.create({
-      data: {
-        id: epic.id || undefined,
-        projectId: epic.projectId,
-        moduleId: epic.moduleId,
-        name: epic.name,
-        description: epic.description,
-        status: epic.status,
-        startDate: epic.startDate,
-        endDate: epic.endDate,
-        progress: epic.progress,
-        developers: epic.developerIds.length > 0
-          ? { create: epic.developerIds.map((userId) => ({ userId })) }
-          : undefined,
-      },
-      include: { developers: true },
+    return this.prisma.$transaction(async (tx) => {
+      const raw: any = await tx.epic.create({
+        data: {
+          id: epic.id || undefined,
+          projectId: epic.projectId,
+          moduleId: epic.moduleId,
+          name: epic.name,
+          description: epic.description,
+          status: epic.status,
+          startDate: epic.startDate,
+          endDate: epic.endDate,
+          progress: epic.progress,
+        },
+      });
+      // EpicDeveloper é tenant-scoped; criado via chamadas top-level para a
+      // extensão injetar o tenantId (writes aninhados não passam pela extensão
+      // e cairiam no @default(uuid()) do schema -> FK inválida).
+      raw.developers = [];
+      for (const userId of epic.developerIds) {
+        raw.developers.push(await tx.epicDeveloper.create({ data: { epicId: raw.id, userId } }));
+      }
+      return this.mapToDomain(raw);
     });
-    return this.mapToDomain(raw);
   }
 
   async findById(id: string): Promise<Epic | null> {

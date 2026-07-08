@@ -89,25 +89,6 @@ export default function RegisterPage() {
               Crie sua conta agora para gerenciar tarefas, cronogramas e métricas avançadas em tempo real.
             </p>
           </motion.div>
-
-          <div className="mt-10 grid grid-cols-3 gap-4">
-            {[
-              { label: "Projetos Ativos", value: "4" },
-              { label: "Tarefas Concluídas", value: "28" },
-              { label: "Horas Registradas", value: "1.2k" },
-            ].map((stat, i) => (
-              <motion.div
-                key={stat.label}
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 + i * 0.1 }}
-                className="bg-zinc-800/50 border border-zinc-700/50 rounded-xl p-4"
-              >
-                <p className="text-2xl font-bold text-white">{stat.value}</p>
-                <p className="text-xs text-zinc-400 mt-0.5">{stat.label}</p>
-              </motion.div>
-            ))}
-          </div>
         </div>
 
         <p className="relative text-xs text-zinc-600">© 2026 DevFlow. Todos os direitos reservados.</p>

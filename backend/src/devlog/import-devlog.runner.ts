@@ -192,9 +192,11 @@ async function createModuleWithTimeLog(
         status: ProjectStatus.ATIVO,
         startDate: workDate,
         endDate: workDate,
-        developers: { create: [{ userId: ownerId }] },
       },
     });
+    // EpicDeveloper é tenant-scoped; criado via chamada top-level para a extensão
+    // injetar o tenantId (writes aninhados não passam pela extensão).
+    await tx.epicDeveloper.create({ data: { epicId: epicRaw.id, userId: ownerId } });
 
     const taskRaw = await tx.task.create({
       data: {
