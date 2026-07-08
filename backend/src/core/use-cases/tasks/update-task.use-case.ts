@@ -83,24 +83,12 @@ export class UpdateTaskUseCase {
     } else if (!wasActiveAndUrgent && isActiveAndUrgent) {
       // Passou a ser ativa e urgente
       // Bloquear todas as outras tarefas ativas do novo assignee
-      const newAssigneeTasks = await this.taskRepository.findByAssignee(newAssigneeId);
-      for (const t of newAssigneeTasks) {
-        if (t.id !== saved.id && t.status !== TaskStatus.CONCLUIDA && t.status !== TaskStatus.CANCELADA) {
-          t.blockDueToUrgency(saved.id);
-          await this.taskRepository.update(t);
-        }
-      }
+      await this.blockActiveTasksOfAssignee(newAssigneeId, saved.id);
     } else if (wasActiveAndUrgent && isActiveAndUrgent && oldAssigneeId !== newAssigneeId) {
       // Continua ativa e urgente, mas mudou de desenvolvedor
       await this.releaseUrgencyBlocksUseCase.execute(saved.id);
       // Bloquear as do novo assignee
-      const newAssigneeTasks = await this.taskRepository.findByAssignee(newAssigneeId);
-      for (const t of newAssigneeTasks) {
-        if (t.id !== saved.id && t.status !== TaskStatus.CONCLUIDA && t.status !== TaskStatus.CANCELADA) {
-          t.blockDueToUrgency(saved.id);
-          await this.taskRepository.update(t);
-        }
-      }
+      await this.blockActiveTasksOfAssignee(newAssigneeId, saved.id);
     } else if (
       (newStatus === TaskStatus.CONCLUIDA || newStatus === TaskStatus.CANCELADA) &&
       oldStatus !== newStatus
@@ -109,5 +97,15 @@ export class UpdateTaskUseCase {
     }
 
     return saved;
+  }
+
+  /** INC-08: bloqueia as tarefas ativas do assignee num único bulkUpdate. */
+  private async blockActiveTasksOfAssignee(assigneeId: string, urgentTaskId: string): Promise<void> {
+    const assigneeTasks = await this.taskRepository.findByAssignee(assigneeId);
+    const toBlock = assigneeTasks.filter(
+      (t) => t.id !== urgentTaskId && t.status !== TaskStatus.CONCLUIDA && t.status !== TaskStatus.CANCELADA,
+    );
+    for (const t of toBlock) t.blockDueToUrgency(urgentTaskId);
+    await this.taskRepository.bulkUpdate(toBlock);
   }
 }

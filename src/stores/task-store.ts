@@ -7,6 +7,13 @@ import { generateId, delay } from "@/lib/utils";
 import type { AuditLog } from "@/types";
 import { api } from "@/lib/api";
 import { useWorkSessionStore } from "@/stores/work-session-store";
+import { createDirtyTracker, replacePreservingDirty } from "@/lib/reconcile";
+
+/**
+ * Ids de tasks com mutação otimista em voo (INC-03). Compartilhado com o delta sync
+ * (INC-12) para que um poll/refetch nunca sobrescreva uma edição local pendente.
+ */
+export const taskDirty = createDirtyTracker();
 
 type ApiTask = Omit<Task, "parentTaskId" | "startDate" | "dueDate" | "completedAt" | "blockedReason" | "urgentBlockedById" | "urgentPreviousStatus"> & {
   parentTaskId?: string | null;
@@ -216,7 +223,10 @@ export const useTaskStore = create<TaskStore>()(
 
   updateTaskStatus: async (id, newStatus, userId) => {
     void userId;
-    const updated = normalizeTask(await api.put<ApiTask>(`tasks/${id}`, { status: newStatus }));
+    taskDirty.markDirty(id);
+    const updated = normalizeTask(
+      await api.put<ApiTask>(`tasks/${id}`, { status: newStatus }).finally(() => taskDirty.clearDirty(id)),
+    );
     set((state) => ({
       tasks: TERMINAL_STATUSES.includes(newStatus)
         ? releaseUrgencyBlocksInStore(
@@ -381,10 +391,13 @@ export const useTaskStore = create<TaskStore>()(
           api.get<ApiTask[]>(`tasks/project/${projectId}`).catch(() => [] as ApiTask[])
         )
       );
-      set({
-        tasks: projectTasks.flat().map(normalizeTask),
+      const incoming = projectTasks.flat().map(normalizeTask);
+      // Replace do servidor (fonte de verdade), preservando itens com edição otimista
+      // em voo (dirty) para não engolir o que o usuário acabou de mexer. Ver INC-03.
+      set((state) => ({
+        tasks: replacePreservingDirty(state.tasks, incoming, taskDirty.ids),
         isLoading: false,
-      });
+      }));
     } catch (error) {
       set({ isLoading: false });
       throw error;
@@ -556,14 +569,16 @@ export const useTaskStore = create<TaskStore>()(
   }),
   {
     name: "devflow-tasks",
-    // Persist local workflow edits until task endpoints replace the mock-backed store.
+    // INC-07: só persistimos dados LOCAIS (mock/workflow não sincronizado). `tasks` NÃO
+    // é mais persistido — é server-state (vem do /bootstrap e do delta sync); persistir
+    // fazia o reload pintar tasks velhas antes do fetch ("render errado"). O 1º load
+    // hidrata da API; a UI mostra loading via `isLoading` das stores.
     partialize: (state) => ({
-      tasks: state.tasks,
       statusHistory: state.statusHistory,
       auditLogs: state.auditLogs,
       notes: state.notes,
       attachments: state.attachments,
-      // moduleAttachments e timeLogs vêm do backend
+      // tasks, moduleAttachments e timeLogs vêm do backend
     }),
   }
 ));

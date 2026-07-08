@@ -64,5 +64,7 @@ export function createPrismaMariaDbAdapter(config: MysqlConfig = getMysqlConfig(
     database: config.database,
     connectTimeout: 10000,
     acquireTimeout: 30000,
+    // INC-10: pool maior para absorver rajadas concorrentes (default do driver ~10).
+    connectionLimit: 20,
   });
 }

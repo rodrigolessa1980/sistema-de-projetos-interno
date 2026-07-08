@@ -13,10 +13,9 @@ export class ReleaseUrgencyBlocksUseCase {
 
   async execute(urgentTaskId: string): Promise<void> {
     const blockedTasks = await this.taskRepository.findByUrgentBlockedById(urgentTaskId);
-    for (const task of blockedTasks) {
-      task.releaseUrgencyBlock();
-      await this.taskRepository.update(task);
-    }
+    for (const task of blockedTasks) task.releaseUrgencyBlock();
+    // INC-08: um único bulkUpdate em vez de N updates sequenciais.
+    await this.taskRepository.bulkUpdate(blockedTasks);
   }
 
   async repairIfBlockerCompleted(task: Task): Promise<Task> {
@@ -36,6 +35,12 @@ export class ReleaseUrgencyBlocksUseCase {
     return this.taskRepository.update(task);
   }
 
+  /**
+   * INC-09: reparo PURO (em memória, sem escrever no banco) para uso no caminho de
+   * LEITURA. Retorna a visão correta (libera blocos cujo bloqueador já foi concluído)
+   * sem gerar UPDATEs num GET. A persistência real acontece no caminho de escrita
+   * (updateTask/reorderKanban chamam `execute`).
+   */
   async repairStaleBlocksInProject(tasks: Task[]): Promise<Task[]> {
     const tasksById = new Map(tasks.map((task) => [task.id, task]));
     const repaired: Task[] = [];
@@ -58,8 +63,8 @@ export class ReleaseUrgencyBlocksUseCase {
         continue;
       }
 
-      task.releaseUrgencyBlock();
-      repaired.push(await this.taskRepository.update(task));
+      task.releaseUrgencyBlock(); // muta apenas a instância retornada; NÃO persiste
+      repaired.push(task);
     }
 
     return repaired;

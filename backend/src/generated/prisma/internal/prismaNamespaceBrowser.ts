@@ -321,7 +321,8 @@ export const TimeLogScalarFieldEnum = {
   endedAt: 'endedAt',
   source: 'source',
   status: 'status',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 } as const
 
 export type TimeLogScalarFieldEnum = (typeof TimeLogScalarFieldEnum)[keyof typeof TimeLogScalarFieldEnum]

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { StatCard } from "@/components/shared/stat-card";
 import { StatusBadge } from "@/components/shared/task-badge";
 import { useMetrics } from "@/hooks/use-metrics";
@@ -49,25 +49,31 @@ export default function DashboardPage() {
     return () => clearInterval(id);
   }, [activeSession]);
 
-  const today = new Date().toISOString().split("T")[0];
-  const todayInRange = isInRange(today, range);
+  // `today` como valor estável (string) — não recomputa memos a cada render.
+  const today = useMemo(() => new Date().toISOString().split("T")[0], []);
+  const todayInRange = useMemo(() => isInRange(today, range), [today, range]);
 
-  // Tarefas atrasadas: têm prazo definido, não concluídas/canceladas, prazo < hoje (estado atual — global)
-  const overdueTasks = tasks.filter(
-    (t) => t.dueDate && t.dueDate < today && !["CONCLUIDA", "CANCELADA"].includes(t.status)
+  // INC-05: derivações pesadas em useMemo (deps reais) — NÃO recalculam a cada tick
+  // do cronômetro (setTick) nem a cada poll do delta sync.
+  const overdueTasks = useMemo(
+    () => tasks.filter((t) => t.dueDate && t.dueDate < today && !["CONCLUIDA", "CANCELADA"].includes(t.status)),
+    [tasks, today],
   );
   const overdueCount = overdueTasks.length;
-  const overdueProjects = new Set(overdueTasks.map((t) => t.projectId)).size;
+  const overdueProjects = useMemo(() => new Set(overdueTasks.map((t) => t.projectId)).size, [overdueTasks]);
 
-  // Tarefas concluídas dentro do período (por completedAt)
-  const completedInPeriod = tasks.filter((t) => isInRange(t.completedAt, range)).length;
+  const completedInPeriod = useMemo(() => tasks.filter((t) => isInRange(t.completedAt, range)).length, [tasks, range]);
 
-  // Horas registradas no período por taskId
-  const periodLogs = timeLogs.filter((tl) => isInRange(tl.date, range));
-  const periodLogsByTask = periodLogs.reduce<Record<string, number>>((acc, tl) => {
-    acc[tl.taskId] = (acc[tl.taskId] ?? 0) + tl.hours;
-    return acc;
-  }, {});
+  const periodLogs = useMemo(() => timeLogs.filter((tl) => isInRange(tl.date, range)), [timeLogs, range]);
+  const periodLogsByTask = useMemo(
+    () => periodLogs.reduce<Record<string, number>>((acc, tl) => {
+      acc[tl.taskId] = (acc[tl.taskId] ?? 0) + tl.hours;
+      return acc;
+    }, {}),
+    [periodLogs],
+  );
+
+  const taskById = useMemo(() => new Map(tasks.map((t) => [t.id, t])), [tasks]);
 
   // Horas por task incluindo a sessão ativa (só conta o cronômetro se hoje está no período)
   const taskHoursInPeriod = (taskId: string): number => {
@@ -76,38 +82,60 @@ export default function DashboardPage() {
     return logged;
   };
 
-  // Total de horas no período por projectId (inclui sessão ativa quando hoje ∈ período)
-  const periodHoursByProject = { ...Object.entries(periodLogsByTask).reduce<Record<string, number>>(
-    (acc, [taskId, hours]) => {
-      const task = tasks.find((t) => t.id === taskId);
+  // Parte pesada memoizada (usa mapa de lookup); a soma da sessão ativa (live) é O(1).
+  const basePeriodHoursByProject = useMemo(() => {
+    const acc: Record<string, number> = {};
+    for (const [taskId, hours] of Object.entries(periodLogsByTask)) {
+      const task = taskById.get(taskId);
       if (task) acc[task.projectId] = (acc[task.projectId] ?? 0) + hours;
-      return acc;
-    }, {}
-  ) };
+    }
+    return acc;
+  }, [periodLogsByTask, taskById]);
+
+  const periodHoursByProject: Record<string, number> = { ...basePeriodHoursByProject };
   if (todayInRange && activeSession) {
-    const activeTask = tasks.find((t) => t.id === activeSession.taskId);
+    const activeTask = taskById.get(activeSession.taskId);
     if (activeTask) {
       periodHoursByProject[activeTask.projectId] =
         (periodHoursByProject[activeTask.projectId] ?? 0) + getElapsedSeconds() / 3600;
     }
   }
 
-  const myTasks = isAdmin
-    ? tasks.filter((t) => ["EM_DESENVOLVIMENTO", "EM_REVISAO"].includes(t.status)).slice(0, 5)
-    : tasks.filter((t) => t.assigneeId === user?.id).slice(0, 5);
+  const myTasks = useMemo(
+    () => (isAdmin
+      ? tasks.filter((t) => ["EM_DESENVOLVIMENTO", "EM_REVISAO"].includes(t.status)).slice(0, 5)
+      : tasks.filter((t) => t.assigneeId === user?.id).slice(0, 5)),
+    [isAdmin, tasks, user?.id],
+  );
 
-  // Ranking de desenvolvedores por horas registradas no período
-  const devRanking = users
-    .map((u) => {
-      const hours = periodLogs.filter((tl) => tl.userId === u.id).reduce((acc, tl) => acc + tl.hours, 0);
-      const activeTasks = tasks.filter((t) => t.assigneeId === u.id && t.status === "EM_DESENVOLVIMENTO").length;
-      const totalTasks = tasks.filter((t) => t.assigneeId === u.id).length;
-      const projectCount = projects.filter((p) => p.developerIds.includes(u.id) || p.ownerId === u.id).length;
-      return { user: u, hours, activeTasks, totalTasks, projectCount };
-    })
-    .filter((d) => d.hours > 0 || d.totalTasks > 0)
-    .sort((a, b) => b.hours - a.hours)
-    .slice(0, 6);
+  // Ranking de devs: passada única (era O(users × (tasks+projects)) a cada segundo).
+  const devRanking = useMemo(() => {
+    const hoursByUser = new Map<string, number>();
+    for (const tl of periodLogs) hoursByUser.set(tl.userId, (hoursByUser.get(tl.userId) ?? 0) + tl.hours);
+    const activeByUser = new Map<string, number>();
+    const totalByUser = new Map<string, number>();
+    for (const t of tasks) {
+      totalByUser.set(t.assigneeId, (totalByUser.get(t.assigneeId) ?? 0) + 1);
+      if (t.status === "EM_DESENVOLVIMENTO") activeByUser.set(t.assigneeId, (activeByUser.get(t.assigneeId) ?? 0) + 1);
+    }
+    const projectsByUser = new Map<string, number>();
+    for (const p of projects) {
+      for (const uid of new Set([p.ownerId, ...p.developerIds])) {
+        projectsByUser.set(uid, (projectsByUser.get(uid) ?? 0) + 1);
+      }
+    }
+    return users
+      .map((u) => ({
+        user: u,
+        hours: hoursByUser.get(u.id) ?? 0,
+        activeTasks: activeByUser.get(u.id) ?? 0,
+        totalTasks: totalByUser.get(u.id) ?? 0,
+        projectCount: projectsByUser.get(u.id) ?? 0,
+      }))
+      .filter((d) => d.hours > 0 || d.totalTasks > 0)
+      .sort((a, b) => b.hours - a.hours)
+      .slice(0, 6);
+  }, [users, periodLogs, tasks, projects]);
 
   const maxHours = devRanking[0]?.hours || 1;
 
@@ -399,9 +427,8 @@ export default function DashboardPage() {
             <div className="space-y-2">
               {projects.slice(0, 4).map((project) => {
                 const hoursToday = periodHoursByProject[project.id] ?? 0;
-                const hasActiveTask = !!(activeSession && tasks.find(
-                  (t) => t.id === activeSession.taskId && t.projectId === project.id
-                ));
+                const activeTask = activeSession ? taskById.get(activeSession.taskId) : undefined;
+                const hasActiveTask = !!activeTask && activeTask.projectId === project.id;
                 const hoursDisplay = hoursToday >= 0.017
                   ? hoursToday >= 1 ? `${hoursToday.toFixed(1)}h` : `${Math.round(hoursToday * 60)}m`
                   : null;

@@ -236,6 +236,7 @@ export interface TimeLog {
   source?: "TIMER" | "MANUAL";
   status: TaskStatus;
   createdAt: string;
+  updatedAt?: string; // INC-11: carimbo de modificação p/ delta sync
 }
 
 export interface Comment {

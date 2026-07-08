@@ -252,6 +252,7 @@ model Project {
   @@index([ownerId])
   @@index([status])
   @@index([tenantId])
+  @@index([tenantId, updatedAt]) // INC-12: delta sync
   @@map("projects")
 }
 
@@ -292,6 +293,8 @@ model Module {
   @@index([projectId])
   @@index([loggedByUserId])
   @@index([tenantId])
+  @@index([tenantId, projectId]) // INC-10
+  @@index([tenantId, updatedAt]) // INC-12: delta sync
   @@map("modules")
 }
 
@@ -317,6 +320,8 @@ model Epic {
   @@index([projectId])
   @@index([moduleId])
   @@index([tenantId])
+  @@index([tenantId, projectId]) // INC-10
+  @@index([tenantId, updatedAt]) // INC-12: delta sync
   @@map("epics")
 }
 
@@ -384,6 +389,11 @@ model Task {
   @@index([assigneeId])
   @@index([status])
   @@index([tenantId])
+  // INC-10: índices compostos liderados por tenantId (toda query filtra tenantId AND x).
+  @@index([tenantId, projectId])
+  @@index([tenantId, assigneeId])
+  @@index([tenantId, status])
+  @@index([tenantId, updatedAt]) // INC-12: delta sync
   @@map("tasks")
 }
 
@@ -440,6 +450,7 @@ model TimeLog {
   source          TimeLogSource @default(MANUAL)
   status          TaskStatus
   createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt // INC-11: carimbo de modificação p/ delta sync
 
   @@index([taskId])
   @@index([userId])
@@ -449,6 +460,10 @@ model TimeLog {
   @@index([userId, date])
   @@index([projectId, userId, date])
   @@index([tenantId])
+  // INC-10: compostos liderados por tenantId para os filtros quentes de relatório.
+  @@index([tenantId, projectId, date])
+  @@index([tenantId, userId, date])
+  @@index([tenantId, updatedAt]) // INC-12: delta sync (updatedAt > since)
   @@map("time_logs")
 }
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { eachDayOfInterval, parseISO, subDays } from "date-fns";
 import { useTaskStore, useProjectStore, useUserStore } from "@/stores";
 import { useAuth } from "@/hooks/use-auth";
@@ -67,9 +67,6 @@ export default function OverviewReportPage() {
   const [hoursStart, setHoursStart] = useState(() => getPresetRange(14).start);
   const [hoursEnd, setHoursEnd] = useState(() => getPresetRange(14).end);
 
-  if (isLoading) return null;
-  if (!isAdmin) notFound();
-
   const today = toISODate(new Date());
 
   function applyHoursPreset(preset: HoursChartPreset) {
@@ -97,39 +94,72 @@ export default function OverviewReportPage() {
     ? `${formatDate(hoursStart)} — ${formatDate(hoursEnd)}`
     : `Últimos ${hoursPreset} dias`;
 
-  // Distribuição por status
-  const statusDist = Object.entries(
+  // INC-05: derivações memoizadas (deps reais) — não recomputam a cada render/poll.
+  const statusDist = useMemo(() => Object.entries(
     tasks.reduce<Record<string, number>>((acc, t) => {
       acc[t.status] = (acc[t.status] ?? 0) + 1;
       return acc;
     }, {})
-  ).map(([status, count]) => ({ name: STATUS_LABELS[status] ?? status, value: count, fill: STATUS_COLORS[status] ?? "#6366f1" }));
+  ).map(([status, count]) => ({ name: STATUS_LABELS[status] ?? status, value: count, fill: STATUS_COLORS[status] ?? "#6366f1" })), [tasks]);
 
-  const dailyHours = buildDateRange(hoursStart, hoursEnd).map((day) => {
-    const iso = toISODate(day);
-    return {
-      date: iso.slice(5),
-      horas: timeLogs.filter((tl) => tl.date === iso).reduce((acc, tl) => acc + tl.hours, 0),
-    };
-  });
+  // O(timeLogs + dias) via mapa por data (era O(dias × timeLogs)).
+  const dailyHours = useMemo(() => {
+    const hoursByDate: Record<string, number> = {};
+    for (const tl of timeLogs) hoursByDate[tl.date] = (hoursByDate[tl.date] ?? 0) + tl.hours;
+    return buildDateRange(hoursStart, hoursEnd).map((day) => {
+      const iso = toISODate(day);
+      return { date: iso.slice(5), horas: hoursByDate[iso] ?? 0 };
+    });
+  }, [timeLogs, hoursStart, hoursEnd]);
 
-  // Stats gerais
-  const totalHours = timeLogs.reduce((acc, tl) => acc + tl.hours, 0);
-  const overdueTasks = tasks.filter(
-    (t) => t.dueDate && t.dueDate < today && !["CONCLUIDA", "CANCELADA"].includes(t.status)
-  ).length;
-  const completionRate = tasks.length > 0
-    ? Math.round((tasks.filter((t) => t.status === "CONCLUIDA").length / tasks.length) * 100) : 0;
+  const totalHours = useMemo(() => timeLogs.reduce((acc, tl) => acc + tl.hours, 0), [timeLogs]);
+  const overdueTasks = useMemo(
+    () => tasks.filter((t) => t.dueDate && t.dueDate < today && !["CONCLUIDA", "CANCELADA"].includes(t.status)).length,
+    [tasks, today],
+  );
+  const completionRate = useMemo(
+    () => (tasks.length > 0 ? Math.round((tasks.filter((t) => t.status === "CONCLUIDA").length / tasks.length) * 100) : 0),
+    [tasks],
+  );
 
-  // Top tarefas por horas
-  const topTasks = [...tasks]
-    .sort((a, b) => b.actualHours - a.actualHours)
-    .slice(0, 5)
-    .map((t) => ({
-      task: t,
-      project: projects.find((p) => p.id === t.projectId),
-      assignee: users.find((u) => u.id === t.assigneeId),
-    }));
+  // Top tarefas por horas (com mapas de lookup em vez de find por item).
+  const topTasks = useMemo(() => {
+    const projectById = new Map(projects.map((p) => [p.id, p]));
+    const userById = new Map(users.map((u) => [u.id, u]));
+    return [...tasks]
+      .sort((a, b) => b.actualHours - a.actualHours)
+      .slice(0, 5)
+      .map((t) => ({ task: t, project: projectById.get(t.projectId), assignee: userById.get(t.assigneeId) }));
+  }, [tasks, projects, users]);
+
+  // Resumo por dev em passada única (era O(users × (tasks+timeLogs)) no JSX).
+  const teamStats = useMemo(() => {
+    const doneByUser = new Map<string, number>();
+    const activeByUser = new Map<string, number>();
+    const totalByUser = new Map<string, number>();
+    for (const t of tasks) {
+      totalByUser.set(t.assigneeId, (totalByUser.get(t.assigneeId) ?? 0) + 1);
+      if (t.status === "CONCLUIDA") doneByUser.set(t.assigneeId, (doneByUser.get(t.assigneeId) ?? 0) + 1);
+      if (t.status === "EM_DESENVOLVIMENTO") activeByUser.set(t.assigneeId, (activeByUser.get(t.assigneeId) ?? 0) + 1);
+    }
+    const hoursByUser = new Map<string, number>();
+    for (const tl of timeLogs) hoursByUser.set(tl.userId, (hoursByUser.get(tl.userId) ?? 0) + tl.hours);
+    return users.map((u) => {
+      const total = totalByUser.get(u.id) ?? 0;
+      const done = doneByUser.get(u.id) ?? 0;
+      return {
+        user: u,
+        total,
+        done,
+        active: activeByUser.get(u.id) ?? 0,
+        hours: hoursByUser.get(u.id) ?? 0,
+        rate: total > 0 ? Math.round((done / total) * 100) : 0,
+      };
+    });
+  }, [users, tasks, timeLogs]);
+
+  if (isLoading) return null;
+  if (!isAdmin) notFound();
 
   return (
       <div className="p-6 w-full space-y-6" data-print-content
@@ -304,12 +334,7 @@ export default function OverviewReportPage() {
             Equipe — Resumo por Desenvolvedor
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-            {users.map((u, i) => {
-              const userTasks = tasks.filter((t) => t.assigneeId === u.id);
-              const done = userTasks.filter((t) => t.status === "CONCLUIDA").length;
-              const active = userTasks.filter((t) => t.status === "EM_DESENVOLVIMENTO").length;
-              const hours = timeLogs.filter((tl) => tl.userId === u.id).reduce((acc, tl) => acc + tl.hours, 0);
-              const rate = userTasks.length > 0 ? Math.round((done / userTasks.length) * 100) : 0;
+            {teamStats.map(({ user: u, done, active, hours, rate, total }, i) => {
               return (
                 <motion.div
                   key={u.id}
@@ -327,7 +352,7 @@ export default function OverviewReportPage() {
                   <div className="flex-1 min-w-0">
                     <p className="text-xs font-semibold text-zinc-200 truncate">{u.name}</p>
                     <div className="flex items-center gap-2 text-[10px] text-zinc-500 mt-0.5">
-                      <span>{done}/{userTasks.length} tarefas</span>
+                      <span>{done}/{total} tarefas</span>
                       {active > 0 && <span className="text-violet-400">{active} ativas</span>}
                     </div>
                     <Progress value={rate} className="h-1 bg-zinc-700 mt-1" />

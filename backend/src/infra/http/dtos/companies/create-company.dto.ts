@@ -1,6 +1,11 @@
-import { IsOptional, IsString, Matches, MaxLength } from 'class-validator';
+import { IsOptional, IsString, IsUUID, Matches, MaxLength } from 'class-validator';
 
 export class CreateCompanyDto {
+  // INC-04: id opcional gerado no cliente (otimismo estável, sem swap de id no front).
+  @IsOptional()
+  @IsUUID()
+  id?: string;
+
   @IsOptional()
   @IsString()
   @MaxLength(100)

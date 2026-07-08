@@ -173,17 +173,24 @@ export default function ProjectDetailPage() {
   );
   const canAddModule = isAdmin || isProjectMember;
 
+  // Recalcula só os agregados computados no servidor (summary/calendar) + timelogs do
+  // projeto. NÃO re-baixa blobs de anexo (não mudam ao mexer em módulo). INC-13.
+  async function refreshReportAggregates() {
+    const [s, c] = await Promise.all([
+      api.get<ProjectSummary>(`reports/projects/${id}/summary`).catch(() => null),
+      api.get<{ projectId: string; days: CalendarDay[] }>(`reports/projects/${id}/calendar`).catch(() => ({ projectId: id, days: [] })),
+    ]);
+    if (s) setSummary(s);
+    setCalendar(c?.days ?? []);
+    await fetchTimeLogsForProject(id);
+  }
+
   async function loadReport() {
     setLoadingReport(true);
     try {
-      const [s, c] = await Promise.all([
-        api.get<ProjectSummary>(`reports/projects/${id}/summary`).catch(() => null),
-        api.get<{ projectId: string; days: CalendarDay[] }>(`reports/projects/${id}/calendar`).catch(() => ({ projectId: id, days: [] })),
-      ]);
-      if (s) setSummary(s);
-      setCalendar(c?.days ?? []);
+      await refreshReportAggregates();
+      // Anexos (blobs pesados) só no carregamento inicial da página.
       await Promise.all([
-        fetchTimeLogsForProject(id),
         fetchModuleAttachmentsForProject(id, getModulesByProject(id).map((m) => m.id)),
         fetchProjectShowcaseAttachments(id),
         fetchProjectDemandAttachments(id),
@@ -304,7 +311,7 @@ export default function ProjectDetailPage() {
 
       const attachmentCount = pendingAttachments.length;
       resetModuleForm();
-      await loadReport();
+      await refreshReportAggregates();
       const attachMsg = attachmentCount > 0
         ? ` e ${attachmentCount} evidência(s) anexada(s)`
         : "";
@@ -347,7 +354,7 @@ export default function ProjectDetailPage() {
     try {
       await deleteModule(module.id);
       if (editingModuleId === module.id) setEditingModuleId(null);
-      await loadReport();
+      await refreshReportAggregates();
       toast.success("Módulo excluído");
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Erro ao excluir módulo");

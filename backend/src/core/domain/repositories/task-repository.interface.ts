@@ -13,6 +13,8 @@ export interface ITaskRepository {
   findById(id: string): Promise<Task | null>;
   create(task: Task): Promise<Task>;
   update(task: Task): Promise<Task>;
+  /** Persiste várias tasks numa única transação (evita N updates sequenciais). */
+  bulkUpdate(tasks: Task[]): Promise<void>;
   delete(id: string): Promise<void>;
   findByAssignee(assigneeId: string): Promise<Task[]>;
   findByUrgentBlockedById(urgentTaskId: string): Promise<Task[]>;

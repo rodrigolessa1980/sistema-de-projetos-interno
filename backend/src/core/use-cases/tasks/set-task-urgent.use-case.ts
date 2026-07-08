@@ -29,24 +29,20 @@ export class SetTaskUrgentUseCase {
 
     const savedTask = await this.taskRepository.update(updatedTask);
 
+    // INC-08: coleta as tarefas afetadas e persiste tudo num único bulkUpdate.
+    const assigneeTasks = await this.taskRepository.findByAssignee(savedTask.assigneeId);
     if (isUrgent) {
       // Bloquear todas as outras tarefas ativas do mesmo assignee
-      const assigneeTasks = await this.taskRepository.findByAssignee(savedTask.assigneeId);
-      for (const t of assigneeTasks) {
-        if (t.id !== savedTask.id && t.status !== TaskStatus.CONCLUIDA && t.status !== TaskStatus.CANCELADA) {
-          t.blockDueToUrgency(savedTask.id);
-          await this.taskRepository.update(t);
-        }
-      }
+      const toBlock = assigneeTasks.filter(
+        (t) => t.id !== savedTask.id && t.status !== TaskStatus.CONCLUIDA && t.status !== TaskStatus.CANCELADA,
+      );
+      for (const t of toBlock) t.blockDueToUrgency(savedTask.id);
+      await this.taskRepository.bulkUpdate(toBlock);
     } else {
       // Liberar todas as tarefas bloqueadas por este
-      const assigneeTasks = await this.taskRepository.findByAssignee(savedTask.assigneeId);
-      for (const t of assigneeTasks) {
-        if (t.urgentBlockedById === savedTask.id) {
-          t.releaseUrgencyBlock();
-          await this.taskRepository.update(t);
-        }
-      }
+      const toRelease = assigneeTasks.filter((t) => t.urgentBlockedById === savedTask.id);
+      for (const t of toRelease) t.releaseUrgencyBlock();
+      await this.taskRepository.bulkUpdate(toRelease);
     }
 
     return savedTask;

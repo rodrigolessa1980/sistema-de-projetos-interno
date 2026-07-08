@@ -4,6 +4,7 @@ import { Sidebar } from "./sidebar";
 import { Header } from "./header";
 import { useAuth } from "@/hooks/use-auth";
 import { useSyncWorkSession } from "@/hooks/use-work-session";
+import { useDeltaSync } from "@/hooks/use-delta-sync";
 import { useRouter, usePathname } from "@/lib/router";
 import { useEffect } from "react";
 import { useProjectStore, useTaskStore, useUIStore, useUserStore } from "@/stores";
@@ -23,11 +24,12 @@ export function AppLayout({ children, title }: AppLayoutProps) {
   const router = useRouter();
   const pathname = usePathname();
   const fetchProjects = useProjectStore((s) => s.fetchProjects);
-  const fetchTasksForProjects = useTaskStore((s) => s.fetchTasksForProjects);
   const fetchAllTimeLogs = useTaskStore((s) => s.fetchAllTimeLogs);
   const fetchNotifications = useUIStore((s) => s.fetchNotifications);
   const fetchUsers = useUserStore((s) => s.fetchUsers);
   useSyncWorkSession(isAuthenticated && !isPending);
+  // INC-12: delta sync — vê mudanças de outros usuários sem recarregar a página.
+  useDeltaSync(isAuthenticated && !isPending);
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated && pathname !== "/login") {
@@ -38,17 +40,14 @@ export function AppLayout({ children, title }: AppLayoutProps) {
   useEffect(() => {
     if (isAuthenticated && !isPending) {
       void preloadMainPages();
-      fetchProjects()
-        .then(() => {
-          const ids = useProjectStore.getState().projects.map((project) => project.id);
-          return fetchTasksForProjects(ids);
-        })
-        .catch(() => {});
+      // INC-01: fetchProjects agora carrega projetos + módulos + épicos + tasks numa
+      // única chamada agregada (/bootstrap); não é mais preciso buscar tasks por projeto.
+      fetchProjects().catch(() => {});
       fetchAllTimeLogs().catch(() => {});
       fetchUsers().catch(() => {});
       fetchNotifications().catch(() => {});
     }
-  }, [isAuthenticated, isPending, fetchNotifications, fetchProjects, fetchTasksForProjects, fetchAllTimeLogs, fetchUsers]);
+  }, [isAuthenticated, isPending, fetchNotifications, fetchProjects, fetchAllTimeLogs, fetchUsers]);
 
   if (isLoading) {
     return (

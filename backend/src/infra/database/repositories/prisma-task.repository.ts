@@ -102,6 +102,42 @@ export class PrismaTaskRepository implements ITaskRepository {
     return this.mapToDomain(raw);
   }
 
+  async bulkUpdate(tasks: Task[]): Promise<void> {
+    if (tasks.length === 0) return;
+    // Uma transação com N updates = 1 round-trip em vez de N awaits sequenciais.
+    // Cada update passa pela extensão de tenant (tenantId injetado no where). INC-08.
+    await this.prisma.$transaction(
+      tasks.map((task) =>
+        this.prisma.task.update({
+          where: { id: task.id },
+          data: {
+            projectId: task.projectId,
+            moduleId: task.moduleId,
+            epicId: task.epicId,
+            parentTaskId: task.parentTaskId,
+            title: task.title,
+            description: task.description,
+            status: task.status,
+            complexity: task.complexity,
+            assigneeId: task.assigneeId,
+            reporterId: task.reporterId,
+            estimatedHours: task.estimatedHours,
+            actualHours: task.actualHours,
+            startDate: task.startDate,
+            dueDate: task.dueDate,
+            completedAt: task.completedAt,
+            blockedReason: task.blockedReason,
+            isUrgent: task.isUrgent,
+            urgentBlockedById: task.urgentBlockedById,
+            urgentPreviousStatus: task.urgentPreviousStatus,
+            order: task.order,
+          },
+        }),
+      ),
+      { timeout: 60_000 },
+    );
+  }
+
   async delete(id: string): Promise<void> {
     await this.prisma.task.delete({ where: { id } });
   }

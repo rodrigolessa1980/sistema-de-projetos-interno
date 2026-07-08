@@ -22,11 +22,14 @@ export class ListUsersUseCase {
 
   async execute(): Promise<UserWithPermissions[]> {
     const users = await this.userRepository.listAll();
-    const result: UserWithPermissions[] = [];
-    for (const user of users) {
-      const permissions = await this.permissionRepository.findByUserId(user.id);
-      result.push({ user, permissions });
+    // INC-08: uma query para todas as permissões (era 1 + N).
+    const allPermissions = await this.permissionRepository.findByUserIds(users.map((u) => u.id));
+    const byUser = new Map<string, UserPermission[]>();
+    for (const permission of allPermissions) {
+      const list = byUser.get(permission.userId);
+      if (list) list.push(permission);
+      else byUser.set(permission.userId, [permission]);
     }
-    return result;
+    return users.map((user) => ({ user, permissions: byUser.get(user.id) ?? [] }));
   }
 }

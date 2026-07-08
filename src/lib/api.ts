@@ -1,5 +1,18 @@
-const API_URL = import.meta.env.NEXT_PUBLIC_API_URL || "http://localhost:4011/api";
+export const API_URL = import.meta.env.NEXT_PUBLIC_API_URL || "http://localhost:4011/api";
 const SESSION_KEY = "devflow_session";
+
+/** Lê o token da sessão no localStorage (mesma fonte do header Authorization). */
+export function getSessionToken(): string | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const stored = localStorage.getItem(SESSION_KEY);
+    if (!stored) return null;
+    const session = JSON.parse(stored);
+    return session?.token ?? null;
+  } catch {
+    return null;
+  }
+}
 
 interface RequestOptions extends RequestInit {
   params?: Record<string, string>;

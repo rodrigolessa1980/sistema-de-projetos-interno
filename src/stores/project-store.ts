@@ -4,13 +4,21 @@ import { create } from "zustand";
 import type { Project, Module, Epic, Company, ModuleStatus, ProjectShowcaseAttachment, ProjectDemandAttachment } from "@/types";
 import type { Task, TimeLog, ModuleAttachment } from "@/types";
 // Module and Epic are fetched from API; types re-exported for clarity
-import { generateId, delay } from "@/lib/utils";
+import { delay } from "@/lib/utils";
 import { api } from "@/lib/api";
 import { useTaskStore } from "./task-store";
+import { createDirtyTracker, replacePreservingDirty } from "@/lib/reconcile";
+import { normalizeTask, taskDirty } from "./task-store";
+
+/**
+ * Ids de projetos com mutação otimista em voo (INC-03). Compartilhado com o delta sync
+ * (INC-12) para não sobrescrever edição local pendente.
+ */
+export const projectDirty = createDirtyTracker();
 
 const asArray = <T,>(value: T[] | null | undefined): T[] => Array.isArray(value) ? value : [];
 
-const normalizeProject = (project: Project): Project => ({
+export const normalizeProject = (project: Project): Project => ({
   ...project,
   endDate: project.endDate ?? undefined,
   queueOrder: project.queueOrder ?? undefined,
@@ -19,7 +27,7 @@ const normalizeProject = (project: Project): Project => ({
   developerIds: asArray(project.developerIds),
 });
 
-const normalizeEpic = (epic: Epic): Epic => ({
+export const normalizeEpic = (epic: Epic): Epic => ({
   ...epic,
   developerIds: asArray(epic.developerIds),
 });
@@ -96,13 +104,16 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
 
   createCompany: (data) => {
     const now = new Date().toISOString();
-    const company: Company = { ...data, id: generateId("company"), createdAt: now, updatedAt: now };
-    void api.post<{ company: Company }>("companies", data).then((response) => {
+    // INC-04: id estável gerado no cliente e enviado no POST -> a resposta do servidor
+    // tem o MESMO id, então a reconciliação não troca a key (sem remount/flicker).
+    const id = crypto.randomUUID();
+    const company: Company = { ...data, id, createdAt: now, updatedAt: now };
+    void api.post<{ company: Company }>("companies", { ...data, id }).then((response) => {
       set((state) => ({
-        companies: state.companies.map((item) => (item.id === company.id ? response.company : item)),
+        companies: state.companies.map((item) => (item.id === id ? response.company : item)),
       }));
     }).catch(() => {
-      set((state) => ({ companies: state.companies.filter((item) => item.id !== company.id) }));
+      set((state) => ({ companies: state.companies.filter((item) => item.id !== id) }));
     });
     set((state) => ({ companies: [...state.companies, company] }));
     return company;
@@ -133,42 +144,35 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
   fetchProjects: async () => {
     set({ isLoading: true });
     try {
-      const [projects, companiesResponse] = await Promise.all([
-        api.get<Project[]>("projects"),
-        api.get<{ companies: Company[] }>("companies"),
-      ]);
-      const normalizedProjects = asArray(projects).map(normalizeProject);
+      // INC-01: uma única chamada agregada substitui a cascata de 6N+5 requests.
+      // Anexos (dataUrl/base64) NÃO vêm aqui — são carregados sob demanda (INC-02).
+      const data = await api.get<{
+        projects: Project[];
+        companies: Company[];
+        modules: Module[];
+        epics: Epic[];
+        tasks: Parameters<typeof normalizeTask>[0][];
+      }>("bootstrap");
 
-      // Busca módulos e epics de todos os projetos em paralelo
-      const projectIds = normalizedProjects.map((p) => p.id);
-      const [modulesResults, epicsResults, attachmentsResults] = await Promise.all([
-        Promise.all(projectIds.map((id) =>
-          api.get<{ modules: Module[] }>(`projects/${id}/modules`).then((r) => asArray(r.modules)).catch(() => [] as Module[])
-        )),
-        Promise.all(projectIds.map((id) =>
-          api.get<{ epics: Epic[] }>(`projects/${id}/epics`).then((r) => asArray(r.epics).map(normalizeEpic)).catch(() => [] as Epic[])
-        )),
-        Promise.all(projectIds.map((id) =>
-          api.get<{ attachments: ModuleAttachment[] }>(`projects/${id}/module-attachments`).then((r) => asArray(r.attachments)).catch(() => [] as ModuleAttachment[])
-        )),
-      ]);
-      const showcaseAttachmentResults = await Promise.all(projectIds.map((id) =>
-        api.get<{ attachments: ProjectShowcaseAttachment[] }>(`projects/${id}/showcase-attachments`).then((r) => asArray(r.attachments)).catch(() => [] as ProjectShowcaseAttachment[])
-      ));
-      const demandAttachmentResults = await Promise.all(projectIds.map((id) =>
-        api.get<{ attachments: ProjectDemandAttachment[] }>(`projects/${id}/demand-attachments`).then((r) => asArray(r.attachments)).catch(() => [] as ProjectDemandAttachment[])
-      ));
+      const normalizedProjects = asArray(data.projects).map(normalizeProject);
 
       set({
         projects: normalizedProjects,
-        companies: asArray(companiesResponse.companies),
-        modules: modulesResults.flat(),
-        epics: epicsResults.flat(),
-        projectShowcaseAttachments: showcaseAttachmentResults.flat(),
-        projectDemandAttachments: demandAttachmentResults.flat(),
+        companies: asArray(data.companies),
+        modules: asArray(data.modules),
+        epics: asArray(data.epics).map(normalizeEpic),
+        // Anexos ficam vazios até o detalhe ser aberto (fetch sob demanda).
+        projectShowcaseAttachments: [],
+        projectDemandAttachments: [],
         isLoading: false,
       });
-      useTaskStore.setState({ moduleAttachments: attachmentsResults.flat() });
+
+      // Tasks vão para a task-store, preservando edições otimistas em voo (dirty).
+      const incomingTasks = asArray(data.tasks).map(normalizeTask);
+      useTaskStore.setState((state) => ({
+        tasks: replacePreservingDirty(state.tasks, incomingTasks, taskDirty.ids),
+        moduleAttachments: [],
+      }));
     } catch (error) {
       set({ isLoading: false });
       throw error;
@@ -283,12 +287,17 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
   },
 
   updateProject: async (id, data) => {
-    const project = await api.put<Project>(`projects/${id}`, data);
-    const normalized = normalizeProject(project);
-    set((state) => ({
-      projects: state.projects.map((p) => (p.id === id ? normalized : p)),
-    }));
-    return normalized;
+    projectDirty.markDirty(id);
+    try {
+      const project = await api.put<Project>(`projects/${id}`, data);
+      const normalized = normalizeProject(project);
+      set((state) => ({
+        projects: state.projects.map((p) => (p.id === id ? normalized : p)),
+      }));
+      return normalized;
+    } finally {
+      projectDirty.clearDirty(id);
+    }
   },
 
   deleteProject: async (id) => {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { PageHeader } from "@/components/shared/page-header";
 import { EmptyState } from "@/components/shared/empty-state";
 import { useProjectStore } from "@/stores";
@@ -78,7 +78,14 @@ export default function ProjectsPage() {
   const [moduleDrafts, setModuleDrafts] = useState<ModuleDraft[]>([]);
   const [newModuleName, setNewModuleName] = useState("");
 
-  const visibleProjects = isAdmin ? projects : projects.filter((p) => p.developerIds.includes(user?.id ?? "") || p.ownerId === user?.id);
+  const visibleProjects = useMemo(
+    () => (isAdmin ? projects : projects.filter((p) => p.developerIds.includes(user?.id ?? "") || p.ownerId === user?.id)),
+    [isAdmin, projects, user?.id],
+  );
+
+  // INC-05: mapas de lookup (era find/filter por projeto sobre todos os users no JSX).
+  const userById = useMemo(() => new Map(users.map((u) => [u.id, u])), [users]);
+  const companyById = useMemo(() => new Map(companies.map((c) => [c.id, c])), [companies]);
 
   const form = useForm<CreateProjectForm>({
     resolver: zodResolver(createProjectSchema),
@@ -248,10 +255,14 @@ export default function ProjectsPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
             {visibleProjects.map((project, i) => {
-              const devs = users.filter((u) => project.developerIds.includes(u.id));
-              const owner = users.find((u) => u.id === project.ownerId);
-              const nonMembers = users.filter((u) => !project.developerIds.includes(u.id) && u.id !== project.ownerId);
-              const company = companies.find((c) => c.id === project.companyId);
+              const memberIds = new Set([project.ownerId, ...project.developerIds]);
+              const devs = project.developerIds.flatMap((idv) => {
+                const u = userById.get(idv);
+                return u ? [u] : [];
+              });
+              const owner = userById.get(project.ownerId);
+              const nonMembers = users.filter((u) => !memberIds.has(u.id));
+              const company = project.companyId ? companyById.get(project.companyId) : undefined;
               return (
                 <motion.div
                   key={project.id}

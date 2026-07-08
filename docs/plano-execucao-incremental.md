@@ -100,6 +100,13 @@ rápido. Fidelidade: **INC-03/04/06/07**. "Ver o outro usuário": **INC-11→12*
 **Aceite:** payload do bootstrap cai de MB para KB; abrir um anexo ainda funciona.
 **Rollback:** remover o `select` (volta a mandar tudo).
 
+> **Status (implementado):** o núcleo — não carregar blobs no bootstrap — foi entregue
+> junto do INC-01 (o `/bootstrap` não retorna anexos; eles só carregam ao abrir o
+> detalhe). O **split metadados/binário** (endpoint `/attachments/:id/data` + `select`
+> sem `dataUrl` nas listas) foi **ADIADO**: os previews usam `<img src={dataUrl}>` inline
+> e trocar por URL exigiria autenticar a imagem (token em query/cookie), quebrando os
+> previews. Fica como refinamento futuro de menor prioridade.
+
 ---
 
 ## FASE 1 — Fidelidade do dado no front

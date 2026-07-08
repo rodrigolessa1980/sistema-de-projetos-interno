@@ -4,6 +4,7 @@ import type { ICompanyRepository } from '../../domain/repositories/company-repos
 import { ICompanyRepositoryToken } from '../../domain/repositories/company-repository.interface';
 
 export interface CreateCompanyInput {
+  id?: string;
   name?: string;
   shortName?: string;
   color?: string;
@@ -19,6 +20,7 @@ export class CreateCompanyUseCase {
 
   async execute(input: CreateCompanyInput): Promise<Company> {
     const company = new Company({
+      id: input.id,
       name: input.name?.trim() || `Empresa ${new Date().toLocaleString('pt-BR')}`,
       shortName: (input.shortName?.trim() || 'EMP').toUpperCase(),
       color: input.color?.trim() || '#6366f1',

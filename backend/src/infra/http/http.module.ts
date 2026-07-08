@@ -14,15 +14,23 @@ import { NotificationsController } from './controllers/notifications.controller'
 import { ReportsController } from './controllers/reports.controller';
 import { DevlogController } from './controllers/devlog.controller';
 import { ApiTokensController } from './controllers/api-tokens.controller';
+import { BootstrapController } from './controllers/bootstrap.controller';
+import { SyncController } from './controllers/sync.controller';
+import { SyncStreamController } from './controllers/sync-stream.controller';
 import { PermissionsGuard } from './guards/permissions.guard';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { SseAuthGuard } from './guards/sse-auth.guard';
+import { SyncEmitInterceptor } from './interceptors/sync-emit.interceptor';
 
 @Module({
   imports: [UseCasesModule],
   providers: [
     PermissionsGuard,
     JwtAuthGuard,
+    SseAuthGuard,
     { provide: APP_INTERCEPTOR, useClass: TenantContextInterceptor },
+    // INC-14: emite evento de mudança (por tenant) após escritas HTTP -> alimenta o SSE.
+    { provide: APP_INTERCEPTOR, useClass: SyncEmitInterceptor },
   ],
   controllers: [
     HealthController,
@@ -37,6 +45,9 @@ import { JwtAuthGuard } from './guards/jwt-auth.guard';
     ReportsController,
     DevlogController,
     ApiTokensController,
+    BootstrapController,
+    SyncController,
+    SyncStreamController,
   ],
 })
 export class HttpModule {}

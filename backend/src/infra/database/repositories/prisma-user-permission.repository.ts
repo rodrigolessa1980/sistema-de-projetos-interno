@@ -24,6 +24,12 @@ export class PrismaUserPermissionRepository implements IUserPermissionRepository
     return raws.map((r) => this.mapToDomain(r));
   }
 
+  async findByUserIds(userIds: string[]): Promise<UserPermission[]> {
+    if (userIds.length === 0) return [];
+    const raws = await this.prisma.userPermission.findMany({ where: { userId: { in: userIds } } });
+    return raws.map((r) => this.mapToDomain(r));
+  }
+
   async upsertMany(
     userId: string,
     permissions: { module: string; action: string; granted: boolean }[],

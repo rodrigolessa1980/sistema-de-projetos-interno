@@ -117,8 +117,12 @@ function GanttTaskTooltipContent({
 
 export default function GanttPage() {
   const { tasks } = useTaskStore();
-  const { projects, modules, getProjectById } = useProjectStore();
-  const { getUserById } = useUserStore();
+  const { projects, modules } = useProjectStore();
+  const { users } = useUserStore();
+
+  // INC-05: mapas de lookup (era find linear por task no render das linhas).
+  const projectById = useMemo(() => new Map(projects.map((p) => [p.id, p])), [projects]);
+  const userById = useMemo(() => new Map(users.map((u) => [u.id, u])), [users]);
   const [projectFilter, setProjectFilter] = useState("all");
   const [baseYear, setBaseYear] = useState(new Date().getFullYear());
 
@@ -214,8 +218,8 @@ export default function GanttPage() {
             <div className="divide-y divide-zinc-800/30">
               {visibleTasks.map((task, i) => {
                 const barPos = getBarPosition(task);
-                const project = getProjectById(task.projectId);
-                const assignee = getUserById(task.assigneeId);
+                const project = projectById.get(task.projectId);
+                const assignee = userById.get(task.assigneeId);
                 const tooltipContent = (
                   <GanttTaskTooltipContent
                     task={task}

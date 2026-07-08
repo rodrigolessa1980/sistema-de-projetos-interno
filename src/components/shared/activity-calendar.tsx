@@ -283,7 +283,10 @@ function EntryRow({
         name: name.trim(), description: desc.trim(), status, workDate, hours: h,
         assignedUserId: isAdmin && assignedUserId !== userId ? assignedUserId : undefined,
       });
-      await useTaskStore.getState().fetchAllTimeLogs();
+      // INC-13: refetch só dos logs deste projeto (não de todos do tenant).
+      if (moduleObj?.projectId) {
+        await useTaskStore.getState().fetchTimeLogsForProject(moduleObj.projectId);
+      }
       toast.success("Registro atualizado");
       setEditing(false);
     } catch (e) {
@@ -439,7 +442,8 @@ function DayEditor({ day, ownerId }: { day: string; ownerId: string }) {
         workDate: wd,
         assignedUserId: isAdmin ? assignedUserId : undefined,
       });
-      await useTaskStore.getState().fetchAllTimeLogs();
+      // INC-13: createModule já adiciona o timeLog retornado à store (otimista);
+      // não é preciso re-baixar TODOS os logs do tenant.
       const who = users.find((u) => u.id === assignedUserId)?.name;
       toast.success(`Registrado: ${h}h em ${wd.split("-").reverse().join("/")}${isAdmin && who ? ` para ${who.split(" ")[0]}` : ""}`);
       reset();
