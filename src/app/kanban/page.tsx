@@ -6,6 +6,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useUpdateKanbanOrder } from "@/hooks/use-tasks";
 import { ComplexityBadge } from "@/components/shared/task-badge";
 import { formatDate, getStatusLabel, getStatusDotColor } from "@/lib/utils";
+import { quickLogModuleIds } from "@/lib/worklog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AlertTriangle, Clock, GripVertical, Plus, Lock, Flame } from "lucide-react";
@@ -262,7 +263,7 @@ function getInsertIndex(event: DragOverEvent | DragEndEvent, overId: string, ord
 
 export default function KanbanPage() {
   const { tasks, getBlockersForTask } = useTaskStore();
-  const { projects } = useProjectStore();
+  const { projects, modules } = useProjectStore();
   const { isAdmin } = useAuth();
   const updateKanbanOrder = useUpdateKanbanOrder();
   const [projectFilter, setProjectFilter] = useState("all");
@@ -275,9 +276,11 @@ export default function KanbanPage() {
   );
 
   const visibleTasks = useMemo(() => {
-    if (projectFilter !== "all") return tasks.filter((t) => t.projectId === projectFilter);
-    return tasks;
-  }, [tasks, projectFilter]);
+    // Esconde as tarefas-andaime do lançamento rápido de horas (timesheet).
+    const quickLog = quickLogModuleIds(modules);
+    const base = projectFilter !== "all" ? tasks.filter((t) => t.projectId === projectFilter) : tasks;
+    return base.filter((t) => !quickLog.has(t.moduleId));
+  }, [tasks, projectFilter, modules]);
 
   const tasksById = useMemo(
     () => new Map(visibleTasks.map((task) => [task.id, task])),

@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useTaskStore, useProjectStore, useUserStore } from "@/stores";
+import { quickLogModuleIds } from "@/lib/worklog";
 import { StatusBadge } from "@/components/shared/task-badge";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { formatDate, formatHours, getComplexityLabel, getStatusLabel } from "@/lib/utils";
@@ -116,19 +117,21 @@ function GanttTaskTooltipContent({
 
 export default function GanttPage() {
   const { tasks } = useTaskStore();
-  const { projects, getProjectById } = useProjectStore();
+  const { projects, modules, getProjectById } = useProjectStore();
   const { getUserById } = useUserStore();
   const [projectFilter, setProjectFilter] = useState("all");
   const [baseYear, setBaseYear] = useState(new Date().getFullYear());
 
   const visibleTasks = useMemo(() => {
+    // Esconde as tarefas-andaime do lançamento rápido de horas (timesheet).
+    const quickLog = quickLogModuleIds(modules);
     const filtered = projectFilter === "all" ? tasks : tasks.filter((t) => t.projectId === projectFilter);
-    return filtered.filter((t) => t.startDate || t.dueDate).sort((a, b) => {
+    return filtered.filter((t) => !quickLog.has(t.moduleId) && (t.startDate || t.dueDate)).sort((a, b) => {
       const aDate = a.startDate ?? a.dueDate ?? "";
       const bDate = b.startDate ?? b.dueDate ?? "";
       return aDate.localeCompare(bDate);
     });
-  }, [tasks, projectFilter]);
+  }, [tasks, projectFilter, modules]);
 
   const months = useMemo(() => {
     return MONTH_NAMES.map((name, i) => ({ name, index: i }));

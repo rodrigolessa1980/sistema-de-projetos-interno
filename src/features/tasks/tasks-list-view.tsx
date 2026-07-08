@@ -14,6 +14,7 @@ import {
   cn,
 } from "@/lib/utils";
 import { motion } from "@/lib/motion";
+import { quickLogModuleIds } from "@/lib/worklog";
 import {
   ListTodo,
   Search,
@@ -423,7 +424,7 @@ interface TasksListViewProps {
 
 export function TasksListView({ isAdmin, userId, onCreateTask }: TasksListViewProps) {
   const { tasks, getBlockersForTask } = useTaskStore();
-  const { projects, companies } = useProjectStore();
+  const { projects, companies, modules } = useProjectStore();
   const { users } = useUserStore();
   const { activeSession } = useWorkSessionStore();
 
@@ -455,11 +456,14 @@ export function TasksListView({ isAdmin, userId, onCreateTask }: TasksListViewPr
       );
 
   const baseTasks = useMemo(() => {
+    // Esconde as tarefas-andaime do lançamento rápido de horas (timesheet).
+    const quickLog = quickLogModuleIds(modules);
     return tasks.filter((t) => {
+      if (quickLog.has(t.moduleId)) return false;
       if (!isAdmin && t.assigneeId !== userId) return false;
       return true;
     });
-  }, [tasks, isAdmin, userId]);
+  }, [tasks, isAdmin, userId, modules]);
 
   const allTags = useMemo(() => {
     const tags = new Set<string>();
