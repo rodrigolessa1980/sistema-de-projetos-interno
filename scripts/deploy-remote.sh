@@ -15,17 +15,32 @@ if ! printf '%s\n' "${ENV_FRONTEND}" | grep -q '^NEXT_PUBLIC_API_URL='; then
   exit 1
 fi
 
+# Nunca deixar o git abrir prompt interativo (sem TTY isso quebra o deploy com
+# "could not read Username for 'https://github.com'").
+export GIT_TERMINAL_PROMPT=0
+
+# Autenticacao opcional: quando GH_TOKEN esta presente, injeta o cabecalho de
+# autorizacao apenas para o comando (nao persiste o token no .git/config).
+# Funciona tanto para repositorio publico quanto privado.
+GIT_AUTH=()
+if [[ -n "${GH_TOKEN:-}" ]]; then
+  BASIC_AUTH="$(printf 'x-access-token:%s' "${GH_TOKEN}" | base64 | tr -d '\n')"
+  GIT_AUTH=(-c "http.https://github.com/.extraheader=AUTHORIZATION: basic ${BASIC_AUTH}")
+fi
+
 if [[ ! -d "${DEPLOY_PATH}/.git" ]]; then
   echo "Primeiro deploy: clonando repositorio em ${DEPLOY_PATH}..."
   mkdir -p "$(dirname "${DEPLOY_PATH}")"
-  git clone --branch "${BRANCH}" --single-branch "${REPO_URL}" "${DEPLOY_PATH}"
+  git ${GIT_AUTH[@]+"${GIT_AUTH[@]}"} clone --branch "${BRANCH}" --single-branch "${REPO_URL}" "${DEPLOY_PATH}"
+  cd "${DEPLOY_PATH}"
 else
   echo "Atualizando repositorio em ${DEPLOY_PATH}..."
   cd "${DEPLOY_PATH}"
-  git fetch origin "${BRANCH}"
+  # Normaliza a origin para a URL canonica (auto-corrige remote invalido no servidor).
+  git remote set-url origin "${REPO_URL}" 2>/dev/null || git remote add origin "${REPO_URL}"
+  git ${GIT_AUTH[@]+"${GIT_AUTH[@]}"} fetch origin "${BRANCH}"
   git reset --hard "origin/${BRANCH}"
   git clean -fd
-  git pull origin "${BRANCH}"
 fi
 
 cd "${DEPLOY_PATH}"
