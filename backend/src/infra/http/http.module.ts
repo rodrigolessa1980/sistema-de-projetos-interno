@@ -1,5 +1,7 @@
 import { Module } from '@nestjs/common';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 import { UseCasesModule } from '../../core/use-cases/use-cases.module';
+import { TenantContextInterceptor } from '../tenancy/tenant.interceptor';
 import { AuthController } from './controllers/auth.controller';
 import { CompaniesController } from './controllers/companies.controller';
 import { HealthController } from './controllers/health.controller';
@@ -17,7 +19,11 @@ import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 @Module({
   imports: [UseCasesModule],
-  providers: [PermissionsGuard, JwtAuthGuard],
+  providers: [
+    PermissionsGuard,
+    JwtAuthGuard,
+    { provide: APP_INTERCEPTOR, useClass: TenantContextInterceptor },
+  ],
   controllers: [
     HealthController,
     AuthController,

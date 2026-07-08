@@ -5,11 +5,13 @@ import {
   DEFAULT_DEVELOPER_PERMISSIONS,
   type PermissionKey,
 } from './permission-keys';
-import { PrismaService } from '../../infra/database/prisma/prisma.service';
+import { BasePrismaService } from '../../infra/database/prisma/prisma.service';
 
 @Injectable()
 export class PermissionService {
-  constructor(private readonly prisma: PrismaService) {}
+  // Roda em tempo de guard (antes do contexto de tenant): usa o client base.
+  // Permissões são lidas por userId, portanto não dependem de filtro por tenant.
+  constructor(private readonly prisma: BasePrismaService) {}
 
   async getUserPermissionSet(userId: string, role: UserRole): Promise<Set<PermissionKey>> {
     if (role === UserRole.ADMIN) {

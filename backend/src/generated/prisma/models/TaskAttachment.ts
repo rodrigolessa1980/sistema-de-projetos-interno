@@ -36,6 +36,7 @@ export type TaskAttachmentSumAggregateOutputType = {
 
 export type TaskAttachmentMinAggregateOutputType = {
   id: string | null
+  tenantId: string | null
   taskId: string | null
   userId: string | null
   name: string | null
@@ -47,6 +48,7 @@ export type TaskAttachmentMinAggregateOutputType = {
 
 export type TaskAttachmentMaxAggregateOutputType = {
   id: string | null
+  tenantId: string | null
   taskId: string | null
   userId: string | null
   name: string | null
@@ -58,6 +60,7 @@ export type TaskAttachmentMaxAggregateOutputType = {
 
 export type TaskAttachmentCountAggregateOutputType = {
   id: number
+  tenantId: number
   taskId: number
   userId: number
   name: number
@@ -79,6 +82,7 @@ export type TaskAttachmentSumAggregateInputType = {
 
 export type TaskAttachmentMinAggregateInputType = {
   id?: true
+  tenantId?: true
   taskId?: true
   userId?: true
   name?: true
@@ -90,6 +94,7 @@ export type TaskAttachmentMinAggregateInputType = {
 
 export type TaskAttachmentMaxAggregateInputType = {
   id?: true
+  tenantId?: true
   taskId?: true
   userId?: true
   name?: true
@@ -101,6 +106,7 @@ export type TaskAttachmentMaxAggregateInputType = {
 
 export type TaskAttachmentCountAggregateInputType = {
   id?: true
+  tenantId?: true
   taskId?: true
   userId?: true
   name?: true
@@ -199,6 +205,7 @@ export type TaskAttachmentGroupByArgs<ExtArgs extends runtime.Types.Extensions.I
 
 export type TaskAttachmentGroupByOutputType = {
   id: string
+  tenantId: string
   taskId: string
   userId: string
   name: string
@@ -233,6 +240,7 @@ export type TaskAttachmentWhereInput = {
   OR?: Prisma.TaskAttachmentWhereInput[]
   NOT?: Prisma.TaskAttachmentWhereInput | Prisma.TaskAttachmentWhereInput[]
   id?: Prisma.StringFilter<"TaskAttachment"> | string
+  tenantId?: Prisma.StringFilter<"TaskAttachment"> | string
   taskId?: Prisma.StringFilter<"TaskAttachment"> | string
   userId?: Prisma.StringFilter<"TaskAttachment"> | string
   name?: Prisma.StringFilter<"TaskAttachment"> | string
@@ -240,12 +248,14 @@ export type TaskAttachmentWhereInput = {
   size?: Prisma.IntFilter<"TaskAttachment"> | number
   dataUrl?: Prisma.StringFilter<"TaskAttachment"> | string
   createdAt?: Prisma.DateTimeFilter<"TaskAttachment"> | Date | string
+  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
   task?: Prisma.XOR<Prisma.TaskScalarRelationFilter, Prisma.TaskWhereInput>
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }
 
 export type TaskAttachmentOrderByWithRelationInput = {
   id?: Prisma.SortOrder
+  tenantId?: Prisma.SortOrder
   taskId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   name?: Prisma.SortOrder
@@ -253,6 +263,7 @@ export type TaskAttachmentOrderByWithRelationInput = {
   size?: Prisma.SortOrder
   dataUrl?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  tenant?: Prisma.TenantOrderByWithRelationInput
   task?: Prisma.TaskOrderByWithRelationInput
   user?: Prisma.UserOrderByWithRelationInput
   _relevance?: Prisma.TaskAttachmentOrderByRelevanceInput
@@ -263,6 +274,7 @@ export type TaskAttachmentWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.TaskAttachmentWhereInput | Prisma.TaskAttachmentWhereInput[]
   OR?: Prisma.TaskAttachmentWhereInput[]
   NOT?: Prisma.TaskAttachmentWhereInput | Prisma.TaskAttachmentWhereInput[]
+  tenantId?: Prisma.StringFilter<"TaskAttachment"> | string
   taskId?: Prisma.StringFilter<"TaskAttachment"> | string
   userId?: Prisma.StringFilter<"TaskAttachment"> | string
   name?: Prisma.StringFilter<"TaskAttachment"> | string
@@ -270,12 +282,14 @@ export type TaskAttachmentWhereUniqueInput = Prisma.AtLeast<{
   size?: Prisma.IntFilter<"TaskAttachment"> | number
   dataUrl?: Prisma.StringFilter<"TaskAttachment"> | string
   createdAt?: Prisma.DateTimeFilter<"TaskAttachment"> | Date | string
+  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
   task?: Prisma.XOR<Prisma.TaskScalarRelationFilter, Prisma.TaskWhereInput>
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }, "id">
 
 export type TaskAttachmentOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
+  tenantId?: Prisma.SortOrder
   taskId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   name?: Prisma.SortOrder
@@ -295,6 +309,7 @@ export type TaskAttachmentScalarWhereWithAggregatesInput = {
   OR?: Prisma.TaskAttachmentScalarWhereWithAggregatesInput[]
   NOT?: Prisma.TaskAttachmentScalarWhereWithAggregatesInput | Prisma.TaskAttachmentScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"TaskAttachment"> | string
+  tenantId?: Prisma.StringWithAggregatesFilter<"TaskAttachment"> | string
   taskId?: Prisma.StringWithAggregatesFilter<"TaskAttachment"> | string
   userId?: Prisma.StringWithAggregatesFilter<"TaskAttachment"> | string
   name?: Prisma.StringWithAggregatesFilter<"TaskAttachment"> | string
@@ -311,12 +326,14 @@ export type TaskAttachmentCreateInput = {
   size: number
   dataUrl: string
   createdAt?: Date | string
+  tenant?: Prisma.TenantCreateNestedOneWithoutTaskAttachmentsInput
   task: Prisma.TaskCreateNestedOneWithoutAttachmentsInput
   user: Prisma.UserCreateNestedOneWithoutAttachmentsInput
 }
 
 export type TaskAttachmentUncheckedCreateInput = {
   id?: string
+  tenantId?: string
   taskId: string
   userId: string
   name: string
@@ -333,12 +350,14 @@ export type TaskAttachmentUpdateInput = {
   size?: Prisma.IntFieldUpdateOperationsInput | number
   dataUrl?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutTaskAttachmentsNestedInput
   task?: Prisma.TaskUpdateOneRequiredWithoutAttachmentsNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutAttachmentsNestedInput
 }
 
 export type TaskAttachmentUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   taskId?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
@@ -350,6 +369,7 @@ export type TaskAttachmentUncheckedUpdateInput = {
 
 export type TaskAttachmentCreateManyInput = {
   id?: string
+  tenantId?: string
   taskId: string
   userId: string
   name: string
@@ -370,6 +390,7 @@ export type TaskAttachmentUpdateManyMutationInput = {
 
 export type TaskAttachmentUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   taskId?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
@@ -397,6 +418,7 @@ export type TaskAttachmentOrderByRelevanceInput = {
 
 export type TaskAttachmentCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  tenantId?: Prisma.SortOrder
   taskId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   name?: Prisma.SortOrder
@@ -412,6 +434,7 @@ export type TaskAttachmentAvgOrderByAggregateInput = {
 
 export type TaskAttachmentMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  tenantId?: Prisma.SortOrder
   taskId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   name?: Prisma.SortOrder
@@ -423,6 +446,7 @@ export type TaskAttachmentMaxOrderByAggregateInput = {
 
 export type TaskAttachmentMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  tenantId?: Prisma.SortOrder
   taskId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   name?: Prisma.SortOrder
@@ -434,6 +458,48 @@ export type TaskAttachmentMinOrderByAggregateInput = {
 
 export type TaskAttachmentSumOrderByAggregateInput = {
   size?: Prisma.SortOrder
+}
+
+export type TaskAttachmentCreateNestedManyWithoutTenantInput = {
+  create?: Prisma.XOR<Prisma.TaskAttachmentCreateWithoutTenantInput, Prisma.TaskAttachmentUncheckedCreateWithoutTenantInput> | Prisma.TaskAttachmentCreateWithoutTenantInput[] | Prisma.TaskAttachmentUncheckedCreateWithoutTenantInput[]
+  connectOrCreate?: Prisma.TaskAttachmentCreateOrConnectWithoutTenantInput | Prisma.TaskAttachmentCreateOrConnectWithoutTenantInput[]
+  createMany?: Prisma.TaskAttachmentCreateManyTenantInputEnvelope
+  connect?: Prisma.TaskAttachmentWhereUniqueInput | Prisma.TaskAttachmentWhereUniqueInput[]
+}
+
+export type TaskAttachmentUncheckedCreateNestedManyWithoutTenantInput = {
+  create?: Prisma.XOR<Prisma.TaskAttachmentCreateWithoutTenantInput, Prisma.TaskAttachmentUncheckedCreateWithoutTenantInput> | Prisma.TaskAttachmentCreateWithoutTenantInput[] | Prisma.TaskAttachmentUncheckedCreateWithoutTenantInput[]
+  connectOrCreate?: Prisma.TaskAttachmentCreateOrConnectWithoutTenantInput | Prisma.TaskAttachmentCreateOrConnectWithoutTenantInput[]
+  createMany?: Prisma.TaskAttachmentCreateManyTenantInputEnvelope
+  connect?: Prisma.TaskAttachmentWhereUniqueInput | Prisma.TaskAttachmentWhereUniqueInput[]
+}
+
+export type TaskAttachmentUpdateManyWithoutTenantNestedInput = {
+  create?: Prisma.XOR<Prisma.TaskAttachmentCreateWithoutTenantInput, Prisma.TaskAttachmentUncheckedCreateWithoutTenantInput> | Prisma.TaskAttachmentCreateWithoutTenantInput[] | Prisma.TaskAttachmentUncheckedCreateWithoutTenantInput[]
+  connectOrCreate?: Prisma.TaskAttachmentCreateOrConnectWithoutTenantInput | Prisma.TaskAttachmentCreateOrConnectWithoutTenantInput[]
+  upsert?: Prisma.TaskAttachmentUpsertWithWhereUniqueWithoutTenantInput | Prisma.TaskAttachmentUpsertWithWhereUniqueWithoutTenantInput[]
+  createMany?: Prisma.TaskAttachmentCreateManyTenantInputEnvelope
+  set?: Prisma.TaskAttachmentWhereUniqueInput | Prisma.TaskAttachmentWhereUniqueInput[]
+  disconnect?: Prisma.TaskAttachmentWhereUniqueInput | Prisma.TaskAttachmentWhereUniqueInput[]
+  delete?: Prisma.TaskAttachmentWhereUniqueInput | Prisma.TaskAttachmentWhereUniqueInput[]
+  connect?: Prisma.TaskAttachmentWhereUniqueInput | Prisma.TaskAttachmentWhereUniqueInput[]
+  update?: Prisma.TaskAttachmentUpdateWithWhereUniqueWithoutTenantInput | Prisma.TaskAttachmentUpdateWithWhereUniqueWithoutTenantInput[]
+  updateMany?: Prisma.TaskAttachmentUpdateManyWithWhereWithoutTenantInput | Prisma.TaskAttachmentUpdateManyWithWhereWithoutTenantInput[]
+  deleteMany?: Prisma.TaskAttachmentScalarWhereInput | Prisma.TaskAttachmentScalarWhereInput[]
+}
+
+export type TaskAttachmentUncheckedUpdateManyWithoutTenantNestedInput = {
+  create?: Prisma.XOR<Prisma.TaskAttachmentCreateWithoutTenantInput, Prisma.TaskAttachmentUncheckedCreateWithoutTenantInput> | Prisma.TaskAttachmentCreateWithoutTenantInput[] | Prisma.TaskAttachmentUncheckedCreateWithoutTenantInput[]
+  connectOrCreate?: Prisma.TaskAttachmentCreateOrConnectWithoutTenantInput | Prisma.TaskAttachmentCreateOrConnectWithoutTenantInput[]
+  upsert?: Prisma.TaskAttachmentUpsertWithWhereUniqueWithoutTenantInput | Prisma.TaskAttachmentUpsertWithWhereUniqueWithoutTenantInput[]
+  createMany?: Prisma.TaskAttachmentCreateManyTenantInputEnvelope
+  set?: Prisma.TaskAttachmentWhereUniqueInput | Prisma.TaskAttachmentWhereUniqueInput[]
+  disconnect?: Prisma.TaskAttachmentWhereUniqueInput | Prisma.TaskAttachmentWhereUniqueInput[]
+  delete?: Prisma.TaskAttachmentWhereUniqueInput | Prisma.TaskAttachmentWhereUniqueInput[]
+  connect?: Prisma.TaskAttachmentWhereUniqueInput | Prisma.TaskAttachmentWhereUniqueInput[]
+  update?: Prisma.TaskAttachmentUpdateWithWhereUniqueWithoutTenantInput | Prisma.TaskAttachmentUpdateWithWhereUniqueWithoutTenantInput[]
+  updateMany?: Prisma.TaskAttachmentUpdateManyWithWhereWithoutTenantInput | Prisma.TaskAttachmentUpdateManyWithWhereWithoutTenantInput[]
+  deleteMany?: Prisma.TaskAttachmentScalarWhereInput | Prisma.TaskAttachmentScalarWhereInput[]
 }
 
 export type TaskAttachmentCreateNestedManyWithoutUserInput = {
@@ -520,7 +586,7 @@ export type TaskAttachmentUncheckedUpdateManyWithoutTaskNestedInput = {
   deleteMany?: Prisma.TaskAttachmentScalarWhereInput | Prisma.TaskAttachmentScalarWhereInput[]
 }
 
-export type TaskAttachmentCreateWithoutUserInput = {
+export type TaskAttachmentCreateWithoutTenantInput = {
   id?: string
   name: string
   type: string
@@ -528,10 +594,75 @@ export type TaskAttachmentCreateWithoutUserInput = {
   dataUrl: string
   createdAt?: Date | string
   task: Prisma.TaskCreateNestedOneWithoutAttachmentsInput
+  user: Prisma.UserCreateNestedOneWithoutAttachmentsInput
+}
+
+export type TaskAttachmentUncheckedCreateWithoutTenantInput = {
+  id?: string
+  taskId: string
+  userId: string
+  name: string
+  type: string
+  size: number
+  dataUrl: string
+  createdAt?: Date | string
+}
+
+export type TaskAttachmentCreateOrConnectWithoutTenantInput = {
+  where: Prisma.TaskAttachmentWhereUniqueInput
+  create: Prisma.XOR<Prisma.TaskAttachmentCreateWithoutTenantInput, Prisma.TaskAttachmentUncheckedCreateWithoutTenantInput>
+}
+
+export type TaskAttachmentCreateManyTenantInputEnvelope = {
+  data: Prisma.TaskAttachmentCreateManyTenantInput | Prisma.TaskAttachmentCreateManyTenantInput[]
+  skipDuplicates?: boolean
+}
+
+export type TaskAttachmentUpsertWithWhereUniqueWithoutTenantInput = {
+  where: Prisma.TaskAttachmentWhereUniqueInput
+  update: Prisma.XOR<Prisma.TaskAttachmentUpdateWithoutTenantInput, Prisma.TaskAttachmentUncheckedUpdateWithoutTenantInput>
+  create: Prisma.XOR<Prisma.TaskAttachmentCreateWithoutTenantInput, Prisma.TaskAttachmentUncheckedCreateWithoutTenantInput>
+}
+
+export type TaskAttachmentUpdateWithWhereUniqueWithoutTenantInput = {
+  where: Prisma.TaskAttachmentWhereUniqueInput
+  data: Prisma.XOR<Prisma.TaskAttachmentUpdateWithoutTenantInput, Prisma.TaskAttachmentUncheckedUpdateWithoutTenantInput>
+}
+
+export type TaskAttachmentUpdateManyWithWhereWithoutTenantInput = {
+  where: Prisma.TaskAttachmentScalarWhereInput
+  data: Prisma.XOR<Prisma.TaskAttachmentUpdateManyMutationInput, Prisma.TaskAttachmentUncheckedUpdateManyWithoutTenantInput>
+}
+
+export type TaskAttachmentScalarWhereInput = {
+  AND?: Prisma.TaskAttachmentScalarWhereInput | Prisma.TaskAttachmentScalarWhereInput[]
+  OR?: Prisma.TaskAttachmentScalarWhereInput[]
+  NOT?: Prisma.TaskAttachmentScalarWhereInput | Prisma.TaskAttachmentScalarWhereInput[]
+  id?: Prisma.StringFilter<"TaskAttachment"> | string
+  tenantId?: Prisma.StringFilter<"TaskAttachment"> | string
+  taskId?: Prisma.StringFilter<"TaskAttachment"> | string
+  userId?: Prisma.StringFilter<"TaskAttachment"> | string
+  name?: Prisma.StringFilter<"TaskAttachment"> | string
+  type?: Prisma.StringFilter<"TaskAttachment"> | string
+  size?: Prisma.IntFilter<"TaskAttachment"> | number
+  dataUrl?: Prisma.StringFilter<"TaskAttachment"> | string
+  createdAt?: Prisma.DateTimeFilter<"TaskAttachment"> | Date | string
+}
+
+export type TaskAttachmentCreateWithoutUserInput = {
+  id?: string
+  name: string
+  type: string
+  size: number
+  dataUrl: string
+  createdAt?: Date | string
+  tenant?: Prisma.TenantCreateNestedOneWithoutTaskAttachmentsInput
+  task: Prisma.TaskCreateNestedOneWithoutAttachmentsInput
 }
 
 export type TaskAttachmentUncheckedCreateWithoutUserInput = {
   id?: string
+  tenantId?: string
   taskId: string
   name: string
   type: string
@@ -566,20 +697,6 @@ export type TaskAttachmentUpdateManyWithWhereWithoutUserInput = {
   data: Prisma.XOR<Prisma.TaskAttachmentUpdateManyMutationInput, Prisma.TaskAttachmentUncheckedUpdateManyWithoutUserInput>
 }
 
-export type TaskAttachmentScalarWhereInput = {
-  AND?: Prisma.TaskAttachmentScalarWhereInput | Prisma.TaskAttachmentScalarWhereInput[]
-  OR?: Prisma.TaskAttachmentScalarWhereInput[]
-  NOT?: Prisma.TaskAttachmentScalarWhereInput | Prisma.TaskAttachmentScalarWhereInput[]
-  id?: Prisma.StringFilter<"TaskAttachment"> | string
-  taskId?: Prisma.StringFilter<"TaskAttachment"> | string
-  userId?: Prisma.StringFilter<"TaskAttachment"> | string
-  name?: Prisma.StringFilter<"TaskAttachment"> | string
-  type?: Prisma.StringFilter<"TaskAttachment"> | string
-  size?: Prisma.IntFilter<"TaskAttachment"> | number
-  dataUrl?: Prisma.StringFilter<"TaskAttachment"> | string
-  createdAt?: Prisma.DateTimeFilter<"TaskAttachment"> | Date | string
-}
-
 export type TaskAttachmentCreateWithoutTaskInput = {
   id?: string
   name: string
@@ -587,11 +704,13 @@ export type TaskAttachmentCreateWithoutTaskInput = {
   size: number
   dataUrl: string
   createdAt?: Date | string
+  tenant?: Prisma.TenantCreateNestedOneWithoutTaskAttachmentsInput
   user: Prisma.UserCreateNestedOneWithoutAttachmentsInput
 }
 
 export type TaskAttachmentUncheckedCreateWithoutTaskInput = {
   id?: string
+  tenantId?: string
   userId: string
   name: string
   type: string
@@ -626,8 +745,53 @@ export type TaskAttachmentUpdateManyWithWhereWithoutTaskInput = {
   data: Prisma.XOR<Prisma.TaskAttachmentUpdateManyMutationInput, Prisma.TaskAttachmentUncheckedUpdateManyWithoutTaskInput>
 }
 
+export type TaskAttachmentCreateManyTenantInput = {
+  id?: string
+  taskId: string
+  userId: string
+  name: string
+  type: string
+  size: number
+  dataUrl: string
+  createdAt?: Date | string
+}
+
+export type TaskAttachmentUpdateWithoutTenantInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.StringFieldUpdateOperationsInput | string
+  size?: Prisma.IntFieldUpdateOperationsInput | number
+  dataUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  task?: Prisma.TaskUpdateOneRequiredWithoutAttachmentsNestedInput
+  user?: Prisma.UserUpdateOneRequiredWithoutAttachmentsNestedInput
+}
+
+export type TaskAttachmentUncheckedUpdateWithoutTenantInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  taskId?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.StringFieldUpdateOperationsInput | string
+  size?: Prisma.IntFieldUpdateOperationsInput | number
+  dataUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type TaskAttachmentUncheckedUpdateManyWithoutTenantInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  taskId?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.StringFieldUpdateOperationsInput | string
+  size?: Prisma.IntFieldUpdateOperationsInput | number
+  dataUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
 export type TaskAttachmentCreateManyUserInput = {
   id?: string
+  tenantId?: string
   taskId: string
   name: string
   type: string
@@ -643,11 +807,13 @@ export type TaskAttachmentUpdateWithoutUserInput = {
   size?: Prisma.IntFieldUpdateOperationsInput | number
   dataUrl?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutTaskAttachmentsNestedInput
   task?: Prisma.TaskUpdateOneRequiredWithoutAttachmentsNestedInput
 }
 
 export type TaskAttachmentUncheckedUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   taskId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
@@ -658,6 +824,7 @@ export type TaskAttachmentUncheckedUpdateWithoutUserInput = {
 
 export type TaskAttachmentUncheckedUpdateManyWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   taskId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
@@ -668,6 +835,7 @@ export type TaskAttachmentUncheckedUpdateManyWithoutUserInput = {
 
 export type TaskAttachmentCreateManyTaskInput = {
   id?: string
+  tenantId?: string
   userId: string
   name: string
   type: string
@@ -683,11 +851,13 @@ export type TaskAttachmentUpdateWithoutTaskInput = {
   size?: Prisma.IntFieldUpdateOperationsInput | number
   dataUrl?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutTaskAttachmentsNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutAttachmentsNestedInput
 }
 
 export type TaskAttachmentUncheckedUpdateWithoutTaskInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
@@ -698,6 +868,7 @@ export type TaskAttachmentUncheckedUpdateWithoutTaskInput = {
 
 export type TaskAttachmentUncheckedUpdateManyWithoutTaskInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
@@ -710,6 +881,7 @@ export type TaskAttachmentUncheckedUpdateManyWithoutTaskInput = {
 
 export type TaskAttachmentSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  tenantId?: boolean
   taskId?: boolean
   userId?: boolean
   name?: boolean
@@ -717,6 +889,7 @@ export type TaskAttachmentSelect<ExtArgs extends runtime.Types.Extensions.Intern
   size?: boolean
   dataUrl?: boolean
   createdAt?: boolean
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   task?: boolean | Prisma.TaskDefaultArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["taskAttachment"]>
@@ -725,6 +898,7 @@ export type TaskAttachmentSelect<ExtArgs extends runtime.Types.Extensions.Intern
 
 export type TaskAttachmentSelectScalar = {
   id?: boolean
+  tenantId?: boolean
   taskId?: boolean
   userId?: boolean
   name?: boolean
@@ -734,8 +908,9 @@ export type TaskAttachmentSelectScalar = {
   createdAt?: boolean
 }
 
-export type TaskAttachmentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "taskId" | "userId" | "name" | "type" | "size" | "dataUrl" | "createdAt", ExtArgs["result"]["taskAttachment"]>
+export type TaskAttachmentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "taskId" | "userId" | "name" | "type" | "size" | "dataUrl" | "createdAt", ExtArgs["result"]["taskAttachment"]>
 export type TaskAttachmentInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   task?: boolean | Prisma.TaskDefaultArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
@@ -743,11 +918,13 @@ export type TaskAttachmentInclude<ExtArgs extends runtime.Types.Extensions.Inter
 export type $TaskAttachmentPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "TaskAttachment"
   objects: {
+    tenant: Prisma.$TenantPayload<ExtArgs>
     task: Prisma.$TaskPayload<ExtArgs>
     user: Prisma.$UserPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
+    tenantId: string
     taskId: string
     userId: string
     name: string
@@ -1095,6 +1272,7 @@ readonly fields: TaskAttachmentFieldRefs;
  */
 export interface Prisma__TaskAttachmentClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  tenant<T extends Prisma.TenantDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TenantDefaultArgs<ExtArgs>>): Prisma.Prisma__TenantClient<runtime.Types.Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   task<T extends Prisma.TaskDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TaskDefaultArgs<ExtArgs>>): Prisma.Prisma__TaskClient<runtime.Types.Result.GetResult<Prisma.$TaskPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
@@ -1127,6 +1305,7 @@ export interface Prisma__TaskAttachmentClient<T, Null = never, ExtArgs extends r
  */
 export interface TaskAttachmentFieldRefs {
   readonly id: Prisma.FieldRef<"TaskAttachment", 'String'>
+  readonly tenantId: Prisma.FieldRef<"TaskAttachment", 'String'>
   readonly taskId: Prisma.FieldRef<"TaskAttachment", 'String'>
   readonly userId: Prisma.FieldRef<"TaskAttachment", 'String'>
   readonly name: Prisma.FieldRef<"TaskAttachment", 'String'>

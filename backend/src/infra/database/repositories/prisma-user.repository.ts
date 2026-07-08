@@ -1,16 +1,22 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
+import { BasePrismaService, PrismaService } from '../prisma/prisma.service';
 import { IUserRepository } from '../../../core/domain/repositories/user-repository.interface';
 import { User } from '../../../core/domain/entities/user.entity';
 import { UserRole } from '../../../core/domain/entities/enums';
 
 @Injectable()
 export class PrismaUserRepository implements IUserRepository {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    // Client estendido (isolado por tenant) para operações dentro do request.
+    private prisma: PrismaService,
+    // Client base (sem filtro) para fluxos globais/pré-auth: login e registro.
+    private base: BasePrismaService,
+  ) {}
 
   private mapToDomain(raw: any): User {
     return new User({
       id: raw.id,
+      tenantId: raw.tenantId,
       name: raw.name,
       email: raw.email,
       passwordHash: raw.passwordHash,
@@ -19,6 +25,7 @@ export class PrismaUserRepository implements IUserRepository {
       position: raw.position,
       department: raw.department,
       isActive: raw.isActive,
+      isApproved: raw.isApproved,
       lastLoginAt: raw.lastLoginAt,
       createdAt: raw.createdAt,
       updatedAt: raw.updatedAt,
@@ -30,8 +37,9 @@ export class PrismaUserRepository implements IUserRepository {
     return raw ? this.mapToDomain(raw) : null;
   }
 
-  async findByEmail(email: string): Promise<User | null> {
-    const raw = await this.prisma.user.findUnique({ where: { email } });
+  async findByEmailAndTenant(email: string, tenantId: string): Promise<User | null> {
+    // E-mail é único POR GRUPO: busca no client base (sem contexto) filtrando por tenant.
+    const raw = await this.base.user.findFirst({ where: { email, tenantId } });
     return raw ? this.mapToDomain(raw) : null;
   }
 
@@ -47,6 +55,27 @@ export class PrismaUserRepository implements IUserRepository {
         position: user.position,
         department: user.department,
         isActive: user.isActive,
+        isApproved: user.isApproved,
+      },
+    });
+    return this.mapToDomain(raw);
+  }
+
+  async registerPending(user: User, tenantId: string): Promise<User> {
+    // Registro público: sem contexto de tenant -> client base com tenantId explícito.
+    const raw = await this.base.user.create({
+      data: {
+        id: user.id || undefined,
+        tenantId,
+        name: user.name,
+        email: user.email,
+        passwordHash: user.passwordHash,
+        role: user.role,
+        avatar: user.avatar,
+        position: user.position,
+        department: user.department,
+        isActive: true,
+        isApproved: false,
       },
     });
     return this.mapToDomain(raw);
@@ -64,10 +93,19 @@ export class PrismaUserRepository implements IUserRepository {
         position: user.position,
         department: user.department,
         isActive: user.isActive,
+        isApproved: user.isApproved,
         lastLoginAt: user.lastLoginAt,
       },
     });
     return this.mapToDomain(raw);
+  }
+
+  async approve(id: string): Promise<void> {
+    // Escopo de tenant garantido pela extensão: um admin só aprova usuários do seu tenant.
+    await this.prisma.user.update({
+      where: { id },
+      data: { isApproved: true },
+    });
   }
 
   async delete(id: string): Promise<void> {
@@ -80,7 +118,8 @@ export class PrismaUserRepository implements IUserRepository {
   }
 
   async updateLastLogin(id: string): Promise<void> {
-    await this.prisma.user.update({
+    // Login é público (sem contexto de tenant) -> client base.
+    await this.base.user.update({
       where: { id },
       data: { lastLoginAt: new Date() },
     });

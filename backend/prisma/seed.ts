@@ -9,10 +9,38 @@ import {
   UserRole,
 } from '../src/generated/prisma/client';
 import { createPrismaMariaDbAdapter } from '../src/infra/config/mysql.config';
+import { tenantExtension } from '../src/infra/tenancy/tenant.extension';
+import { TenantContext } from '../src/infra/tenancy/tenant-context';
+import { TENANT_IDS, TENANT_SLUGS } from '../src/infra/tenancy/tenant.constants';
 
-const prisma = new PrismaClient({
+// Client base para operações fora de tenant (upsert dos tenants) e conexão.
+const base = new PrismaClient({
   adapter: createPrismaMariaDbAdapter(),
 });
+// Client estendido: usado por todo o seed dentro do contexto Desenvolvimento.
+const prisma = base.$extends(tenantExtension);
+
+/** Garante os dois tenants (idempotente com os UUIDs fixos da migration). */
+async function ensureTenants() {
+  await base.tenant.upsert({
+    where: { id: TENANT_IDS.DESENVOLVIMENTO },
+    update: {},
+    create: {
+      id: TENANT_IDS.DESENVOLVIMENTO,
+      name: 'Desenvolvimento',
+      slug: TENANT_SLUGS.DESENVOLVIMENTO,
+    },
+  });
+  await base.tenant.upsert({
+    where: { id: TENANT_IDS.MARKETING },
+    update: {},
+    create: {
+      id: TENANT_IDS.MARKETING,
+      name: 'Marketing',
+      slug: TENANT_SLUGS.MARKETING,
+    },
+  });
+}
 
 function daysFromNow(days: number) {
   const date = new Date();
@@ -546,11 +574,12 @@ async function main() {
   console.log('Seed concluido: usuarios, empresas, projetos, fila, modulos, epics, tarefas, horas e notificacoes preparados.');
 }
 
-main()
+ensureTenants()
+  .then(() => TenantContext.run(TENANT_IDS.DESENVOLVIMENTO, () => main()))
   .catch((e) => {
     console.error(e);
     process.exit(1);
   })
   .finally(async () => {
-    await prisma.$disconnect();
+    await base.$disconnect();
   });

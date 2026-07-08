@@ -16,10 +16,11 @@ import {
   hashApiToken,
   isApiToken,
 } from '../../../core/permissions/api-token.util';
-import { PrismaService } from '../../database/prisma/prisma.service';
+import { BasePrismaService } from '../../database/prisma/prisma.service';
 
 export interface AuthenticatedRequest extends Request {
   userId: string;
+  tenantId: string;
   userRole: UserRole;
   authMethod: 'jwt' | 'api_token';
   permissions: Set<PermissionKey>;
@@ -29,6 +30,7 @@ export interface AuthenticatedRequest extends Request {
 interface AuthPayload {
   sub: string;
   role: UserRole;
+  tenantId?: string;
   exp?: number;
 }
 
@@ -38,7 +40,7 @@ const FAKE_TOKEN_PREFIX = 'devflow_fake_jwt_';
 export class JwtAuthGuard implements CanActivate {
   constructor(
     private readonly jwtService: JwtService,
-    private readonly prisma: PrismaService,
+    private readonly prisma: BasePrismaService,
     private readonly permissionService: PermissionService,
     @Inject(IApiTokenRepositoryToken)
     private readonly apiTokenRepository: IApiTokenRepository,
@@ -71,10 +73,13 @@ export class JwtAuthGuard implements CanActivate {
 
     const user = await this.prisma.user.findUnique({
       where: { id: apiToken.userId },
-      select: { id: true, role: true, isActive: true },
+      select: { id: true, role: true, isActive: true, isApproved: true, tenantId: true },
     });
     if (!user?.isActive) {
       throw new UnauthorizedException('Usuário associado ao token está inativo.');
+    }
+    if (!user.isApproved) {
+      throw new UnauthorizedException('Cadastro aguardando autorização do administrador.');
     }
 
     const userPermissions = await this.permissionService.getUserPermissionSet(
@@ -87,6 +92,7 @@ export class JwtAuthGuard implements CanActivate {
     );
 
     request.userId = user.id;
+    request.tenantId = user.tenantId;
     request.userRole = user.role as UserRole;
     request.authMethod = 'api_token';
     request.permissions = effectivePermissions;
@@ -102,16 +108,20 @@ export class JwtAuthGuard implements CanActivate {
   ): Promise<boolean> {
     const user = await this.prisma.user.findUnique({
       where: { id: payload.sub },
-      select: { id: true, role: true, isActive: true },
+      select: { id: true, role: true, isActive: true, isApproved: true, tenantId: true },
     });
     if (!user?.isActive) {
       throw new UnauthorizedException('Usuário inativo.');
+    }
+    if (!user.isApproved) {
+      throw new UnauthorizedException('Cadastro aguardando autorização do administrador.');
     }
 
     const role = user.role as UserRole;
     const permissions = await this.permissionService.getUserPermissionSet(user.id, role);
 
     request.userId = user.id;
+    request.tenantId = user.tenantId;
     request.userRole = role;
     request.authMethod = 'jwt';
     request.permissions = permissions;

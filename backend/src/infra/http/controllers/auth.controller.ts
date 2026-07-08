@@ -2,6 +2,7 @@ import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { LoginUseCase } from '../../../core/use-cases/auth/login.use-case';
 import { RegisterUseCase } from '../../../core/use-cases/auth/register.use-case';
 import { GetCurrentUserUseCase } from '../../../core/use-cases/auth/get-current-user.use-case';
+import { ListTenantsUseCase } from '../../../core/use-cases/tenants/list-tenants.use-case';
 import { LoginDto } from '../dtos/auth/login.dto';
 import { RegisterDto } from '../dtos/auth/register.dto';
 import { UserPresenter } from '../presenters/user.presenter';
@@ -16,13 +17,22 @@ export class AuthController {
     private readonly loginUseCase: LoginUseCase,
     private readonly registerUseCase: RegisterUseCase,
     private readonly getCurrentUserUseCase: GetCurrentUserUseCase,
+    private readonly listTenantsUseCase: ListTenantsUseCase,
   ) {}
+
+  // Público: lista os grupos disponíveis para a tela de cadastro.
+  @Get('tenants')
+  async tenants() {
+    const tenants = await this.listTenantsUseCase.execute();
+    return tenants.map((t) => ({ id: t.id, name: t.name, slug: t.slug }));
+  }
 
   @Post('login')
   async login(@Body() body: LoginDto) {
     const result = await this.loginUseCase.execute({
       email: body.email,
       password: body.password,
+      tenantSlug: body.tenantSlug,
     });
 
     return {
@@ -40,7 +50,7 @@ export class AuthController {
       password: body.password,
       position: body.position,
       department: body.department,
-      role: body.role,
+      tenantSlug: body.tenantSlug,
     });
 
     return {

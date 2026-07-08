@@ -42,6 +42,7 @@ export type TaskSumAggregateOutputType = {
 
 export type TaskMinAggregateOutputType = {
   id: string | null
+  tenantId: string | null
   projectId: string | null
   moduleId: string | null
   epicId: string | null
@@ -68,6 +69,7 @@ export type TaskMinAggregateOutputType = {
 
 export type TaskMaxAggregateOutputType = {
   id: string | null
+  tenantId: string | null
   projectId: string | null
   moduleId: string | null
   epicId: string | null
@@ -94,6 +96,7 @@ export type TaskMaxAggregateOutputType = {
 
 export type TaskCountAggregateOutputType = {
   id: number
+  tenantId: number
   projectId: number
   moduleId: number
   epicId: number
@@ -136,6 +139,7 @@ export type TaskSumAggregateInputType = {
 
 export type TaskMinAggregateInputType = {
   id?: true
+  tenantId?: true
   projectId?: true
   moduleId?: true
   epicId?: true
@@ -162,6 +166,7 @@ export type TaskMinAggregateInputType = {
 
 export type TaskMaxAggregateInputType = {
   id?: true
+  tenantId?: true
   projectId?: true
   moduleId?: true
   epicId?: true
@@ -188,6 +193,7 @@ export type TaskMaxAggregateInputType = {
 
 export type TaskCountAggregateInputType = {
   id?: true
+  tenantId?: true
   projectId?: true
   moduleId?: true
   epicId?: true
@@ -301,6 +307,7 @@ export type TaskGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
 
 export type TaskGroupByOutputType = {
   id: string
+  tenantId: string
   projectId: string
   moduleId: string
   epicId: string
@@ -350,6 +357,7 @@ export type TaskWhereInput = {
   OR?: Prisma.TaskWhereInput[]
   NOT?: Prisma.TaskWhereInput | Prisma.TaskWhereInput[]
   id?: Prisma.StringFilter<"Task"> | string
+  tenantId?: Prisma.StringFilter<"Task"> | string
   projectId?: Prisma.StringFilter<"Task"> | string
   moduleId?: Prisma.StringFilter<"Task"> | string
   epicId?: Prisma.StringFilter<"Task"> | string
@@ -372,6 +380,7 @@ export type TaskWhereInput = {
   order?: Prisma.IntFilter<"Task"> | number
   createdAt?: Prisma.DateTimeFilter<"Task"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Task"> | Date | string
+  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
   project?: Prisma.XOR<Prisma.ProjectScalarRelationFilter, Prisma.ProjectWhereInput>
   module?: Prisma.XOR<Prisma.ModuleScalarRelationFilter, Prisma.ModuleWhereInput>
   epic?: Prisma.XOR<Prisma.EpicScalarRelationFilter, Prisma.EpicWhereInput>
@@ -392,6 +401,7 @@ export type TaskWhereInput = {
 
 export type TaskOrderByWithRelationInput = {
   id?: Prisma.SortOrder
+  tenantId?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
   moduleId?: Prisma.SortOrder
   epicId?: Prisma.SortOrder
@@ -414,6 +424,7 @@ export type TaskOrderByWithRelationInput = {
   order?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  tenant?: Prisma.TenantOrderByWithRelationInput
   project?: Prisma.ProjectOrderByWithRelationInput
   module?: Prisma.ModuleOrderByWithRelationInput
   epic?: Prisma.EpicOrderByWithRelationInput
@@ -438,6 +449,7 @@ export type TaskWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.TaskWhereInput | Prisma.TaskWhereInput[]
   OR?: Prisma.TaskWhereInput[]
   NOT?: Prisma.TaskWhereInput | Prisma.TaskWhereInput[]
+  tenantId?: Prisma.StringFilter<"Task"> | string
   projectId?: Prisma.StringFilter<"Task"> | string
   moduleId?: Prisma.StringFilter<"Task"> | string
   epicId?: Prisma.StringFilter<"Task"> | string
@@ -460,6 +472,7 @@ export type TaskWhereUniqueInput = Prisma.AtLeast<{
   order?: Prisma.IntFilter<"Task"> | number
   createdAt?: Prisma.DateTimeFilter<"Task"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Task"> | Date | string
+  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
   project?: Prisma.XOR<Prisma.ProjectScalarRelationFilter, Prisma.ProjectWhereInput>
   module?: Prisma.XOR<Prisma.ModuleScalarRelationFilter, Prisma.ModuleWhereInput>
   epic?: Prisma.XOR<Prisma.EpicScalarRelationFilter, Prisma.EpicWhereInput>
@@ -480,6 +493,7 @@ export type TaskWhereUniqueInput = Prisma.AtLeast<{
 
 export type TaskOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
+  tenantId?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
   moduleId?: Prisma.SortOrder
   epicId?: Prisma.SortOrder
@@ -514,6 +528,7 @@ export type TaskScalarWhereWithAggregatesInput = {
   OR?: Prisma.TaskScalarWhereWithAggregatesInput[]
   NOT?: Prisma.TaskScalarWhereWithAggregatesInput | Prisma.TaskScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Task"> | string
+  tenantId?: Prisma.StringWithAggregatesFilter<"Task"> | string
   projectId?: Prisma.StringWithAggregatesFilter<"Task"> | string
   moduleId?: Prisma.StringWithAggregatesFilter<"Task"> | string
   epicId?: Prisma.StringWithAggregatesFilter<"Task"> | string
@@ -556,6 +571,7 @@ export type TaskCreateInput = {
   order?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  tenant?: Prisma.TenantCreateNestedOneWithoutTasksInput
   project: Prisma.ProjectCreateNestedOneWithoutTasksInput
   module: Prisma.ModuleCreateNestedOneWithoutTasksInput
   epic: Prisma.EpicCreateNestedOneWithoutTasksInput
@@ -576,6 +592,7 @@ export type TaskCreateInput = {
 
 export type TaskUncheckedCreateInput = {
   id?: string
+  tenantId?: string
   projectId: string
   moduleId: string
   epicId: string
@@ -628,6 +645,7 @@ export type TaskUpdateInput = {
   order?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutTasksNestedInput
   project?: Prisma.ProjectUpdateOneRequiredWithoutTasksNestedInput
   module?: Prisma.ModuleUpdateOneRequiredWithoutTasksNestedInput
   epic?: Prisma.EpicUpdateOneRequiredWithoutTasksNestedInput
@@ -648,6 +666,7 @@ export type TaskUpdateInput = {
 
 export type TaskUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   moduleId?: Prisma.StringFieldUpdateOperationsInput | string
   epicId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -684,6 +703,7 @@ export type TaskUncheckedUpdateInput = {
 
 export type TaskCreateManyInput = {
   id?: string
+  tenantId?: string
   projectId: string
   moduleId: string
   epicId: string
@@ -730,6 +750,7 @@ export type TaskUpdateManyMutationInput = {
 
 export type TaskUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   moduleId?: Prisma.StringFieldUpdateOperationsInput | string
   epicId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -777,6 +798,7 @@ export type TaskOrderByRelevanceInput = {
 
 export type TaskCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  tenantId?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
   moduleId?: Prisma.SortOrder
   epicId?: Prisma.SortOrder
@@ -810,6 +832,7 @@ export type TaskAvgOrderByAggregateInput = {
 
 export type TaskMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  tenantId?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
   moduleId?: Prisma.SortOrder
   epicId?: Prisma.SortOrder
@@ -836,6 +859,7 @@ export type TaskMaxOrderByAggregateInput = {
 
 export type TaskMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  tenantId?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
   moduleId?: Prisma.SortOrder
   epicId?: Prisma.SortOrder
@@ -870,6 +894,48 @@ export type TaskSumOrderByAggregateInput = {
 export type TaskScalarRelationFilter = {
   is?: Prisma.TaskWhereInput
   isNot?: Prisma.TaskWhereInput
+}
+
+export type TaskCreateNestedManyWithoutTenantInput = {
+  create?: Prisma.XOR<Prisma.TaskCreateWithoutTenantInput, Prisma.TaskUncheckedCreateWithoutTenantInput> | Prisma.TaskCreateWithoutTenantInput[] | Prisma.TaskUncheckedCreateWithoutTenantInput[]
+  connectOrCreate?: Prisma.TaskCreateOrConnectWithoutTenantInput | Prisma.TaskCreateOrConnectWithoutTenantInput[]
+  createMany?: Prisma.TaskCreateManyTenantInputEnvelope
+  connect?: Prisma.TaskWhereUniqueInput | Prisma.TaskWhereUniqueInput[]
+}
+
+export type TaskUncheckedCreateNestedManyWithoutTenantInput = {
+  create?: Prisma.XOR<Prisma.TaskCreateWithoutTenantInput, Prisma.TaskUncheckedCreateWithoutTenantInput> | Prisma.TaskCreateWithoutTenantInput[] | Prisma.TaskUncheckedCreateWithoutTenantInput[]
+  connectOrCreate?: Prisma.TaskCreateOrConnectWithoutTenantInput | Prisma.TaskCreateOrConnectWithoutTenantInput[]
+  createMany?: Prisma.TaskCreateManyTenantInputEnvelope
+  connect?: Prisma.TaskWhereUniqueInput | Prisma.TaskWhereUniqueInput[]
+}
+
+export type TaskUpdateManyWithoutTenantNestedInput = {
+  create?: Prisma.XOR<Prisma.TaskCreateWithoutTenantInput, Prisma.TaskUncheckedCreateWithoutTenantInput> | Prisma.TaskCreateWithoutTenantInput[] | Prisma.TaskUncheckedCreateWithoutTenantInput[]
+  connectOrCreate?: Prisma.TaskCreateOrConnectWithoutTenantInput | Prisma.TaskCreateOrConnectWithoutTenantInput[]
+  upsert?: Prisma.TaskUpsertWithWhereUniqueWithoutTenantInput | Prisma.TaskUpsertWithWhereUniqueWithoutTenantInput[]
+  createMany?: Prisma.TaskCreateManyTenantInputEnvelope
+  set?: Prisma.TaskWhereUniqueInput | Prisma.TaskWhereUniqueInput[]
+  disconnect?: Prisma.TaskWhereUniqueInput | Prisma.TaskWhereUniqueInput[]
+  delete?: Prisma.TaskWhereUniqueInput | Prisma.TaskWhereUniqueInput[]
+  connect?: Prisma.TaskWhereUniqueInput | Prisma.TaskWhereUniqueInput[]
+  update?: Prisma.TaskUpdateWithWhereUniqueWithoutTenantInput | Prisma.TaskUpdateWithWhereUniqueWithoutTenantInput[]
+  updateMany?: Prisma.TaskUpdateManyWithWhereWithoutTenantInput | Prisma.TaskUpdateManyWithWhereWithoutTenantInput[]
+  deleteMany?: Prisma.TaskScalarWhereInput | Prisma.TaskScalarWhereInput[]
+}
+
+export type TaskUncheckedUpdateManyWithoutTenantNestedInput = {
+  create?: Prisma.XOR<Prisma.TaskCreateWithoutTenantInput, Prisma.TaskUncheckedCreateWithoutTenantInput> | Prisma.TaskCreateWithoutTenantInput[] | Prisma.TaskUncheckedCreateWithoutTenantInput[]
+  connectOrCreate?: Prisma.TaskCreateOrConnectWithoutTenantInput | Prisma.TaskCreateOrConnectWithoutTenantInput[]
+  upsert?: Prisma.TaskUpsertWithWhereUniqueWithoutTenantInput | Prisma.TaskUpsertWithWhereUniqueWithoutTenantInput[]
+  createMany?: Prisma.TaskCreateManyTenantInputEnvelope
+  set?: Prisma.TaskWhereUniqueInput | Prisma.TaskWhereUniqueInput[]
+  disconnect?: Prisma.TaskWhereUniqueInput | Prisma.TaskWhereUniqueInput[]
+  delete?: Prisma.TaskWhereUniqueInput | Prisma.TaskWhereUniqueInput[]
+  connect?: Prisma.TaskWhereUniqueInput | Prisma.TaskWhereUniqueInput[]
+  update?: Prisma.TaskUpdateWithWhereUniqueWithoutTenantInput | Prisma.TaskUpdateWithWhereUniqueWithoutTenantInput[]
+  updateMany?: Prisma.TaskUpdateManyWithWhereWithoutTenantInput | Prisma.TaskUpdateManyWithWhereWithoutTenantInput[]
+  deleteMany?: Prisma.TaskScalarWhereInput | Prisma.TaskScalarWhereInput[]
 }
 
 export type TaskCreateNestedManyWithoutAssigneeInput = {
@@ -1276,7 +1342,7 @@ export type TaskUpdateOneRequiredWithoutAttachmentsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.TaskUpdateToOneWithWhereWithoutAttachmentsInput, Prisma.TaskUpdateWithoutAttachmentsInput>, Prisma.TaskUncheckedUpdateWithoutAttachmentsInput>
 }
 
-export type TaskCreateWithoutAssigneeInput = {
+export type TaskCreateWithoutTenantInput = {
   id?: string
   title: string
   description: string
@@ -1298,6 +1364,135 @@ export type TaskCreateWithoutAssigneeInput = {
   module: Prisma.ModuleCreateNestedOneWithoutTasksInput
   epic: Prisma.EpicCreateNestedOneWithoutTasksInput
   parentTask?: Prisma.TaskCreateNestedOneWithoutChildTasksInput
+  assignee: Prisma.UserCreateNestedOneWithoutAssignedTasksInput
+  reporter: Prisma.UserCreateNestedOneWithoutReportedTasksInput
+  subtasks?: Prisma.SubtaskCreateNestedManyWithoutTaskInput
+  childTasks?: Prisma.TaskCreateNestedManyWithoutParentTaskInput
+  dependencies?: Prisma.TaskDependencyCreateNestedManyWithoutTaskInput
+  dependencyOf?: Prisma.TaskDependencyCreateNestedManyWithoutDependsOnTaskInput
+  timeLogs?: Prisma.TimeLogCreateNestedManyWithoutTaskInput
+  comments?: Prisma.CommentCreateNestedManyWithoutTaskInput
+  statusHistories?: Prisma.StatusHistoryCreateNestedManyWithoutTaskInput
+  notes?: Prisma.TaskNoteCreateNestedManyWithoutTaskInput
+  attachments?: Prisma.TaskAttachmentCreateNestedManyWithoutTaskInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutRelatedTaskInput
+}
+
+export type TaskUncheckedCreateWithoutTenantInput = {
+  id?: string
+  projectId: string
+  moduleId: string
+  epicId: string
+  parentTaskId?: string | null
+  title: string
+  description: string
+  status?: $Enums.TaskStatus
+  complexity?: number
+  assigneeId: string
+  reporterId: string
+  estimatedHours?: number
+  actualHours?: number
+  startDate?: Date | string | null
+  dueDate?: Date | string | null
+  completedAt?: Date | string | null
+  blockedReason?: string | null
+  isUrgent?: boolean
+  urgentBlockedById?: string | null
+  urgentPreviousStatus?: $Enums.TaskStatus | null
+  order?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  subtasks?: Prisma.SubtaskUncheckedCreateNestedManyWithoutTaskInput
+  childTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutParentTaskInput
+  dependencies?: Prisma.TaskDependencyUncheckedCreateNestedManyWithoutTaskInput
+  dependencyOf?: Prisma.TaskDependencyUncheckedCreateNestedManyWithoutDependsOnTaskInput
+  timeLogs?: Prisma.TimeLogUncheckedCreateNestedManyWithoutTaskInput
+  comments?: Prisma.CommentUncheckedCreateNestedManyWithoutTaskInput
+  statusHistories?: Prisma.StatusHistoryUncheckedCreateNestedManyWithoutTaskInput
+  notes?: Prisma.TaskNoteUncheckedCreateNestedManyWithoutTaskInput
+  attachments?: Prisma.TaskAttachmentUncheckedCreateNestedManyWithoutTaskInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRelatedTaskInput
+}
+
+export type TaskCreateOrConnectWithoutTenantInput = {
+  where: Prisma.TaskWhereUniqueInput
+  create: Prisma.XOR<Prisma.TaskCreateWithoutTenantInput, Prisma.TaskUncheckedCreateWithoutTenantInput>
+}
+
+export type TaskCreateManyTenantInputEnvelope = {
+  data: Prisma.TaskCreateManyTenantInput | Prisma.TaskCreateManyTenantInput[]
+  skipDuplicates?: boolean
+}
+
+export type TaskUpsertWithWhereUniqueWithoutTenantInput = {
+  where: Prisma.TaskWhereUniqueInput
+  update: Prisma.XOR<Prisma.TaskUpdateWithoutTenantInput, Prisma.TaskUncheckedUpdateWithoutTenantInput>
+  create: Prisma.XOR<Prisma.TaskCreateWithoutTenantInput, Prisma.TaskUncheckedCreateWithoutTenantInput>
+}
+
+export type TaskUpdateWithWhereUniqueWithoutTenantInput = {
+  where: Prisma.TaskWhereUniqueInput
+  data: Prisma.XOR<Prisma.TaskUpdateWithoutTenantInput, Prisma.TaskUncheckedUpdateWithoutTenantInput>
+}
+
+export type TaskUpdateManyWithWhereWithoutTenantInput = {
+  where: Prisma.TaskScalarWhereInput
+  data: Prisma.XOR<Prisma.TaskUpdateManyMutationInput, Prisma.TaskUncheckedUpdateManyWithoutTenantInput>
+}
+
+export type TaskScalarWhereInput = {
+  AND?: Prisma.TaskScalarWhereInput | Prisma.TaskScalarWhereInput[]
+  OR?: Prisma.TaskScalarWhereInput[]
+  NOT?: Prisma.TaskScalarWhereInput | Prisma.TaskScalarWhereInput[]
+  id?: Prisma.StringFilter<"Task"> | string
+  tenantId?: Prisma.StringFilter<"Task"> | string
+  projectId?: Prisma.StringFilter<"Task"> | string
+  moduleId?: Prisma.StringFilter<"Task"> | string
+  epicId?: Prisma.StringFilter<"Task"> | string
+  parentTaskId?: Prisma.StringNullableFilter<"Task"> | string | null
+  title?: Prisma.StringFilter<"Task"> | string
+  description?: Prisma.StringFilter<"Task"> | string
+  status?: Prisma.EnumTaskStatusFilter<"Task"> | $Enums.TaskStatus
+  complexity?: Prisma.IntFilter<"Task"> | number
+  assigneeId?: Prisma.StringFilter<"Task"> | string
+  reporterId?: Prisma.StringFilter<"Task"> | string
+  estimatedHours?: Prisma.IntFilter<"Task"> | number
+  actualHours?: Prisma.FloatFilter<"Task"> | number
+  startDate?: Prisma.DateTimeNullableFilter<"Task"> | Date | string | null
+  dueDate?: Prisma.DateTimeNullableFilter<"Task"> | Date | string | null
+  completedAt?: Prisma.DateTimeNullableFilter<"Task"> | Date | string | null
+  blockedReason?: Prisma.StringNullableFilter<"Task"> | string | null
+  isUrgent?: Prisma.BoolFilter<"Task"> | boolean
+  urgentBlockedById?: Prisma.StringNullableFilter<"Task"> | string | null
+  urgentPreviousStatus?: Prisma.EnumTaskStatusNullableFilter<"Task"> | $Enums.TaskStatus | null
+  order?: Prisma.IntFilter<"Task"> | number
+  createdAt?: Prisma.DateTimeFilter<"Task"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"Task"> | Date | string
+}
+
+export type TaskCreateWithoutAssigneeInput = {
+  id?: string
+  title: string
+  description: string
+  status?: $Enums.TaskStatus
+  complexity?: number
+  estimatedHours?: number
+  actualHours?: number
+  startDate?: Date | string | null
+  dueDate?: Date | string | null
+  completedAt?: Date | string | null
+  blockedReason?: string | null
+  isUrgent?: boolean
+  urgentBlockedById?: string | null
+  urgentPreviousStatus?: $Enums.TaskStatus | null
+  order?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  tenant?: Prisma.TenantCreateNestedOneWithoutTasksInput
+  project: Prisma.ProjectCreateNestedOneWithoutTasksInput
+  module: Prisma.ModuleCreateNestedOneWithoutTasksInput
+  epic: Prisma.EpicCreateNestedOneWithoutTasksInput
+  parentTask?: Prisma.TaskCreateNestedOneWithoutChildTasksInput
   reporter: Prisma.UserCreateNestedOneWithoutReportedTasksInput
   subtasks?: Prisma.SubtaskCreateNestedManyWithoutTaskInput
   childTasks?: Prisma.TaskCreateNestedManyWithoutParentTaskInput
@@ -1313,6 +1508,7 @@ export type TaskCreateWithoutAssigneeInput = {
 
 export type TaskUncheckedCreateWithoutAssigneeInput = {
   id?: string
+  tenantId?: string
   projectId: string
   moduleId: string
   epicId: string
@@ -1374,6 +1570,7 @@ export type TaskCreateWithoutReporterInput = {
   order?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  tenant?: Prisma.TenantCreateNestedOneWithoutTasksInput
   project: Prisma.ProjectCreateNestedOneWithoutTasksInput
   module: Prisma.ModuleCreateNestedOneWithoutTasksInput
   epic: Prisma.EpicCreateNestedOneWithoutTasksInput
@@ -1393,6 +1590,7 @@ export type TaskCreateWithoutReporterInput = {
 
 export type TaskUncheckedCreateWithoutReporterInput = {
   id?: string
+  tenantId?: string
   projectId: string
   moduleId: string
   epicId: string
@@ -1452,35 +1650,6 @@ export type TaskUpdateManyWithWhereWithoutAssigneeInput = {
   data: Prisma.XOR<Prisma.TaskUpdateManyMutationInput, Prisma.TaskUncheckedUpdateManyWithoutAssigneeInput>
 }
 
-export type TaskScalarWhereInput = {
-  AND?: Prisma.TaskScalarWhereInput | Prisma.TaskScalarWhereInput[]
-  OR?: Prisma.TaskScalarWhereInput[]
-  NOT?: Prisma.TaskScalarWhereInput | Prisma.TaskScalarWhereInput[]
-  id?: Prisma.StringFilter<"Task"> | string
-  projectId?: Prisma.StringFilter<"Task"> | string
-  moduleId?: Prisma.StringFilter<"Task"> | string
-  epicId?: Prisma.StringFilter<"Task"> | string
-  parentTaskId?: Prisma.StringNullableFilter<"Task"> | string | null
-  title?: Prisma.StringFilter<"Task"> | string
-  description?: Prisma.StringFilter<"Task"> | string
-  status?: Prisma.EnumTaskStatusFilter<"Task"> | $Enums.TaskStatus
-  complexity?: Prisma.IntFilter<"Task"> | number
-  assigneeId?: Prisma.StringFilter<"Task"> | string
-  reporterId?: Prisma.StringFilter<"Task"> | string
-  estimatedHours?: Prisma.IntFilter<"Task"> | number
-  actualHours?: Prisma.FloatFilter<"Task"> | number
-  startDate?: Prisma.DateTimeNullableFilter<"Task"> | Date | string | null
-  dueDate?: Prisma.DateTimeNullableFilter<"Task"> | Date | string | null
-  completedAt?: Prisma.DateTimeNullableFilter<"Task"> | Date | string | null
-  blockedReason?: Prisma.StringNullableFilter<"Task"> | string | null
-  isUrgent?: Prisma.BoolFilter<"Task"> | boolean
-  urgentBlockedById?: Prisma.StringNullableFilter<"Task"> | string | null
-  urgentPreviousStatus?: Prisma.EnumTaskStatusNullableFilter<"Task"> | $Enums.TaskStatus | null
-  order?: Prisma.IntFilter<"Task"> | number
-  createdAt?: Prisma.DateTimeFilter<"Task"> | Date | string
-  updatedAt?: Prisma.DateTimeFilter<"Task"> | Date | string
-}
-
 export type TaskUpsertWithWhereUniqueWithoutReporterInput = {
   where: Prisma.TaskWhereUniqueInput
   update: Prisma.XOR<Prisma.TaskUpdateWithoutReporterInput, Prisma.TaskUncheckedUpdateWithoutReporterInput>
@@ -1515,6 +1684,7 @@ export type TaskCreateWithoutProjectInput = {
   order?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  tenant?: Prisma.TenantCreateNestedOneWithoutTasksInput
   module: Prisma.ModuleCreateNestedOneWithoutTasksInput
   epic: Prisma.EpicCreateNestedOneWithoutTasksInput
   parentTask?: Prisma.TaskCreateNestedOneWithoutChildTasksInput
@@ -1534,6 +1704,7 @@ export type TaskCreateWithoutProjectInput = {
 
 export type TaskUncheckedCreateWithoutProjectInput = {
   id?: string
+  tenantId?: string
   moduleId: string
   epicId: string
   parentTaskId?: string | null
@@ -1611,6 +1782,7 @@ export type TaskCreateWithoutModuleInput = {
   order?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  tenant?: Prisma.TenantCreateNestedOneWithoutTasksInput
   project: Prisma.ProjectCreateNestedOneWithoutTasksInput
   epic: Prisma.EpicCreateNestedOneWithoutTasksInput
   parentTask?: Prisma.TaskCreateNestedOneWithoutChildTasksInput
@@ -1630,6 +1802,7 @@ export type TaskCreateWithoutModuleInput = {
 
 export type TaskUncheckedCreateWithoutModuleInput = {
   id?: string
+  tenantId?: string
   projectId: string
   epicId: string
   parentTaskId?: string | null
@@ -1707,6 +1880,7 @@ export type TaskCreateWithoutEpicInput = {
   order?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  tenant?: Prisma.TenantCreateNestedOneWithoutTasksInput
   project: Prisma.ProjectCreateNestedOneWithoutTasksInput
   module: Prisma.ModuleCreateNestedOneWithoutTasksInput
   parentTask?: Prisma.TaskCreateNestedOneWithoutChildTasksInput
@@ -1726,6 +1900,7 @@ export type TaskCreateWithoutEpicInput = {
 
 export type TaskUncheckedCreateWithoutEpicInput = {
   id?: string
+  tenantId?: string
   projectId: string
   moduleId: string
   parentTaskId?: string | null
@@ -1803,6 +1978,7 @@ export type TaskCreateWithoutChildTasksInput = {
   order?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  tenant?: Prisma.TenantCreateNestedOneWithoutTasksInput
   project: Prisma.ProjectCreateNestedOneWithoutTasksInput
   module: Prisma.ModuleCreateNestedOneWithoutTasksInput
   epic: Prisma.EpicCreateNestedOneWithoutTasksInput
@@ -1822,6 +1998,7 @@ export type TaskCreateWithoutChildTasksInput = {
 
 export type TaskUncheckedCreateWithoutChildTasksInput = {
   id?: string
+  tenantId?: string
   projectId: string
   moduleId: string
   epicId: string
@@ -1878,6 +2055,7 @@ export type TaskCreateWithoutParentTaskInput = {
   order?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  tenant?: Prisma.TenantCreateNestedOneWithoutTasksInput
   project: Prisma.ProjectCreateNestedOneWithoutTasksInput
   module: Prisma.ModuleCreateNestedOneWithoutTasksInput
   epic: Prisma.EpicCreateNestedOneWithoutTasksInput
@@ -1897,6 +2075,7 @@ export type TaskCreateWithoutParentTaskInput = {
 
 export type TaskUncheckedCreateWithoutParentTaskInput = {
   id?: string
+  tenantId?: string
   projectId: string
   moduleId: string
   epicId: string
@@ -1969,6 +2148,7 @@ export type TaskUpdateWithoutChildTasksInput = {
   order?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutTasksNestedInput
   project?: Prisma.ProjectUpdateOneRequiredWithoutTasksNestedInput
   module?: Prisma.ModuleUpdateOneRequiredWithoutTasksNestedInput
   epic?: Prisma.EpicUpdateOneRequiredWithoutTasksNestedInput
@@ -1988,6 +2168,7 @@ export type TaskUpdateWithoutChildTasksInput = {
 
 export type TaskUncheckedUpdateWithoutChildTasksInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   moduleId?: Prisma.StringFieldUpdateOperationsInput | string
   epicId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -2055,6 +2236,7 @@ export type TaskCreateWithoutSubtasksInput = {
   order?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  tenant?: Prisma.TenantCreateNestedOneWithoutTasksInput
   project: Prisma.ProjectCreateNestedOneWithoutTasksInput
   module: Prisma.ModuleCreateNestedOneWithoutTasksInput
   epic: Prisma.EpicCreateNestedOneWithoutTasksInput
@@ -2074,6 +2256,7 @@ export type TaskCreateWithoutSubtasksInput = {
 
 export type TaskUncheckedCreateWithoutSubtasksInput = {
   id?: string
+  tenantId?: string
   projectId: string
   moduleId: string
   epicId: string
@@ -2141,6 +2324,7 @@ export type TaskUpdateWithoutSubtasksInput = {
   order?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutTasksNestedInput
   project?: Prisma.ProjectUpdateOneRequiredWithoutTasksNestedInput
   module?: Prisma.ModuleUpdateOneRequiredWithoutTasksNestedInput
   epic?: Prisma.EpicUpdateOneRequiredWithoutTasksNestedInput
@@ -2160,6 +2344,7 @@ export type TaskUpdateWithoutSubtasksInput = {
 
 export type TaskUncheckedUpdateWithoutSubtasksInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   moduleId?: Prisma.StringFieldUpdateOperationsInput | string
   epicId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -2211,6 +2396,7 @@ export type TaskCreateWithoutDependenciesInput = {
   order?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  tenant?: Prisma.TenantCreateNestedOneWithoutTasksInput
   project: Prisma.ProjectCreateNestedOneWithoutTasksInput
   module: Prisma.ModuleCreateNestedOneWithoutTasksInput
   epic: Prisma.EpicCreateNestedOneWithoutTasksInput
@@ -2230,6 +2416,7 @@ export type TaskCreateWithoutDependenciesInput = {
 
 export type TaskUncheckedCreateWithoutDependenciesInput = {
   id?: string
+  tenantId?: string
   projectId: string
   moduleId: string
   epicId: string
@@ -2286,6 +2473,7 @@ export type TaskCreateWithoutDependencyOfInput = {
   order?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  tenant?: Prisma.TenantCreateNestedOneWithoutTasksInput
   project: Prisma.ProjectCreateNestedOneWithoutTasksInput
   module: Prisma.ModuleCreateNestedOneWithoutTasksInput
   epic: Prisma.EpicCreateNestedOneWithoutTasksInput
@@ -2305,6 +2493,7 @@ export type TaskCreateWithoutDependencyOfInput = {
 
 export type TaskUncheckedCreateWithoutDependencyOfInput = {
   id?: string
+  tenantId?: string
   projectId: string
   moduleId: string
   epicId: string
@@ -2372,6 +2561,7 @@ export type TaskUpdateWithoutDependenciesInput = {
   order?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutTasksNestedInput
   project?: Prisma.ProjectUpdateOneRequiredWithoutTasksNestedInput
   module?: Prisma.ModuleUpdateOneRequiredWithoutTasksNestedInput
   epic?: Prisma.EpicUpdateOneRequiredWithoutTasksNestedInput
@@ -2391,6 +2581,7 @@ export type TaskUpdateWithoutDependenciesInput = {
 
 export type TaskUncheckedUpdateWithoutDependenciesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   moduleId?: Prisma.StringFieldUpdateOperationsInput | string
   epicId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -2453,6 +2644,7 @@ export type TaskUpdateWithoutDependencyOfInput = {
   order?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutTasksNestedInput
   project?: Prisma.ProjectUpdateOneRequiredWithoutTasksNestedInput
   module?: Prisma.ModuleUpdateOneRequiredWithoutTasksNestedInput
   epic?: Prisma.EpicUpdateOneRequiredWithoutTasksNestedInput
@@ -2472,6 +2664,7 @@ export type TaskUpdateWithoutDependencyOfInput = {
 
 export type TaskUncheckedUpdateWithoutDependencyOfInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   moduleId?: Prisma.StringFieldUpdateOperationsInput | string
   epicId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -2523,6 +2716,7 @@ export type TaskCreateWithoutTimeLogsInput = {
   order?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  tenant?: Prisma.TenantCreateNestedOneWithoutTasksInput
   project: Prisma.ProjectCreateNestedOneWithoutTasksInput
   module: Prisma.ModuleCreateNestedOneWithoutTasksInput
   epic: Prisma.EpicCreateNestedOneWithoutTasksInput
@@ -2542,6 +2736,7 @@ export type TaskCreateWithoutTimeLogsInput = {
 
 export type TaskUncheckedCreateWithoutTimeLogsInput = {
   id?: string
+  tenantId?: string
   projectId: string
   moduleId: string
   epicId: string
@@ -2609,6 +2804,7 @@ export type TaskUpdateWithoutTimeLogsInput = {
   order?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutTasksNestedInput
   project?: Prisma.ProjectUpdateOneRequiredWithoutTasksNestedInput
   module?: Prisma.ModuleUpdateOneRequiredWithoutTasksNestedInput
   epic?: Prisma.EpicUpdateOneRequiredWithoutTasksNestedInput
@@ -2628,6 +2824,7 @@ export type TaskUpdateWithoutTimeLogsInput = {
 
 export type TaskUncheckedUpdateWithoutTimeLogsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   moduleId?: Prisma.StringFieldUpdateOperationsInput | string
   epicId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -2679,6 +2876,7 @@ export type TaskCreateWithoutCommentsInput = {
   order?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  tenant?: Prisma.TenantCreateNestedOneWithoutTasksInput
   project: Prisma.ProjectCreateNestedOneWithoutTasksInput
   module: Prisma.ModuleCreateNestedOneWithoutTasksInput
   epic: Prisma.EpicCreateNestedOneWithoutTasksInput
@@ -2698,6 +2896,7 @@ export type TaskCreateWithoutCommentsInput = {
 
 export type TaskUncheckedCreateWithoutCommentsInput = {
   id?: string
+  tenantId?: string
   projectId: string
   moduleId: string
   epicId: string
@@ -2765,6 +2964,7 @@ export type TaskUpdateWithoutCommentsInput = {
   order?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutTasksNestedInput
   project?: Prisma.ProjectUpdateOneRequiredWithoutTasksNestedInput
   module?: Prisma.ModuleUpdateOneRequiredWithoutTasksNestedInput
   epic?: Prisma.EpicUpdateOneRequiredWithoutTasksNestedInput
@@ -2784,6 +2984,7 @@ export type TaskUpdateWithoutCommentsInput = {
 
 export type TaskUncheckedUpdateWithoutCommentsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   moduleId?: Prisma.StringFieldUpdateOperationsInput | string
   epicId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -2835,6 +3036,7 @@ export type TaskCreateWithoutNotificationsInput = {
   order?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  tenant?: Prisma.TenantCreateNestedOneWithoutTasksInput
   project: Prisma.ProjectCreateNestedOneWithoutTasksInput
   module: Prisma.ModuleCreateNestedOneWithoutTasksInput
   epic: Prisma.EpicCreateNestedOneWithoutTasksInput
@@ -2854,6 +3056,7 @@ export type TaskCreateWithoutNotificationsInput = {
 
 export type TaskUncheckedCreateWithoutNotificationsInput = {
   id?: string
+  tenantId?: string
   projectId: string
   moduleId: string
   epicId: string
@@ -2921,6 +3124,7 @@ export type TaskUpdateWithoutNotificationsInput = {
   order?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutTasksNestedInput
   project?: Prisma.ProjectUpdateOneRequiredWithoutTasksNestedInput
   module?: Prisma.ModuleUpdateOneRequiredWithoutTasksNestedInput
   epic?: Prisma.EpicUpdateOneRequiredWithoutTasksNestedInput
@@ -2940,6 +3144,7 @@ export type TaskUpdateWithoutNotificationsInput = {
 
 export type TaskUncheckedUpdateWithoutNotificationsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   moduleId?: Prisma.StringFieldUpdateOperationsInput | string
   epicId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -2991,6 +3196,7 @@ export type TaskCreateWithoutStatusHistoriesInput = {
   order?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  tenant?: Prisma.TenantCreateNestedOneWithoutTasksInput
   project: Prisma.ProjectCreateNestedOneWithoutTasksInput
   module: Prisma.ModuleCreateNestedOneWithoutTasksInput
   epic: Prisma.EpicCreateNestedOneWithoutTasksInput
@@ -3010,6 +3216,7 @@ export type TaskCreateWithoutStatusHistoriesInput = {
 
 export type TaskUncheckedCreateWithoutStatusHistoriesInput = {
   id?: string
+  tenantId?: string
   projectId: string
   moduleId: string
   epicId: string
@@ -3077,6 +3284,7 @@ export type TaskUpdateWithoutStatusHistoriesInput = {
   order?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutTasksNestedInput
   project?: Prisma.ProjectUpdateOneRequiredWithoutTasksNestedInput
   module?: Prisma.ModuleUpdateOneRequiredWithoutTasksNestedInput
   epic?: Prisma.EpicUpdateOneRequiredWithoutTasksNestedInput
@@ -3096,6 +3304,7 @@ export type TaskUpdateWithoutStatusHistoriesInput = {
 
 export type TaskUncheckedUpdateWithoutStatusHistoriesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   moduleId?: Prisma.StringFieldUpdateOperationsInput | string
   epicId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -3147,6 +3356,7 @@ export type TaskCreateWithoutNotesInput = {
   order?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  tenant?: Prisma.TenantCreateNestedOneWithoutTasksInput
   project: Prisma.ProjectCreateNestedOneWithoutTasksInput
   module: Prisma.ModuleCreateNestedOneWithoutTasksInput
   epic: Prisma.EpicCreateNestedOneWithoutTasksInput
@@ -3166,6 +3376,7 @@ export type TaskCreateWithoutNotesInput = {
 
 export type TaskUncheckedCreateWithoutNotesInput = {
   id?: string
+  tenantId?: string
   projectId: string
   moduleId: string
   epicId: string
@@ -3233,6 +3444,7 @@ export type TaskUpdateWithoutNotesInput = {
   order?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutTasksNestedInput
   project?: Prisma.ProjectUpdateOneRequiredWithoutTasksNestedInput
   module?: Prisma.ModuleUpdateOneRequiredWithoutTasksNestedInput
   epic?: Prisma.EpicUpdateOneRequiredWithoutTasksNestedInput
@@ -3252,6 +3464,7 @@ export type TaskUpdateWithoutNotesInput = {
 
 export type TaskUncheckedUpdateWithoutNotesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   moduleId?: Prisma.StringFieldUpdateOperationsInput | string
   epicId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -3303,6 +3516,7 @@ export type TaskCreateWithoutAttachmentsInput = {
   order?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  tenant?: Prisma.TenantCreateNestedOneWithoutTasksInput
   project: Prisma.ProjectCreateNestedOneWithoutTasksInput
   module: Prisma.ModuleCreateNestedOneWithoutTasksInput
   epic: Prisma.EpicCreateNestedOneWithoutTasksInput
@@ -3322,6 +3536,7 @@ export type TaskCreateWithoutAttachmentsInput = {
 
 export type TaskUncheckedCreateWithoutAttachmentsInput = {
   id?: string
+  tenantId?: string
   projectId: string
   moduleId: string
   epicId: string
@@ -3389,6 +3604,7 @@ export type TaskUpdateWithoutAttachmentsInput = {
   order?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutTasksNestedInput
   project?: Prisma.ProjectUpdateOneRequiredWithoutTasksNestedInput
   module?: Prisma.ModuleUpdateOneRequiredWithoutTasksNestedInput
   epic?: Prisma.EpicUpdateOneRequiredWithoutTasksNestedInput
@@ -3408,6 +3624,7 @@ export type TaskUpdateWithoutAttachmentsInput = {
 
 export type TaskUncheckedUpdateWithoutAttachmentsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   moduleId?: Prisma.StringFieldUpdateOperationsInput | string
   epicId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -3441,8 +3658,133 @@ export type TaskUncheckedUpdateWithoutAttachmentsInput = {
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRelatedTaskNestedInput
 }
 
+export type TaskCreateManyTenantInput = {
+  id?: string
+  projectId: string
+  moduleId: string
+  epicId: string
+  parentTaskId?: string | null
+  title: string
+  description: string
+  status?: $Enums.TaskStatus
+  complexity?: number
+  assigneeId: string
+  reporterId: string
+  estimatedHours?: number
+  actualHours?: number
+  startDate?: Date | string | null
+  dueDate?: Date | string | null
+  completedAt?: Date | string | null
+  blockedReason?: string | null
+  isUrgent?: boolean
+  urgentBlockedById?: string | null
+  urgentPreviousStatus?: $Enums.TaskStatus | null
+  order?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type TaskUpdateWithoutTenantInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+  complexity?: Prisma.IntFieldUpdateOperationsInput | number
+  estimatedHours?: Prisma.IntFieldUpdateOperationsInput | number
+  actualHours?: Prisma.FloatFieldUpdateOperationsInput | number
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  blockedReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isUrgent?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  urgentBlockedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  urgentPreviousStatus?: Prisma.NullableEnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus | null
+  order?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  project?: Prisma.ProjectUpdateOneRequiredWithoutTasksNestedInput
+  module?: Prisma.ModuleUpdateOneRequiredWithoutTasksNestedInput
+  epic?: Prisma.EpicUpdateOneRequiredWithoutTasksNestedInput
+  parentTask?: Prisma.TaskUpdateOneWithoutChildTasksNestedInput
+  assignee?: Prisma.UserUpdateOneRequiredWithoutAssignedTasksNestedInput
+  reporter?: Prisma.UserUpdateOneRequiredWithoutReportedTasksNestedInput
+  subtasks?: Prisma.SubtaskUpdateManyWithoutTaskNestedInput
+  childTasks?: Prisma.TaskUpdateManyWithoutParentTaskNestedInput
+  dependencies?: Prisma.TaskDependencyUpdateManyWithoutTaskNestedInput
+  dependencyOf?: Prisma.TaskDependencyUpdateManyWithoutDependsOnTaskNestedInput
+  timeLogs?: Prisma.TimeLogUpdateManyWithoutTaskNestedInput
+  comments?: Prisma.CommentUpdateManyWithoutTaskNestedInput
+  statusHistories?: Prisma.StatusHistoryUpdateManyWithoutTaskNestedInput
+  notes?: Prisma.TaskNoteUpdateManyWithoutTaskNestedInput
+  attachments?: Prisma.TaskAttachmentUpdateManyWithoutTaskNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutRelatedTaskNestedInput
+}
+
+export type TaskUncheckedUpdateWithoutTenantInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  projectId?: Prisma.StringFieldUpdateOperationsInput | string
+  moduleId?: Prisma.StringFieldUpdateOperationsInput | string
+  epicId?: Prisma.StringFieldUpdateOperationsInput | string
+  parentTaskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+  complexity?: Prisma.IntFieldUpdateOperationsInput | number
+  assigneeId?: Prisma.StringFieldUpdateOperationsInput | string
+  reporterId?: Prisma.StringFieldUpdateOperationsInput | string
+  estimatedHours?: Prisma.IntFieldUpdateOperationsInput | number
+  actualHours?: Prisma.FloatFieldUpdateOperationsInput | number
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  blockedReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isUrgent?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  urgentBlockedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  urgentPreviousStatus?: Prisma.NullableEnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus | null
+  order?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  subtasks?: Prisma.SubtaskUncheckedUpdateManyWithoutTaskNestedInput
+  childTasks?: Prisma.TaskUncheckedUpdateManyWithoutParentTaskNestedInput
+  dependencies?: Prisma.TaskDependencyUncheckedUpdateManyWithoutTaskNestedInput
+  dependencyOf?: Prisma.TaskDependencyUncheckedUpdateManyWithoutDependsOnTaskNestedInput
+  timeLogs?: Prisma.TimeLogUncheckedUpdateManyWithoutTaskNestedInput
+  comments?: Prisma.CommentUncheckedUpdateManyWithoutTaskNestedInput
+  statusHistories?: Prisma.StatusHistoryUncheckedUpdateManyWithoutTaskNestedInput
+  notes?: Prisma.TaskNoteUncheckedUpdateManyWithoutTaskNestedInput
+  attachments?: Prisma.TaskAttachmentUncheckedUpdateManyWithoutTaskNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRelatedTaskNestedInput
+}
+
+export type TaskUncheckedUpdateManyWithoutTenantInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  projectId?: Prisma.StringFieldUpdateOperationsInput | string
+  moduleId?: Prisma.StringFieldUpdateOperationsInput | string
+  epicId?: Prisma.StringFieldUpdateOperationsInput | string
+  parentTaskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+  complexity?: Prisma.IntFieldUpdateOperationsInput | number
+  assigneeId?: Prisma.StringFieldUpdateOperationsInput | string
+  reporterId?: Prisma.StringFieldUpdateOperationsInput | string
+  estimatedHours?: Prisma.IntFieldUpdateOperationsInput | number
+  actualHours?: Prisma.FloatFieldUpdateOperationsInput | number
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  blockedReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isUrgent?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  urgentBlockedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  urgentPreviousStatus?: Prisma.NullableEnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus | null
+  order?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
 export type TaskCreateManyAssigneeInput = {
   id?: string
+  tenantId?: string
   projectId: string
   moduleId: string
   epicId: string
@@ -3468,6 +3810,7 @@ export type TaskCreateManyAssigneeInput = {
 
 export type TaskCreateManyReporterInput = {
   id?: string
+  tenantId?: string
   projectId: string
   moduleId: string
   epicId: string
@@ -3509,6 +3852,7 @@ export type TaskUpdateWithoutAssigneeInput = {
   order?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutTasksNestedInput
   project?: Prisma.ProjectUpdateOneRequiredWithoutTasksNestedInput
   module?: Prisma.ModuleUpdateOneRequiredWithoutTasksNestedInput
   epic?: Prisma.EpicUpdateOneRequiredWithoutTasksNestedInput
@@ -3528,6 +3872,7 @@ export type TaskUpdateWithoutAssigneeInput = {
 
 export type TaskUncheckedUpdateWithoutAssigneeInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   moduleId?: Prisma.StringFieldUpdateOperationsInput | string
   epicId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -3563,6 +3908,7 @@ export type TaskUncheckedUpdateWithoutAssigneeInput = {
 
 export type TaskUncheckedUpdateManyWithoutAssigneeInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   moduleId?: Prisma.StringFieldUpdateOperationsInput | string
   epicId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -3604,6 +3950,7 @@ export type TaskUpdateWithoutReporterInput = {
   order?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutTasksNestedInput
   project?: Prisma.ProjectUpdateOneRequiredWithoutTasksNestedInput
   module?: Prisma.ModuleUpdateOneRequiredWithoutTasksNestedInput
   epic?: Prisma.EpicUpdateOneRequiredWithoutTasksNestedInput
@@ -3623,6 +3970,7 @@ export type TaskUpdateWithoutReporterInput = {
 
 export type TaskUncheckedUpdateWithoutReporterInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   moduleId?: Prisma.StringFieldUpdateOperationsInput | string
   epicId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -3658,6 +4006,7 @@ export type TaskUncheckedUpdateWithoutReporterInput = {
 
 export type TaskUncheckedUpdateManyWithoutReporterInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   moduleId?: Prisma.StringFieldUpdateOperationsInput | string
   epicId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -3683,6 +4032,7 @@ export type TaskUncheckedUpdateManyWithoutReporterInput = {
 
 export type TaskCreateManyProjectInput = {
   id?: string
+  tenantId?: string
   moduleId: string
   epicId: string
   parentTaskId?: string | null
@@ -3724,6 +4074,7 @@ export type TaskUpdateWithoutProjectInput = {
   order?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutTasksNestedInput
   module?: Prisma.ModuleUpdateOneRequiredWithoutTasksNestedInput
   epic?: Prisma.EpicUpdateOneRequiredWithoutTasksNestedInput
   parentTask?: Prisma.TaskUpdateOneWithoutChildTasksNestedInput
@@ -3743,6 +4094,7 @@ export type TaskUpdateWithoutProjectInput = {
 
 export type TaskUncheckedUpdateWithoutProjectInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   moduleId?: Prisma.StringFieldUpdateOperationsInput | string
   epicId?: Prisma.StringFieldUpdateOperationsInput | string
   parentTaskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3778,6 +4130,7 @@ export type TaskUncheckedUpdateWithoutProjectInput = {
 
 export type TaskUncheckedUpdateManyWithoutProjectInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   moduleId?: Prisma.StringFieldUpdateOperationsInput | string
   epicId?: Prisma.StringFieldUpdateOperationsInput | string
   parentTaskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3803,6 +4156,7 @@ export type TaskUncheckedUpdateManyWithoutProjectInput = {
 
 export type TaskCreateManyModuleInput = {
   id?: string
+  tenantId?: string
   projectId: string
   epicId: string
   parentTaskId?: string | null
@@ -3844,6 +4198,7 @@ export type TaskUpdateWithoutModuleInput = {
   order?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutTasksNestedInput
   project?: Prisma.ProjectUpdateOneRequiredWithoutTasksNestedInput
   epic?: Prisma.EpicUpdateOneRequiredWithoutTasksNestedInput
   parentTask?: Prisma.TaskUpdateOneWithoutChildTasksNestedInput
@@ -3863,6 +4218,7 @@ export type TaskUpdateWithoutModuleInput = {
 
 export type TaskUncheckedUpdateWithoutModuleInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   epicId?: Prisma.StringFieldUpdateOperationsInput | string
   parentTaskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3898,6 +4254,7 @@ export type TaskUncheckedUpdateWithoutModuleInput = {
 
 export type TaskUncheckedUpdateManyWithoutModuleInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   epicId?: Prisma.StringFieldUpdateOperationsInput | string
   parentTaskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3923,6 +4280,7 @@ export type TaskUncheckedUpdateManyWithoutModuleInput = {
 
 export type TaskCreateManyEpicInput = {
   id?: string
+  tenantId?: string
   projectId: string
   moduleId: string
   parentTaskId?: string | null
@@ -3964,6 +4322,7 @@ export type TaskUpdateWithoutEpicInput = {
   order?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutTasksNestedInput
   project?: Prisma.ProjectUpdateOneRequiredWithoutTasksNestedInput
   module?: Prisma.ModuleUpdateOneRequiredWithoutTasksNestedInput
   parentTask?: Prisma.TaskUpdateOneWithoutChildTasksNestedInput
@@ -3983,6 +4342,7 @@ export type TaskUpdateWithoutEpicInput = {
 
 export type TaskUncheckedUpdateWithoutEpicInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   moduleId?: Prisma.StringFieldUpdateOperationsInput | string
   parentTaskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -4018,6 +4378,7 @@ export type TaskUncheckedUpdateWithoutEpicInput = {
 
 export type TaskUncheckedUpdateManyWithoutEpicInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   moduleId?: Prisma.StringFieldUpdateOperationsInput | string
   parentTaskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -4043,6 +4404,7 @@ export type TaskUncheckedUpdateManyWithoutEpicInput = {
 
 export type TaskCreateManyParentTaskInput = {
   id?: string
+  tenantId?: string
   projectId: string
   moduleId: string
   epicId: string
@@ -4084,6 +4446,7 @@ export type TaskUpdateWithoutParentTaskInput = {
   order?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutTasksNestedInput
   project?: Prisma.ProjectUpdateOneRequiredWithoutTasksNestedInput
   module?: Prisma.ModuleUpdateOneRequiredWithoutTasksNestedInput
   epic?: Prisma.EpicUpdateOneRequiredWithoutTasksNestedInput
@@ -4103,6 +4466,7 @@ export type TaskUpdateWithoutParentTaskInput = {
 
 export type TaskUncheckedUpdateWithoutParentTaskInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   moduleId?: Prisma.StringFieldUpdateOperationsInput | string
   epicId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -4138,6 +4502,7 @@ export type TaskUncheckedUpdateWithoutParentTaskInput = {
 
 export type TaskUncheckedUpdateManyWithoutParentTaskInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   moduleId?: Prisma.StringFieldUpdateOperationsInput | string
   epicId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -4275,6 +4640,7 @@ export type TaskCountOutputTypeCountNotificationsArgs<ExtArgs extends runtime.Ty
 
 export type TaskSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  tenantId?: boolean
   projectId?: boolean
   moduleId?: boolean
   epicId?: boolean
@@ -4297,6 +4663,7 @@ export type TaskSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   order?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
   module?: boolean | Prisma.ModuleDefaultArgs<ExtArgs>
   epic?: boolean | Prisma.EpicDefaultArgs<ExtArgs>
@@ -4320,6 +4687,7 @@ export type TaskSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
 
 export type TaskSelectScalar = {
   id?: boolean
+  tenantId?: boolean
   projectId?: boolean
   moduleId?: boolean
   epicId?: boolean
@@ -4344,8 +4712,9 @@ export type TaskSelectScalar = {
   updatedAt?: boolean
 }
 
-export type TaskOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "projectId" | "moduleId" | "epicId" | "parentTaskId" | "title" | "description" | "status" | "complexity" | "assigneeId" | "reporterId" | "estimatedHours" | "actualHours" | "startDate" | "dueDate" | "completedAt" | "blockedReason" | "isUrgent" | "urgentBlockedById" | "urgentPreviousStatus" | "order" | "createdAt" | "updatedAt", ExtArgs["result"]["task"]>
+export type TaskOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "projectId" | "moduleId" | "epicId" | "parentTaskId" | "title" | "description" | "status" | "complexity" | "assigneeId" | "reporterId" | "estimatedHours" | "actualHours" | "startDate" | "dueDate" | "completedAt" | "blockedReason" | "isUrgent" | "urgentBlockedById" | "urgentPreviousStatus" | "order" | "createdAt" | "updatedAt", ExtArgs["result"]["task"]>
 export type TaskInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
   module?: boolean | Prisma.ModuleDefaultArgs<ExtArgs>
   epic?: boolean | Prisma.EpicDefaultArgs<ExtArgs>
@@ -4368,6 +4737,7 @@ export type TaskInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
 export type $TaskPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Task"
   objects: {
+    tenant: Prisma.$TenantPayload<ExtArgs>
     project: Prisma.$ProjectPayload<ExtArgs>
     module: Prisma.$ModulePayload<ExtArgs>
     epic: Prisma.$EpicPayload<ExtArgs>
@@ -4387,6 +4757,7 @@ export type $TaskPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
+    tenantId: string
     projectId: string
     moduleId: string
     epicId: string
@@ -4749,6 +5120,7 @@ readonly fields: TaskFieldRefs;
  */
 export interface Prisma__TaskClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  tenant<T extends Prisma.TenantDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TenantDefaultArgs<ExtArgs>>): Prisma.Prisma__TenantClient<runtime.Types.Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   project<T extends Prisma.ProjectDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProjectDefaultArgs<ExtArgs>>): Prisma.Prisma__ProjectClient<runtime.Types.Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   module<T extends Prisma.ModuleDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ModuleDefaultArgs<ExtArgs>>): Prisma.Prisma__ModuleClient<runtime.Types.Result.GetResult<Prisma.$ModulePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   epic<T extends Prisma.EpicDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.EpicDefaultArgs<ExtArgs>>): Prisma.Prisma__EpicClient<runtime.Types.Result.GetResult<Prisma.$EpicPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
@@ -4795,6 +5167,7 @@ export interface Prisma__TaskClient<T, Null = never, ExtArgs extends runtime.Typ
  */
 export interface TaskFieldRefs {
   readonly id: Prisma.FieldRef<"Task", 'String'>
+  readonly tenantId: Prisma.FieldRef<"Task", 'String'>
   readonly projectId: Prisma.FieldRef<"Task", 'String'>
   readonly moduleId: Prisma.FieldRef<"Task", 'String'>
   readonly epicId: Prisma.FieldRef<"Task", 'String'>

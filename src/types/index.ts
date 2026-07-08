@@ -55,16 +55,24 @@ export interface UserPermission {
 
 export interface User {
   id: string;
+  tenantId?: string;
   name: string;
   email: string;
   role: UserRole;
   avatar?: string;
   position: string;
   department: string;
+  isApproved?: boolean;
   projectIds: string[];
   permissions?: UserPermission[];
   createdAt: string;
   updatedAt: string;
+}
+
+export interface TenantOption {
+  id: string;
+  name: string;
+  slug: string;
 }
 
 export interface Project {
@@ -323,6 +331,8 @@ export interface AuthSession {
 export interface LoginCredentials {
   email: string;
   password: string;
+  /** Grupo (tenant) escolhido no login. */
+  tenantSlug: string;
 }
 
 export interface RegisterCredentials {
@@ -331,7 +341,8 @@ export interface RegisterCredentials {
   password: string;
   position: string;
   department: string;
-  role?: UserRole;
+  /** Grupo (tenant) escolhido no cadastro. */
+  tenantSlug: string;
 }
 
 export type ViewMode = "table" | "kanban" | "gantt" | "calendar";

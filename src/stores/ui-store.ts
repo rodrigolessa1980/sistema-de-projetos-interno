@@ -117,6 +117,7 @@ interface UserStore {
   updateUser: (id: string, data: Partial<User>) => void;
   deleteUser: (id: string) => void;
   updateUserPermissions: (userId: string, permissions: UserPermission[]) => Promise<void>;
+  approveUser: (id: string) => Promise<void>;
 }
 
 export const useUserStore = create<UserStore>()(
@@ -131,12 +132,14 @@ export const useUserStore = create<UserStore>()(
           users: asArray(response).map((u) => ({
             ...state.users.find((existing) => existing.id === u.id),
             id: u.id,
+            tenantId: u.tenantId,
             name: u.name,
             email: u.email,
             role: u.role,
             avatar: u.avatar ?? undefined,
             position: u.position ?? "",
             department: u.department ?? "",
+            isApproved: u.isApproved,
             projectIds: u.projectIds ?? [],
             permissions: u.permissions ?? [],
             createdAt: u.createdAt,
@@ -192,6 +195,15 @@ export const useUserStore = create<UserStore>()(
         set((state) => ({
           users: state.users.map((u) =>
             u.id === userId ? { ...u, permissions } : u
+          ),
+        }));
+      },
+
+      approveUser: async (id) => {
+        await api.post(`users/${id}/approve`, {});
+        set((state) => ({
+          users: state.users.map((u) =>
+            u.id === id ? { ...u, isApproved: true } : u
           ),
         }));
       },

@@ -25,16 +25,19 @@ export type AggregateEpicDeveloper = {
 }
 
 export type EpicDeveloperMinAggregateOutputType = {
+  tenantId: string | null
   epicId: string | null
   userId: string | null
 }
 
 export type EpicDeveloperMaxAggregateOutputType = {
+  tenantId: string | null
   epicId: string | null
   userId: string | null
 }
 
 export type EpicDeveloperCountAggregateOutputType = {
+  tenantId: number
   epicId: number
   userId: number
   _all: number
@@ -42,16 +45,19 @@ export type EpicDeveloperCountAggregateOutputType = {
 
 
 export type EpicDeveloperMinAggregateInputType = {
+  tenantId?: true
   epicId?: true
   userId?: true
 }
 
 export type EpicDeveloperMaxAggregateInputType = {
+  tenantId?: true
   epicId?: true
   userId?: true
 }
 
 export type EpicDeveloperCountAggregateInputType = {
+  tenantId?: true
   epicId?: true
   userId?: true
   _all?: true
@@ -130,6 +136,7 @@ export type EpicDeveloperGroupByArgs<ExtArgs extends runtime.Types.Extensions.In
 }
 
 export type EpicDeveloperGroupByOutputType = {
+  tenantId: string
   epicId: string
   userId: string
   _count: EpicDeveloperCountAggregateOutputType | null
@@ -156,15 +163,19 @@ export type EpicDeveloperWhereInput = {
   AND?: Prisma.EpicDeveloperWhereInput | Prisma.EpicDeveloperWhereInput[]
   OR?: Prisma.EpicDeveloperWhereInput[]
   NOT?: Prisma.EpicDeveloperWhereInput | Prisma.EpicDeveloperWhereInput[]
+  tenantId?: Prisma.StringFilter<"EpicDeveloper"> | string
   epicId?: Prisma.StringFilter<"EpicDeveloper"> | string
   userId?: Prisma.StringFilter<"EpicDeveloper"> | string
+  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
   epic?: Prisma.XOR<Prisma.EpicScalarRelationFilter, Prisma.EpicWhereInput>
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }
 
 export type EpicDeveloperOrderByWithRelationInput = {
+  tenantId?: Prisma.SortOrder
   epicId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
+  tenant?: Prisma.TenantOrderByWithRelationInput
   epic?: Prisma.EpicOrderByWithRelationInput
   user?: Prisma.UserOrderByWithRelationInput
   _relevance?: Prisma.EpicDeveloperOrderByRelevanceInput
@@ -175,13 +186,16 @@ export type EpicDeveloperWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.EpicDeveloperWhereInput | Prisma.EpicDeveloperWhereInput[]
   OR?: Prisma.EpicDeveloperWhereInput[]
   NOT?: Prisma.EpicDeveloperWhereInput | Prisma.EpicDeveloperWhereInput[]
+  tenantId?: Prisma.StringFilter<"EpicDeveloper"> | string
   epicId?: Prisma.StringFilter<"EpicDeveloper"> | string
   userId?: Prisma.StringFilter<"EpicDeveloper"> | string
+  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
   epic?: Prisma.XOR<Prisma.EpicScalarRelationFilter, Prisma.EpicWhereInput>
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }, "epicId_userId">
 
 export type EpicDeveloperOrderByWithAggregationInput = {
+  tenantId?: Prisma.SortOrder
   epicId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   _count?: Prisma.EpicDeveloperCountOrderByAggregateInput
@@ -193,31 +207,37 @@ export type EpicDeveloperScalarWhereWithAggregatesInput = {
   AND?: Prisma.EpicDeveloperScalarWhereWithAggregatesInput | Prisma.EpicDeveloperScalarWhereWithAggregatesInput[]
   OR?: Prisma.EpicDeveloperScalarWhereWithAggregatesInput[]
   NOT?: Prisma.EpicDeveloperScalarWhereWithAggregatesInput | Prisma.EpicDeveloperScalarWhereWithAggregatesInput[]
+  tenantId?: Prisma.StringWithAggregatesFilter<"EpicDeveloper"> | string
   epicId?: Prisma.StringWithAggregatesFilter<"EpicDeveloper"> | string
   userId?: Prisma.StringWithAggregatesFilter<"EpicDeveloper"> | string
 }
 
 export type EpicDeveloperCreateInput = {
+  tenant?: Prisma.TenantCreateNestedOneWithoutEpicDevelopersInput
   epic: Prisma.EpicCreateNestedOneWithoutDevelopersInput
   user: Prisma.UserCreateNestedOneWithoutEpicAssignmentsInput
 }
 
 export type EpicDeveloperUncheckedCreateInput = {
+  tenantId?: string
   epicId: string
   userId: string
 }
 
 export type EpicDeveloperUpdateInput = {
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutEpicDevelopersNestedInput
   epic?: Prisma.EpicUpdateOneRequiredWithoutDevelopersNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutEpicAssignmentsNestedInput
 }
 
 export type EpicDeveloperUncheckedUpdateInput = {
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   epicId?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type EpicDeveloperCreateManyInput = {
+  tenantId?: string
   epicId: string
   userId: string
 }
@@ -227,6 +247,7 @@ export type EpicDeveloperUpdateManyMutationInput = {
 }
 
 export type EpicDeveloperUncheckedUpdateManyInput = {
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   epicId?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
 }
@@ -253,18 +274,63 @@ export type EpicDeveloperEpicIdUserIdCompoundUniqueInput = {
 }
 
 export type EpicDeveloperCountOrderByAggregateInput = {
+  tenantId?: Prisma.SortOrder
   epicId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
 }
 
 export type EpicDeveloperMaxOrderByAggregateInput = {
+  tenantId?: Prisma.SortOrder
   epicId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
 }
 
 export type EpicDeveloperMinOrderByAggregateInput = {
+  tenantId?: Prisma.SortOrder
   epicId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
+}
+
+export type EpicDeveloperCreateNestedManyWithoutTenantInput = {
+  create?: Prisma.XOR<Prisma.EpicDeveloperCreateWithoutTenantInput, Prisma.EpicDeveloperUncheckedCreateWithoutTenantInput> | Prisma.EpicDeveloperCreateWithoutTenantInput[] | Prisma.EpicDeveloperUncheckedCreateWithoutTenantInput[]
+  connectOrCreate?: Prisma.EpicDeveloperCreateOrConnectWithoutTenantInput | Prisma.EpicDeveloperCreateOrConnectWithoutTenantInput[]
+  createMany?: Prisma.EpicDeveloperCreateManyTenantInputEnvelope
+  connect?: Prisma.EpicDeveloperWhereUniqueInput | Prisma.EpicDeveloperWhereUniqueInput[]
+}
+
+export type EpicDeveloperUncheckedCreateNestedManyWithoutTenantInput = {
+  create?: Prisma.XOR<Prisma.EpicDeveloperCreateWithoutTenantInput, Prisma.EpicDeveloperUncheckedCreateWithoutTenantInput> | Prisma.EpicDeveloperCreateWithoutTenantInput[] | Prisma.EpicDeveloperUncheckedCreateWithoutTenantInput[]
+  connectOrCreate?: Prisma.EpicDeveloperCreateOrConnectWithoutTenantInput | Prisma.EpicDeveloperCreateOrConnectWithoutTenantInput[]
+  createMany?: Prisma.EpicDeveloperCreateManyTenantInputEnvelope
+  connect?: Prisma.EpicDeveloperWhereUniqueInput | Prisma.EpicDeveloperWhereUniqueInput[]
+}
+
+export type EpicDeveloperUpdateManyWithoutTenantNestedInput = {
+  create?: Prisma.XOR<Prisma.EpicDeveloperCreateWithoutTenantInput, Prisma.EpicDeveloperUncheckedCreateWithoutTenantInput> | Prisma.EpicDeveloperCreateWithoutTenantInput[] | Prisma.EpicDeveloperUncheckedCreateWithoutTenantInput[]
+  connectOrCreate?: Prisma.EpicDeveloperCreateOrConnectWithoutTenantInput | Prisma.EpicDeveloperCreateOrConnectWithoutTenantInput[]
+  upsert?: Prisma.EpicDeveloperUpsertWithWhereUniqueWithoutTenantInput | Prisma.EpicDeveloperUpsertWithWhereUniqueWithoutTenantInput[]
+  createMany?: Prisma.EpicDeveloperCreateManyTenantInputEnvelope
+  set?: Prisma.EpicDeveloperWhereUniqueInput | Prisma.EpicDeveloperWhereUniqueInput[]
+  disconnect?: Prisma.EpicDeveloperWhereUniqueInput | Prisma.EpicDeveloperWhereUniqueInput[]
+  delete?: Prisma.EpicDeveloperWhereUniqueInput | Prisma.EpicDeveloperWhereUniqueInput[]
+  connect?: Prisma.EpicDeveloperWhereUniqueInput | Prisma.EpicDeveloperWhereUniqueInput[]
+  update?: Prisma.EpicDeveloperUpdateWithWhereUniqueWithoutTenantInput | Prisma.EpicDeveloperUpdateWithWhereUniqueWithoutTenantInput[]
+  updateMany?: Prisma.EpicDeveloperUpdateManyWithWhereWithoutTenantInput | Prisma.EpicDeveloperUpdateManyWithWhereWithoutTenantInput[]
+  deleteMany?: Prisma.EpicDeveloperScalarWhereInput | Prisma.EpicDeveloperScalarWhereInput[]
+}
+
+export type EpicDeveloperUncheckedUpdateManyWithoutTenantNestedInput = {
+  create?: Prisma.XOR<Prisma.EpicDeveloperCreateWithoutTenantInput, Prisma.EpicDeveloperUncheckedCreateWithoutTenantInput> | Prisma.EpicDeveloperCreateWithoutTenantInput[] | Prisma.EpicDeveloperUncheckedCreateWithoutTenantInput[]
+  connectOrCreate?: Prisma.EpicDeveloperCreateOrConnectWithoutTenantInput | Prisma.EpicDeveloperCreateOrConnectWithoutTenantInput[]
+  upsert?: Prisma.EpicDeveloperUpsertWithWhereUniqueWithoutTenantInput | Prisma.EpicDeveloperUpsertWithWhereUniqueWithoutTenantInput[]
+  createMany?: Prisma.EpicDeveloperCreateManyTenantInputEnvelope
+  set?: Prisma.EpicDeveloperWhereUniqueInput | Prisma.EpicDeveloperWhereUniqueInput[]
+  disconnect?: Prisma.EpicDeveloperWhereUniqueInput | Prisma.EpicDeveloperWhereUniqueInput[]
+  delete?: Prisma.EpicDeveloperWhereUniqueInput | Prisma.EpicDeveloperWhereUniqueInput[]
+  connect?: Prisma.EpicDeveloperWhereUniqueInput | Prisma.EpicDeveloperWhereUniqueInput[]
+  update?: Prisma.EpicDeveloperUpdateWithWhereUniqueWithoutTenantInput | Prisma.EpicDeveloperUpdateWithWhereUniqueWithoutTenantInput[]
+  updateMany?: Prisma.EpicDeveloperUpdateManyWithWhereWithoutTenantInput | Prisma.EpicDeveloperUpdateManyWithWhereWithoutTenantInput[]
+  deleteMany?: Prisma.EpicDeveloperScalarWhereInput | Prisma.EpicDeveloperScalarWhereInput[]
 }
 
 export type EpicDeveloperCreateNestedManyWithoutUserInput = {
@@ -351,11 +417,58 @@ export type EpicDeveloperUncheckedUpdateManyWithoutEpicNestedInput = {
   deleteMany?: Prisma.EpicDeveloperScalarWhereInput | Prisma.EpicDeveloperScalarWhereInput[]
 }
 
+export type EpicDeveloperCreateWithoutTenantInput = {
+  epic: Prisma.EpicCreateNestedOneWithoutDevelopersInput
+  user: Prisma.UserCreateNestedOneWithoutEpicAssignmentsInput
+}
+
+export type EpicDeveloperUncheckedCreateWithoutTenantInput = {
+  epicId: string
+  userId: string
+}
+
+export type EpicDeveloperCreateOrConnectWithoutTenantInput = {
+  where: Prisma.EpicDeveloperWhereUniqueInput
+  create: Prisma.XOR<Prisma.EpicDeveloperCreateWithoutTenantInput, Prisma.EpicDeveloperUncheckedCreateWithoutTenantInput>
+}
+
+export type EpicDeveloperCreateManyTenantInputEnvelope = {
+  data: Prisma.EpicDeveloperCreateManyTenantInput | Prisma.EpicDeveloperCreateManyTenantInput[]
+  skipDuplicates?: boolean
+}
+
+export type EpicDeveloperUpsertWithWhereUniqueWithoutTenantInput = {
+  where: Prisma.EpicDeveloperWhereUniqueInput
+  update: Prisma.XOR<Prisma.EpicDeveloperUpdateWithoutTenantInput, Prisma.EpicDeveloperUncheckedUpdateWithoutTenantInput>
+  create: Prisma.XOR<Prisma.EpicDeveloperCreateWithoutTenantInput, Prisma.EpicDeveloperUncheckedCreateWithoutTenantInput>
+}
+
+export type EpicDeveloperUpdateWithWhereUniqueWithoutTenantInput = {
+  where: Prisma.EpicDeveloperWhereUniqueInput
+  data: Prisma.XOR<Prisma.EpicDeveloperUpdateWithoutTenantInput, Prisma.EpicDeveloperUncheckedUpdateWithoutTenantInput>
+}
+
+export type EpicDeveloperUpdateManyWithWhereWithoutTenantInput = {
+  where: Prisma.EpicDeveloperScalarWhereInput
+  data: Prisma.XOR<Prisma.EpicDeveloperUpdateManyMutationInput, Prisma.EpicDeveloperUncheckedUpdateManyWithoutTenantInput>
+}
+
+export type EpicDeveloperScalarWhereInput = {
+  AND?: Prisma.EpicDeveloperScalarWhereInput | Prisma.EpicDeveloperScalarWhereInput[]
+  OR?: Prisma.EpicDeveloperScalarWhereInput[]
+  NOT?: Prisma.EpicDeveloperScalarWhereInput | Prisma.EpicDeveloperScalarWhereInput[]
+  tenantId?: Prisma.StringFilter<"EpicDeveloper"> | string
+  epicId?: Prisma.StringFilter<"EpicDeveloper"> | string
+  userId?: Prisma.StringFilter<"EpicDeveloper"> | string
+}
+
 export type EpicDeveloperCreateWithoutUserInput = {
+  tenant?: Prisma.TenantCreateNestedOneWithoutEpicDevelopersInput
   epic: Prisma.EpicCreateNestedOneWithoutDevelopersInput
 }
 
 export type EpicDeveloperUncheckedCreateWithoutUserInput = {
+  tenantId?: string
   epicId: string
 }
 
@@ -385,19 +498,13 @@ export type EpicDeveloperUpdateManyWithWhereWithoutUserInput = {
   data: Prisma.XOR<Prisma.EpicDeveloperUpdateManyMutationInput, Prisma.EpicDeveloperUncheckedUpdateManyWithoutUserInput>
 }
 
-export type EpicDeveloperScalarWhereInput = {
-  AND?: Prisma.EpicDeveloperScalarWhereInput | Prisma.EpicDeveloperScalarWhereInput[]
-  OR?: Prisma.EpicDeveloperScalarWhereInput[]
-  NOT?: Prisma.EpicDeveloperScalarWhereInput | Prisma.EpicDeveloperScalarWhereInput[]
-  epicId?: Prisma.StringFilter<"EpicDeveloper"> | string
-  userId?: Prisma.StringFilter<"EpicDeveloper"> | string
-}
-
 export type EpicDeveloperCreateWithoutEpicInput = {
+  tenant?: Prisma.TenantCreateNestedOneWithoutEpicDevelopersInput
   user: Prisma.UserCreateNestedOneWithoutEpicAssignmentsInput
 }
 
 export type EpicDeveloperUncheckedCreateWithoutEpicInput = {
+  tenantId?: string
   userId: string
 }
 
@@ -427,43 +534,73 @@ export type EpicDeveloperUpdateManyWithWhereWithoutEpicInput = {
   data: Prisma.XOR<Prisma.EpicDeveloperUpdateManyMutationInput, Prisma.EpicDeveloperUncheckedUpdateManyWithoutEpicInput>
 }
 
+export type EpicDeveloperCreateManyTenantInput = {
+  epicId: string
+  userId: string
+}
+
+export type EpicDeveloperUpdateWithoutTenantInput = {
+  epic?: Prisma.EpicUpdateOneRequiredWithoutDevelopersNestedInput
+  user?: Prisma.UserUpdateOneRequiredWithoutEpicAssignmentsNestedInput
+}
+
+export type EpicDeveloperUncheckedUpdateWithoutTenantInput = {
+  epicId?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+}
+
+export type EpicDeveloperUncheckedUpdateManyWithoutTenantInput = {
+  epicId?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+}
+
 export type EpicDeveloperCreateManyUserInput = {
+  tenantId?: string
   epicId: string
 }
 
 export type EpicDeveloperUpdateWithoutUserInput = {
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutEpicDevelopersNestedInput
   epic?: Prisma.EpicUpdateOneRequiredWithoutDevelopersNestedInput
 }
 
 export type EpicDeveloperUncheckedUpdateWithoutUserInput = {
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   epicId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type EpicDeveloperUncheckedUpdateManyWithoutUserInput = {
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   epicId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type EpicDeveloperCreateManyEpicInput = {
+  tenantId?: string
   userId: string
 }
 
 export type EpicDeveloperUpdateWithoutEpicInput = {
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutEpicDevelopersNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutEpicAssignmentsNestedInput
 }
 
 export type EpicDeveloperUncheckedUpdateWithoutEpicInput = {
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type EpicDeveloperUncheckedUpdateManyWithoutEpicInput = {
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 
 
 export type EpicDeveloperSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  tenantId?: boolean
   epicId?: boolean
   userId?: boolean
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   epic?: boolean | Prisma.EpicDefaultArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["epicDeveloper"]>
@@ -471,12 +608,14 @@ export type EpicDeveloperSelect<ExtArgs extends runtime.Types.Extensions.Interna
 
 
 export type EpicDeveloperSelectScalar = {
+  tenantId?: boolean
   epicId?: boolean
   userId?: boolean
 }
 
-export type EpicDeveloperOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"epicId" | "userId", ExtArgs["result"]["epicDeveloper"]>
+export type EpicDeveloperOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"tenantId" | "epicId" | "userId", ExtArgs["result"]["epicDeveloper"]>
 export type EpicDeveloperInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   epic?: boolean | Prisma.EpicDefaultArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
@@ -484,10 +623,12 @@ export type EpicDeveloperInclude<ExtArgs extends runtime.Types.Extensions.Intern
 export type $EpicDeveloperPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "EpicDeveloper"
   objects: {
+    tenant: Prisma.$TenantPayload<ExtArgs>
     epic: Prisma.$EpicPayload<ExtArgs>
     user: Prisma.$UserPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
+    tenantId: string
     epicId: string
     userId: string
   }, ExtArgs["result"]["epicDeveloper"]>
@@ -573,8 +714,8 @@ export interface EpicDeveloperDelegate<ExtArgs extends runtime.Types.Extensions.
    * // Get first 10 EpicDevelopers
    * const epicDevelopers = await prisma.epicDeveloper.findMany({ take: 10 })
    * 
-   * // Only select the `epicId`
-   * const epicDeveloperWithEpicIdOnly = await prisma.epicDeveloper.findMany({ select: { epicId: true } })
+   * // Only select the `tenantId`
+   * const epicDeveloperWithTenantIdOnly = await prisma.epicDeveloper.findMany({ select: { tenantId: true } })
    * 
    */
   findMany<T extends EpicDeveloperFindManyArgs>(args?: Prisma.SelectSubset<T, EpicDeveloperFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EpicDeveloperPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
@@ -830,6 +971,7 @@ readonly fields: EpicDeveloperFieldRefs;
  */
 export interface Prisma__EpicDeveloperClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  tenant<T extends Prisma.TenantDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TenantDefaultArgs<ExtArgs>>): Prisma.Prisma__TenantClient<runtime.Types.Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   epic<T extends Prisma.EpicDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.EpicDefaultArgs<ExtArgs>>): Prisma.Prisma__EpicClient<runtime.Types.Result.GetResult<Prisma.$EpicPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
@@ -861,6 +1003,7 @@ export interface Prisma__EpicDeveloperClient<T, Null = never, ExtArgs extends ru
  * Fields of the EpicDeveloper model
  */
 export interface EpicDeveloperFieldRefs {
+  readonly tenantId: Prisma.FieldRef<"EpicDeveloper", 'String'>
   readonly epicId: Prisma.FieldRef<"EpicDeveloper", 'String'>
   readonly userId: Prisma.FieldRef<"EpicDeveloper", 'String'>
 }

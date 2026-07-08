@@ -78,59 +78,106 @@ enum ModuleStatus {
   CONCLUIDO
 }
 
+/// Grupo/base lógica (ex.: Desenvolvimento, Marketing). Todo dado de domínio
+/// pertence a exatamente um Tenant e o isolamento é aplicado automaticamente.
+model Tenant {
+  id        String   @id @default(uuid())
+  name      String   @db.VarChar(100)
+  slug      String   @unique @db.VarChar(50)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  companies                  Company[]
+  users                      User[]
+  apiTokens                  ApiToken[]
+  userPermissions            UserPermission[]
+  projects                   Project[]
+  projectDevelopers          ProjectDeveloper[]
+  modules                    Module[]
+  epics                      Epic[]
+  epicDevelopers             EpicDeveloper[]
+  tasks                      Task[]
+  subtasks                   Subtask[]
+  taskDependencies           TaskDependency[]
+  timeLogs                   TimeLog[]
+  comments                   Comment[]
+  notifications              Notification[]
+  auditLogs                  AuditLog[]
+  statusHistories            StatusHistory[]
+  taskNotes                  TaskNote[]
+  taskAttachments            TaskAttachment[]
+  moduleAttachments          ModuleAttachment[]
+  projectShowcaseAttachments ProjectShowcaseAttachment[]
+  projectDemandAttachments   ProjectDemandAttachment[]
+
+  @@map("tenants")
+}
+
 model Company {
   id        String    @id @default(uuid())
+  tenantId  String    @default(uuid())
+  tenant    Tenant    @relation(fields: [tenantId], references: [id], onDelete: Restrict)
   name      String    @db.VarChar(100)
   shortName String    @db.VarChar(10)
   color     String    @db.VarChar(7) // Hex: #FFFFFF
-  cnpj      String?   @unique @db.VarChar(18)
+  cnpj      String?   @db.VarChar(18)
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   projects  Project[]
 
+  @@unique([tenantId, cnpj])
+  @@index([tenantId])
   @@map("companies")
 }
 
 model User {
   id           String    @id @default(uuid())
+  tenantId     String    @default(uuid())
+  tenant       Tenant    @relation(fields: [tenantId], references: [id], onDelete: Restrict)
   name         String    @db.VarChar(100)
-  email        String    @unique @db.VarChar(150)
+  email        String    @db.VarChar(150)
   passwordHash String    @db.VarChar(255)
   role         UserRole  @default(DEVELOPER)
   avatar       String?   @db.VarChar(255)
   position     String    @db.VarChar(100)
   department   String    @db.VarChar(100)
   isActive     Boolean   @default(true)
+  isApproved   Boolean   @default(false)
   lastLoginAt  DateTime?
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
 
-  managedProjects    Project[]          @relation("ProjectOwner")
-  projects           ProjectDeveloper[]
-  epicAssignments    EpicDeveloper[]
-  assignedTasks      Task[]             @relation("TaskAssignee")
-  reportedTasks   Task[]             @relation("TaskReporter")
-  subtasks        Subtask[]
-  timeLogs        TimeLog[]
-  comments        Comment[]
-  notifications   Notification[]
-  auditLogs       AuditLog[]
-  statusHistories StatusHistory[]
-  taskNotes           TaskNote[]
-  attachments         TaskAttachment[]
-  moduleAttachments   ModuleAttachment[]
+  managedProjects            Project[]                   @relation("ProjectOwner")
+  projects                   ProjectDeveloper[]
+  epicAssignments            EpicDeveloper[]
+  assignedTasks              Task[]                      @relation("TaskAssignee")
+  reportedTasks              Task[]                      @relation("TaskReporter")
+  subtasks                   Subtask[]
+  timeLogs                   TimeLog[]
+  comments                   Comment[]
+  notifications              Notification[]
+  auditLogs                  AuditLog[]
+  statusHistories            StatusHistory[]
+  taskNotes                  TaskNote[]
+  attachments                TaskAttachment[]
+  moduleAttachments          ModuleAttachment[]
   projectShowcaseAttachments ProjectShowcaseAttachment[]
   projectDemandAttachments   ProjectDemandAttachment[]
-  loggedModules       Module[]             @relation("ModuleLoggedBy")
-  permissions         UserPermission[]
-  apiTokens           ApiToken[]
+  loggedModules              Module[]                    @relation("ModuleLoggedBy")
+  permissions                UserPermission[]
+  apiTokens                  ApiToken[]
 
+  @@unique([tenantId, email])
   @@index([email])
+  @@index([tenantId])
   @@map("users")
 }
 
 model ApiToken {
   id          String    @id @default(uuid())
+  tenantId    String    @default(uuid())
+  tenant      Tenant    @relation(fields: [tenantId], references: [id], onDelete: Restrict)
   userId      String
   user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   name        String    @db.VarChar(100)
@@ -144,11 +191,14 @@ model ApiToken {
 
   @@index([userId])
   @@index([tokenHash])
+  @@index([tenantId])
   @@map("api_tokens")
 }
 
 model UserPermission {
   id        String   @id @default(uuid())
+  tenantId  String   @default(uuid())
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Restrict)
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   module    String   @db.VarChar(50)
@@ -159,60 +209,69 @@ model UserPermission {
 
   @@unique([userId, module, action])
   @@index([userId])
+  @@index([tenantId])
   @@map("user_permissions")
 }
 
 model Project {
-  id             String        @id @default(uuid())
-  companyId      String?
-  company        Company?      @relation(fields: [companyId], references: [id], onDelete: Restrict)
-  name           String        @db.VarChar(150)
-  description    String        @db.Text
-  technicalDescription String? @db.Text
-  demandDescription    String? @db.Text
-  requestedBy    String?       @db.VarChar(150)
-  status         ProjectStatus @default(NA_FILA)
-  ownerId        String
-  owner          User          @relation("ProjectOwner", fields: [ownerId], references: [id], onDelete: Restrict)
-  startDate      DateTime      @db.Date
-  endDate        DateTime?     @db.Date
-  estimatedHours Int           @default(0)
-  actualHours    Float         @default(0.0)
-  progress       Int           @default(0)
-  color          String        @db.VarChar(7)
-  avatar         String?       @db.LongText
-  testUrl        String?       @db.VarChar(255)
-  queueOrder     Int?
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
+  id                   String        @id @default(uuid())
+  tenantId             String        @default(uuid())
+  tenant               Tenant        @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  companyId            String?
+  company              Company?      @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  name                 String        @db.VarChar(150)
+  description          String        @db.Text
+  technicalDescription String?       @db.Text
+  demandDescription    String?       @db.Text
+  requestedBy          String?       @db.VarChar(150)
+  status               ProjectStatus @default(NA_FILA)
+  ownerId              String
+  owner                User          @relation("ProjectOwner", fields: [ownerId], references: [id], onDelete: Restrict)
+  startDate            DateTime      @db.Date
+  endDate              DateTime?     @db.Date
+  estimatedHours       Int           @default(0)
+  actualHours          Float         @default(0.0)
+  progress             Int           @default(0)
+  color                String        @db.VarChar(7)
+  avatar               String?       @db.LongText
+  testUrl              String?       @db.VarChar(255)
+  queueOrder           Int?
+  createdAt            DateTime      @default(now())
+  updatedAt            DateTime      @updatedAt
 
-  developers    ProjectDeveloper[]
-  modules       Module[]
-  epics         Epic[]
-  tasks         Task[]
-  timeLogs      TimeLog[]
-  notifications Notification[]
+  developers          ProjectDeveloper[]
+  modules             Module[]
+  epics               Epic[]
+  tasks               Task[]
+  timeLogs            TimeLog[]
+  notifications       Notification[]
   showcaseAttachments ProjectShowcaseAttachment[]
   demandAttachments   ProjectDemandAttachment[]
 
   @@index([companyId])
   @@index([ownerId])
   @@index([status])
+  @@index([tenantId])
   @@map("projects")
 }
 
 model ProjectDeveloper {
+  tenantId  String  @default(uuid())
+  tenant    Tenant  @relation(fields: [tenantId], references: [id], onDelete: Restrict)
   projectId String
   project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
   userId    String
   user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([projectId, userId])
+  @@index([tenantId])
   @@map("project_developers")
 }
 
 model Module {
   id             String             @id @default(uuid())
+  tenantId       String             @default(uuid())
+  tenant         Tenant             @relation(fields: [tenantId], references: [id], onDelete: Restrict)
   projectId      String
   project        Project            @relation(fields: [projectId], references: [id], onDelete: Cascade)
   name           String             @db.VarChar(100)
@@ -232,44 +291,53 @@ model Module {
 
   @@index([projectId])
   @@index([loggedByUserId])
+  @@index([tenantId])
   @@map("modules")
 }
 
 model Epic {
-  id          String        @id @default(uuid())
+  id          String          @id @default(uuid())
+  tenantId    String          @default(uuid())
+  tenant      Tenant          @relation(fields: [tenantId], references: [id], onDelete: Restrict)
   projectId   String
-  project     Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  project     Project         @relation(fields: [projectId], references: [id], onDelete: Cascade)
   moduleId    String
-  module      Module        @relation(fields: [moduleId], references: [id], onDelete: Cascade)
-  name        String        @db.VarChar(100)
-  description String        @db.Text
-  status      ProjectStatus @default(ATIVO)
-  startDate   DateTime      @db.Date
-  endDate     DateTime?     @db.Date
-  progress    Int           @default(0)
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  module      Module          @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  name        String          @db.VarChar(100)
+  description String          @db.Text
+  status      ProjectStatus   @default(ATIVO)
+  startDate   DateTime        @db.Date
+  endDate     DateTime?       @db.Date
+  progress    Int             @default(0)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
   tasks       Task[]
   developers  EpicDeveloper[]
 
   @@index([projectId])
   @@index([moduleId])
+  @@index([tenantId])
   @@map("epics")
 }
 
 model EpicDeveloper {
-  epicId String
-  epic   Epic   @relation(fields: [epicId], references: [id], onDelete: Cascade)
-  userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tenantId String @default(uuid())
+  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  epicId   String
+  epic     Epic   @relation(fields: [epicId], references: [id], onDelete: Cascade)
+  userId   String
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([epicId, userId])
   @@index([userId])
+  @@index([tenantId])
   @@map("epic_developers")
 }
 
 model Task {
   id                   String      @id @default(uuid())
+  tenantId             String      @default(uuid())
+  tenant               Tenant      @relation(fields: [tenantId], references: [id], onDelete: Restrict)
   projectId            String
   project              Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
   moduleId             String
@@ -315,11 +383,14 @@ model Task {
   @@index([epicId])
   @@index([assigneeId])
   @@index([status])
+  @@index([tenantId])
   @@map("tasks")
 }
 
 model Subtask {
   id         String   @id @default(uuid())
+  tenantId   String   @default(uuid())
+  tenant     Tenant   @relation(fields: [tenantId], references: [id], onDelete: Restrict)
   taskId     String
   task       Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
   title      String   @db.VarChar(200)
@@ -330,11 +401,14 @@ model Subtask {
   updatedAt  DateTime @updatedAt
 
   @@index([taskId])
+  @@index([tenantId])
   @@map("subtasks")
 }
 
 model TaskDependency {
   id              String         @id @default(uuid())
+  tenantId        String         @default(uuid())
+  tenant          Tenant         @relation(fields: [tenantId], references: [id], onDelete: Restrict)
   taskId          String
   task            Task           @relation("TaskPrimary", fields: [taskId], references: [id], onDelete: Cascade)
   dependsOnTaskId String
@@ -343,11 +417,14 @@ model TaskDependency {
   createdAt       DateTime       @default(now())
 
   @@unique([taskId, dependsOnTaskId])
+  @@index([tenantId])
   @@map("task_dependencies")
 }
 
 model TimeLog {
   id              String        @id @default(uuid())
+  tenantId        String        @default(uuid())
+  tenant          Tenant        @relation(fields: [tenantId], references: [id], onDelete: Restrict)
   projectId       String
   project         Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
   taskId          String
@@ -371,11 +448,14 @@ model TimeLog {
   @@index([projectId, date])
   @@index([userId, date])
   @@index([projectId, userId, date])
+  @@index([tenantId])
   @@map("time_logs")
 }
 
 model Comment {
   id        String   @id @default(uuid())
+  tenantId  String   @default(uuid())
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Restrict)
   taskId    String
   task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
   userId    String
@@ -386,11 +466,14 @@ model Comment {
   updatedAt DateTime @updatedAt
 
   @@index([taskId])
+  @@index([tenantId])
   @@map("comments")
 }
 
 model Notification {
   id               String           @id @default(uuid())
+  tenantId         String           @default(uuid())
+  tenant           Tenant           @relation(fields: [tenantId], references: [id], onDelete: Restrict)
   userId           String
   user             User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   type             NotificationType
@@ -405,11 +488,14 @@ model Notification {
 
   @@index([userId])
   @@index([read])
+  @@index([tenantId])
   @@map("notifications")
 }
 
 model AuditLog {
   id            String          @id @default(uuid())
+  tenantId      String          @default(uuid())
+  tenant        Tenant          @relation(fields: [tenantId], references: [id], onDelete: Restrict)
   entityType    AuditEntityType
   entityId      String
   action        AuditAction
@@ -422,11 +508,14 @@ model AuditLog {
 
   @@index([entityType, entityId])
   @@index([userId])
+  @@index([tenantId])
   @@map("audit_logs")
 }
 
 model StatusHistory {
   id         String     @id @default(uuid())
+  tenantId   String     @default(uuid())
+  tenant     Tenant     @relation(fields: [tenantId], references: [id], onDelete: Restrict)
   taskId     String
   task       Task       @relation(fields: [taskId], references: [id], onDelete: Cascade)
   fromStatus TaskStatus
@@ -437,11 +526,14 @@ model StatusHistory {
   createdAt  DateTime   @default(now())
 
   @@index([taskId])
+  @@index([tenantId])
   @@map("status_histories")
 }
 
 model TaskNote {
   id        String   @id @default(uuid())
+  tenantId  String   @default(uuid())
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Restrict)
   taskId    String
   task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
   userId    String
@@ -452,11 +544,14 @@ model TaskNote {
   updatedAt DateTime @updatedAt
 
   @@index([taskId])
+  @@index([tenantId])
   @@map("task_notes")
 }
 
 model TaskAttachment {
   id        String   @id @default(uuid())
+  tenantId  String   @default(uuid())
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Restrict)
   taskId    String
   task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
   userId    String
@@ -468,11 +563,14 @@ model TaskAttachment {
   createdAt DateTime @default(now())
 
   @@index([taskId])
+  @@index([tenantId])
   @@map("task_attachments")
 }
 
 model ModuleAttachment {
   id        String   @id @default(uuid())
+  tenantId  String   @default(uuid())
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Restrict)
   moduleId  String
   module    Module   @relation(fields: [moduleId], references: [id], onDelete: Cascade)
   userId    String
@@ -484,11 +582,14 @@ model ModuleAttachment {
   createdAt DateTime @default(now())
 
   @@index([moduleId])
+  @@index([tenantId])
   @@map("module_attachments")
 }
 
 model ProjectShowcaseAttachment {
   id        String   @id @default(uuid())
+  tenantId  String   @default(uuid())
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Restrict)
   projectId String
   project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
   userId    String
@@ -500,11 +601,14 @@ model ProjectShowcaseAttachment {
   createdAt DateTime @default(now())
 
   @@index([projectId])
+  @@index([tenantId])
   @@map("project_showcase_attachments")
 }
 
 model ProjectDemandAttachment {
   id        String   @id @default(uuid())
+  tenantId  String   @default(uuid())
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Restrict)
   projectId String
   project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
   userId    String
@@ -516,5 +620,6 @@ model ProjectDemandAttachment {
   createdAt DateTime @default(now())
 
   @@index([projectId])
+  @@index([tenantId])
   @@map("project_demand_attachments")
 }

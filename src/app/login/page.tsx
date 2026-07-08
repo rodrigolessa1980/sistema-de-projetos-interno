@@ -14,8 +14,11 @@ import { Label } from "@/components/ui/label";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
+import { listTenants } from "@/lib/auth";
+import type { TenantOption } from "@/types";
 
 const loginSchema = z.object({
+  tenantSlug: z.string().min(1, "Selecione um grupo"),
   email: z.string().email("Email inválido"),
   password: z.string().min(1, "Senha obrigatória"),
 });
@@ -26,14 +29,21 @@ export default function LoginPage() {
   const { login, isLoading, error, isAuthenticated, clearError } = useAuth();
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
+  const [tenants, setTenants] = useState<TenantOption[]>([]);
 
   useEffect(() => {
     if (isAuthenticated) router.push("/dashboard");
   }, [isAuthenticated, router]);
 
+  useEffect(() => {
+    listTenants()
+      .then(setTenants)
+      .catch(() => setTenants([]));
+  }, []);
+
   const form = useForm<LoginForm>({
     resolver: zodResolver(loginSchema),
-    defaultValues: { email: "", password: "" },
+    defaultValues: { tenantSlug: "", email: "", password: "" },
   });
 
   const onSubmit = async (data: LoginForm) => {
@@ -112,6 +122,29 @@ export default function LoginPage() {
 
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <FormField
+                control={form.control}
+                name="tenantSlug"
+                render={({ field }) => (
+                  <FormItem>
+                    <Label className="text-zinc-300 text-sm">Grupo</Label>
+                    <FormControl>
+                      <select
+                        {...field}
+                        className="h-9 w-full rounded-lg border border-zinc-700/50 bg-zinc-800/50 px-2.5 py-1 text-sm text-zinc-100 focus:border-violet-500/50 focus:outline-none"
+                      >
+                        <option value="" className="bg-zinc-900 text-zinc-100">Selecione seu grupo…</option>
+                        {tenants.map((t) => (
+                          <option key={t.id} value={t.slug} className="bg-zinc-900 text-zinc-100">
+                            {t.name}
+                          </option>
+                        ))}
+                      </select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
               <FormField
                 control={form.control}
                 name="email"

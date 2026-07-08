@@ -2,6 +2,7 @@ import { UserRole } from './enums';
 
 export interface UserProps {
   id?: string;
+  tenantId?: string;
   name: string;
   email: string;
   passwordHash: string;
@@ -10,6 +11,7 @@ export interface UserProps {
   position: string;
   department: string;
   isActive?: boolean;
+  isApproved?: boolean;
   lastLoginAt?: Date | null;
   createdAt?: Date;
   updatedAt?: Date;
@@ -21,6 +23,7 @@ export class User {
   constructor(props: UserProps) {
     this.props = {
       id: props.id || '',
+      tenantId: props.tenantId || '',
       name: props.name,
       email: props.email,
       passwordHash: props.passwordHash,
@@ -29,6 +32,7 @@ export class User {
       position: props.position,
       department: props.department,
       isActive: props.isActive ?? true,
+      isApproved: props.isApproved ?? false,
       lastLoginAt: props.lastLoginAt ?? null,
       createdAt: props.createdAt || new Date(),
       updatedAt: props.updatedAt || new Date(),
@@ -46,6 +50,7 @@ export class User {
   }
 
   public get id(): string { return this.props.id; }
+  public get tenantId(): string { return this.props.tenantId; }
   public get name(): string { return this.props.name; }
   public get email(): string { return this.props.email; }
   public get passwordHash(): string { return this.props.passwordHash; }
@@ -54,6 +59,7 @@ export class User {
   public get position(): string { return this.props.position; }
   public get department(): string { return this.props.department; }
   public get isActive(): boolean { return this.props.isActive; }
+  public get isApproved(): boolean { return this.props.isApproved; }
   public get lastLoginAt(): Date | null { return this.props.lastLoginAt; }
   public get createdAt(): Date { return this.props.createdAt; }
   public get updatedAt(): Date { return this.props.updatedAt; }

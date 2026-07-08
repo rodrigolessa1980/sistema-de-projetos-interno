@@ -26,6 +26,7 @@ export type AggregateUser = {
 
 export type UserMinAggregateOutputType = {
   id: string | null
+  tenantId: string | null
   name: string | null
   email: string | null
   passwordHash: string | null
@@ -34,6 +35,7 @@ export type UserMinAggregateOutputType = {
   position: string | null
   department: string | null
   isActive: boolean | null
+  isApproved: boolean | null
   lastLoginAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -41,6 +43,7 @@ export type UserMinAggregateOutputType = {
 
 export type UserMaxAggregateOutputType = {
   id: string | null
+  tenantId: string | null
   name: string | null
   email: string | null
   passwordHash: string | null
@@ -49,6 +52,7 @@ export type UserMaxAggregateOutputType = {
   position: string | null
   department: string | null
   isActive: boolean | null
+  isApproved: boolean | null
   lastLoginAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -56,6 +60,7 @@ export type UserMaxAggregateOutputType = {
 
 export type UserCountAggregateOutputType = {
   id: number
+  tenantId: number
   name: number
   email: number
   passwordHash: number
@@ -64,6 +69,7 @@ export type UserCountAggregateOutputType = {
   position: number
   department: number
   isActive: number
+  isApproved: number
   lastLoginAt: number
   createdAt: number
   updatedAt: number
@@ -73,6 +79,7 @@ export type UserCountAggregateOutputType = {
 
 export type UserMinAggregateInputType = {
   id?: true
+  tenantId?: true
   name?: true
   email?: true
   passwordHash?: true
@@ -81,6 +88,7 @@ export type UserMinAggregateInputType = {
   position?: true
   department?: true
   isActive?: true
+  isApproved?: true
   lastLoginAt?: true
   createdAt?: true
   updatedAt?: true
@@ -88,6 +96,7 @@ export type UserMinAggregateInputType = {
 
 export type UserMaxAggregateInputType = {
   id?: true
+  tenantId?: true
   name?: true
   email?: true
   passwordHash?: true
@@ -96,6 +105,7 @@ export type UserMaxAggregateInputType = {
   position?: true
   department?: true
   isActive?: true
+  isApproved?: true
   lastLoginAt?: true
   createdAt?: true
   updatedAt?: true
@@ -103,6 +113,7 @@ export type UserMaxAggregateInputType = {
 
 export type UserCountAggregateInputType = {
   id?: true
+  tenantId?: true
   name?: true
   email?: true
   passwordHash?: true
@@ -111,6 +122,7 @@ export type UserCountAggregateInputType = {
   position?: true
   department?: true
   isActive?: true
+  isApproved?: true
   lastLoginAt?: true
   createdAt?: true
   updatedAt?: true
@@ -191,6 +203,7 @@ export type UserGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
 
 export type UserGroupByOutputType = {
   id: string
+  tenantId: string
   name: string
   email: string
   passwordHash: string
@@ -199,6 +212,7 @@ export type UserGroupByOutputType = {
   position: string
   department: string
   isActive: boolean
+  isApproved: boolean
   lastLoginAt: Date | null
   createdAt: Date
   updatedAt: Date
@@ -227,6 +241,7 @@ export type UserWhereInput = {
   OR?: Prisma.UserWhereInput[]
   NOT?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
   id?: Prisma.StringFilter<"User"> | string
+  tenantId?: Prisma.StringFilter<"User"> | string
   name?: Prisma.StringFilter<"User"> | string
   email?: Prisma.StringFilter<"User"> | string
   passwordHash?: Prisma.StringFilter<"User"> | string
@@ -235,9 +250,11 @@ export type UserWhereInput = {
   position?: Prisma.StringFilter<"User"> | string
   department?: Prisma.StringFilter<"User"> | string
   isActive?: Prisma.BoolFilter<"User"> | boolean
+  isApproved?: Prisma.BoolFilter<"User"> | boolean
   lastLoginAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
+  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
   managedProjects?: Prisma.ProjectListRelationFilter
   projects?: Prisma.ProjectDeveloperListRelationFilter
   epicAssignments?: Prisma.EpicDeveloperListRelationFilter
@@ -261,6 +278,7 @@ export type UserWhereInput = {
 
 export type UserOrderByWithRelationInput = {
   id?: Prisma.SortOrder
+  tenantId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   email?: Prisma.SortOrder
   passwordHash?: Prisma.SortOrder
@@ -269,9 +287,11 @@ export type UserOrderByWithRelationInput = {
   position?: Prisma.SortOrder
   department?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  isApproved?: Prisma.SortOrder
   lastLoginAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  tenant?: Prisma.TenantOrderByWithRelationInput
   managedProjects?: Prisma.ProjectOrderByRelationAggregateInput
   projects?: Prisma.ProjectDeveloperOrderByRelationAggregateInput
   epicAssignments?: Prisma.EpicDeveloperOrderByRelationAggregateInput
@@ -296,20 +316,24 @@ export type UserOrderByWithRelationInput = {
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
   id?: string
-  email?: string
+  tenantId_email?: Prisma.UserTenantIdEmailCompoundUniqueInput
   AND?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
   OR?: Prisma.UserWhereInput[]
   NOT?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
+  tenantId?: Prisma.StringFilter<"User"> | string
   name?: Prisma.StringFilter<"User"> | string
+  email?: Prisma.StringFilter<"User"> | string
   passwordHash?: Prisma.StringFilter<"User"> | string
   role?: Prisma.EnumUserRoleFilter<"User"> | $Enums.UserRole
   avatar?: Prisma.StringNullableFilter<"User"> | string | null
   position?: Prisma.StringFilter<"User"> | string
   department?: Prisma.StringFilter<"User"> | string
   isActive?: Prisma.BoolFilter<"User"> | boolean
+  isApproved?: Prisma.BoolFilter<"User"> | boolean
   lastLoginAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
+  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
   managedProjects?: Prisma.ProjectListRelationFilter
   projects?: Prisma.ProjectDeveloperListRelationFilter
   epicAssignments?: Prisma.EpicDeveloperListRelationFilter
@@ -329,10 +353,11 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   loggedModules?: Prisma.ModuleListRelationFilter
   permissions?: Prisma.UserPermissionListRelationFilter
   apiTokens?: Prisma.ApiTokenListRelationFilter
-}, "id" | "email">
+}, "id" | "tenantId_email">
 
 export type UserOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
+  tenantId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   email?: Prisma.SortOrder
   passwordHash?: Prisma.SortOrder
@@ -341,6 +366,7 @@ export type UserOrderByWithAggregationInput = {
   position?: Prisma.SortOrder
   department?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  isApproved?: Prisma.SortOrder
   lastLoginAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -354,6 +380,7 @@ export type UserScalarWhereWithAggregatesInput = {
   OR?: Prisma.UserScalarWhereWithAggregatesInput[]
   NOT?: Prisma.UserScalarWhereWithAggregatesInput | Prisma.UserScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"User"> | string
+  tenantId?: Prisma.StringWithAggregatesFilter<"User"> | string
   name?: Prisma.StringWithAggregatesFilter<"User"> | string
   email?: Prisma.StringWithAggregatesFilter<"User"> | string
   passwordHash?: Prisma.StringWithAggregatesFilter<"User"> | string
@@ -362,6 +389,7 @@ export type UserScalarWhereWithAggregatesInput = {
   position?: Prisma.StringWithAggregatesFilter<"User"> | string
   department?: Prisma.StringWithAggregatesFilter<"User"> | string
   isActive?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
+  isApproved?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
   lastLoginAt?: Prisma.DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
@@ -377,9 +405,11 @@ export type UserCreateInput = {
   position: string
   department: string
   isActive?: boolean
+  isApproved?: boolean
   lastLoginAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  tenant?: Prisma.TenantCreateNestedOneWithoutUsersInput
   managedProjects?: Prisma.ProjectCreateNestedManyWithoutOwnerInput
   projects?: Prisma.ProjectDeveloperCreateNestedManyWithoutUserInput
   epicAssignments?: Prisma.EpicDeveloperCreateNestedManyWithoutUserInput
@@ -403,6 +433,7 @@ export type UserCreateInput = {
 
 export type UserUncheckedCreateInput = {
   id?: string
+  tenantId?: string
   name: string
   email: string
   passwordHash: string
@@ -411,6 +442,7 @@ export type UserUncheckedCreateInput = {
   position: string
   department: string
   isActive?: boolean
+  isApproved?: boolean
   lastLoginAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -445,9 +477,11 @@ export type UserUpdateInput = {
   position?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isApproved?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutUsersNestedInput
   managedProjects?: Prisma.ProjectUpdateManyWithoutOwnerNestedInput
   projects?: Prisma.ProjectDeveloperUpdateManyWithoutUserNestedInput
   epicAssignments?: Prisma.EpicDeveloperUpdateManyWithoutUserNestedInput
@@ -471,6 +505,7 @@ export type UserUpdateInput = {
 
 export type UserUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
@@ -479,6 +514,7 @@ export type UserUncheckedUpdateInput = {
   position?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isApproved?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -505,6 +541,7 @@ export type UserUncheckedUpdateInput = {
 
 export type UserCreateManyInput = {
   id?: string
+  tenantId?: string
   name: string
   email: string
   passwordHash: string
@@ -513,6 +550,7 @@ export type UserCreateManyInput = {
   position: string
   department: string
   isActive?: boolean
+  isApproved?: boolean
   lastLoginAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -528,6 +566,7 @@ export type UserUpdateManyMutationInput = {
   position?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isApproved?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -535,6 +574,7 @@ export type UserUpdateManyMutationInput = {
 
 export type UserUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
@@ -543,9 +583,20 @@ export type UserUncheckedUpdateManyInput = {
   position?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isApproved?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type UserListRelationFilter = {
+  every?: Prisma.UserWhereInput
+  some?: Prisma.UserWhereInput
+  none?: Prisma.UserWhereInput
+}
+
+export type UserOrderByRelationAggregateInput = {
+  _count?: Prisma.SortOrder
 }
 
 export type UserOrderByRelevanceInput = {
@@ -554,8 +605,14 @@ export type UserOrderByRelevanceInput = {
   search: string
 }
 
+export type UserTenantIdEmailCompoundUniqueInput = {
+  tenantId: string
+  email: string
+}
+
 export type UserCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  tenantId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   email?: Prisma.SortOrder
   passwordHash?: Prisma.SortOrder
@@ -564,6 +621,7 @@ export type UserCountOrderByAggregateInput = {
   position?: Prisma.SortOrder
   department?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  isApproved?: Prisma.SortOrder
   lastLoginAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -571,6 +629,7 @@ export type UserCountOrderByAggregateInput = {
 
 export type UserMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  tenantId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   email?: Prisma.SortOrder
   passwordHash?: Prisma.SortOrder
@@ -579,6 +638,7 @@ export type UserMaxOrderByAggregateInput = {
   position?: Prisma.SortOrder
   department?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  isApproved?: Prisma.SortOrder
   lastLoginAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -586,6 +646,7 @@ export type UserMaxOrderByAggregateInput = {
 
 export type UserMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  tenantId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   email?: Prisma.SortOrder
   passwordHash?: Prisma.SortOrder
@@ -594,6 +655,7 @@ export type UserMinOrderByAggregateInput = {
   position?: Prisma.SortOrder
   department?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  isApproved?: Prisma.SortOrder
   lastLoginAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -609,12 +671,50 @@ export type UserNullableScalarRelationFilter = {
   isNot?: Prisma.UserWhereInput | null
 }
 
-export type EnumUserRoleFieldUpdateOperationsInput = {
-  set?: $Enums.UserRole
+export type UserCreateNestedManyWithoutTenantInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutTenantInput, Prisma.UserUncheckedCreateWithoutTenantInput> | Prisma.UserCreateWithoutTenantInput[] | Prisma.UserUncheckedCreateWithoutTenantInput[]
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutTenantInput | Prisma.UserCreateOrConnectWithoutTenantInput[]
+  createMany?: Prisma.UserCreateManyTenantInputEnvelope
+  connect?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
 }
 
-export type BoolFieldUpdateOperationsInput = {
-  set?: boolean
+export type UserUncheckedCreateNestedManyWithoutTenantInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutTenantInput, Prisma.UserUncheckedCreateWithoutTenantInput> | Prisma.UserCreateWithoutTenantInput[] | Prisma.UserUncheckedCreateWithoutTenantInput[]
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutTenantInput | Prisma.UserCreateOrConnectWithoutTenantInput[]
+  createMany?: Prisma.UserCreateManyTenantInputEnvelope
+  connect?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+}
+
+export type UserUpdateManyWithoutTenantNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutTenantInput, Prisma.UserUncheckedCreateWithoutTenantInput> | Prisma.UserCreateWithoutTenantInput[] | Prisma.UserUncheckedCreateWithoutTenantInput[]
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutTenantInput | Prisma.UserCreateOrConnectWithoutTenantInput[]
+  upsert?: Prisma.UserUpsertWithWhereUniqueWithoutTenantInput | Prisma.UserUpsertWithWhereUniqueWithoutTenantInput[]
+  createMany?: Prisma.UserCreateManyTenantInputEnvelope
+  set?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+  disconnect?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+  delete?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+  connect?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+  update?: Prisma.UserUpdateWithWhereUniqueWithoutTenantInput | Prisma.UserUpdateWithWhereUniqueWithoutTenantInput[]
+  updateMany?: Prisma.UserUpdateManyWithWhereWithoutTenantInput | Prisma.UserUpdateManyWithWhereWithoutTenantInput[]
+  deleteMany?: Prisma.UserScalarWhereInput | Prisma.UserScalarWhereInput[]
+}
+
+export type UserUncheckedUpdateManyWithoutTenantNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutTenantInput, Prisma.UserUncheckedCreateWithoutTenantInput> | Prisma.UserCreateWithoutTenantInput[] | Prisma.UserUncheckedCreateWithoutTenantInput[]
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutTenantInput | Prisma.UserCreateOrConnectWithoutTenantInput[]
+  upsert?: Prisma.UserUpsertWithWhereUniqueWithoutTenantInput | Prisma.UserUpsertWithWhereUniqueWithoutTenantInput[]
+  createMany?: Prisma.UserCreateManyTenantInputEnvelope
+  set?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+  disconnect?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+  delete?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+  connect?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+  update?: Prisma.UserUpdateWithWhereUniqueWithoutTenantInput | Prisma.UserUpdateWithWhereUniqueWithoutTenantInput[]
+  updateMany?: Prisma.UserUpdateManyWithWhereWithoutTenantInput | Prisma.UserUpdateManyWithWhereWithoutTenantInput[]
+  deleteMany?: Prisma.UserScalarWhereInput | Prisma.UserScalarWhereInput[]
+}
+
+export type EnumUserRoleFieldUpdateOperationsInput = {
+  set?: $Enums.UserRole
 }
 
 export type NullableDateTimeFieldUpdateOperationsInput = {
@@ -891,6 +991,122 @@ export type UserUpdateOneRequiredWithoutProjectDemandAttachmentsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutProjectDemandAttachmentsInput, Prisma.UserUpdateWithoutProjectDemandAttachmentsInput>, Prisma.UserUncheckedUpdateWithoutProjectDemandAttachmentsInput>
 }
 
+export type UserCreateWithoutTenantInput = {
+  id?: string
+  name: string
+  email: string
+  passwordHash: string
+  role?: $Enums.UserRole
+  avatar?: string | null
+  position: string
+  department: string
+  isActive?: boolean
+  isApproved?: boolean
+  lastLoginAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  managedProjects?: Prisma.ProjectCreateNestedManyWithoutOwnerInput
+  projects?: Prisma.ProjectDeveloperCreateNestedManyWithoutUserInput
+  epicAssignments?: Prisma.EpicDeveloperCreateNestedManyWithoutUserInput
+  assignedTasks?: Prisma.TaskCreateNestedManyWithoutAssigneeInput
+  reportedTasks?: Prisma.TaskCreateNestedManyWithoutReporterInput
+  subtasks?: Prisma.SubtaskCreateNestedManyWithoutAssigneeInput
+  timeLogs?: Prisma.TimeLogCreateNestedManyWithoutUserInput
+  comments?: Prisma.CommentCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput
+  statusHistories?: Prisma.StatusHistoryCreateNestedManyWithoutUserInput
+  taskNotes?: Prisma.TaskNoteCreateNestedManyWithoutUserInput
+  attachments?: Prisma.TaskAttachmentCreateNestedManyWithoutUserInput
+  moduleAttachments?: Prisma.ModuleAttachmentCreateNestedManyWithoutUserInput
+  projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentCreateNestedManyWithoutUserInput
+  projectDemandAttachments?: Prisma.ProjectDemandAttachmentCreateNestedManyWithoutUserInput
+  loggedModules?: Prisma.ModuleCreateNestedManyWithoutLoggedByInput
+  permissions?: Prisma.UserPermissionCreateNestedManyWithoutUserInput
+  apiTokens?: Prisma.ApiTokenCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutTenantInput = {
+  id?: string
+  name: string
+  email: string
+  passwordHash: string
+  role?: $Enums.UserRole
+  avatar?: string | null
+  position: string
+  department: string
+  isActive?: boolean
+  isApproved?: boolean
+  lastLoginAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  managedProjects?: Prisma.ProjectUncheckedCreateNestedManyWithoutOwnerInput
+  projects?: Prisma.ProjectDeveloperUncheckedCreateNestedManyWithoutUserInput
+  epicAssignments?: Prisma.EpicDeveloperUncheckedCreateNestedManyWithoutUserInput
+  assignedTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutAssigneeInput
+  reportedTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutReporterInput
+  subtasks?: Prisma.SubtaskUncheckedCreateNestedManyWithoutAssigneeInput
+  timeLogs?: Prisma.TimeLogUncheckedCreateNestedManyWithoutUserInput
+  comments?: Prisma.CommentUncheckedCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput
+  statusHistories?: Prisma.StatusHistoryUncheckedCreateNestedManyWithoutUserInput
+  taskNotes?: Prisma.TaskNoteUncheckedCreateNestedManyWithoutUserInput
+  attachments?: Prisma.TaskAttachmentUncheckedCreateNestedManyWithoutUserInput
+  moduleAttachments?: Prisma.ModuleAttachmentUncheckedCreateNestedManyWithoutUserInput
+  projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentUncheckedCreateNestedManyWithoutUserInput
+  projectDemandAttachments?: Prisma.ProjectDemandAttachmentUncheckedCreateNestedManyWithoutUserInput
+  loggedModules?: Prisma.ModuleUncheckedCreateNestedManyWithoutLoggedByInput
+  permissions?: Prisma.UserPermissionUncheckedCreateNestedManyWithoutUserInput
+  apiTokens?: Prisma.ApiTokenUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutTenantInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutTenantInput, Prisma.UserUncheckedCreateWithoutTenantInput>
+}
+
+export type UserCreateManyTenantInputEnvelope = {
+  data: Prisma.UserCreateManyTenantInput | Prisma.UserCreateManyTenantInput[]
+  skipDuplicates?: boolean
+}
+
+export type UserUpsertWithWhereUniqueWithoutTenantInput = {
+  where: Prisma.UserWhereUniqueInput
+  update: Prisma.XOR<Prisma.UserUpdateWithoutTenantInput, Prisma.UserUncheckedUpdateWithoutTenantInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutTenantInput, Prisma.UserUncheckedCreateWithoutTenantInput>
+}
+
+export type UserUpdateWithWhereUniqueWithoutTenantInput = {
+  where: Prisma.UserWhereUniqueInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutTenantInput, Prisma.UserUncheckedUpdateWithoutTenantInput>
+}
+
+export type UserUpdateManyWithWhereWithoutTenantInput = {
+  where: Prisma.UserScalarWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateManyMutationInput, Prisma.UserUncheckedUpdateManyWithoutTenantInput>
+}
+
+export type UserScalarWhereInput = {
+  AND?: Prisma.UserScalarWhereInput | Prisma.UserScalarWhereInput[]
+  OR?: Prisma.UserScalarWhereInput[]
+  NOT?: Prisma.UserScalarWhereInput | Prisma.UserScalarWhereInput[]
+  id?: Prisma.StringFilter<"User"> | string
+  tenantId?: Prisma.StringFilter<"User"> | string
+  name?: Prisma.StringFilter<"User"> | string
+  email?: Prisma.StringFilter<"User"> | string
+  passwordHash?: Prisma.StringFilter<"User"> | string
+  role?: Prisma.EnumUserRoleFilter<"User"> | $Enums.UserRole
+  avatar?: Prisma.StringNullableFilter<"User"> | string | null
+  position?: Prisma.StringFilter<"User"> | string
+  department?: Prisma.StringFilter<"User"> | string
+  isActive?: Prisma.BoolFilter<"User"> | boolean
+  isApproved?: Prisma.BoolFilter<"User"> | boolean
+  lastLoginAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
+  createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
+}
+
 export type UserCreateWithoutApiTokensInput = {
   id?: string
   name: string
@@ -901,9 +1117,11 @@ export type UserCreateWithoutApiTokensInput = {
   position: string
   department: string
   isActive?: boolean
+  isApproved?: boolean
   lastLoginAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  tenant?: Prisma.TenantCreateNestedOneWithoutUsersInput
   managedProjects?: Prisma.ProjectCreateNestedManyWithoutOwnerInput
   projects?: Prisma.ProjectDeveloperCreateNestedManyWithoutUserInput
   epicAssignments?: Prisma.EpicDeveloperCreateNestedManyWithoutUserInput
@@ -926,6 +1144,7 @@ export type UserCreateWithoutApiTokensInput = {
 
 export type UserUncheckedCreateWithoutApiTokensInput = {
   id?: string
+  tenantId?: string
   name: string
   email: string
   passwordHash: string
@@ -934,6 +1153,7 @@ export type UserUncheckedCreateWithoutApiTokensInput = {
   position: string
   department: string
   isActive?: boolean
+  isApproved?: boolean
   lastLoginAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -983,9 +1203,11 @@ export type UserUpdateWithoutApiTokensInput = {
   position?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isApproved?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutUsersNestedInput
   managedProjects?: Prisma.ProjectUpdateManyWithoutOwnerNestedInput
   projects?: Prisma.ProjectDeveloperUpdateManyWithoutUserNestedInput
   epicAssignments?: Prisma.EpicDeveloperUpdateManyWithoutUserNestedInput
@@ -1008,6 +1230,7 @@ export type UserUpdateWithoutApiTokensInput = {
 
 export type UserUncheckedUpdateWithoutApiTokensInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1016,6 +1239,7 @@ export type UserUncheckedUpdateWithoutApiTokensInput = {
   position?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isApproved?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1049,9 +1273,11 @@ export type UserCreateWithoutPermissionsInput = {
   position: string
   department: string
   isActive?: boolean
+  isApproved?: boolean
   lastLoginAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  tenant?: Prisma.TenantCreateNestedOneWithoutUsersInput
   managedProjects?: Prisma.ProjectCreateNestedManyWithoutOwnerInput
   projects?: Prisma.ProjectDeveloperCreateNestedManyWithoutUserInput
   epicAssignments?: Prisma.EpicDeveloperCreateNestedManyWithoutUserInput
@@ -1074,6 +1300,7 @@ export type UserCreateWithoutPermissionsInput = {
 
 export type UserUncheckedCreateWithoutPermissionsInput = {
   id?: string
+  tenantId?: string
   name: string
   email: string
   passwordHash: string
@@ -1082,6 +1309,7 @@ export type UserUncheckedCreateWithoutPermissionsInput = {
   position: string
   department: string
   isActive?: boolean
+  isApproved?: boolean
   lastLoginAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1131,9 +1359,11 @@ export type UserUpdateWithoutPermissionsInput = {
   position?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isApproved?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutUsersNestedInput
   managedProjects?: Prisma.ProjectUpdateManyWithoutOwnerNestedInput
   projects?: Prisma.ProjectDeveloperUpdateManyWithoutUserNestedInput
   epicAssignments?: Prisma.EpicDeveloperUpdateManyWithoutUserNestedInput
@@ -1156,6 +1386,7 @@ export type UserUpdateWithoutPermissionsInput = {
 
 export type UserUncheckedUpdateWithoutPermissionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1164,6 +1395,7 @@ export type UserUncheckedUpdateWithoutPermissionsInput = {
   position?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isApproved?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1197,9 +1429,11 @@ export type UserCreateWithoutManagedProjectsInput = {
   position: string
   department: string
   isActive?: boolean
+  isApproved?: boolean
   lastLoginAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  tenant?: Prisma.TenantCreateNestedOneWithoutUsersInput
   projects?: Prisma.ProjectDeveloperCreateNestedManyWithoutUserInput
   epicAssignments?: Prisma.EpicDeveloperCreateNestedManyWithoutUserInput
   assignedTasks?: Prisma.TaskCreateNestedManyWithoutAssigneeInput
@@ -1222,6 +1456,7 @@ export type UserCreateWithoutManagedProjectsInput = {
 
 export type UserUncheckedCreateWithoutManagedProjectsInput = {
   id?: string
+  tenantId?: string
   name: string
   email: string
   passwordHash: string
@@ -1230,6 +1465,7 @@ export type UserUncheckedCreateWithoutManagedProjectsInput = {
   position: string
   department: string
   isActive?: boolean
+  isApproved?: boolean
   lastLoginAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1279,9 +1515,11 @@ export type UserUpdateWithoutManagedProjectsInput = {
   position?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isApproved?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutUsersNestedInput
   projects?: Prisma.ProjectDeveloperUpdateManyWithoutUserNestedInput
   epicAssignments?: Prisma.EpicDeveloperUpdateManyWithoutUserNestedInput
   assignedTasks?: Prisma.TaskUpdateManyWithoutAssigneeNestedInput
@@ -1304,6 +1542,7 @@ export type UserUpdateWithoutManagedProjectsInput = {
 
 export type UserUncheckedUpdateWithoutManagedProjectsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1312,6 +1551,7 @@ export type UserUncheckedUpdateWithoutManagedProjectsInput = {
   position?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isApproved?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1345,9 +1585,11 @@ export type UserCreateWithoutProjectsInput = {
   position: string
   department: string
   isActive?: boolean
+  isApproved?: boolean
   lastLoginAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  tenant?: Prisma.TenantCreateNestedOneWithoutUsersInput
   managedProjects?: Prisma.ProjectCreateNestedManyWithoutOwnerInput
   epicAssignments?: Prisma.EpicDeveloperCreateNestedManyWithoutUserInput
   assignedTasks?: Prisma.TaskCreateNestedManyWithoutAssigneeInput
@@ -1370,6 +1612,7 @@ export type UserCreateWithoutProjectsInput = {
 
 export type UserUncheckedCreateWithoutProjectsInput = {
   id?: string
+  tenantId?: string
   name: string
   email: string
   passwordHash: string
@@ -1378,6 +1621,7 @@ export type UserUncheckedCreateWithoutProjectsInput = {
   position: string
   department: string
   isActive?: boolean
+  isApproved?: boolean
   lastLoginAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1427,9 +1671,11 @@ export type UserUpdateWithoutProjectsInput = {
   position?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isApproved?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutUsersNestedInput
   managedProjects?: Prisma.ProjectUpdateManyWithoutOwnerNestedInput
   epicAssignments?: Prisma.EpicDeveloperUpdateManyWithoutUserNestedInput
   assignedTasks?: Prisma.TaskUpdateManyWithoutAssigneeNestedInput
@@ -1452,6 +1698,7 @@ export type UserUpdateWithoutProjectsInput = {
 
 export type UserUncheckedUpdateWithoutProjectsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1460,6 +1707,7 @@ export type UserUncheckedUpdateWithoutProjectsInput = {
   position?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isApproved?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1493,9 +1741,11 @@ export type UserCreateWithoutLoggedModulesInput = {
   position: string
   department: string
   isActive?: boolean
+  isApproved?: boolean
   lastLoginAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  tenant?: Prisma.TenantCreateNestedOneWithoutUsersInput
   managedProjects?: Prisma.ProjectCreateNestedManyWithoutOwnerInput
   projects?: Prisma.ProjectDeveloperCreateNestedManyWithoutUserInput
   epicAssignments?: Prisma.EpicDeveloperCreateNestedManyWithoutUserInput
@@ -1518,6 +1768,7 @@ export type UserCreateWithoutLoggedModulesInput = {
 
 export type UserUncheckedCreateWithoutLoggedModulesInput = {
   id?: string
+  tenantId?: string
   name: string
   email: string
   passwordHash: string
@@ -1526,6 +1777,7 @@ export type UserUncheckedCreateWithoutLoggedModulesInput = {
   position: string
   department: string
   isActive?: boolean
+  isApproved?: boolean
   lastLoginAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1575,9 +1827,11 @@ export type UserUpdateWithoutLoggedModulesInput = {
   position?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isApproved?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutUsersNestedInput
   managedProjects?: Prisma.ProjectUpdateManyWithoutOwnerNestedInput
   projects?: Prisma.ProjectDeveloperUpdateManyWithoutUserNestedInput
   epicAssignments?: Prisma.EpicDeveloperUpdateManyWithoutUserNestedInput
@@ -1600,6 +1854,7 @@ export type UserUpdateWithoutLoggedModulesInput = {
 
 export type UserUncheckedUpdateWithoutLoggedModulesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1608,6 +1863,7 @@ export type UserUncheckedUpdateWithoutLoggedModulesInput = {
   position?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isApproved?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1641,9 +1897,11 @@ export type UserCreateWithoutEpicAssignmentsInput = {
   position: string
   department: string
   isActive?: boolean
+  isApproved?: boolean
   lastLoginAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  tenant?: Prisma.TenantCreateNestedOneWithoutUsersInput
   managedProjects?: Prisma.ProjectCreateNestedManyWithoutOwnerInput
   projects?: Prisma.ProjectDeveloperCreateNestedManyWithoutUserInput
   assignedTasks?: Prisma.TaskCreateNestedManyWithoutAssigneeInput
@@ -1666,6 +1924,7 @@ export type UserCreateWithoutEpicAssignmentsInput = {
 
 export type UserUncheckedCreateWithoutEpicAssignmentsInput = {
   id?: string
+  tenantId?: string
   name: string
   email: string
   passwordHash: string
@@ -1674,6 +1933,7 @@ export type UserUncheckedCreateWithoutEpicAssignmentsInput = {
   position: string
   department: string
   isActive?: boolean
+  isApproved?: boolean
   lastLoginAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1723,9 +1983,11 @@ export type UserUpdateWithoutEpicAssignmentsInput = {
   position?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isApproved?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutUsersNestedInput
   managedProjects?: Prisma.ProjectUpdateManyWithoutOwnerNestedInput
   projects?: Prisma.ProjectDeveloperUpdateManyWithoutUserNestedInput
   assignedTasks?: Prisma.TaskUpdateManyWithoutAssigneeNestedInput
@@ -1748,6 +2010,7 @@ export type UserUpdateWithoutEpicAssignmentsInput = {
 
 export type UserUncheckedUpdateWithoutEpicAssignmentsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1756,6 +2019,7 @@ export type UserUncheckedUpdateWithoutEpicAssignmentsInput = {
   position?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isApproved?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1789,9 +2053,11 @@ export type UserCreateWithoutAssignedTasksInput = {
   position: string
   department: string
   isActive?: boolean
+  isApproved?: boolean
   lastLoginAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  tenant?: Prisma.TenantCreateNestedOneWithoutUsersInput
   managedProjects?: Prisma.ProjectCreateNestedManyWithoutOwnerInput
   projects?: Prisma.ProjectDeveloperCreateNestedManyWithoutUserInput
   epicAssignments?: Prisma.EpicDeveloperCreateNestedManyWithoutUserInput
@@ -1814,6 +2080,7 @@ export type UserCreateWithoutAssignedTasksInput = {
 
 export type UserUncheckedCreateWithoutAssignedTasksInput = {
   id?: string
+  tenantId?: string
   name: string
   email: string
   passwordHash: string
@@ -1822,6 +2089,7 @@ export type UserUncheckedCreateWithoutAssignedTasksInput = {
   position: string
   department: string
   isActive?: boolean
+  isApproved?: boolean
   lastLoginAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1860,9 +2128,11 @@ export type UserCreateWithoutReportedTasksInput = {
   position: string
   department: string
   isActive?: boolean
+  isApproved?: boolean
   lastLoginAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  tenant?: Prisma.TenantCreateNestedOneWithoutUsersInput
   managedProjects?: Prisma.ProjectCreateNestedManyWithoutOwnerInput
   projects?: Prisma.ProjectDeveloperCreateNestedManyWithoutUserInput
   epicAssignments?: Prisma.EpicDeveloperCreateNestedManyWithoutUserInput
@@ -1885,6 +2155,7 @@ export type UserCreateWithoutReportedTasksInput = {
 
 export type UserUncheckedCreateWithoutReportedTasksInput = {
   id?: string
+  tenantId?: string
   name: string
   email: string
   passwordHash: string
@@ -1893,6 +2164,7 @@ export type UserUncheckedCreateWithoutReportedTasksInput = {
   position: string
   department: string
   isActive?: boolean
+  isApproved?: boolean
   lastLoginAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1942,9 +2214,11 @@ export type UserUpdateWithoutAssignedTasksInput = {
   position?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isApproved?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutUsersNestedInput
   managedProjects?: Prisma.ProjectUpdateManyWithoutOwnerNestedInput
   projects?: Prisma.ProjectDeveloperUpdateManyWithoutUserNestedInput
   epicAssignments?: Prisma.EpicDeveloperUpdateManyWithoutUserNestedInput
@@ -1967,6 +2241,7 @@ export type UserUpdateWithoutAssignedTasksInput = {
 
 export type UserUncheckedUpdateWithoutAssignedTasksInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1975,6 +2250,7 @@ export type UserUncheckedUpdateWithoutAssignedTasksInput = {
   position?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isApproved?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2019,9 +2295,11 @@ export type UserUpdateWithoutReportedTasksInput = {
   position?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isApproved?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutUsersNestedInput
   managedProjects?: Prisma.ProjectUpdateManyWithoutOwnerNestedInput
   projects?: Prisma.ProjectDeveloperUpdateManyWithoutUserNestedInput
   epicAssignments?: Prisma.EpicDeveloperUpdateManyWithoutUserNestedInput
@@ -2044,6 +2322,7 @@ export type UserUpdateWithoutReportedTasksInput = {
 
 export type UserUncheckedUpdateWithoutReportedTasksInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
@@ -2052,6 +2331,7 @@ export type UserUncheckedUpdateWithoutReportedTasksInput = {
   position?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isApproved?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2085,9 +2365,11 @@ export type UserCreateWithoutSubtasksInput = {
   position: string
   department: string
   isActive?: boolean
+  isApproved?: boolean
   lastLoginAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  tenant?: Prisma.TenantCreateNestedOneWithoutUsersInput
   managedProjects?: Prisma.ProjectCreateNestedManyWithoutOwnerInput
   projects?: Prisma.ProjectDeveloperCreateNestedManyWithoutUserInput
   epicAssignments?: Prisma.EpicDeveloperCreateNestedManyWithoutUserInput
@@ -2110,6 +2392,7 @@ export type UserCreateWithoutSubtasksInput = {
 
 export type UserUncheckedCreateWithoutSubtasksInput = {
   id?: string
+  tenantId?: string
   name: string
   email: string
   passwordHash: string
@@ -2118,6 +2401,7 @@ export type UserUncheckedCreateWithoutSubtasksInput = {
   position: string
   department: string
   isActive?: boolean
+  isApproved?: boolean
   lastLoginAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -2167,9 +2451,11 @@ export type UserUpdateWithoutSubtasksInput = {
   position?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isApproved?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutUsersNestedInput
   managedProjects?: Prisma.ProjectUpdateManyWithoutOwnerNestedInput
   projects?: Prisma.ProjectDeveloperUpdateManyWithoutUserNestedInput
   epicAssignments?: Prisma.EpicDeveloperUpdateManyWithoutUserNestedInput
@@ -2192,6 +2478,7 @@ export type UserUpdateWithoutSubtasksInput = {
 
 export type UserUncheckedUpdateWithoutSubtasksInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
@@ -2200,6 +2487,7 @@ export type UserUncheckedUpdateWithoutSubtasksInput = {
   position?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isApproved?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2233,9 +2521,11 @@ export type UserCreateWithoutTimeLogsInput = {
   position: string
   department: string
   isActive?: boolean
+  isApproved?: boolean
   lastLoginAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  tenant?: Prisma.TenantCreateNestedOneWithoutUsersInput
   managedProjects?: Prisma.ProjectCreateNestedManyWithoutOwnerInput
   projects?: Prisma.ProjectDeveloperCreateNestedManyWithoutUserInput
   epicAssignments?: Prisma.EpicDeveloperCreateNestedManyWithoutUserInput
@@ -2258,6 +2548,7 @@ export type UserCreateWithoutTimeLogsInput = {
 
 export type UserUncheckedCreateWithoutTimeLogsInput = {
   id?: string
+  tenantId?: string
   name: string
   email: string
   passwordHash: string
@@ -2266,6 +2557,7 @@ export type UserUncheckedCreateWithoutTimeLogsInput = {
   position: string
   department: string
   isActive?: boolean
+  isApproved?: boolean
   lastLoginAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -2315,9 +2607,11 @@ export type UserUpdateWithoutTimeLogsInput = {
   position?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isApproved?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutUsersNestedInput
   managedProjects?: Prisma.ProjectUpdateManyWithoutOwnerNestedInput
   projects?: Prisma.ProjectDeveloperUpdateManyWithoutUserNestedInput
   epicAssignments?: Prisma.EpicDeveloperUpdateManyWithoutUserNestedInput
@@ -2340,6 +2634,7 @@ export type UserUpdateWithoutTimeLogsInput = {
 
 export type UserUncheckedUpdateWithoutTimeLogsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
@@ -2348,6 +2643,7 @@ export type UserUncheckedUpdateWithoutTimeLogsInput = {
   position?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isApproved?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2381,9 +2677,11 @@ export type UserCreateWithoutCommentsInput = {
   position: string
   department: string
   isActive?: boolean
+  isApproved?: boolean
   lastLoginAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  tenant?: Prisma.TenantCreateNestedOneWithoutUsersInput
   managedProjects?: Prisma.ProjectCreateNestedManyWithoutOwnerInput
   projects?: Prisma.ProjectDeveloperCreateNestedManyWithoutUserInput
   epicAssignments?: Prisma.EpicDeveloperCreateNestedManyWithoutUserInput
@@ -2406,6 +2704,7 @@ export type UserCreateWithoutCommentsInput = {
 
 export type UserUncheckedCreateWithoutCommentsInput = {
   id?: string
+  tenantId?: string
   name: string
   email: string
   passwordHash: string
@@ -2414,6 +2713,7 @@ export type UserUncheckedCreateWithoutCommentsInput = {
   position: string
   department: string
   isActive?: boolean
+  isApproved?: boolean
   lastLoginAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -2463,9 +2763,11 @@ export type UserUpdateWithoutCommentsInput = {
   position?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isApproved?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutUsersNestedInput
   managedProjects?: Prisma.ProjectUpdateManyWithoutOwnerNestedInput
   projects?: Prisma.ProjectDeveloperUpdateManyWithoutUserNestedInput
   epicAssignments?: Prisma.EpicDeveloperUpdateManyWithoutUserNestedInput
@@ -2488,6 +2790,7 @@ export type UserUpdateWithoutCommentsInput = {
 
 export type UserUncheckedUpdateWithoutCommentsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
@@ -2496,6 +2799,7 @@ export type UserUncheckedUpdateWithoutCommentsInput = {
   position?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isApproved?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2529,9 +2833,11 @@ export type UserCreateWithoutNotificationsInput = {
   position: string
   department: string
   isActive?: boolean
+  isApproved?: boolean
   lastLoginAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  tenant?: Prisma.TenantCreateNestedOneWithoutUsersInput
   managedProjects?: Prisma.ProjectCreateNestedManyWithoutOwnerInput
   projects?: Prisma.ProjectDeveloperCreateNestedManyWithoutUserInput
   epicAssignments?: Prisma.EpicDeveloperCreateNestedManyWithoutUserInput
@@ -2554,6 +2860,7 @@ export type UserCreateWithoutNotificationsInput = {
 
 export type UserUncheckedCreateWithoutNotificationsInput = {
   id?: string
+  tenantId?: string
   name: string
   email: string
   passwordHash: string
@@ -2562,6 +2869,7 @@ export type UserUncheckedCreateWithoutNotificationsInput = {
   position: string
   department: string
   isActive?: boolean
+  isApproved?: boolean
   lastLoginAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -2611,9 +2919,11 @@ export type UserUpdateWithoutNotificationsInput = {
   position?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isApproved?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutUsersNestedInput
   managedProjects?: Prisma.ProjectUpdateManyWithoutOwnerNestedInput
   projects?: Prisma.ProjectDeveloperUpdateManyWithoutUserNestedInput
   epicAssignments?: Prisma.EpicDeveloperUpdateManyWithoutUserNestedInput
@@ -2636,6 +2946,7 @@ export type UserUpdateWithoutNotificationsInput = {
 
 export type UserUncheckedUpdateWithoutNotificationsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
@@ -2644,6 +2955,7 @@ export type UserUncheckedUpdateWithoutNotificationsInput = {
   position?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isApproved?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2677,9 +2989,11 @@ export type UserCreateWithoutAuditLogsInput = {
   position: string
   department: string
   isActive?: boolean
+  isApproved?: boolean
   lastLoginAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  tenant?: Prisma.TenantCreateNestedOneWithoutUsersInput
   managedProjects?: Prisma.ProjectCreateNestedManyWithoutOwnerInput
   projects?: Prisma.ProjectDeveloperCreateNestedManyWithoutUserInput
   epicAssignments?: Prisma.EpicDeveloperCreateNestedManyWithoutUserInput
@@ -2702,6 +3016,7 @@ export type UserCreateWithoutAuditLogsInput = {
 
 export type UserUncheckedCreateWithoutAuditLogsInput = {
   id?: string
+  tenantId?: string
   name: string
   email: string
   passwordHash: string
@@ -2710,6 +3025,7 @@ export type UserUncheckedCreateWithoutAuditLogsInput = {
   position: string
   department: string
   isActive?: boolean
+  isApproved?: boolean
   lastLoginAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -2759,9 +3075,11 @@ export type UserUpdateWithoutAuditLogsInput = {
   position?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isApproved?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutUsersNestedInput
   managedProjects?: Prisma.ProjectUpdateManyWithoutOwnerNestedInput
   projects?: Prisma.ProjectDeveloperUpdateManyWithoutUserNestedInput
   epicAssignments?: Prisma.EpicDeveloperUpdateManyWithoutUserNestedInput
@@ -2784,6 +3102,7 @@ export type UserUpdateWithoutAuditLogsInput = {
 
 export type UserUncheckedUpdateWithoutAuditLogsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
@@ -2792,6 +3111,7 @@ export type UserUncheckedUpdateWithoutAuditLogsInput = {
   position?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isApproved?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2825,9 +3145,11 @@ export type UserCreateWithoutStatusHistoriesInput = {
   position: string
   department: string
   isActive?: boolean
+  isApproved?: boolean
   lastLoginAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  tenant?: Prisma.TenantCreateNestedOneWithoutUsersInput
   managedProjects?: Prisma.ProjectCreateNestedManyWithoutOwnerInput
   projects?: Prisma.ProjectDeveloperCreateNestedManyWithoutUserInput
   epicAssignments?: Prisma.EpicDeveloperCreateNestedManyWithoutUserInput
@@ -2850,6 +3172,7 @@ export type UserCreateWithoutStatusHistoriesInput = {
 
 export type UserUncheckedCreateWithoutStatusHistoriesInput = {
   id?: string
+  tenantId?: string
   name: string
   email: string
   passwordHash: string
@@ -2858,6 +3181,7 @@ export type UserUncheckedCreateWithoutStatusHistoriesInput = {
   position: string
   department: string
   isActive?: boolean
+  isApproved?: boolean
   lastLoginAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -2907,9 +3231,11 @@ export type UserUpdateWithoutStatusHistoriesInput = {
   position?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isApproved?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutUsersNestedInput
   managedProjects?: Prisma.ProjectUpdateManyWithoutOwnerNestedInput
   projects?: Prisma.ProjectDeveloperUpdateManyWithoutUserNestedInput
   epicAssignments?: Prisma.EpicDeveloperUpdateManyWithoutUserNestedInput
@@ -2932,6 +3258,7 @@ export type UserUpdateWithoutStatusHistoriesInput = {
 
 export type UserUncheckedUpdateWithoutStatusHistoriesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
@@ -2940,6 +3267,7 @@ export type UserUncheckedUpdateWithoutStatusHistoriesInput = {
   position?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isApproved?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2973,9 +3301,11 @@ export type UserCreateWithoutTaskNotesInput = {
   position: string
   department: string
   isActive?: boolean
+  isApproved?: boolean
   lastLoginAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  tenant?: Prisma.TenantCreateNestedOneWithoutUsersInput
   managedProjects?: Prisma.ProjectCreateNestedManyWithoutOwnerInput
   projects?: Prisma.ProjectDeveloperCreateNestedManyWithoutUserInput
   epicAssignments?: Prisma.EpicDeveloperCreateNestedManyWithoutUserInput
@@ -2998,6 +3328,7 @@ export type UserCreateWithoutTaskNotesInput = {
 
 export type UserUncheckedCreateWithoutTaskNotesInput = {
   id?: string
+  tenantId?: string
   name: string
   email: string
   passwordHash: string
@@ -3006,6 +3337,7 @@ export type UserUncheckedCreateWithoutTaskNotesInput = {
   position: string
   department: string
   isActive?: boolean
+  isApproved?: boolean
   lastLoginAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -3055,9 +3387,11 @@ export type UserUpdateWithoutTaskNotesInput = {
   position?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isApproved?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutUsersNestedInput
   managedProjects?: Prisma.ProjectUpdateManyWithoutOwnerNestedInput
   projects?: Prisma.ProjectDeveloperUpdateManyWithoutUserNestedInput
   epicAssignments?: Prisma.EpicDeveloperUpdateManyWithoutUserNestedInput
@@ -3080,6 +3414,7 @@ export type UserUpdateWithoutTaskNotesInput = {
 
 export type UserUncheckedUpdateWithoutTaskNotesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
@@ -3088,6 +3423,7 @@ export type UserUncheckedUpdateWithoutTaskNotesInput = {
   position?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isApproved?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -3121,9 +3457,11 @@ export type UserCreateWithoutAttachmentsInput = {
   position: string
   department: string
   isActive?: boolean
+  isApproved?: boolean
   lastLoginAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  tenant?: Prisma.TenantCreateNestedOneWithoutUsersInput
   managedProjects?: Prisma.ProjectCreateNestedManyWithoutOwnerInput
   projects?: Prisma.ProjectDeveloperCreateNestedManyWithoutUserInput
   epicAssignments?: Prisma.EpicDeveloperCreateNestedManyWithoutUserInput
@@ -3146,6 +3484,7 @@ export type UserCreateWithoutAttachmentsInput = {
 
 export type UserUncheckedCreateWithoutAttachmentsInput = {
   id?: string
+  tenantId?: string
   name: string
   email: string
   passwordHash: string
@@ -3154,6 +3493,7 @@ export type UserUncheckedCreateWithoutAttachmentsInput = {
   position: string
   department: string
   isActive?: boolean
+  isApproved?: boolean
   lastLoginAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -3203,9 +3543,11 @@ export type UserUpdateWithoutAttachmentsInput = {
   position?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isApproved?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutUsersNestedInput
   managedProjects?: Prisma.ProjectUpdateManyWithoutOwnerNestedInput
   projects?: Prisma.ProjectDeveloperUpdateManyWithoutUserNestedInput
   epicAssignments?: Prisma.EpicDeveloperUpdateManyWithoutUserNestedInput
@@ -3228,6 +3570,7 @@ export type UserUpdateWithoutAttachmentsInput = {
 
 export type UserUncheckedUpdateWithoutAttachmentsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
@@ -3236,6 +3579,7 @@ export type UserUncheckedUpdateWithoutAttachmentsInput = {
   position?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isApproved?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -3269,9 +3613,11 @@ export type UserCreateWithoutModuleAttachmentsInput = {
   position: string
   department: string
   isActive?: boolean
+  isApproved?: boolean
   lastLoginAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  tenant?: Prisma.TenantCreateNestedOneWithoutUsersInput
   managedProjects?: Prisma.ProjectCreateNestedManyWithoutOwnerInput
   projects?: Prisma.ProjectDeveloperCreateNestedManyWithoutUserInput
   epicAssignments?: Prisma.EpicDeveloperCreateNestedManyWithoutUserInput
@@ -3294,6 +3640,7 @@ export type UserCreateWithoutModuleAttachmentsInput = {
 
 export type UserUncheckedCreateWithoutModuleAttachmentsInput = {
   id?: string
+  tenantId?: string
   name: string
   email: string
   passwordHash: string
@@ -3302,6 +3649,7 @@ export type UserUncheckedCreateWithoutModuleAttachmentsInput = {
   position: string
   department: string
   isActive?: boolean
+  isApproved?: boolean
   lastLoginAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -3351,9 +3699,11 @@ export type UserUpdateWithoutModuleAttachmentsInput = {
   position?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isApproved?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutUsersNestedInput
   managedProjects?: Prisma.ProjectUpdateManyWithoutOwnerNestedInput
   projects?: Prisma.ProjectDeveloperUpdateManyWithoutUserNestedInput
   epicAssignments?: Prisma.EpicDeveloperUpdateManyWithoutUserNestedInput
@@ -3376,6 +3726,7 @@ export type UserUpdateWithoutModuleAttachmentsInput = {
 
 export type UserUncheckedUpdateWithoutModuleAttachmentsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
@@ -3384,6 +3735,7 @@ export type UserUncheckedUpdateWithoutModuleAttachmentsInput = {
   position?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isApproved?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -3417,9 +3769,11 @@ export type UserCreateWithoutProjectShowcaseAttachmentsInput = {
   position: string
   department: string
   isActive?: boolean
+  isApproved?: boolean
   lastLoginAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  tenant?: Prisma.TenantCreateNestedOneWithoutUsersInput
   managedProjects?: Prisma.ProjectCreateNestedManyWithoutOwnerInput
   projects?: Prisma.ProjectDeveloperCreateNestedManyWithoutUserInput
   epicAssignments?: Prisma.EpicDeveloperCreateNestedManyWithoutUserInput
@@ -3442,6 +3796,7 @@ export type UserCreateWithoutProjectShowcaseAttachmentsInput = {
 
 export type UserUncheckedCreateWithoutProjectShowcaseAttachmentsInput = {
   id?: string
+  tenantId?: string
   name: string
   email: string
   passwordHash: string
@@ -3450,6 +3805,7 @@ export type UserUncheckedCreateWithoutProjectShowcaseAttachmentsInput = {
   position: string
   department: string
   isActive?: boolean
+  isApproved?: boolean
   lastLoginAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -3499,9 +3855,11 @@ export type UserUpdateWithoutProjectShowcaseAttachmentsInput = {
   position?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isApproved?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutUsersNestedInput
   managedProjects?: Prisma.ProjectUpdateManyWithoutOwnerNestedInput
   projects?: Prisma.ProjectDeveloperUpdateManyWithoutUserNestedInput
   epicAssignments?: Prisma.EpicDeveloperUpdateManyWithoutUserNestedInput
@@ -3524,6 +3882,7 @@ export type UserUpdateWithoutProjectShowcaseAttachmentsInput = {
 
 export type UserUncheckedUpdateWithoutProjectShowcaseAttachmentsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
@@ -3532,6 +3891,7 @@ export type UserUncheckedUpdateWithoutProjectShowcaseAttachmentsInput = {
   position?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isApproved?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -3565,9 +3925,11 @@ export type UserCreateWithoutProjectDemandAttachmentsInput = {
   position: string
   department: string
   isActive?: boolean
+  isApproved?: boolean
   lastLoginAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  tenant?: Prisma.TenantCreateNestedOneWithoutUsersInput
   managedProjects?: Prisma.ProjectCreateNestedManyWithoutOwnerInput
   projects?: Prisma.ProjectDeveloperCreateNestedManyWithoutUserInput
   epicAssignments?: Prisma.EpicDeveloperCreateNestedManyWithoutUserInput
@@ -3590,6 +3952,7 @@ export type UserCreateWithoutProjectDemandAttachmentsInput = {
 
 export type UserUncheckedCreateWithoutProjectDemandAttachmentsInput = {
   id?: string
+  tenantId?: string
   name: string
   email: string
   passwordHash: string
@@ -3598,6 +3961,7 @@ export type UserUncheckedCreateWithoutProjectDemandAttachmentsInput = {
   position: string
   department: string
   isActive?: boolean
+  isApproved?: boolean
   lastLoginAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -3647,9 +4011,11 @@ export type UserUpdateWithoutProjectDemandAttachmentsInput = {
   position?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isApproved?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutUsersNestedInput
   managedProjects?: Prisma.ProjectUpdateManyWithoutOwnerNestedInput
   projects?: Prisma.ProjectDeveloperUpdateManyWithoutUserNestedInput
   epicAssignments?: Prisma.EpicDeveloperUpdateManyWithoutUserNestedInput
@@ -3672,6 +4038,7 @@ export type UserUpdateWithoutProjectDemandAttachmentsInput = {
 
 export type UserUncheckedUpdateWithoutProjectDemandAttachmentsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
@@ -3680,6 +4047,7 @@ export type UserUncheckedUpdateWithoutProjectDemandAttachmentsInput = {
   position?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isApproved?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -3701,6 +4069,108 @@ export type UserUncheckedUpdateWithoutProjectDemandAttachmentsInput = {
   loggedModules?: Prisma.ModuleUncheckedUpdateManyWithoutLoggedByNestedInput
   permissions?: Prisma.UserPermissionUncheckedUpdateManyWithoutUserNestedInput
   apiTokens?: Prisma.ApiTokenUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateManyTenantInput = {
+  id?: string
+  name: string
+  email: string
+  passwordHash: string
+  role?: $Enums.UserRole
+  avatar?: string | null
+  position: string
+  department: string
+  isActive?: boolean
+  isApproved?: boolean
+  lastLoginAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type UserUpdateWithoutTenantInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  position?: Prisma.StringFieldUpdateOperationsInput | string
+  department?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isApproved?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  managedProjects?: Prisma.ProjectUpdateManyWithoutOwnerNestedInput
+  projects?: Prisma.ProjectDeveloperUpdateManyWithoutUserNestedInput
+  epicAssignments?: Prisma.EpicDeveloperUpdateManyWithoutUserNestedInput
+  assignedTasks?: Prisma.TaskUpdateManyWithoutAssigneeNestedInput
+  reportedTasks?: Prisma.TaskUpdateManyWithoutReporterNestedInput
+  subtasks?: Prisma.SubtaskUpdateManyWithoutAssigneeNestedInput
+  timeLogs?: Prisma.TimeLogUpdateManyWithoutUserNestedInput
+  comments?: Prisma.CommentUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput
+  statusHistories?: Prisma.StatusHistoryUpdateManyWithoutUserNestedInput
+  taskNotes?: Prisma.TaskNoteUpdateManyWithoutUserNestedInput
+  attachments?: Prisma.TaskAttachmentUpdateManyWithoutUserNestedInput
+  moduleAttachments?: Prisma.ModuleAttachmentUpdateManyWithoutUserNestedInput
+  projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentUpdateManyWithoutUserNestedInput
+  projectDemandAttachments?: Prisma.ProjectDemandAttachmentUpdateManyWithoutUserNestedInput
+  loggedModules?: Prisma.ModuleUpdateManyWithoutLoggedByNestedInput
+  permissions?: Prisma.UserPermissionUpdateManyWithoutUserNestedInput
+  apiTokens?: Prisma.ApiTokenUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutTenantInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  position?: Prisma.StringFieldUpdateOperationsInput | string
+  department?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isApproved?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  managedProjects?: Prisma.ProjectUncheckedUpdateManyWithoutOwnerNestedInput
+  projects?: Prisma.ProjectDeveloperUncheckedUpdateManyWithoutUserNestedInput
+  epicAssignments?: Prisma.EpicDeveloperUncheckedUpdateManyWithoutUserNestedInput
+  assignedTasks?: Prisma.TaskUncheckedUpdateManyWithoutAssigneeNestedInput
+  reportedTasks?: Prisma.TaskUncheckedUpdateManyWithoutReporterNestedInput
+  subtasks?: Prisma.SubtaskUncheckedUpdateManyWithoutAssigneeNestedInput
+  timeLogs?: Prisma.TimeLogUncheckedUpdateManyWithoutUserNestedInput
+  comments?: Prisma.CommentUncheckedUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput
+  statusHistories?: Prisma.StatusHistoryUncheckedUpdateManyWithoutUserNestedInput
+  taskNotes?: Prisma.TaskNoteUncheckedUpdateManyWithoutUserNestedInput
+  attachments?: Prisma.TaskAttachmentUncheckedUpdateManyWithoutUserNestedInput
+  moduleAttachments?: Prisma.ModuleAttachmentUncheckedUpdateManyWithoutUserNestedInput
+  projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentUncheckedUpdateManyWithoutUserNestedInput
+  projectDemandAttachments?: Prisma.ProjectDemandAttachmentUncheckedUpdateManyWithoutUserNestedInput
+  loggedModules?: Prisma.ModuleUncheckedUpdateManyWithoutLoggedByNestedInput
+  permissions?: Prisma.UserPermissionUncheckedUpdateManyWithoutUserNestedInput
+  apiTokens?: Prisma.ApiTokenUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateManyWithoutTenantInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  position?: Prisma.StringFieldUpdateOperationsInput | string
+  department?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isApproved?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 
@@ -3898,6 +4368,7 @@ export type UserCountOutputTypeCountApiTokensArgs<ExtArgs extends runtime.Types.
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  tenantId?: boolean
   name?: boolean
   email?: boolean
   passwordHash?: boolean
@@ -3906,9 +4377,11 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   position?: boolean
   department?: boolean
   isActive?: boolean
+  isApproved?: boolean
   lastLoginAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   managedProjects?: boolean | Prisma.User$managedProjectsArgs<ExtArgs>
   projects?: boolean | Prisma.User$projectsArgs<ExtArgs>
   epicAssignments?: boolean | Prisma.User$epicAssignmentsArgs<ExtArgs>
@@ -3935,6 +4408,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
 
 export type UserSelectScalar = {
   id?: boolean
+  tenantId?: boolean
   name?: boolean
   email?: boolean
   passwordHash?: boolean
@@ -3943,13 +4417,15 @@ export type UserSelectScalar = {
   position?: boolean
   department?: boolean
   isActive?: boolean
+  isApproved?: boolean
   lastLoginAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "email" | "passwordHash" | "role" | "avatar" | "position" | "department" | "isActive" | "lastLoginAt" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "name" | "email" | "passwordHash" | "role" | "avatar" | "position" | "department" | "isActive" | "isApproved" | "lastLoginAt" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   managedProjects?: boolean | Prisma.User$managedProjectsArgs<ExtArgs>
   projects?: boolean | Prisma.User$projectsArgs<ExtArgs>
   epicAssignments?: boolean | Prisma.User$epicAssignmentsArgs<ExtArgs>
@@ -3975,6 +4451,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
 export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "User"
   objects: {
+    tenant: Prisma.$TenantPayload<ExtArgs>
     managedProjects: Prisma.$ProjectPayload<ExtArgs>[]
     projects: Prisma.$ProjectDeveloperPayload<ExtArgs>[]
     epicAssignments: Prisma.$EpicDeveloperPayload<ExtArgs>[]
@@ -3997,6 +4474,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
+    tenantId: string
     name: string
     email: string
     passwordHash: string
@@ -4005,6 +4483,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     position: string
     department: string
     isActive: boolean
+    isApproved: boolean
     lastLoginAt: Date | null
     createdAt: Date
     updatedAt: Date
@@ -4348,6 +4827,7 @@ readonly fields: UserFieldRefs;
  */
 export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  tenant<T extends Prisma.TenantDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TenantDefaultArgs<ExtArgs>>): Prisma.Prisma__TenantClient<runtime.Types.Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   managedProjects<T extends Prisma.User$managedProjectsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$managedProjectsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   projects<T extends Prisma.User$projectsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$projectsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProjectDeveloperPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   epicAssignments<T extends Prisma.User$epicAssignmentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$epicAssignmentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EpicDeveloperPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -4397,6 +4877,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
  */
 export interface UserFieldRefs {
   readonly id: Prisma.FieldRef<"User", 'String'>
+  readonly tenantId: Prisma.FieldRef<"User", 'String'>
   readonly name: Prisma.FieldRef<"User", 'String'>
   readonly email: Prisma.FieldRef<"User", 'String'>
   readonly passwordHash: Prisma.FieldRef<"User", 'String'>
@@ -4405,6 +4886,7 @@ export interface UserFieldRefs {
   readonly position: Prisma.FieldRef<"User", 'String'>
   readonly department: Prisma.FieldRef<"User", 'String'>
   readonly isActive: Prisma.FieldRef<"User", 'Boolean'>
+  readonly isApproved: Prisma.FieldRef<"User", 'Boolean'>
   readonly lastLoginAt: Prisma.FieldRef<"User", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"User", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"User", 'DateTime'>

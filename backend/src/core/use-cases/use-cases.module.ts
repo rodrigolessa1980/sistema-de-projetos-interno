@@ -61,6 +61,9 @@ import { DeleteTimeLogUseCase } from './time-logs/delete-time-log.use-case';
 import { ListUsersUseCase } from './users/list-users.use-case';
 import { GetUserPermissionsUseCase } from './users/get-user-permissions.use-case';
 import { UpdateUserPermissionsUseCase } from './users/update-user-permissions.use-case';
+import { ApproveUserUseCase } from './users/approve-user.use-case';
+// Tenant Use Cases
+import { ListTenantsUseCase } from './tenants/list-tenants.use-case';
 import { CreateApiTokenUseCase } from './api-tokens/create-api-token.use-case';
 import {
   ListApiTokensUseCase,
@@ -133,6 +136,9 @@ const useCases = [
   ListUsersUseCase,
   GetUserPermissionsUseCase,
   UpdateUserPermissionsUseCase,
+  ApproveUserUseCase,
+  // Tenants
+  ListTenantsUseCase,
   CreateApiTokenUseCase,
   ListApiTokensUseCase,
   RevokeApiTokenUseCase,

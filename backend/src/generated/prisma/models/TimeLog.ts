@@ -38,6 +38,7 @@ export type TimeLogSumAggregateOutputType = {
 
 export type TimeLogMinAggregateOutputType = {
   id: string | null
+  tenantId: string | null
   projectId: string | null
   taskId: string | null
   userId: string | null
@@ -54,6 +55,7 @@ export type TimeLogMinAggregateOutputType = {
 
 export type TimeLogMaxAggregateOutputType = {
   id: string | null
+  tenantId: string | null
   projectId: string | null
   taskId: string | null
   userId: string | null
@@ -70,6 +72,7 @@ export type TimeLogMaxAggregateOutputType = {
 
 export type TimeLogCountAggregateOutputType = {
   id: number
+  tenantId: number
   projectId: number
   taskId: number
   userId: number
@@ -98,6 +101,7 @@ export type TimeLogSumAggregateInputType = {
 
 export type TimeLogMinAggregateInputType = {
   id?: true
+  tenantId?: true
   projectId?: true
   taskId?: true
   userId?: true
@@ -114,6 +118,7 @@ export type TimeLogMinAggregateInputType = {
 
 export type TimeLogMaxAggregateInputType = {
   id?: true
+  tenantId?: true
   projectId?: true
   taskId?: true
   userId?: true
@@ -130,6 +135,7 @@ export type TimeLogMaxAggregateInputType = {
 
 export type TimeLogCountAggregateInputType = {
   id?: true
+  tenantId?: true
   projectId?: true
   taskId?: true
   userId?: true
@@ -233,6 +239,7 @@ export type TimeLogGroupByArgs<ExtArgs extends runtime.Types.Extensions.Internal
 
 export type TimeLogGroupByOutputType = {
   id: string
+  tenantId: string
   projectId: string
   taskId: string
   userId: string
@@ -272,6 +279,7 @@ export type TimeLogWhereInput = {
   OR?: Prisma.TimeLogWhereInput[]
   NOT?: Prisma.TimeLogWhereInput | Prisma.TimeLogWhereInput[]
   id?: Prisma.StringFilter<"TimeLog"> | string
+  tenantId?: Prisma.StringFilter<"TimeLog"> | string
   projectId?: Prisma.StringFilter<"TimeLog"> | string
   taskId?: Prisma.StringFilter<"TimeLog"> | string
   userId?: Prisma.StringFilter<"TimeLog"> | string
@@ -284,6 +292,7 @@ export type TimeLogWhereInput = {
   source?: Prisma.EnumTimeLogSourceFilter<"TimeLog"> | $Enums.TimeLogSource
   status?: Prisma.EnumTaskStatusFilter<"TimeLog"> | $Enums.TaskStatus
   createdAt?: Prisma.DateTimeFilter<"TimeLog"> | Date | string
+  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
   project?: Prisma.XOR<Prisma.ProjectScalarRelationFilter, Prisma.ProjectWhereInput>
   task?: Prisma.XOR<Prisma.TaskScalarRelationFilter, Prisma.TaskWhereInput>
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
@@ -291,6 +300,7 @@ export type TimeLogWhereInput = {
 
 export type TimeLogOrderByWithRelationInput = {
   id?: Prisma.SortOrder
+  tenantId?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
   taskId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
@@ -303,6 +313,7 @@ export type TimeLogOrderByWithRelationInput = {
   source?: Prisma.SortOrder
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  tenant?: Prisma.TenantOrderByWithRelationInput
   project?: Prisma.ProjectOrderByWithRelationInput
   task?: Prisma.TaskOrderByWithRelationInput
   user?: Prisma.UserOrderByWithRelationInput
@@ -314,6 +325,7 @@ export type TimeLogWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.TimeLogWhereInput | Prisma.TimeLogWhereInput[]
   OR?: Prisma.TimeLogWhereInput[]
   NOT?: Prisma.TimeLogWhereInput | Prisma.TimeLogWhereInput[]
+  tenantId?: Prisma.StringFilter<"TimeLog"> | string
   projectId?: Prisma.StringFilter<"TimeLog"> | string
   taskId?: Prisma.StringFilter<"TimeLog"> | string
   userId?: Prisma.StringFilter<"TimeLog"> | string
@@ -326,6 +338,7 @@ export type TimeLogWhereUniqueInput = Prisma.AtLeast<{
   source?: Prisma.EnumTimeLogSourceFilter<"TimeLog"> | $Enums.TimeLogSource
   status?: Prisma.EnumTaskStatusFilter<"TimeLog"> | $Enums.TaskStatus
   createdAt?: Prisma.DateTimeFilter<"TimeLog"> | Date | string
+  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
   project?: Prisma.XOR<Prisma.ProjectScalarRelationFilter, Prisma.ProjectWhereInput>
   task?: Prisma.XOR<Prisma.TaskScalarRelationFilter, Prisma.TaskWhereInput>
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
@@ -333,6 +346,7 @@ export type TimeLogWhereUniqueInput = Prisma.AtLeast<{
 
 export type TimeLogOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
+  tenantId?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
   taskId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
@@ -357,6 +371,7 @@ export type TimeLogScalarWhereWithAggregatesInput = {
   OR?: Prisma.TimeLogScalarWhereWithAggregatesInput[]
   NOT?: Prisma.TimeLogScalarWhereWithAggregatesInput | Prisma.TimeLogScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"TimeLog"> | string
+  tenantId?: Prisma.StringWithAggregatesFilter<"TimeLog"> | string
   projectId?: Prisma.StringWithAggregatesFilter<"TimeLog"> | string
   taskId?: Prisma.StringWithAggregatesFilter<"TimeLog"> | string
   userId?: Prisma.StringWithAggregatesFilter<"TimeLog"> | string
@@ -382,6 +397,7 @@ export type TimeLogCreateInput = {
   source?: $Enums.TimeLogSource
   status: $Enums.TaskStatus
   createdAt?: Date | string
+  tenant?: Prisma.TenantCreateNestedOneWithoutTimeLogsInput
   project: Prisma.ProjectCreateNestedOneWithoutTimeLogsInput
   task: Prisma.TaskCreateNestedOneWithoutTimeLogsInput
   user: Prisma.UserCreateNestedOneWithoutTimeLogsInput
@@ -389,6 +405,7 @@ export type TimeLogCreateInput = {
 
 export type TimeLogUncheckedCreateInput = {
   id?: string
+  tenantId?: string
   projectId: string
   taskId: string
   userId: string
@@ -414,6 +431,7 @@ export type TimeLogUpdateInput = {
   source?: Prisma.EnumTimeLogSourceFieldUpdateOperationsInput | $Enums.TimeLogSource
   status?: Prisma.EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutTimeLogsNestedInput
   project?: Prisma.ProjectUpdateOneRequiredWithoutTimeLogsNestedInput
   task?: Prisma.TaskUpdateOneRequiredWithoutTimeLogsNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutTimeLogsNestedInput
@@ -421,6 +439,7 @@ export type TimeLogUpdateInput = {
 
 export type TimeLogUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   taskId?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -437,6 +456,7 @@ export type TimeLogUncheckedUpdateInput = {
 
 export type TimeLogCreateManyInput = {
   id?: string
+  tenantId?: string
   projectId: string
   taskId: string
   userId: string
@@ -466,6 +486,7 @@ export type TimeLogUpdateManyMutationInput = {
 
 export type TimeLogUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   taskId?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -498,6 +519,7 @@ export type TimeLogOrderByRelevanceInput = {
 
 export type TimeLogCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  tenantId?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
   taskId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
@@ -519,6 +541,7 @@ export type TimeLogAvgOrderByAggregateInput = {
 
 export type TimeLogMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  tenantId?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
   taskId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
@@ -535,6 +558,7 @@ export type TimeLogMaxOrderByAggregateInput = {
 
 export type TimeLogMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  tenantId?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
   taskId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
@@ -552,6 +576,48 @@ export type TimeLogMinOrderByAggregateInput = {
 export type TimeLogSumOrderByAggregateInput = {
   hours?: Prisma.SortOrder
   durationSeconds?: Prisma.SortOrder
+}
+
+export type TimeLogCreateNestedManyWithoutTenantInput = {
+  create?: Prisma.XOR<Prisma.TimeLogCreateWithoutTenantInput, Prisma.TimeLogUncheckedCreateWithoutTenantInput> | Prisma.TimeLogCreateWithoutTenantInput[] | Prisma.TimeLogUncheckedCreateWithoutTenantInput[]
+  connectOrCreate?: Prisma.TimeLogCreateOrConnectWithoutTenantInput | Prisma.TimeLogCreateOrConnectWithoutTenantInput[]
+  createMany?: Prisma.TimeLogCreateManyTenantInputEnvelope
+  connect?: Prisma.TimeLogWhereUniqueInput | Prisma.TimeLogWhereUniqueInput[]
+}
+
+export type TimeLogUncheckedCreateNestedManyWithoutTenantInput = {
+  create?: Prisma.XOR<Prisma.TimeLogCreateWithoutTenantInput, Prisma.TimeLogUncheckedCreateWithoutTenantInput> | Prisma.TimeLogCreateWithoutTenantInput[] | Prisma.TimeLogUncheckedCreateWithoutTenantInput[]
+  connectOrCreate?: Prisma.TimeLogCreateOrConnectWithoutTenantInput | Prisma.TimeLogCreateOrConnectWithoutTenantInput[]
+  createMany?: Prisma.TimeLogCreateManyTenantInputEnvelope
+  connect?: Prisma.TimeLogWhereUniqueInput | Prisma.TimeLogWhereUniqueInput[]
+}
+
+export type TimeLogUpdateManyWithoutTenantNestedInput = {
+  create?: Prisma.XOR<Prisma.TimeLogCreateWithoutTenantInput, Prisma.TimeLogUncheckedCreateWithoutTenantInput> | Prisma.TimeLogCreateWithoutTenantInput[] | Prisma.TimeLogUncheckedCreateWithoutTenantInput[]
+  connectOrCreate?: Prisma.TimeLogCreateOrConnectWithoutTenantInput | Prisma.TimeLogCreateOrConnectWithoutTenantInput[]
+  upsert?: Prisma.TimeLogUpsertWithWhereUniqueWithoutTenantInput | Prisma.TimeLogUpsertWithWhereUniqueWithoutTenantInput[]
+  createMany?: Prisma.TimeLogCreateManyTenantInputEnvelope
+  set?: Prisma.TimeLogWhereUniqueInput | Prisma.TimeLogWhereUniqueInput[]
+  disconnect?: Prisma.TimeLogWhereUniqueInput | Prisma.TimeLogWhereUniqueInput[]
+  delete?: Prisma.TimeLogWhereUniqueInput | Prisma.TimeLogWhereUniqueInput[]
+  connect?: Prisma.TimeLogWhereUniqueInput | Prisma.TimeLogWhereUniqueInput[]
+  update?: Prisma.TimeLogUpdateWithWhereUniqueWithoutTenantInput | Prisma.TimeLogUpdateWithWhereUniqueWithoutTenantInput[]
+  updateMany?: Prisma.TimeLogUpdateManyWithWhereWithoutTenantInput | Prisma.TimeLogUpdateManyWithWhereWithoutTenantInput[]
+  deleteMany?: Prisma.TimeLogScalarWhereInput | Prisma.TimeLogScalarWhereInput[]
+}
+
+export type TimeLogUncheckedUpdateManyWithoutTenantNestedInput = {
+  create?: Prisma.XOR<Prisma.TimeLogCreateWithoutTenantInput, Prisma.TimeLogUncheckedCreateWithoutTenantInput> | Prisma.TimeLogCreateWithoutTenantInput[] | Prisma.TimeLogUncheckedCreateWithoutTenantInput[]
+  connectOrCreate?: Prisma.TimeLogCreateOrConnectWithoutTenantInput | Prisma.TimeLogCreateOrConnectWithoutTenantInput[]
+  upsert?: Prisma.TimeLogUpsertWithWhereUniqueWithoutTenantInput | Prisma.TimeLogUpsertWithWhereUniqueWithoutTenantInput[]
+  createMany?: Prisma.TimeLogCreateManyTenantInputEnvelope
+  set?: Prisma.TimeLogWhereUniqueInput | Prisma.TimeLogWhereUniqueInput[]
+  disconnect?: Prisma.TimeLogWhereUniqueInput | Prisma.TimeLogWhereUniqueInput[]
+  delete?: Prisma.TimeLogWhereUniqueInput | Prisma.TimeLogWhereUniqueInput[]
+  connect?: Prisma.TimeLogWhereUniqueInput | Prisma.TimeLogWhereUniqueInput[]
+  update?: Prisma.TimeLogUpdateWithWhereUniqueWithoutTenantInput | Prisma.TimeLogUpdateWithWhereUniqueWithoutTenantInput[]
+  updateMany?: Prisma.TimeLogUpdateManyWithWhereWithoutTenantInput | Prisma.TimeLogUpdateManyWithWhereWithoutTenantInput[]
+  deleteMany?: Prisma.TimeLogScalarWhereInput | Prisma.TimeLogScalarWhereInput[]
 }
 
 export type TimeLogCreateNestedManyWithoutUserInput = {
@@ -684,7 +750,7 @@ export type EnumTimeLogSourceFieldUpdateOperationsInput = {
   set?: $Enums.TimeLogSource
 }
 
-export type TimeLogCreateWithoutUserInput = {
+export type TimeLogCreateWithoutTenantInput = {
   id?: string
   hours: number
   durationSeconds?: number | null
@@ -697,10 +763,90 @@ export type TimeLogCreateWithoutUserInput = {
   createdAt?: Date | string
   project: Prisma.ProjectCreateNestedOneWithoutTimeLogsInput
   task: Prisma.TaskCreateNestedOneWithoutTimeLogsInput
+  user: Prisma.UserCreateNestedOneWithoutTimeLogsInput
+}
+
+export type TimeLogUncheckedCreateWithoutTenantInput = {
+  id?: string
+  projectId: string
+  taskId: string
+  userId: string
+  hours: number
+  durationSeconds?: number | null
+  description: string
+  date: Date | string
+  startedAt?: Date | string | null
+  endedAt?: Date | string | null
+  source?: $Enums.TimeLogSource
+  status: $Enums.TaskStatus
+  createdAt?: Date | string
+}
+
+export type TimeLogCreateOrConnectWithoutTenantInput = {
+  where: Prisma.TimeLogWhereUniqueInput
+  create: Prisma.XOR<Prisma.TimeLogCreateWithoutTenantInput, Prisma.TimeLogUncheckedCreateWithoutTenantInput>
+}
+
+export type TimeLogCreateManyTenantInputEnvelope = {
+  data: Prisma.TimeLogCreateManyTenantInput | Prisma.TimeLogCreateManyTenantInput[]
+  skipDuplicates?: boolean
+}
+
+export type TimeLogUpsertWithWhereUniqueWithoutTenantInput = {
+  where: Prisma.TimeLogWhereUniqueInput
+  update: Prisma.XOR<Prisma.TimeLogUpdateWithoutTenantInput, Prisma.TimeLogUncheckedUpdateWithoutTenantInput>
+  create: Prisma.XOR<Prisma.TimeLogCreateWithoutTenantInput, Prisma.TimeLogUncheckedCreateWithoutTenantInput>
+}
+
+export type TimeLogUpdateWithWhereUniqueWithoutTenantInput = {
+  where: Prisma.TimeLogWhereUniqueInput
+  data: Prisma.XOR<Prisma.TimeLogUpdateWithoutTenantInput, Prisma.TimeLogUncheckedUpdateWithoutTenantInput>
+}
+
+export type TimeLogUpdateManyWithWhereWithoutTenantInput = {
+  where: Prisma.TimeLogScalarWhereInput
+  data: Prisma.XOR<Prisma.TimeLogUpdateManyMutationInput, Prisma.TimeLogUncheckedUpdateManyWithoutTenantInput>
+}
+
+export type TimeLogScalarWhereInput = {
+  AND?: Prisma.TimeLogScalarWhereInput | Prisma.TimeLogScalarWhereInput[]
+  OR?: Prisma.TimeLogScalarWhereInput[]
+  NOT?: Prisma.TimeLogScalarWhereInput | Prisma.TimeLogScalarWhereInput[]
+  id?: Prisma.StringFilter<"TimeLog"> | string
+  tenantId?: Prisma.StringFilter<"TimeLog"> | string
+  projectId?: Prisma.StringFilter<"TimeLog"> | string
+  taskId?: Prisma.StringFilter<"TimeLog"> | string
+  userId?: Prisma.StringFilter<"TimeLog"> | string
+  hours?: Prisma.FloatFilter<"TimeLog"> | number
+  durationSeconds?: Prisma.IntNullableFilter<"TimeLog"> | number | null
+  description?: Prisma.StringFilter<"TimeLog"> | string
+  date?: Prisma.DateTimeFilter<"TimeLog"> | Date | string
+  startedAt?: Prisma.DateTimeNullableFilter<"TimeLog"> | Date | string | null
+  endedAt?: Prisma.DateTimeNullableFilter<"TimeLog"> | Date | string | null
+  source?: Prisma.EnumTimeLogSourceFilter<"TimeLog"> | $Enums.TimeLogSource
+  status?: Prisma.EnumTaskStatusFilter<"TimeLog"> | $Enums.TaskStatus
+  createdAt?: Prisma.DateTimeFilter<"TimeLog"> | Date | string
+}
+
+export type TimeLogCreateWithoutUserInput = {
+  id?: string
+  hours: number
+  durationSeconds?: number | null
+  description: string
+  date: Date | string
+  startedAt?: Date | string | null
+  endedAt?: Date | string | null
+  source?: $Enums.TimeLogSource
+  status: $Enums.TaskStatus
+  createdAt?: Date | string
+  tenant?: Prisma.TenantCreateNestedOneWithoutTimeLogsInput
+  project: Prisma.ProjectCreateNestedOneWithoutTimeLogsInput
+  task: Prisma.TaskCreateNestedOneWithoutTimeLogsInput
 }
 
 export type TimeLogUncheckedCreateWithoutUserInput = {
   id?: string
+  tenantId?: string
   projectId: string
   taskId: string
   hours: number
@@ -740,25 +886,6 @@ export type TimeLogUpdateManyWithWhereWithoutUserInput = {
   data: Prisma.XOR<Prisma.TimeLogUpdateManyMutationInput, Prisma.TimeLogUncheckedUpdateManyWithoutUserInput>
 }
 
-export type TimeLogScalarWhereInput = {
-  AND?: Prisma.TimeLogScalarWhereInput | Prisma.TimeLogScalarWhereInput[]
-  OR?: Prisma.TimeLogScalarWhereInput[]
-  NOT?: Prisma.TimeLogScalarWhereInput | Prisma.TimeLogScalarWhereInput[]
-  id?: Prisma.StringFilter<"TimeLog"> | string
-  projectId?: Prisma.StringFilter<"TimeLog"> | string
-  taskId?: Prisma.StringFilter<"TimeLog"> | string
-  userId?: Prisma.StringFilter<"TimeLog"> | string
-  hours?: Prisma.FloatFilter<"TimeLog"> | number
-  durationSeconds?: Prisma.IntNullableFilter<"TimeLog"> | number | null
-  description?: Prisma.StringFilter<"TimeLog"> | string
-  date?: Prisma.DateTimeFilter<"TimeLog"> | Date | string
-  startedAt?: Prisma.DateTimeNullableFilter<"TimeLog"> | Date | string | null
-  endedAt?: Prisma.DateTimeNullableFilter<"TimeLog"> | Date | string | null
-  source?: Prisma.EnumTimeLogSourceFilter<"TimeLog"> | $Enums.TimeLogSource
-  status?: Prisma.EnumTaskStatusFilter<"TimeLog"> | $Enums.TaskStatus
-  createdAt?: Prisma.DateTimeFilter<"TimeLog"> | Date | string
-}
-
 export type TimeLogCreateWithoutProjectInput = {
   id?: string
   hours: number
@@ -770,12 +897,14 @@ export type TimeLogCreateWithoutProjectInput = {
   source?: $Enums.TimeLogSource
   status: $Enums.TaskStatus
   createdAt?: Date | string
+  tenant?: Prisma.TenantCreateNestedOneWithoutTimeLogsInput
   task: Prisma.TaskCreateNestedOneWithoutTimeLogsInput
   user: Prisma.UserCreateNestedOneWithoutTimeLogsInput
 }
 
 export type TimeLogUncheckedCreateWithoutProjectInput = {
   id?: string
+  tenantId?: string
   taskId: string
   userId: string
   hours: number
@@ -826,12 +955,14 @@ export type TimeLogCreateWithoutTaskInput = {
   source?: $Enums.TimeLogSource
   status: $Enums.TaskStatus
   createdAt?: Date | string
+  tenant?: Prisma.TenantCreateNestedOneWithoutTimeLogsInput
   project: Prisma.ProjectCreateNestedOneWithoutTimeLogsInput
   user: Prisma.UserCreateNestedOneWithoutTimeLogsInput
 }
 
 export type TimeLogUncheckedCreateWithoutTaskInput = {
   id?: string
+  tenantId?: string
   projectId: string
   userId: string
   hours: number
@@ -871,8 +1002,73 @@ export type TimeLogUpdateManyWithWhereWithoutTaskInput = {
   data: Prisma.XOR<Prisma.TimeLogUpdateManyMutationInput, Prisma.TimeLogUncheckedUpdateManyWithoutTaskInput>
 }
 
+export type TimeLogCreateManyTenantInput = {
+  id?: string
+  projectId: string
+  taskId: string
+  userId: string
+  hours: number
+  durationSeconds?: number | null
+  description: string
+  date: Date | string
+  startedAt?: Date | string | null
+  endedAt?: Date | string | null
+  source?: $Enums.TimeLogSource
+  status: $Enums.TaskStatus
+  createdAt?: Date | string
+}
+
+export type TimeLogUpdateWithoutTenantInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  hours?: Prisma.FloatFieldUpdateOperationsInput | number
+  durationSeconds?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  startedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  source?: Prisma.EnumTimeLogSourceFieldUpdateOperationsInput | $Enums.TimeLogSource
+  status?: Prisma.EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  project?: Prisma.ProjectUpdateOneRequiredWithoutTimeLogsNestedInput
+  task?: Prisma.TaskUpdateOneRequiredWithoutTimeLogsNestedInput
+  user?: Prisma.UserUpdateOneRequiredWithoutTimeLogsNestedInput
+}
+
+export type TimeLogUncheckedUpdateWithoutTenantInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  projectId?: Prisma.StringFieldUpdateOperationsInput | string
+  taskId?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  hours?: Prisma.FloatFieldUpdateOperationsInput | number
+  durationSeconds?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  startedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  source?: Prisma.EnumTimeLogSourceFieldUpdateOperationsInput | $Enums.TimeLogSource
+  status?: Prisma.EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type TimeLogUncheckedUpdateManyWithoutTenantInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  projectId?: Prisma.StringFieldUpdateOperationsInput | string
+  taskId?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  hours?: Prisma.FloatFieldUpdateOperationsInput | number
+  durationSeconds?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  startedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  source?: Prisma.EnumTimeLogSourceFieldUpdateOperationsInput | $Enums.TimeLogSource
+  status?: Prisma.EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
 export type TimeLogCreateManyUserInput = {
   id?: string
+  tenantId?: string
   projectId: string
   taskId: string
   hours: number
@@ -897,12 +1093,14 @@ export type TimeLogUpdateWithoutUserInput = {
   source?: Prisma.EnumTimeLogSourceFieldUpdateOperationsInput | $Enums.TimeLogSource
   status?: Prisma.EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutTimeLogsNestedInput
   project?: Prisma.ProjectUpdateOneRequiredWithoutTimeLogsNestedInput
   task?: Prisma.TaskUpdateOneRequiredWithoutTimeLogsNestedInput
 }
 
 export type TimeLogUncheckedUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   taskId?: Prisma.StringFieldUpdateOperationsInput | string
   hours?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -918,6 +1116,7 @@ export type TimeLogUncheckedUpdateWithoutUserInput = {
 
 export type TimeLogUncheckedUpdateManyWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   taskId?: Prisma.StringFieldUpdateOperationsInput | string
   hours?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -933,6 +1132,7 @@ export type TimeLogUncheckedUpdateManyWithoutUserInput = {
 
 export type TimeLogCreateManyProjectInput = {
   id?: string
+  tenantId?: string
   taskId: string
   userId: string
   hours: number
@@ -957,12 +1157,14 @@ export type TimeLogUpdateWithoutProjectInput = {
   source?: Prisma.EnumTimeLogSourceFieldUpdateOperationsInput | $Enums.TimeLogSource
   status?: Prisma.EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutTimeLogsNestedInput
   task?: Prisma.TaskUpdateOneRequiredWithoutTimeLogsNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutTimeLogsNestedInput
 }
 
 export type TimeLogUncheckedUpdateWithoutProjectInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   taskId?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   hours?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -978,6 +1180,7 @@ export type TimeLogUncheckedUpdateWithoutProjectInput = {
 
 export type TimeLogUncheckedUpdateManyWithoutProjectInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   taskId?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   hours?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -993,6 +1196,7 @@ export type TimeLogUncheckedUpdateManyWithoutProjectInput = {
 
 export type TimeLogCreateManyTaskInput = {
   id?: string
+  tenantId?: string
   projectId: string
   userId: string
   hours: number
@@ -1017,12 +1221,14 @@ export type TimeLogUpdateWithoutTaskInput = {
   source?: Prisma.EnumTimeLogSourceFieldUpdateOperationsInput | $Enums.TimeLogSource
   status?: Prisma.EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutTimeLogsNestedInput
   project?: Prisma.ProjectUpdateOneRequiredWithoutTimeLogsNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutTimeLogsNestedInput
 }
 
 export type TimeLogUncheckedUpdateWithoutTaskInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   hours?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -1038,6 +1244,7 @@ export type TimeLogUncheckedUpdateWithoutTaskInput = {
 
 export type TimeLogUncheckedUpdateManyWithoutTaskInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   hours?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -1055,6 +1262,7 @@ export type TimeLogUncheckedUpdateManyWithoutTaskInput = {
 
 export type TimeLogSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  tenantId?: boolean
   projectId?: boolean
   taskId?: boolean
   userId?: boolean
@@ -1067,6 +1275,7 @@ export type TimeLogSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   source?: boolean
   status?: boolean
   createdAt?: boolean
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
   task?: boolean | Prisma.TaskDefaultArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -1076,6 +1285,7 @@ export type TimeLogSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
 
 export type TimeLogSelectScalar = {
   id?: boolean
+  tenantId?: boolean
   projectId?: boolean
   taskId?: boolean
   userId?: boolean
@@ -1090,8 +1300,9 @@ export type TimeLogSelectScalar = {
   createdAt?: boolean
 }
 
-export type TimeLogOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "projectId" | "taskId" | "userId" | "hours" | "durationSeconds" | "description" | "date" | "startedAt" | "endedAt" | "source" | "status" | "createdAt", ExtArgs["result"]["timeLog"]>
+export type TimeLogOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "projectId" | "taskId" | "userId" | "hours" | "durationSeconds" | "description" | "date" | "startedAt" | "endedAt" | "source" | "status" | "createdAt", ExtArgs["result"]["timeLog"]>
 export type TimeLogInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
   task?: boolean | Prisma.TaskDefaultArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -1100,12 +1311,14 @@ export type TimeLogInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs
 export type $TimeLogPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "TimeLog"
   objects: {
+    tenant: Prisma.$TenantPayload<ExtArgs>
     project: Prisma.$ProjectPayload<ExtArgs>
     task: Prisma.$TaskPayload<ExtArgs>
     user: Prisma.$UserPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
+    tenantId: string
     projectId: string
     taskId: string
     userId: string
@@ -1458,6 +1671,7 @@ readonly fields: TimeLogFieldRefs;
  */
 export interface Prisma__TimeLogClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  tenant<T extends Prisma.TenantDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TenantDefaultArgs<ExtArgs>>): Prisma.Prisma__TenantClient<runtime.Types.Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   project<T extends Prisma.ProjectDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProjectDefaultArgs<ExtArgs>>): Prisma.Prisma__ProjectClient<runtime.Types.Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   task<T extends Prisma.TaskDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TaskDefaultArgs<ExtArgs>>): Prisma.Prisma__TaskClient<runtime.Types.Result.GetResult<Prisma.$TaskPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
@@ -1491,6 +1705,7 @@ export interface Prisma__TimeLogClient<T, Null = never, ExtArgs extends runtime.
  */
 export interface TimeLogFieldRefs {
   readonly id: Prisma.FieldRef<"TimeLog", 'String'>
+  readonly tenantId: Prisma.FieldRef<"TimeLog", 'String'>
   readonly projectId: Prisma.FieldRef<"TimeLog", 'String'>
   readonly taskId: Prisma.FieldRef<"TimeLog", 'String'>
   readonly userId: Prisma.FieldRef<"TimeLog", 'String'>

@@ -1,7 +1,12 @@
-import type { User, AuthSession, LoginCredentials, RegisterCredentials } from "@/types";
+import type { User, AuthSession, LoginCredentials, RegisterCredentials, TenantOption } from "@/types";
 import { api } from "./api";
 
 const SESSION_KEY = "devflow_session";
+
+/** Lista pública dos grupos (tenants) disponíveis para o cadastro. */
+export async function listTenants(): Promise<TenantOption[]> {
+  return api.get<TenantOption[]>("auth/tenants");
+}
 
 export async function login(credentials: LoginCredentials): Promise<AuthSession> {
   const session = await api.post<AuthSession>("auth/login", credentials);

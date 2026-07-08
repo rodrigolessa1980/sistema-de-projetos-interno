@@ -384,6 +384,7 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 
 
 export const ModelName = {
+  Tenant: 'Tenant',
   Company: 'Company',
   User: 'User',
   ApiToken: 'ApiToken',
@@ -421,10 +422,76 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "company" | "user" | "apiToken" | "userPermission" | "project" | "projectDeveloper" | "module" | "epic" | "epicDeveloper" | "task" | "subtask" | "taskDependency" | "timeLog" | "comment" | "notification" | "auditLog" | "statusHistory" | "taskNote" | "taskAttachment" | "moduleAttachment" | "projectShowcaseAttachment" | "projectDemandAttachment"
+    modelProps: "tenant" | "company" | "user" | "apiToken" | "userPermission" | "project" | "projectDeveloper" | "module" | "epic" | "epicDeveloper" | "task" | "subtask" | "taskDependency" | "timeLog" | "comment" | "notification" | "auditLog" | "statusHistory" | "taskNote" | "taskAttachment" | "moduleAttachment" | "projectShowcaseAttachment" | "projectDemandAttachment"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
+    Tenant: {
+      payload: Prisma.$TenantPayload<ExtArgs>
+      fields: Prisma.TenantFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.TenantFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TenantPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.TenantFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TenantPayload>
+        }
+        findFirst: {
+          args: Prisma.TenantFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TenantPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.TenantFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TenantPayload>
+        }
+        findMany: {
+          args: Prisma.TenantFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TenantPayload>[]
+        }
+        create: {
+          args: Prisma.TenantCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TenantPayload>
+        }
+        createMany: {
+          args: Prisma.TenantCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        delete: {
+          args: Prisma.TenantDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TenantPayload>
+        }
+        update: {
+          args: Prisma.TenantUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TenantPayload>
+        }
+        deleteMany: {
+          args: Prisma.TenantDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.TenantUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        upsert: {
+          args: Prisma.TenantUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TenantPayload>
+        }
+        aggregate: {
+          args: Prisma.TenantAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateTenant>
+        }
+        groupBy: {
+          args: Prisma.TenantGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TenantGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.TenantCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TenantCountAggregateOutputType> | number
+        }
+      }
+    }
     Company: {
       payload: Prisma.$CompanyPayload<ExtArgs>
       fields: Prisma.CompanyFieldRefs
@@ -1916,8 +1983,21 @@ export const TransactionIsolationLevel = runtime.makeStrictEnum({
 export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel]
 
 
+export const TenantScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  slug: 'slug',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TenantScalarFieldEnum = (typeof TenantScalarFieldEnum)[keyof typeof TenantScalarFieldEnum]
+
+
 export const CompanyScalarFieldEnum = {
   id: 'id',
+  tenantId: 'tenantId',
   name: 'name',
   shortName: 'shortName',
   color: 'color',
@@ -1931,6 +2011,7 @@ export type CompanyScalarFieldEnum = (typeof CompanyScalarFieldEnum)[keyof typeo
 
 export const UserScalarFieldEnum = {
   id: 'id',
+  tenantId: 'tenantId',
   name: 'name',
   email: 'email',
   passwordHash: 'passwordHash',
@@ -1939,6 +2020,7 @@ export const UserScalarFieldEnum = {
   position: 'position',
   department: 'department',
   isActive: 'isActive',
+  isApproved: 'isApproved',
   lastLoginAt: 'lastLoginAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -1949,6 +2031,7 @@ export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof User
 
 export const ApiTokenScalarFieldEnum = {
   id: 'id',
+  tenantId: 'tenantId',
   userId: 'userId',
   name: 'name',
   tokenHash: 'tokenHash',
@@ -1965,6 +2048,7 @@ export type ApiTokenScalarFieldEnum = (typeof ApiTokenScalarFieldEnum)[keyof typ
 
 export const UserPermissionScalarFieldEnum = {
   id: 'id',
+  tenantId: 'tenantId',
   userId: 'userId',
   module: 'module',
   action: 'action',
@@ -1978,6 +2062,7 @@ export type UserPermissionScalarFieldEnum = (typeof UserPermissionScalarFieldEnu
 
 export const ProjectScalarFieldEnum = {
   id: 'id',
+  tenantId: 'tenantId',
   companyId: 'companyId',
   name: 'name',
   description: 'description',
@@ -2003,6 +2088,7 @@ export type ProjectScalarFieldEnum = (typeof ProjectScalarFieldEnum)[keyof typeo
 
 
 export const ProjectDeveloperScalarFieldEnum = {
+  tenantId: 'tenantId',
   projectId: 'projectId',
   userId: 'userId'
 } as const
@@ -2012,6 +2098,7 @@ export type ProjectDeveloperScalarFieldEnum = (typeof ProjectDeveloperScalarFiel
 
 export const ModuleScalarFieldEnum = {
   id: 'id',
+  tenantId: 'tenantId',
   projectId: 'projectId',
   name: 'name',
   description: 'description',
@@ -2030,6 +2117,7 @@ export type ModuleScalarFieldEnum = (typeof ModuleScalarFieldEnum)[keyof typeof 
 
 export const EpicScalarFieldEnum = {
   id: 'id',
+  tenantId: 'tenantId',
   projectId: 'projectId',
   moduleId: 'moduleId',
   name: 'name',
@@ -2046,6 +2134,7 @@ export type EpicScalarFieldEnum = (typeof EpicScalarFieldEnum)[keyof typeof Epic
 
 
 export const EpicDeveloperScalarFieldEnum = {
+  tenantId: 'tenantId',
   epicId: 'epicId',
   userId: 'userId'
 } as const
@@ -2055,6 +2144,7 @@ export type EpicDeveloperScalarFieldEnum = (typeof EpicDeveloperScalarFieldEnum)
 
 export const TaskScalarFieldEnum = {
   id: 'id',
+  tenantId: 'tenantId',
   projectId: 'projectId',
   moduleId: 'moduleId',
   epicId: 'epicId',
@@ -2084,6 +2174,7 @@ export type TaskScalarFieldEnum = (typeof TaskScalarFieldEnum)[keyof typeof Task
 
 export const SubtaskScalarFieldEnum = {
   id: 'id',
+  tenantId: 'tenantId',
   taskId: 'taskId',
   title: 'title',
   completed: 'completed',
@@ -2097,6 +2188,7 @@ export type SubtaskScalarFieldEnum = (typeof SubtaskScalarFieldEnum)[keyof typeo
 
 export const TaskDependencyScalarFieldEnum = {
   id: 'id',
+  tenantId: 'tenantId',
   taskId: 'taskId',
   dependsOnTaskId: 'dependsOnTaskId',
   type: 'type',
@@ -2108,6 +2200,7 @@ export type TaskDependencyScalarFieldEnum = (typeof TaskDependencyScalarFieldEnu
 
 export const TimeLogScalarFieldEnum = {
   id: 'id',
+  tenantId: 'tenantId',
   projectId: 'projectId',
   taskId: 'taskId',
   userId: 'userId',
@@ -2127,6 +2220,7 @@ export type TimeLogScalarFieldEnum = (typeof TimeLogScalarFieldEnum)[keyof typeo
 
 export const CommentScalarFieldEnum = {
   id: 'id',
+  tenantId: 'tenantId',
   taskId: 'taskId',
   userId: 'userId',
   content: 'content',
@@ -2140,6 +2234,7 @@ export type CommentScalarFieldEnum = (typeof CommentScalarFieldEnum)[keyof typeo
 
 export const NotificationScalarFieldEnum = {
   id: 'id',
+  tenantId: 'tenantId',
   userId: 'userId',
   type: 'type',
   title: 'title',
@@ -2155,6 +2250,7 @@ export type NotificationScalarFieldEnum = (typeof NotificationScalarFieldEnum)[k
 
 export const AuditLogScalarFieldEnum = {
   id: 'id',
+  tenantId: 'tenantId',
   entityType: 'entityType',
   entityId: 'entityId',
   action: 'action',
@@ -2170,6 +2266,7 @@ export type AuditLogScalarFieldEnum = (typeof AuditLogScalarFieldEnum)[keyof typ
 
 export const StatusHistoryScalarFieldEnum = {
   id: 'id',
+  tenantId: 'tenantId',
   taskId: 'taskId',
   fromStatus: 'fromStatus',
   toStatus: 'toStatus',
@@ -2183,6 +2280,7 @@ export type StatusHistoryScalarFieldEnum = (typeof StatusHistoryScalarFieldEnum)
 
 export const TaskNoteScalarFieldEnum = {
   id: 'id',
+  tenantId: 'tenantId',
   taskId: 'taskId',
   userId: 'userId',
   content: 'content',
@@ -2196,6 +2294,7 @@ export type TaskNoteScalarFieldEnum = (typeof TaskNoteScalarFieldEnum)[keyof typ
 
 export const TaskAttachmentScalarFieldEnum = {
   id: 'id',
+  tenantId: 'tenantId',
   taskId: 'taskId',
   userId: 'userId',
   name: 'name',
@@ -2210,6 +2309,7 @@ export type TaskAttachmentScalarFieldEnum = (typeof TaskAttachmentScalarFieldEnu
 
 export const ModuleAttachmentScalarFieldEnum = {
   id: 'id',
+  tenantId: 'tenantId',
   moduleId: 'moduleId',
   userId: 'userId',
   name: 'name',
@@ -2224,6 +2324,7 @@ export type ModuleAttachmentScalarFieldEnum = (typeof ModuleAttachmentScalarFiel
 
 export const ProjectShowcaseAttachmentScalarFieldEnum = {
   id: 'id',
+  tenantId: 'tenantId',
   projectId: 'projectId',
   userId: 'userId',
   name: 'name',
@@ -2238,6 +2339,7 @@ export type ProjectShowcaseAttachmentScalarFieldEnum = (typeof ProjectShowcaseAt
 
 export const ProjectDemandAttachmentScalarFieldEnum = {
   id: 'id',
+  tenantId: 'tenantId',
   projectId: 'projectId',
   userId: 'userId',
   name: 'name',
@@ -2273,6 +2375,15 @@ export const NullableJsonNullValueInput = {
 export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
 
 
+export const TenantOrderByRelevanceFieldEnum = {
+  id: 'id',
+  name: 'name',
+  slug: 'slug'
+} as const
+
+export type TenantOrderByRelevanceFieldEnum = (typeof TenantOrderByRelevanceFieldEnum)[keyof typeof TenantOrderByRelevanceFieldEnum]
+
+
 export const NullsOrder = {
   first: 'first',
   last: 'last'
@@ -2283,6 +2394,7 @@ export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
 
 export const CompanyOrderByRelevanceFieldEnum = {
   id: 'id',
+  tenantId: 'tenantId',
   name: 'name',
   shortName: 'shortName',
   color: 'color',
@@ -2294,6 +2406,7 @@ export type CompanyOrderByRelevanceFieldEnum = (typeof CompanyOrderByRelevanceFi
 
 export const UserOrderByRelevanceFieldEnum = {
   id: 'id',
+  tenantId: 'tenantId',
   name: 'name',
   email: 'email',
   passwordHash: 'passwordHash',
@@ -2324,6 +2437,7 @@ export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
 
 export const ApiTokenOrderByRelevanceFieldEnum = {
   id: 'id',
+  tenantId: 'tenantId',
   userId: 'userId',
   name: 'name',
   tokenHash: 'tokenHash',
@@ -2335,6 +2449,7 @@ export type ApiTokenOrderByRelevanceFieldEnum = (typeof ApiTokenOrderByRelevance
 
 export const UserPermissionOrderByRelevanceFieldEnum = {
   id: 'id',
+  tenantId: 'tenantId',
   userId: 'userId',
   module: 'module',
   action: 'action'
@@ -2345,6 +2460,7 @@ export type UserPermissionOrderByRelevanceFieldEnum = (typeof UserPermissionOrde
 
 export const ProjectOrderByRelevanceFieldEnum = {
   id: 'id',
+  tenantId: 'tenantId',
   companyId: 'companyId',
   name: 'name',
   description: 'description',
@@ -2361,6 +2477,7 @@ export type ProjectOrderByRelevanceFieldEnum = (typeof ProjectOrderByRelevanceFi
 
 
 export const ProjectDeveloperOrderByRelevanceFieldEnum = {
+  tenantId: 'tenantId',
   projectId: 'projectId',
   userId: 'userId'
 } as const
@@ -2370,6 +2487,7 @@ export type ProjectDeveloperOrderByRelevanceFieldEnum = (typeof ProjectDeveloper
 
 export const ModuleOrderByRelevanceFieldEnum = {
   id: 'id',
+  tenantId: 'tenantId',
   projectId: 'projectId',
   name: 'name',
   description: 'description',
@@ -2381,6 +2499,7 @@ export type ModuleOrderByRelevanceFieldEnum = (typeof ModuleOrderByRelevanceFiel
 
 export const EpicOrderByRelevanceFieldEnum = {
   id: 'id',
+  tenantId: 'tenantId',
   projectId: 'projectId',
   moduleId: 'moduleId',
   name: 'name',
@@ -2391,6 +2510,7 @@ export type EpicOrderByRelevanceFieldEnum = (typeof EpicOrderByRelevanceFieldEnu
 
 
 export const EpicDeveloperOrderByRelevanceFieldEnum = {
+  tenantId: 'tenantId',
   epicId: 'epicId',
   userId: 'userId'
 } as const
@@ -2400,6 +2520,7 @@ export type EpicDeveloperOrderByRelevanceFieldEnum = (typeof EpicDeveloperOrderB
 
 export const TaskOrderByRelevanceFieldEnum = {
   id: 'id',
+  tenantId: 'tenantId',
   projectId: 'projectId',
   moduleId: 'moduleId',
   epicId: 'epicId',
@@ -2417,6 +2538,7 @@ export type TaskOrderByRelevanceFieldEnum = (typeof TaskOrderByRelevanceFieldEnu
 
 export const SubtaskOrderByRelevanceFieldEnum = {
   id: 'id',
+  tenantId: 'tenantId',
   taskId: 'taskId',
   title: 'title',
   assigneeId: 'assigneeId'
@@ -2427,6 +2549,7 @@ export type SubtaskOrderByRelevanceFieldEnum = (typeof SubtaskOrderByRelevanceFi
 
 export const TaskDependencyOrderByRelevanceFieldEnum = {
   id: 'id',
+  tenantId: 'tenantId',
   taskId: 'taskId',
   dependsOnTaskId: 'dependsOnTaskId'
 } as const
@@ -2436,6 +2559,7 @@ export type TaskDependencyOrderByRelevanceFieldEnum = (typeof TaskDependencyOrde
 
 export const TimeLogOrderByRelevanceFieldEnum = {
   id: 'id',
+  tenantId: 'tenantId',
   projectId: 'projectId',
   taskId: 'taskId',
   userId: 'userId',
@@ -2447,6 +2571,7 @@ export type TimeLogOrderByRelevanceFieldEnum = (typeof TimeLogOrderByRelevanceFi
 
 export const CommentOrderByRelevanceFieldEnum = {
   id: 'id',
+  tenantId: 'tenantId',
   taskId: 'taskId',
   userId: 'userId',
   content: 'content'
@@ -2457,6 +2582,7 @@ export type CommentOrderByRelevanceFieldEnum = (typeof CommentOrderByRelevanceFi
 
 export const NotificationOrderByRelevanceFieldEnum = {
   id: 'id',
+  tenantId: 'tenantId',
   userId: 'userId',
   title: 'title',
   message: 'message',
@@ -2469,6 +2595,7 @@ export type NotificationOrderByRelevanceFieldEnum = (typeof NotificationOrderByR
 
 export const AuditLogOrderByRelevanceFieldEnum = {
   id: 'id',
+  tenantId: 'tenantId',
   entityId: 'entityId',
   userId: 'userId',
   description: 'description'
@@ -2479,6 +2606,7 @@ export type AuditLogOrderByRelevanceFieldEnum = (typeof AuditLogOrderByRelevance
 
 export const StatusHistoryOrderByRelevanceFieldEnum = {
   id: 'id',
+  tenantId: 'tenantId',
   taskId: 'taskId',
   userId: 'userId'
 } as const
@@ -2488,6 +2616,7 @@ export type StatusHistoryOrderByRelevanceFieldEnum = (typeof StatusHistoryOrderB
 
 export const TaskNoteOrderByRelevanceFieldEnum = {
   id: 'id',
+  tenantId: 'tenantId',
   taskId: 'taskId',
   userId: 'userId',
   content: 'content'
@@ -2498,6 +2627,7 @@ export type TaskNoteOrderByRelevanceFieldEnum = (typeof TaskNoteOrderByRelevance
 
 export const TaskAttachmentOrderByRelevanceFieldEnum = {
   id: 'id',
+  tenantId: 'tenantId',
   taskId: 'taskId',
   userId: 'userId',
   name: 'name',
@@ -2510,6 +2640,7 @@ export type TaskAttachmentOrderByRelevanceFieldEnum = (typeof TaskAttachmentOrde
 
 export const ModuleAttachmentOrderByRelevanceFieldEnum = {
   id: 'id',
+  tenantId: 'tenantId',
   moduleId: 'moduleId',
   userId: 'userId',
   name: 'name',
@@ -2522,6 +2653,7 @@ export type ModuleAttachmentOrderByRelevanceFieldEnum = (typeof ModuleAttachment
 
 export const ProjectShowcaseAttachmentOrderByRelevanceFieldEnum = {
   id: 'id',
+  tenantId: 'tenantId',
   projectId: 'projectId',
   userId: 'userId',
   name: 'name',
@@ -2534,6 +2666,7 @@ export type ProjectShowcaseAttachmentOrderByRelevanceFieldEnum = (typeof Project
 
 export const ProjectDemandAttachmentOrderByRelevanceFieldEnum = {
   id: 'id',
+  tenantId: 'tenantId',
   projectId: 'projectId',
   userId: 'userId',
   name: 'name',
@@ -2558,6 +2691,13 @@ export type StringFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 
 
 
 /**
+ * Reference to a field of type 'Boolean'
+ */
+export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
+    
+
+
+/**
  * Reference to a field of type 'DateTime'
  */
 export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime'>
@@ -2568,13 +2708,6 @@ export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel
  * Reference to a field of type 'UserRole'
  */
 export type EnumUserRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'UserRole'>
-    
-
-
-/**
- * Reference to a field of type 'Boolean'
- */
-export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
     
 
 
@@ -2771,6 +2904,7 @@ export type PrismaClientOptions = ({
   queryPlanCacheMaxSize?: number
 }
 export type GlobalOmitConfig = {
+  tenant?: Prisma.TenantOmit
   company?: Prisma.CompanyOmit
   user?: Prisma.UserOmit
   apiToken?: Prisma.ApiTokenOmit

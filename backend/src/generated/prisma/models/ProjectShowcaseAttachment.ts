@@ -36,6 +36,7 @@ export type ProjectShowcaseAttachmentSumAggregateOutputType = {
 
 export type ProjectShowcaseAttachmentMinAggregateOutputType = {
   id: string | null
+  tenantId: string | null
   projectId: string | null
   userId: string | null
   name: string | null
@@ -47,6 +48,7 @@ export type ProjectShowcaseAttachmentMinAggregateOutputType = {
 
 export type ProjectShowcaseAttachmentMaxAggregateOutputType = {
   id: string | null
+  tenantId: string | null
   projectId: string | null
   userId: string | null
   name: string | null
@@ -58,6 +60,7 @@ export type ProjectShowcaseAttachmentMaxAggregateOutputType = {
 
 export type ProjectShowcaseAttachmentCountAggregateOutputType = {
   id: number
+  tenantId: number
   projectId: number
   userId: number
   name: number
@@ -79,6 +82,7 @@ export type ProjectShowcaseAttachmentSumAggregateInputType = {
 
 export type ProjectShowcaseAttachmentMinAggregateInputType = {
   id?: true
+  tenantId?: true
   projectId?: true
   userId?: true
   name?: true
@@ -90,6 +94,7 @@ export type ProjectShowcaseAttachmentMinAggregateInputType = {
 
 export type ProjectShowcaseAttachmentMaxAggregateInputType = {
   id?: true
+  tenantId?: true
   projectId?: true
   userId?: true
   name?: true
@@ -101,6 +106,7 @@ export type ProjectShowcaseAttachmentMaxAggregateInputType = {
 
 export type ProjectShowcaseAttachmentCountAggregateInputType = {
   id?: true
+  tenantId?: true
   projectId?: true
   userId?: true
   name?: true
@@ -199,6 +205,7 @@ export type ProjectShowcaseAttachmentGroupByArgs<ExtArgs extends runtime.Types.E
 
 export type ProjectShowcaseAttachmentGroupByOutputType = {
   id: string
+  tenantId: string
   projectId: string
   userId: string
   name: string
@@ -233,6 +240,7 @@ export type ProjectShowcaseAttachmentWhereInput = {
   OR?: Prisma.ProjectShowcaseAttachmentWhereInput[]
   NOT?: Prisma.ProjectShowcaseAttachmentWhereInput | Prisma.ProjectShowcaseAttachmentWhereInput[]
   id?: Prisma.StringFilter<"ProjectShowcaseAttachment"> | string
+  tenantId?: Prisma.StringFilter<"ProjectShowcaseAttachment"> | string
   projectId?: Prisma.StringFilter<"ProjectShowcaseAttachment"> | string
   userId?: Prisma.StringFilter<"ProjectShowcaseAttachment"> | string
   name?: Prisma.StringFilter<"ProjectShowcaseAttachment"> | string
@@ -240,12 +248,14 @@ export type ProjectShowcaseAttachmentWhereInput = {
   size?: Prisma.IntFilter<"ProjectShowcaseAttachment"> | number
   dataUrl?: Prisma.StringFilter<"ProjectShowcaseAttachment"> | string
   createdAt?: Prisma.DateTimeFilter<"ProjectShowcaseAttachment"> | Date | string
+  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
   project?: Prisma.XOR<Prisma.ProjectScalarRelationFilter, Prisma.ProjectWhereInput>
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }
 
 export type ProjectShowcaseAttachmentOrderByWithRelationInput = {
   id?: Prisma.SortOrder
+  tenantId?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   name?: Prisma.SortOrder
@@ -253,6 +263,7 @@ export type ProjectShowcaseAttachmentOrderByWithRelationInput = {
   size?: Prisma.SortOrder
   dataUrl?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  tenant?: Prisma.TenantOrderByWithRelationInput
   project?: Prisma.ProjectOrderByWithRelationInput
   user?: Prisma.UserOrderByWithRelationInput
   _relevance?: Prisma.ProjectShowcaseAttachmentOrderByRelevanceInput
@@ -263,6 +274,7 @@ export type ProjectShowcaseAttachmentWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.ProjectShowcaseAttachmentWhereInput | Prisma.ProjectShowcaseAttachmentWhereInput[]
   OR?: Prisma.ProjectShowcaseAttachmentWhereInput[]
   NOT?: Prisma.ProjectShowcaseAttachmentWhereInput | Prisma.ProjectShowcaseAttachmentWhereInput[]
+  tenantId?: Prisma.StringFilter<"ProjectShowcaseAttachment"> | string
   projectId?: Prisma.StringFilter<"ProjectShowcaseAttachment"> | string
   userId?: Prisma.StringFilter<"ProjectShowcaseAttachment"> | string
   name?: Prisma.StringFilter<"ProjectShowcaseAttachment"> | string
@@ -270,12 +282,14 @@ export type ProjectShowcaseAttachmentWhereUniqueInput = Prisma.AtLeast<{
   size?: Prisma.IntFilter<"ProjectShowcaseAttachment"> | number
   dataUrl?: Prisma.StringFilter<"ProjectShowcaseAttachment"> | string
   createdAt?: Prisma.DateTimeFilter<"ProjectShowcaseAttachment"> | Date | string
+  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
   project?: Prisma.XOR<Prisma.ProjectScalarRelationFilter, Prisma.ProjectWhereInput>
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }, "id">
 
 export type ProjectShowcaseAttachmentOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
+  tenantId?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   name?: Prisma.SortOrder
@@ -295,6 +309,7 @@ export type ProjectShowcaseAttachmentScalarWhereWithAggregatesInput = {
   OR?: Prisma.ProjectShowcaseAttachmentScalarWhereWithAggregatesInput[]
   NOT?: Prisma.ProjectShowcaseAttachmentScalarWhereWithAggregatesInput | Prisma.ProjectShowcaseAttachmentScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"ProjectShowcaseAttachment"> | string
+  tenantId?: Prisma.StringWithAggregatesFilter<"ProjectShowcaseAttachment"> | string
   projectId?: Prisma.StringWithAggregatesFilter<"ProjectShowcaseAttachment"> | string
   userId?: Prisma.StringWithAggregatesFilter<"ProjectShowcaseAttachment"> | string
   name?: Prisma.StringWithAggregatesFilter<"ProjectShowcaseAttachment"> | string
@@ -311,12 +326,14 @@ export type ProjectShowcaseAttachmentCreateInput = {
   size: number
   dataUrl: string
   createdAt?: Date | string
+  tenant?: Prisma.TenantCreateNestedOneWithoutProjectShowcaseAttachmentsInput
   project: Prisma.ProjectCreateNestedOneWithoutShowcaseAttachmentsInput
   user: Prisma.UserCreateNestedOneWithoutProjectShowcaseAttachmentsInput
 }
 
 export type ProjectShowcaseAttachmentUncheckedCreateInput = {
   id?: string
+  tenantId?: string
   projectId: string
   userId: string
   name: string
@@ -333,12 +350,14 @@ export type ProjectShowcaseAttachmentUpdateInput = {
   size?: Prisma.IntFieldUpdateOperationsInput | number
   dataUrl?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutProjectShowcaseAttachmentsNestedInput
   project?: Prisma.ProjectUpdateOneRequiredWithoutShowcaseAttachmentsNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutProjectShowcaseAttachmentsNestedInput
 }
 
 export type ProjectShowcaseAttachmentUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
@@ -350,6 +369,7 @@ export type ProjectShowcaseAttachmentUncheckedUpdateInput = {
 
 export type ProjectShowcaseAttachmentCreateManyInput = {
   id?: string
+  tenantId?: string
   projectId: string
   userId: string
   name: string
@@ -370,6 +390,7 @@ export type ProjectShowcaseAttachmentUpdateManyMutationInput = {
 
 export type ProjectShowcaseAttachmentUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
@@ -397,6 +418,7 @@ export type ProjectShowcaseAttachmentOrderByRelevanceInput = {
 
 export type ProjectShowcaseAttachmentCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  tenantId?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   name?: Prisma.SortOrder
@@ -412,6 +434,7 @@ export type ProjectShowcaseAttachmentAvgOrderByAggregateInput = {
 
 export type ProjectShowcaseAttachmentMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  tenantId?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   name?: Prisma.SortOrder
@@ -423,6 +446,7 @@ export type ProjectShowcaseAttachmentMaxOrderByAggregateInput = {
 
 export type ProjectShowcaseAttachmentMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  tenantId?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   name?: Prisma.SortOrder
@@ -434,6 +458,48 @@ export type ProjectShowcaseAttachmentMinOrderByAggregateInput = {
 
 export type ProjectShowcaseAttachmentSumOrderByAggregateInput = {
   size?: Prisma.SortOrder
+}
+
+export type ProjectShowcaseAttachmentCreateNestedManyWithoutTenantInput = {
+  create?: Prisma.XOR<Prisma.ProjectShowcaseAttachmentCreateWithoutTenantInput, Prisma.ProjectShowcaseAttachmentUncheckedCreateWithoutTenantInput> | Prisma.ProjectShowcaseAttachmentCreateWithoutTenantInput[] | Prisma.ProjectShowcaseAttachmentUncheckedCreateWithoutTenantInput[]
+  connectOrCreate?: Prisma.ProjectShowcaseAttachmentCreateOrConnectWithoutTenantInput | Prisma.ProjectShowcaseAttachmentCreateOrConnectWithoutTenantInput[]
+  createMany?: Prisma.ProjectShowcaseAttachmentCreateManyTenantInputEnvelope
+  connect?: Prisma.ProjectShowcaseAttachmentWhereUniqueInput | Prisma.ProjectShowcaseAttachmentWhereUniqueInput[]
+}
+
+export type ProjectShowcaseAttachmentUncheckedCreateNestedManyWithoutTenantInput = {
+  create?: Prisma.XOR<Prisma.ProjectShowcaseAttachmentCreateWithoutTenantInput, Prisma.ProjectShowcaseAttachmentUncheckedCreateWithoutTenantInput> | Prisma.ProjectShowcaseAttachmentCreateWithoutTenantInput[] | Prisma.ProjectShowcaseAttachmentUncheckedCreateWithoutTenantInput[]
+  connectOrCreate?: Prisma.ProjectShowcaseAttachmentCreateOrConnectWithoutTenantInput | Prisma.ProjectShowcaseAttachmentCreateOrConnectWithoutTenantInput[]
+  createMany?: Prisma.ProjectShowcaseAttachmentCreateManyTenantInputEnvelope
+  connect?: Prisma.ProjectShowcaseAttachmentWhereUniqueInput | Prisma.ProjectShowcaseAttachmentWhereUniqueInput[]
+}
+
+export type ProjectShowcaseAttachmentUpdateManyWithoutTenantNestedInput = {
+  create?: Prisma.XOR<Prisma.ProjectShowcaseAttachmentCreateWithoutTenantInput, Prisma.ProjectShowcaseAttachmentUncheckedCreateWithoutTenantInput> | Prisma.ProjectShowcaseAttachmentCreateWithoutTenantInput[] | Prisma.ProjectShowcaseAttachmentUncheckedCreateWithoutTenantInput[]
+  connectOrCreate?: Prisma.ProjectShowcaseAttachmentCreateOrConnectWithoutTenantInput | Prisma.ProjectShowcaseAttachmentCreateOrConnectWithoutTenantInput[]
+  upsert?: Prisma.ProjectShowcaseAttachmentUpsertWithWhereUniqueWithoutTenantInput | Prisma.ProjectShowcaseAttachmentUpsertWithWhereUniqueWithoutTenantInput[]
+  createMany?: Prisma.ProjectShowcaseAttachmentCreateManyTenantInputEnvelope
+  set?: Prisma.ProjectShowcaseAttachmentWhereUniqueInput | Prisma.ProjectShowcaseAttachmentWhereUniqueInput[]
+  disconnect?: Prisma.ProjectShowcaseAttachmentWhereUniqueInput | Prisma.ProjectShowcaseAttachmentWhereUniqueInput[]
+  delete?: Prisma.ProjectShowcaseAttachmentWhereUniqueInput | Prisma.ProjectShowcaseAttachmentWhereUniqueInput[]
+  connect?: Prisma.ProjectShowcaseAttachmentWhereUniqueInput | Prisma.ProjectShowcaseAttachmentWhereUniqueInput[]
+  update?: Prisma.ProjectShowcaseAttachmentUpdateWithWhereUniqueWithoutTenantInput | Prisma.ProjectShowcaseAttachmentUpdateWithWhereUniqueWithoutTenantInput[]
+  updateMany?: Prisma.ProjectShowcaseAttachmentUpdateManyWithWhereWithoutTenantInput | Prisma.ProjectShowcaseAttachmentUpdateManyWithWhereWithoutTenantInput[]
+  deleteMany?: Prisma.ProjectShowcaseAttachmentScalarWhereInput | Prisma.ProjectShowcaseAttachmentScalarWhereInput[]
+}
+
+export type ProjectShowcaseAttachmentUncheckedUpdateManyWithoutTenantNestedInput = {
+  create?: Prisma.XOR<Prisma.ProjectShowcaseAttachmentCreateWithoutTenantInput, Prisma.ProjectShowcaseAttachmentUncheckedCreateWithoutTenantInput> | Prisma.ProjectShowcaseAttachmentCreateWithoutTenantInput[] | Prisma.ProjectShowcaseAttachmentUncheckedCreateWithoutTenantInput[]
+  connectOrCreate?: Prisma.ProjectShowcaseAttachmentCreateOrConnectWithoutTenantInput | Prisma.ProjectShowcaseAttachmentCreateOrConnectWithoutTenantInput[]
+  upsert?: Prisma.ProjectShowcaseAttachmentUpsertWithWhereUniqueWithoutTenantInput | Prisma.ProjectShowcaseAttachmentUpsertWithWhereUniqueWithoutTenantInput[]
+  createMany?: Prisma.ProjectShowcaseAttachmentCreateManyTenantInputEnvelope
+  set?: Prisma.ProjectShowcaseAttachmentWhereUniqueInput | Prisma.ProjectShowcaseAttachmentWhereUniqueInput[]
+  disconnect?: Prisma.ProjectShowcaseAttachmentWhereUniqueInput | Prisma.ProjectShowcaseAttachmentWhereUniqueInput[]
+  delete?: Prisma.ProjectShowcaseAttachmentWhereUniqueInput | Prisma.ProjectShowcaseAttachmentWhereUniqueInput[]
+  connect?: Prisma.ProjectShowcaseAttachmentWhereUniqueInput | Prisma.ProjectShowcaseAttachmentWhereUniqueInput[]
+  update?: Prisma.ProjectShowcaseAttachmentUpdateWithWhereUniqueWithoutTenantInput | Prisma.ProjectShowcaseAttachmentUpdateWithWhereUniqueWithoutTenantInput[]
+  updateMany?: Prisma.ProjectShowcaseAttachmentUpdateManyWithWhereWithoutTenantInput | Prisma.ProjectShowcaseAttachmentUpdateManyWithWhereWithoutTenantInput[]
+  deleteMany?: Prisma.ProjectShowcaseAttachmentScalarWhereInput | Prisma.ProjectShowcaseAttachmentScalarWhereInput[]
 }
 
 export type ProjectShowcaseAttachmentCreateNestedManyWithoutUserInput = {
@@ -520,7 +586,7 @@ export type ProjectShowcaseAttachmentUncheckedUpdateManyWithoutProjectNestedInpu
   deleteMany?: Prisma.ProjectShowcaseAttachmentScalarWhereInput | Prisma.ProjectShowcaseAttachmentScalarWhereInput[]
 }
 
-export type ProjectShowcaseAttachmentCreateWithoutUserInput = {
+export type ProjectShowcaseAttachmentCreateWithoutTenantInput = {
   id?: string
   name: string
   type: string
@@ -528,10 +594,75 @@ export type ProjectShowcaseAttachmentCreateWithoutUserInput = {
   dataUrl: string
   createdAt?: Date | string
   project: Prisma.ProjectCreateNestedOneWithoutShowcaseAttachmentsInput
+  user: Prisma.UserCreateNestedOneWithoutProjectShowcaseAttachmentsInput
+}
+
+export type ProjectShowcaseAttachmentUncheckedCreateWithoutTenantInput = {
+  id?: string
+  projectId: string
+  userId: string
+  name: string
+  type: string
+  size: number
+  dataUrl: string
+  createdAt?: Date | string
+}
+
+export type ProjectShowcaseAttachmentCreateOrConnectWithoutTenantInput = {
+  where: Prisma.ProjectShowcaseAttachmentWhereUniqueInput
+  create: Prisma.XOR<Prisma.ProjectShowcaseAttachmentCreateWithoutTenantInput, Prisma.ProjectShowcaseAttachmentUncheckedCreateWithoutTenantInput>
+}
+
+export type ProjectShowcaseAttachmentCreateManyTenantInputEnvelope = {
+  data: Prisma.ProjectShowcaseAttachmentCreateManyTenantInput | Prisma.ProjectShowcaseAttachmentCreateManyTenantInput[]
+  skipDuplicates?: boolean
+}
+
+export type ProjectShowcaseAttachmentUpsertWithWhereUniqueWithoutTenantInput = {
+  where: Prisma.ProjectShowcaseAttachmentWhereUniqueInput
+  update: Prisma.XOR<Prisma.ProjectShowcaseAttachmentUpdateWithoutTenantInput, Prisma.ProjectShowcaseAttachmentUncheckedUpdateWithoutTenantInput>
+  create: Prisma.XOR<Prisma.ProjectShowcaseAttachmentCreateWithoutTenantInput, Prisma.ProjectShowcaseAttachmentUncheckedCreateWithoutTenantInput>
+}
+
+export type ProjectShowcaseAttachmentUpdateWithWhereUniqueWithoutTenantInput = {
+  where: Prisma.ProjectShowcaseAttachmentWhereUniqueInput
+  data: Prisma.XOR<Prisma.ProjectShowcaseAttachmentUpdateWithoutTenantInput, Prisma.ProjectShowcaseAttachmentUncheckedUpdateWithoutTenantInput>
+}
+
+export type ProjectShowcaseAttachmentUpdateManyWithWhereWithoutTenantInput = {
+  where: Prisma.ProjectShowcaseAttachmentScalarWhereInput
+  data: Prisma.XOR<Prisma.ProjectShowcaseAttachmentUpdateManyMutationInput, Prisma.ProjectShowcaseAttachmentUncheckedUpdateManyWithoutTenantInput>
+}
+
+export type ProjectShowcaseAttachmentScalarWhereInput = {
+  AND?: Prisma.ProjectShowcaseAttachmentScalarWhereInput | Prisma.ProjectShowcaseAttachmentScalarWhereInput[]
+  OR?: Prisma.ProjectShowcaseAttachmentScalarWhereInput[]
+  NOT?: Prisma.ProjectShowcaseAttachmentScalarWhereInput | Prisma.ProjectShowcaseAttachmentScalarWhereInput[]
+  id?: Prisma.StringFilter<"ProjectShowcaseAttachment"> | string
+  tenantId?: Prisma.StringFilter<"ProjectShowcaseAttachment"> | string
+  projectId?: Prisma.StringFilter<"ProjectShowcaseAttachment"> | string
+  userId?: Prisma.StringFilter<"ProjectShowcaseAttachment"> | string
+  name?: Prisma.StringFilter<"ProjectShowcaseAttachment"> | string
+  type?: Prisma.StringFilter<"ProjectShowcaseAttachment"> | string
+  size?: Prisma.IntFilter<"ProjectShowcaseAttachment"> | number
+  dataUrl?: Prisma.StringFilter<"ProjectShowcaseAttachment"> | string
+  createdAt?: Prisma.DateTimeFilter<"ProjectShowcaseAttachment"> | Date | string
+}
+
+export type ProjectShowcaseAttachmentCreateWithoutUserInput = {
+  id?: string
+  name: string
+  type: string
+  size: number
+  dataUrl: string
+  createdAt?: Date | string
+  tenant?: Prisma.TenantCreateNestedOneWithoutProjectShowcaseAttachmentsInput
+  project: Prisma.ProjectCreateNestedOneWithoutShowcaseAttachmentsInput
 }
 
 export type ProjectShowcaseAttachmentUncheckedCreateWithoutUserInput = {
   id?: string
+  tenantId?: string
   projectId: string
   name: string
   type: string
@@ -566,20 +697,6 @@ export type ProjectShowcaseAttachmentUpdateManyWithWhereWithoutUserInput = {
   data: Prisma.XOR<Prisma.ProjectShowcaseAttachmentUpdateManyMutationInput, Prisma.ProjectShowcaseAttachmentUncheckedUpdateManyWithoutUserInput>
 }
 
-export type ProjectShowcaseAttachmentScalarWhereInput = {
-  AND?: Prisma.ProjectShowcaseAttachmentScalarWhereInput | Prisma.ProjectShowcaseAttachmentScalarWhereInput[]
-  OR?: Prisma.ProjectShowcaseAttachmentScalarWhereInput[]
-  NOT?: Prisma.ProjectShowcaseAttachmentScalarWhereInput | Prisma.ProjectShowcaseAttachmentScalarWhereInput[]
-  id?: Prisma.StringFilter<"ProjectShowcaseAttachment"> | string
-  projectId?: Prisma.StringFilter<"ProjectShowcaseAttachment"> | string
-  userId?: Prisma.StringFilter<"ProjectShowcaseAttachment"> | string
-  name?: Prisma.StringFilter<"ProjectShowcaseAttachment"> | string
-  type?: Prisma.StringFilter<"ProjectShowcaseAttachment"> | string
-  size?: Prisma.IntFilter<"ProjectShowcaseAttachment"> | number
-  dataUrl?: Prisma.StringFilter<"ProjectShowcaseAttachment"> | string
-  createdAt?: Prisma.DateTimeFilter<"ProjectShowcaseAttachment"> | Date | string
-}
-
 export type ProjectShowcaseAttachmentCreateWithoutProjectInput = {
   id?: string
   name: string
@@ -587,11 +704,13 @@ export type ProjectShowcaseAttachmentCreateWithoutProjectInput = {
   size: number
   dataUrl: string
   createdAt?: Date | string
+  tenant?: Prisma.TenantCreateNestedOneWithoutProjectShowcaseAttachmentsInput
   user: Prisma.UserCreateNestedOneWithoutProjectShowcaseAttachmentsInput
 }
 
 export type ProjectShowcaseAttachmentUncheckedCreateWithoutProjectInput = {
   id?: string
+  tenantId?: string
   userId: string
   name: string
   type: string
@@ -626,8 +745,53 @@ export type ProjectShowcaseAttachmentUpdateManyWithWhereWithoutProjectInput = {
   data: Prisma.XOR<Prisma.ProjectShowcaseAttachmentUpdateManyMutationInput, Prisma.ProjectShowcaseAttachmentUncheckedUpdateManyWithoutProjectInput>
 }
 
+export type ProjectShowcaseAttachmentCreateManyTenantInput = {
+  id?: string
+  projectId: string
+  userId: string
+  name: string
+  type: string
+  size: number
+  dataUrl: string
+  createdAt?: Date | string
+}
+
+export type ProjectShowcaseAttachmentUpdateWithoutTenantInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.StringFieldUpdateOperationsInput | string
+  size?: Prisma.IntFieldUpdateOperationsInput | number
+  dataUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  project?: Prisma.ProjectUpdateOneRequiredWithoutShowcaseAttachmentsNestedInput
+  user?: Prisma.UserUpdateOneRequiredWithoutProjectShowcaseAttachmentsNestedInput
+}
+
+export type ProjectShowcaseAttachmentUncheckedUpdateWithoutTenantInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  projectId?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.StringFieldUpdateOperationsInput | string
+  size?: Prisma.IntFieldUpdateOperationsInput | number
+  dataUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type ProjectShowcaseAttachmentUncheckedUpdateManyWithoutTenantInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  projectId?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.StringFieldUpdateOperationsInput | string
+  size?: Prisma.IntFieldUpdateOperationsInput | number
+  dataUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
 export type ProjectShowcaseAttachmentCreateManyUserInput = {
   id?: string
+  tenantId?: string
   projectId: string
   name: string
   type: string
@@ -643,11 +807,13 @@ export type ProjectShowcaseAttachmentUpdateWithoutUserInput = {
   size?: Prisma.IntFieldUpdateOperationsInput | number
   dataUrl?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutProjectShowcaseAttachmentsNestedInput
   project?: Prisma.ProjectUpdateOneRequiredWithoutShowcaseAttachmentsNestedInput
 }
 
 export type ProjectShowcaseAttachmentUncheckedUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
@@ -658,6 +824,7 @@ export type ProjectShowcaseAttachmentUncheckedUpdateWithoutUserInput = {
 
 export type ProjectShowcaseAttachmentUncheckedUpdateManyWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
@@ -668,6 +835,7 @@ export type ProjectShowcaseAttachmentUncheckedUpdateManyWithoutUserInput = {
 
 export type ProjectShowcaseAttachmentCreateManyProjectInput = {
   id?: string
+  tenantId?: string
   userId: string
   name: string
   type: string
@@ -683,11 +851,13 @@ export type ProjectShowcaseAttachmentUpdateWithoutProjectInput = {
   size?: Prisma.IntFieldUpdateOperationsInput | number
   dataUrl?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutProjectShowcaseAttachmentsNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutProjectShowcaseAttachmentsNestedInput
 }
 
 export type ProjectShowcaseAttachmentUncheckedUpdateWithoutProjectInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
@@ -698,6 +868,7 @@ export type ProjectShowcaseAttachmentUncheckedUpdateWithoutProjectInput = {
 
 export type ProjectShowcaseAttachmentUncheckedUpdateManyWithoutProjectInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
@@ -710,6 +881,7 @@ export type ProjectShowcaseAttachmentUncheckedUpdateManyWithoutProjectInput = {
 
 export type ProjectShowcaseAttachmentSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  tenantId?: boolean
   projectId?: boolean
   userId?: boolean
   name?: boolean
@@ -717,6 +889,7 @@ export type ProjectShowcaseAttachmentSelect<ExtArgs extends runtime.Types.Extens
   size?: boolean
   dataUrl?: boolean
   createdAt?: boolean
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["projectShowcaseAttachment"]>
@@ -725,6 +898,7 @@ export type ProjectShowcaseAttachmentSelect<ExtArgs extends runtime.Types.Extens
 
 export type ProjectShowcaseAttachmentSelectScalar = {
   id?: boolean
+  tenantId?: boolean
   projectId?: boolean
   userId?: boolean
   name?: boolean
@@ -734,8 +908,9 @@ export type ProjectShowcaseAttachmentSelectScalar = {
   createdAt?: boolean
 }
 
-export type ProjectShowcaseAttachmentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "projectId" | "userId" | "name" | "type" | "size" | "dataUrl" | "createdAt", ExtArgs["result"]["projectShowcaseAttachment"]>
+export type ProjectShowcaseAttachmentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "projectId" | "userId" | "name" | "type" | "size" | "dataUrl" | "createdAt", ExtArgs["result"]["projectShowcaseAttachment"]>
 export type ProjectShowcaseAttachmentInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
@@ -743,11 +918,13 @@ export type ProjectShowcaseAttachmentInclude<ExtArgs extends runtime.Types.Exten
 export type $ProjectShowcaseAttachmentPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "ProjectShowcaseAttachment"
   objects: {
+    tenant: Prisma.$TenantPayload<ExtArgs>
     project: Prisma.$ProjectPayload<ExtArgs>
     user: Prisma.$UserPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
+    tenantId: string
     projectId: string
     userId: string
     name: string
@@ -1095,6 +1272,7 @@ readonly fields: ProjectShowcaseAttachmentFieldRefs;
  */
 export interface Prisma__ProjectShowcaseAttachmentClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  tenant<T extends Prisma.TenantDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TenantDefaultArgs<ExtArgs>>): Prisma.Prisma__TenantClient<runtime.Types.Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   project<T extends Prisma.ProjectDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProjectDefaultArgs<ExtArgs>>): Prisma.Prisma__ProjectClient<runtime.Types.Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
@@ -1127,6 +1305,7 @@ export interface Prisma__ProjectShowcaseAttachmentClient<T, Null = never, ExtArg
  */
 export interface ProjectShowcaseAttachmentFieldRefs {
   readonly id: Prisma.FieldRef<"ProjectShowcaseAttachment", 'String'>
+  readonly tenantId: Prisma.FieldRef<"ProjectShowcaseAttachment", 'String'>
   readonly projectId: Prisma.FieldRef<"ProjectShowcaseAttachment", 'String'>
   readonly userId: Prisma.FieldRef<"ProjectShowcaseAttachment", 'String'>
   readonly name: Prisma.FieldRef<"ProjectShowcaseAttachment", 'String'>

@@ -26,6 +26,7 @@ export type AggregateTaskDependency = {
 
 export type TaskDependencyMinAggregateOutputType = {
   id: string | null
+  tenantId: string | null
   taskId: string | null
   dependsOnTaskId: string | null
   type: $Enums.DependencyType | null
@@ -34,6 +35,7 @@ export type TaskDependencyMinAggregateOutputType = {
 
 export type TaskDependencyMaxAggregateOutputType = {
   id: string | null
+  tenantId: string | null
   taskId: string | null
   dependsOnTaskId: string | null
   type: $Enums.DependencyType | null
@@ -42,6 +44,7 @@ export type TaskDependencyMaxAggregateOutputType = {
 
 export type TaskDependencyCountAggregateOutputType = {
   id: number
+  tenantId: number
   taskId: number
   dependsOnTaskId: number
   type: number
@@ -52,6 +55,7 @@ export type TaskDependencyCountAggregateOutputType = {
 
 export type TaskDependencyMinAggregateInputType = {
   id?: true
+  tenantId?: true
   taskId?: true
   dependsOnTaskId?: true
   type?: true
@@ -60,6 +64,7 @@ export type TaskDependencyMinAggregateInputType = {
 
 export type TaskDependencyMaxAggregateInputType = {
   id?: true
+  tenantId?: true
   taskId?: true
   dependsOnTaskId?: true
   type?: true
@@ -68,6 +73,7 @@ export type TaskDependencyMaxAggregateInputType = {
 
 export type TaskDependencyCountAggregateInputType = {
   id?: true
+  tenantId?: true
   taskId?: true
   dependsOnTaskId?: true
   type?: true
@@ -149,6 +155,7 @@ export type TaskDependencyGroupByArgs<ExtArgs extends runtime.Types.Extensions.I
 
 export type TaskDependencyGroupByOutputType = {
   id: string
+  tenantId: string
   taskId: string
   dependsOnTaskId: string
   type: $Enums.DependencyType
@@ -178,20 +185,24 @@ export type TaskDependencyWhereInput = {
   OR?: Prisma.TaskDependencyWhereInput[]
   NOT?: Prisma.TaskDependencyWhereInput | Prisma.TaskDependencyWhereInput[]
   id?: Prisma.StringFilter<"TaskDependency"> | string
+  tenantId?: Prisma.StringFilter<"TaskDependency"> | string
   taskId?: Prisma.StringFilter<"TaskDependency"> | string
   dependsOnTaskId?: Prisma.StringFilter<"TaskDependency"> | string
   type?: Prisma.EnumDependencyTypeFilter<"TaskDependency"> | $Enums.DependencyType
   createdAt?: Prisma.DateTimeFilter<"TaskDependency"> | Date | string
+  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
   task?: Prisma.XOR<Prisma.TaskScalarRelationFilter, Prisma.TaskWhereInput>
   dependsOnTask?: Prisma.XOR<Prisma.TaskScalarRelationFilter, Prisma.TaskWhereInput>
 }
 
 export type TaskDependencyOrderByWithRelationInput = {
   id?: Prisma.SortOrder
+  tenantId?: Prisma.SortOrder
   taskId?: Prisma.SortOrder
   dependsOnTaskId?: Prisma.SortOrder
   type?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  tenant?: Prisma.TenantOrderByWithRelationInput
   task?: Prisma.TaskOrderByWithRelationInput
   dependsOnTask?: Prisma.TaskOrderByWithRelationInput
   _relevance?: Prisma.TaskDependencyOrderByRelevanceInput
@@ -203,16 +214,19 @@ export type TaskDependencyWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.TaskDependencyWhereInput | Prisma.TaskDependencyWhereInput[]
   OR?: Prisma.TaskDependencyWhereInput[]
   NOT?: Prisma.TaskDependencyWhereInput | Prisma.TaskDependencyWhereInput[]
+  tenantId?: Prisma.StringFilter<"TaskDependency"> | string
   taskId?: Prisma.StringFilter<"TaskDependency"> | string
   dependsOnTaskId?: Prisma.StringFilter<"TaskDependency"> | string
   type?: Prisma.EnumDependencyTypeFilter<"TaskDependency"> | $Enums.DependencyType
   createdAt?: Prisma.DateTimeFilter<"TaskDependency"> | Date | string
+  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
   task?: Prisma.XOR<Prisma.TaskScalarRelationFilter, Prisma.TaskWhereInput>
   dependsOnTask?: Prisma.XOR<Prisma.TaskScalarRelationFilter, Prisma.TaskWhereInput>
 }, "id" | "taskId_dependsOnTaskId">
 
 export type TaskDependencyOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
+  tenantId?: Prisma.SortOrder
   taskId?: Prisma.SortOrder
   dependsOnTaskId?: Prisma.SortOrder
   type?: Prisma.SortOrder
@@ -227,6 +241,7 @@ export type TaskDependencyScalarWhereWithAggregatesInput = {
   OR?: Prisma.TaskDependencyScalarWhereWithAggregatesInput[]
   NOT?: Prisma.TaskDependencyScalarWhereWithAggregatesInput | Prisma.TaskDependencyScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"TaskDependency"> | string
+  tenantId?: Prisma.StringWithAggregatesFilter<"TaskDependency"> | string
   taskId?: Prisma.StringWithAggregatesFilter<"TaskDependency"> | string
   dependsOnTaskId?: Prisma.StringWithAggregatesFilter<"TaskDependency"> | string
   type?: Prisma.EnumDependencyTypeWithAggregatesFilter<"TaskDependency"> | $Enums.DependencyType
@@ -237,12 +252,14 @@ export type TaskDependencyCreateInput = {
   id?: string
   type?: $Enums.DependencyType
   createdAt?: Date | string
+  tenant?: Prisma.TenantCreateNestedOneWithoutTaskDependenciesInput
   task: Prisma.TaskCreateNestedOneWithoutDependenciesInput
   dependsOnTask: Prisma.TaskCreateNestedOneWithoutDependencyOfInput
 }
 
 export type TaskDependencyUncheckedCreateInput = {
   id?: string
+  tenantId?: string
   taskId: string
   dependsOnTaskId: string
   type?: $Enums.DependencyType
@@ -253,12 +270,14 @@ export type TaskDependencyUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumDependencyTypeFieldUpdateOperationsInput | $Enums.DependencyType
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutTaskDependenciesNestedInput
   task?: Prisma.TaskUpdateOneRequiredWithoutDependenciesNestedInput
   dependsOnTask?: Prisma.TaskUpdateOneRequiredWithoutDependencyOfNestedInput
 }
 
 export type TaskDependencyUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   taskId?: Prisma.StringFieldUpdateOperationsInput | string
   dependsOnTaskId?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumDependencyTypeFieldUpdateOperationsInput | $Enums.DependencyType
@@ -267,6 +286,7 @@ export type TaskDependencyUncheckedUpdateInput = {
 
 export type TaskDependencyCreateManyInput = {
   id?: string
+  tenantId?: string
   taskId: string
   dependsOnTaskId: string
   type?: $Enums.DependencyType
@@ -281,6 +301,7 @@ export type TaskDependencyUpdateManyMutationInput = {
 
 export type TaskDependencyUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   taskId?: Prisma.StringFieldUpdateOperationsInput | string
   dependsOnTaskId?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumDependencyTypeFieldUpdateOperationsInput | $Enums.DependencyType
@@ -310,6 +331,7 @@ export type TaskDependencyTaskIdDependsOnTaskIdCompoundUniqueInput = {
 
 export type TaskDependencyCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  tenantId?: Prisma.SortOrder
   taskId?: Prisma.SortOrder
   dependsOnTaskId?: Prisma.SortOrder
   type?: Prisma.SortOrder
@@ -318,6 +340,7 @@ export type TaskDependencyCountOrderByAggregateInput = {
 
 export type TaskDependencyMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  tenantId?: Prisma.SortOrder
   taskId?: Prisma.SortOrder
   dependsOnTaskId?: Prisma.SortOrder
   type?: Prisma.SortOrder
@@ -326,10 +349,53 @@ export type TaskDependencyMaxOrderByAggregateInput = {
 
 export type TaskDependencyMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  tenantId?: Prisma.SortOrder
   taskId?: Prisma.SortOrder
   dependsOnTaskId?: Prisma.SortOrder
   type?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+}
+
+export type TaskDependencyCreateNestedManyWithoutTenantInput = {
+  create?: Prisma.XOR<Prisma.TaskDependencyCreateWithoutTenantInput, Prisma.TaskDependencyUncheckedCreateWithoutTenantInput> | Prisma.TaskDependencyCreateWithoutTenantInput[] | Prisma.TaskDependencyUncheckedCreateWithoutTenantInput[]
+  connectOrCreate?: Prisma.TaskDependencyCreateOrConnectWithoutTenantInput | Prisma.TaskDependencyCreateOrConnectWithoutTenantInput[]
+  createMany?: Prisma.TaskDependencyCreateManyTenantInputEnvelope
+  connect?: Prisma.TaskDependencyWhereUniqueInput | Prisma.TaskDependencyWhereUniqueInput[]
+}
+
+export type TaskDependencyUncheckedCreateNestedManyWithoutTenantInput = {
+  create?: Prisma.XOR<Prisma.TaskDependencyCreateWithoutTenantInput, Prisma.TaskDependencyUncheckedCreateWithoutTenantInput> | Prisma.TaskDependencyCreateWithoutTenantInput[] | Prisma.TaskDependencyUncheckedCreateWithoutTenantInput[]
+  connectOrCreate?: Prisma.TaskDependencyCreateOrConnectWithoutTenantInput | Prisma.TaskDependencyCreateOrConnectWithoutTenantInput[]
+  createMany?: Prisma.TaskDependencyCreateManyTenantInputEnvelope
+  connect?: Prisma.TaskDependencyWhereUniqueInput | Prisma.TaskDependencyWhereUniqueInput[]
+}
+
+export type TaskDependencyUpdateManyWithoutTenantNestedInput = {
+  create?: Prisma.XOR<Prisma.TaskDependencyCreateWithoutTenantInput, Prisma.TaskDependencyUncheckedCreateWithoutTenantInput> | Prisma.TaskDependencyCreateWithoutTenantInput[] | Prisma.TaskDependencyUncheckedCreateWithoutTenantInput[]
+  connectOrCreate?: Prisma.TaskDependencyCreateOrConnectWithoutTenantInput | Prisma.TaskDependencyCreateOrConnectWithoutTenantInput[]
+  upsert?: Prisma.TaskDependencyUpsertWithWhereUniqueWithoutTenantInput | Prisma.TaskDependencyUpsertWithWhereUniqueWithoutTenantInput[]
+  createMany?: Prisma.TaskDependencyCreateManyTenantInputEnvelope
+  set?: Prisma.TaskDependencyWhereUniqueInput | Prisma.TaskDependencyWhereUniqueInput[]
+  disconnect?: Prisma.TaskDependencyWhereUniqueInput | Prisma.TaskDependencyWhereUniqueInput[]
+  delete?: Prisma.TaskDependencyWhereUniqueInput | Prisma.TaskDependencyWhereUniqueInput[]
+  connect?: Prisma.TaskDependencyWhereUniqueInput | Prisma.TaskDependencyWhereUniqueInput[]
+  update?: Prisma.TaskDependencyUpdateWithWhereUniqueWithoutTenantInput | Prisma.TaskDependencyUpdateWithWhereUniqueWithoutTenantInput[]
+  updateMany?: Prisma.TaskDependencyUpdateManyWithWhereWithoutTenantInput | Prisma.TaskDependencyUpdateManyWithWhereWithoutTenantInput[]
+  deleteMany?: Prisma.TaskDependencyScalarWhereInput | Prisma.TaskDependencyScalarWhereInput[]
+}
+
+export type TaskDependencyUncheckedUpdateManyWithoutTenantNestedInput = {
+  create?: Prisma.XOR<Prisma.TaskDependencyCreateWithoutTenantInput, Prisma.TaskDependencyUncheckedCreateWithoutTenantInput> | Prisma.TaskDependencyCreateWithoutTenantInput[] | Prisma.TaskDependencyUncheckedCreateWithoutTenantInput[]
+  connectOrCreate?: Prisma.TaskDependencyCreateOrConnectWithoutTenantInput | Prisma.TaskDependencyCreateOrConnectWithoutTenantInput[]
+  upsert?: Prisma.TaskDependencyUpsertWithWhereUniqueWithoutTenantInput | Prisma.TaskDependencyUpsertWithWhereUniqueWithoutTenantInput[]
+  createMany?: Prisma.TaskDependencyCreateManyTenantInputEnvelope
+  set?: Prisma.TaskDependencyWhereUniqueInput | Prisma.TaskDependencyWhereUniqueInput[]
+  disconnect?: Prisma.TaskDependencyWhereUniqueInput | Prisma.TaskDependencyWhereUniqueInput[]
+  delete?: Prisma.TaskDependencyWhereUniqueInput | Prisma.TaskDependencyWhereUniqueInput[]
+  connect?: Prisma.TaskDependencyWhereUniqueInput | Prisma.TaskDependencyWhereUniqueInput[]
+  update?: Prisma.TaskDependencyUpdateWithWhereUniqueWithoutTenantInput | Prisma.TaskDependencyUpdateWithWhereUniqueWithoutTenantInput[]
+  updateMany?: Prisma.TaskDependencyUpdateManyWithWhereWithoutTenantInput | Prisma.TaskDependencyUpdateManyWithWhereWithoutTenantInput[]
+  deleteMany?: Prisma.TaskDependencyScalarWhereInput | Prisma.TaskDependencyScalarWhereInput[]
 }
 
 export type TaskDependencyCreateNestedManyWithoutTaskInput = {
@@ -420,15 +486,71 @@ export type EnumDependencyTypeFieldUpdateOperationsInput = {
   set?: $Enums.DependencyType
 }
 
+export type TaskDependencyCreateWithoutTenantInput = {
+  id?: string
+  type?: $Enums.DependencyType
+  createdAt?: Date | string
+  task: Prisma.TaskCreateNestedOneWithoutDependenciesInput
+  dependsOnTask: Prisma.TaskCreateNestedOneWithoutDependencyOfInput
+}
+
+export type TaskDependencyUncheckedCreateWithoutTenantInput = {
+  id?: string
+  taskId: string
+  dependsOnTaskId: string
+  type?: $Enums.DependencyType
+  createdAt?: Date | string
+}
+
+export type TaskDependencyCreateOrConnectWithoutTenantInput = {
+  where: Prisma.TaskDependencyWhereUniqueInput
+  create: Prisma.XOR<Prisma.TaskDependencyCreateWithoutTenantInput, Prisma.TaskDependencyUncheckedCreateWithoutTenantInput>
+}
+
+export type TaskDependencyCreateManyTenantInputEnvelope = {
+  data: Prisma.TaskDependencyCreateManyTenantInput | Prisma.TaskDependencyCreateManyTenantInput[]
+  skipDuplicates?: boolean
+}
+
+export type TaskDependencyUpsertWithWhereUniqueWithoutTenantInput = {
+  where: Prisma.TaskDependencyWhereUniqueInput
+  update: Prisma.XOR<Prisma.TaskDependencyUpdateWithoutTenantInput, Prisma.TaskDependencyUncheckedUpdateWithoutTenantInput>
+  create: Prisma.XOR<Prisma.TaskDependencyCreateWithoutTenantInput, Prisma.TaskDependencyUncheckedCreateWithoutTenantInput>
+}
+
+export type TaskDependencyUpdateWithWhereUniqueWithoutTenantInput = {
+  where: Prisma.TaskDependencyWhereUniqueInput
+  data: Prisma.XOR<Prisma.TaskDependencyUpdateWithoutTenantInput, Prisma.TaskDependencyUncheckedUpdateWithoutTenantInput>
+}
+
+export type TaskDependencyUpdateManyWithWhereWithoutTenantInput = {
+  where: Prisma.TaskDependencyScalarWhereInput
+  data: Prisma.XOR<Prisma.TaskDependencyUpdateManyMutationInput, Prisma.TaskDependencyUncheckedUpdateManyWithoutTenantInput>
+}
+
+export type TaskDependencyScalarWhereInput = {
+  AND?: Prisma.TaskDependencyScalarWhereInput | Prisma.TaskDependencyScalarWhereInput[]
+  OR?: Prisma.TaskDependencyScalarWhereInput[]
+  NOT?: Prisma.TaskDependencyScalarWhereInput | Prisma.TaskDependencyScalarWhereInput[]
+  id?: Prisma.StringFilter<"TaskDependency"> | string
+  tenantId?: Prisma.StringFilter<"TaskDependency"> | string
+  taskId?: Prisma.StringFilter<"TaskDependency"> | string
+  dependsOnTaskId?: Prisma.StringFilter<"TaskDependency"> | string
+  type?: Prisma.EnumDependencyTypeFilter<"TaskDependency"> | $Enums.DependencyType
+  createdAt?: Prisma.DateTimeFilter<"TaskDependency"> | Date | string
+}
+
 export type TaskDependencyCreateWithoutTaskInput = {
   id?: string
   type?: $Enums.DependencyType
   createdAt?: Date | string
+  tenant?: Prisma.TenantCreateNestedOneWithoutTaskDependenciesInput
   dependsOnTask: Prisma.TaskCreateNestedOneWithoutDependencyOfInput
 }
 
 export type TaskDependencyUncheckedCreateWithoutTaskInput = {
   id?: string
+  tenantId?: string
   dependsOnTaskId: string
   type?: $Enums.DependencyType
   createdAt?: Date | string
@@ -448,11 +570,13 @@ export type TaskDependencyCreateWithoutDependsOnTaskInput = {
   id?: string
   type?: $Enums.DependencyType
   createdAt?: Date | string
+  tenant?: Prisma.TenantCreateNestedOneWithoutTaskDependenciesInput
   task: Prisma.TaskCreateNestedOneWithoutDependenciesInput
 }
 
 export type TaskDependencyUncheckedCreateWithoutDependsOnTaskInput = {
   id?: string
+  tenantId?: string
   taskId: string
   type?: $Enums.DependencyType
   createdAt?: Date | string
@@ -484,17 +608,6 @@ export type TaskDependencyUpdateManyWithWhereWithoutTaskInput = {
   data: Prisma.XOR<Prisma.TaskDependencyUpdateManyMutationInput, Prisma.TaskDependencyUncheckedUpdateManyWithoutTaskInput>
 }
 
-export type TaskDependencyScalarWhereInput = {
-  AND?: Prisma.TaskDependencyScalarWhereInput | Prisma.TaskDependencyScalarWhereInput[]
-  OR?: Prisma.TaskDependencyScalarWhereInput[]
-  NOT?: Prisma.TaskDependencyScalarWhereInput | Prisma.TaskDependencyScalarWhereInput[]
-  id?: Prisma.StringFilter<"TaskDependency"> | string
-  taskId?: Prisma.StringFilter<"TaskDependency"> | string
-  dependsOnTaskId?: Prisma.StringFilter<"TaskDependency"> | string
-  type?: Prisma.EnumDependencyTypeFilter<"TaskDependency"> | $Enums.DependencyType
-  createdAt?: Prisma.DateTimeFilter<"TaskDependency"> | Date | string
-}
-
 export type TaskDependencyUpsertWithWhereUniqueWithoutDependsOnTaskInput = {
   where: Prisma.TaskDependencyWhereUniqueInput
   update: Prisma.XOR<Prisma.TaskDependencyUpdateWithoutDependsOnTaskInput, Prisma.TaskDependencyUncheckedUpdateWithoutDependsOnTaskInput>
@@ -511,8 +624,41 @@ export type TaskDependencyUpdateManyWithWhereWithoutDependsOnTaskInput = {
   data: Prisma.XOR<Prisma.TaskDependencyUpdateManyMutationInput, Prisma.TaskDependencyUncheckedUpdateManyWithoutDependsOnTaskInput>
 }
 
+export type TaskDependencyCreateManyTenantInput = {
+  id?: string
+  taskId: string
+  dependsOnTaskId: string
+  type?: $Enums.DependencyType
+  createdAt?: Date | string
+}
+
+export type TaskDependencyUpdateWithoutTenantInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumDependencyTypeFieldUpdateOperationsInput | $Enums.DependencyType
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  task?: Prisma.TaskUpdateOneRequiredWithoutDependenciesNestedInput
+  dependsOnTask?: Prisma.TaskUpdateOneRequiredWithoutDependencyOfNestedInput
+}
+
+export type TaskDependencyUncheckedUpdateWithoutTenantInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  taskId?: Prisma.StringFieldUpdateOperationsInput | string
+  dependsOnTaskId?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumDependencyTypeFieldUpdateOperationsInput | $Enums.DependencyType
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type TaskDependencyUncheckedUpdateManyWithoutTenantInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  taskId?: Prisma.StringFieldUpdateOperationsInput | string
+  dependsOnTaskId?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumDependencyTypeFieldUpdateOperationsInput | $Enums.DependencyType
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
 export type TaskDependencyCreateManyTaskInput = {
   id?: string
+  tenantId?: string
   dependsOnTaskId: string
   type?: $Enums.DependencyType
   createdAt?: Date | string
@@ -520,6 +666,7 @@ export type TaskDependencyCreateManyTaskInput = {
 
 export type TaskDependencyCreateManyDependsOnTaskInput = {
   id?: string
+  tenantId?: string
   taskId: string
   type?: $Enums.DependencyType
   createdAt?: Date | string
@@ -529,11 +676,13 @@ export type TaskDependencyUpdateWithoutTaskInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumDependencyTypeFieldUpdateOperationsInput | $Enums.DependencyType
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutTaskDependenciesNestedInput
   dependsOnTask?: Prisma.TaskUpdateOneRequiredWithoutDependencyOfNestedInput
 }
 
 export type TaskDependencyUncheckedUpdateWithoutTaskInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   dependsOnTaskId?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumDependencyTypeFieldUpdateOperationsInput | $Enums.DependencyType
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -541,6 +690,7 @@ export type TaskDependencyUncheckedUpdateWithoutTaskInput = {
 
 export type TaskDependencyUncheckedUpdateManyWithoutTaskInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   dependsOnTaskId?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumDependencyTypeFieldUpdateOperationsInput | $Enums.DependencyType
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -550,11 +700,13 @@ export type TaskDependencyUpdateWithoutDependsOnTaskInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumDependencyTypeFieldUpdateOperationsInput | $Enums.DependencyType
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutTaskDependenciesNestedInput
   task?: Prisma.TaskUpdateOneRequiredWithoutDependenciesNestedInput
 }
 
 export type TaskDependencyUncheckedUpdateWithoutDependsOnTaskInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   taskId?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumDependencyTypeFieldUpdateOperationsInput | $Enums.DependencyType
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -562,6 +714,7 @@ export type TaskDependencyUncheckedUpdateWithoutDependsOnTaskInput = {
 
 export type TaskDependencyUncheckedUpdateManyWithoutDependsOnTaskInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   taskId?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumDependencyTypeFieldUpdateOperationsInput | $Enums.DependencyType
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -571,10 +724,12 @@ export type TaskDependencyUncheckedUpdateManyWithoutDependsOnTaskInput = {
 
 export type TaskDependencySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  tenantId?: boolean
   taskId?: boolean
   dependsOnTaskId?: boolean
   type?: boolean
   createdAt?: boolean
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   task?: boolean | Prisma.TaskDefaultArgs<ExtArgs>
   dependsOnTask?: boolean | Prisma.TaskDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["taskDependency"]>
@@ -583,14 +738,16 @@ export type TaskDependencySelect<ExtArgs extends runtime.Types.Extensions.Intern
 
 export type TaskDependencySelectScalar = {
   id?: boolean
+  tenantId?: boolean
   taskId?: boolean
   dependsOnTaskId?: boolean
   type?: boolean
   createdAt?: boolean
 }
 
-export type TaskDependencyOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "taskId" | "dependsOnTaskId" | "type" | "createdAt", ExtArgs["result"]["taskDependency"]>
+export type TaskDependencyOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "taskId" | "dependsOnTaskId" | "type" | "createdAt", ExtArgs["result"]["taskDependency"]>
 export type TaskDependencyInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   task?: boolean | Prisma.TaskDefaultArgs<ExtArgs>
   dependsOnTask?: boolean | Prisma.TaskDefaultArgs<ExtArgs>
 }
@@ -598,11 +755,13 @@ export type TaskDependencyInclude<ExtArgs extends runtime.Types.Extensions.Inter
 export type $TaskDependencyPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "TaskDependency"
   objects: {
+    tenant: Prisma.$TenantPayload<ExtArgs>
     task: Prisma.$TaskPayload<ExtArgs>
     dependsOnTask: Prisma.$TaskPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
+    tenantId: string
     taskId: string
     dependsOnTaskId: string
     type: $Enums.DependencyType
@@ -947,6 +1106,7 @@ readonly fields: TaskDependencyFieldRefs;
  */
 export interface Prisma__TaskDependencyClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  tenant<T extends Prisma.TenantDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TenantDefaultArgs<ExtArgs>>): Prisma.Prisma__TenantClient<runtime.Types.Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   task<T extends Prisma.TaskDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TaskDefaultArgs<ExtArgs>>): Prisma.Prisma__TaskClient<runtime.Types.Result.GetResult<Prisma.$TaskPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   dependsOnTask<T extends Prisma.TaskDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TaskDefaultArgs<ExtArgs>>): Prisma.Prisma__TaskClient<runtime.Types.Result.GetResult<Prisma.$TaskPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
@@ -979,6 +1139,7 @@ export interface Prisma__TaskDependencyClient<T, Null = never, ExtArgs extends r
  */
 export interface TaskDependencyFieldRefs {
   readonly id: Prisma.FieldRef<"TaskDependency", 'String'>
+  readonly tenantId: Prisma.FieldRef<"TaskDependency", 'String'>
   readonly taskId: Prisma.FieldRef<"TaskDependency", 'String'>
   readonly dependsOnTaskId: Prisma.FieldRef<"TaskDependency", 'String'>
   readonly type: Prisma.FieldRef<"TaskDependency", 'DependencyType'>

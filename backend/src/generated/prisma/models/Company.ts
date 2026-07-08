@@ -26,6 +26,7 @@ export type AggregateCompany = {
 
 export type CompanyMinAggregateOutputType = {
   id: string | null
+  tenantId: string | null
   name: string | null
   shortName: string | null
   color: string | null
@@ -36,6 +37,7 @@ export type CompanyMinAggregateOutputType = {
 
 export type CompanyMaxAggregateOutputType = {
   id: string | null
+  tenantId: string | null
   name: string | null
   shortName: string | null
   color: string | null
@@ -46,6 +48,7 @@ export type CompanyMaxAggregateOutputType = {
 
 export type CompanyCountAggregateOutputType = {
   id: number
+  tenantId: number
   name: number
   shortName: number
   color: number
@@ -58,6 +61,7 @@ export type CompanyCountAggregateOutputType = {
 
 export type CompanyMinAggregateInputType = {
   id?: true
+  tenantId?: true
   name?: true
   shortName?: true
   color?: true
@@ -68,6 +72,7 @@ export type CompanyMinAggregateInputType = {
 
 export type CompanyMaxAggregateInputType = {
   id?: true
+  tenantId?: true
   name?: true
   shortName?: true
   color?: true
@@ -78,6 +83,7 @@ export type CompanyMaxAggregateInputType = {
 
 export type CompanyCountAggregateInputType = {
   id?: true
+  tenantId?: true
   name?: true
   shortName?: true
   color?: true
@@ -161,6 +167,7 @@ export type CompanyGroupByArgs<ExtArgs extends runtime.Types.Extensions.Internal
 
 export type CompanyGroupByOutputType = {
   id: string
+  tenantId: string
   name: string
   shortName: string
   color: string
@@ -192,43 +199,51 @@ export type CompanyWhereInput = {
   OR?: Prisma.CompanyWhereInput[]
   NOT?: Prisma.CompanyWhereInput | Prisma.CompanyWhereInput[]
   id?: Prisma.StringFilter<"Company"> | string
+  tenantId?: Prisma.StringFilter<"Company"> | string
   name?: Prisma.StringFilter<"Company"> | string
   shortName?: Prisma.StringFilter<"Company"> | string
   color?: Prisma.StringFilter<"Company"> | string
   cnpj?: Prisma.StringNullableFilter<"Company"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Company"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Company"> | Date | string
+  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
   projects?: Prisma.ProjectListRelationFilter
 }
 
 export type CompanyOrderByWithRelationInput = {
   id?: Prisma.SortOrder
+  tenantId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   shortName?: Prisma.SortOrder
   color?: Prisma.SortOrder
   cnpj?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  tenant?: Prisma.TenantOrderByWithRelationInput
   projects?: Prisma.ProjectOrderByRelationAggregateInput
   _relevance?: Prisma.CompanyOrderByRelevanceInput
 }
 
 export type CompanyWhereUniqueInput = Prisma.AtLeast<{
   id?: string
-  cnpj?: string
+  tenantId_cnpj?: Prisma.CompanyTenantIdCnpjCompoundUniqueInput
   AND?: Prisma.CompanyWhereInput | Prisma.CompanyWhereInput[]
   OR?: Prisma.CompanyWhereInput[]
   NOT?: Prisma.CompanyWhereInput | Prisma.CompanyWhereInput[]
+  tenantId?: Prisma.StringFilter<"Company"> | string
   name?: Prisma.StringFilter<"Company"> | string
   shortName?: Prisma.StringFilter<"Company"> | string
   color?: Prisma.StringFilter<"Company"> | string
+  cnpj?: Prisma.StringNullableFilter<"Company"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Company"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Company"> | Date | string
+  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
   projects?: Prisma.ProjectListRelationFilter
-}, "id" | "cnpj">
+}, "id" | "tenantId_cnpj">
 
 export type CompanyOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
+  tenantId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   shortName?: Prisma.SortOrder
   color?: Prisma.SortOrder
@@ -245,6 +260,7 @@ export type CompanyScalarWhereWithAggregatesInput = {
   OR?: Prisma.CompanyScalarWhereWithAggregatesInput[]
   NOT?: Prisma.CompanyScalarWhereWithAggregatesInput | Prisma.CompanyScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Company"> | string
+  tenantId?: Prisma.StringWithAggregatesFilter<"Company"> | string
   name?: Prisma.StringWithAggregatesFilter<"Company"> | string
   shortName?: Prisma.StringWithAggregatesFilter<"Company"> | string
   color?: Prisma.StringWithAggregatesFilter<"Company"> | string
@@ -261,11 +277,13 @@ export type CompanyCreateInput = {
   cnpj?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  tenant?: Prisma.TenantCreateNestedOneWithoutCompaniesInput
   projects?: Prisma.ProjectCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyUncheckedCreateInput = {
   id?: string
+  tenantId?: string
   name: string
   shortName: string
   color: string
@@ -283,11 +301,13 @@ export type CompanyUpdateInput = {
   cnpj?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutCompaniesNestedInput
   projects?: Prisma.ProjectUpdateManyWithoutCompanyNestedInput
 }
 
 export type CompanyUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   shortName?: Prisma.StringFieldUpdateOperationsInput | string
   color?: Prisma.StringFieldUpdateOperationsInput | string
@@ -299,6 +319,7 @@ export type CompanyUncheckedUpdateInput = {
 
 export type CompanyCreateManyInput = {
   id?: string
+  tenantId?: string
   name: string
   shortName: string
   color: string
@@ -319,6 +340,7 @@ export type CompanyUpdateManyMutationInput = {
 
 export type CompanyUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   shortName?: Prisma.StringFieldUpdateOperationsInput | string
   color?: Prisma.StringFieldUpdateOperationsInput | string
@@ -327,14 +349,30 @@ export type CompanyUncheckedUpdateManyInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
+export type CompanyListRelationFilter = {
+  every?: Prisma.CompanyWhereInput
+  some?: Prisma.CompanyWhereInput
+  none?: Prisma.CompanyWhereInput
+}
+
+export type CompanyOrderByRelationAggregateInput = {
+  _count?: Prisma.SortOrder
+}
+
 export type CompanyOrderByRelevanceInput = {
   fields: Prisma.CompanyOrderByRelevanceFieldEnum | Prisma.CompanyOrderByRelevanceFieldEnum[]
   sort: Prisma.SortOrder
   search: string
 }
 
+export type CompanyTenantIdCnpjCompoundUniqueInput = {
+  tenantId: string
+  cnpj: string
+}
+
 export type CompanyCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  tenantId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   shortName?: Prisma.SortOrder
   color?: Prisma.SortOrder
@@ -345,6 +383,7 @@ export type CompanyCountOrderByAggregateInput = {
 
 export type CompanyMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  tenantId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   shortName?: Prisma.SortOrder
   color?: Prisma.SortOrder
@@ -355,6 +394,7 @@ export type CompanyMaxOrderByAggregateInput = {
 
 export type CompanyMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  tenantId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   shortName?: Prisma.SortOrder
   color?: Prisma.SortOrder
@@ -368,16 +408,50 @@ export type CompanyNullableScalarRelationFilter = {
   isNot?: Prisma.CompanyWhereInput | null
 }
 
-export type StringFieldUpdateOperationsInput = {
-  set?: string
+export type CompanyCreateNestedManyWithoutTenantInput = {
+  create?: Prisma.XOR<Prisma.CompanyCreateWithoutTenantInput, Prisma.CompanyUncheckedCreateWithoutTenantInput> | Prisma.CompanyCreateWithoutTenantInput[] | Prisma.CompanyUncheckedCreateWithoutTenantInput[]
+  connectOrCreate?: Prisma.CompanyCreateOrConnectWithoutTenantInput | Prisma.CompanyCreateOrConnectWithoutTenantInput[]
+  createMany?: Prisma.CompanyCreateManyTenantInputEnvelope
+  connect?: Prisma.CompanyWhereUniqueInput | Prisma.CompanyWhereUniqueInput[]
+}
+
+export type CompanyUncheckedCreateNestedManyWithoutTenantInput = {
+  create?: Prisma.XOR<Prisma.CompanyCreateWithoutTenantInput, Prisma.CompanyUncheckedCreateWithoutTenantInput> | Prisma.CompanyCreateWithoutTenantInput[] | Prisma.CompanyUncheckedCreateWithoutTenantInput[]
+  connectOrCreate?: Prisma.CompanyCreateOrConnectWithoutTenantInput | Prisma.CompanyCreateOrConnectWithoutTenantInput[]
+  createMany?: Prisma.CompanyCreateManyTenantInputEnvelope
+  connect?: Prisma.CompanyWhereUniqueInput | Prisma.CompanyWhereUniqueInput[]
+}
+
+export type CompanyUpdateManyWithoutTenantNestedInput = {
+  create?: Prisma.XOR<Prisma.CompanyCreateWithoutTenantInput, Prisma.CompanyUncheckedCreateWithoutTenantInput> | Prisma.CompanyCreateWithoutTenantInput[] | Prisma.CompanyUncheckedCreateWithoutTenantInput[]
+  connectOrCreate?: Prisma.CompanyCreateOrConnectWithoutTenantInput | Prisma.CompanyCreateOrConnectWithoutTenantInput[]
+  upsert?: Prisma.CompanyUpsertWithWhereUniqueWithoutTenantInput | Prisma.CompanyUpsertWithWhereUniqueWithoutTenantInput[]
+  createMany?: Prisma.CompanyCreateManyTenantInputEnvelope
+  set?: Prisma.CompanyWhereUniqueInput | Prisma.CompanyWhereUniqueInput[]
+  disconnect?: Prisma.CompanyWhereUniqueInput | Prisma.CompanyWhereUniqueInput[]
+  delete?: Prisma.CompanyWhereUniqueInput | Prisma.CompanyWhereUniqueInput[]
+  connect?: Prisma.CompanyWhereUniqueInput | Prisma.CompanyWhereUniqueInput[]
+  update?: Prisma.CompanyUpdateWithWhereUniqueWithoutTenantInput | Prisma.CompanyUpdateWithWhereUniqueWithoutTenantInput[]
+  updateMany?: Prisma.CompanyUpdateManyWithWhereWithoutTenantInput | Prisma.CompanyUpdateManyWithWhereWithoutTenantInput[]
+  deleteMany?: Prisma.CompanyScalarWhereInput | Prisma.CompanyScalarWhereInput[]
+}
+
+export type CompanyUncheckedUpdateManyWithoutTenantNestedInput = {
+  create?: Prisma.XOR<Prisma.CompanyCreateWithoutTenantInput, Prisma.CompanyUncheckedCreateWithoutTenantInput> | Prisma.CompanyCreateWithoutTenantInput[] | Prisma.CompanyUncheckedCreateWithoutTenantInput[]
+  connectOrCreate?: Prisma.CompanyCreateOrConnectWithoutTenantInput | Prisma.CompanyCreateOrConnectWithoutTenantInput[]
+  upsert?: Prisma.CompanyUpsertWithWhereUniqueWithoutTenantInput | Prisma.CompanyUpsertWithWhereUniqueWithoutTenantInput[]
+  createMany?: Prisma.CompanyCreateManyTenantInputEnvelope
+  set?: Prisma.CompanyWhereUniqueInput | Prisma.CompanyWhereUniqueInput[]
+  disconnect?: Prisma.CompanyWhereUniqueInput | Prisma.CompanyWhereUniqueInput[]
+  delete?: Prisma.CompanyWhereUniqueInput | Prisma.CompanyWhereUniqueInput[]
+  connect?: Prisma.CompanyWhereUniqueInput | Prisma.CompanyWhereUniqueInput[]
+  update?: Prisma.CompanyUpdateWithWhereUniqueWithoutTenantInput | Prisma.CompanyUpdateWithWhereUniqueWithoutTenantInput[]
+  updateMany?: Prisma.CompanyUpdateManyWithWhereWithoutTenantInput | Prisma.CompanyUpdateManyWithWhereWithoutTenantInput[]
+  deleteMany?: Prisma.CompanyScalarWhereInput | Prisma.CompanyScalarWhereInput[]
 }
 
 export type NullableStringFieldUpdateOperationsInput = {
   set?: string | null
-}
-
-export type DateTimeFieldUpdateOperationsInput = {
-  set?: Date | string
 }
 
 export type CompanyCreateNestedOneWithoutProjectsInput = {
@@ -396,6 +470,68 @@ export type CompanyUpdateOneWithoutProjectsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.CompanyUpdateToOneWithWhereWithoutProjectsInput, Prisma.CompanyUpdateWithoutProjectsInput>, Prisma.CompanyUncheckedUpdateWithoutProjectsInput>
 }
 
+export type CompanyCreateWithoutTenantInput = {
+  id?: string
+  name: string
+  shortName: string
+  color: string
+  cnpj?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  projects?: Prisma.ProjectCreateNestedManyWithoutCompanyInput
+}
+
+export type CompanyUncheckedCreateWithoutTenantInput = {
+  id?: string
+  name: string
+  shortName: string
+  color: string
+  cnpj?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutCompanyInput
+}
+
+export type CompanyCreateOrConnectWithoutTenantInput = {
+  where: Prisma.CompanyWhereUniqueInput
+  create: Prisma.XOR<Prisma.CompanyCreateWithoutTenantInput, Prisma.CompanyUncheckedCreateWithoutTenantInput>
+}
+
+export type CompanyCreateManyTenantInputEnvelope = {
+  data: Prisma.CompanyCreateManyTenantInput | Prisma.CompanyCreateManyTenantInput[]
+  skipDuplicates?: boolean
+}
+
+export type CompanyUpsertWithWhereUniqueWithoutTenantInput = {
+  where: Prisma.CompanyWhereUniqueInput
+  update: Prisma.XOR<Prisma.CompanyUpdateWithoutTenantInput, Prisma.CompanyUncheckedUpdateWithoutTenantInput>
+  create: Prisma.XOR<Prisma.CompanyCreateWithoutTenantInput, Prisma.CompanyUncheckedCreateWithoutTenantInput>
+}
+
+export type CompanyUpdateWithWhereUniqueWithoutTenantInput = {
+  where: Prisma.CompanyWhereUniqueInput
+  data: Prisma.XOR<Prisma.CompanyUpdateWithoutTenantInput, Prisma.CompanyUncheckedUpdateWithoutTenantInput>
+}
+
+export type CompanyUpdateManyWithWhereWithoutTenantInput = {
+  where: Prisma.CompanyScalarWhereInput
+  data: Prisma.XOR<Prisma.CompanyUpdateManyMutationInput, Prisma.CompanyUncheckedUpdateManyWithoutTenantInput>
+}
+
+export type CompanyScalarWhereInput = {
+  AND?: Prisma.CompanyScalarWhereInput | Prisma.CompanyScalarWhereInput[]
+  OR?: Prisma.CompanyScalarWhereInput[]
+  NOT?: Prisma.CompanyScalarWhereInput | Prisma.CompanyScalarWhereInput[]
+  id?: Prisma.StringFilter<"Company"> | string
+  tenantId?: Prisma.StringFilter<"Company"> | string
+  name?: Prisma.StringFilter<"Company"> | string
+  shortName?: Prisma.StringFilter<"Company"> | string
+  color?: Prisma.StringFilter<"Company"> | string
+  cnpj?: Prisma.StringNullableFilter<"Company"> | string | null
+  createdAt?: Prisma.DateTimeFilter<"Company"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"Company"> | Date | string
+}
+
 export type CompanyCreateWithoutProjectsInput = {
   id?: string
   name: string
@@ -404,10 +540,12 @@ export type CompanyCreateWithoutProjectsInput = {
   cnpj?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  tenant?: Prisma.TenantCreateNestedOneWithoutCompaniesInput
 }
 
 export type CompanyUncheckedCreateWithoutProjectsInput = {
   id?: string
+  tenantId?: string
   name: string
   shortName: string
   color: string
@@ -440,9 +578,53 @@ export type CompanyUpdateWithoutProjectsInput = {
   cnpj?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutCompaniesNestedInput
 }
 
 export type CompanyUncheckedUpdateWithoutProjectsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  shortName?: Prisma.StringFieldUpdateOperationsInput | string
+  color?: Prisma.StringFieldUpdateOperationsInput | string
+  cnpj?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type CompanyCreateManyTenantInput = {
+  id?: string
+  name: string
+  shortName: string
+  color: string
+  cnpj?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type CompanyUpdateWithoutTenantInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  shortName?: Prisma.StringFieldUpdateOperationsInput | string
+  color?: Prisma.StringFieldUpdateOperationsInput | string
+  cnpj?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  projects?: Prisma.ProjectUpdateManyWithoutCompanyNestedInput
+}
+
+export type CompanyUncheckedUpdateWithoutTenantInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  shortName?: Prisma.StringFieldUpdateOperationsInput | string
+  color?: Prisma.StringFieldUpdateOperationsInput | string
+  cnpj?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutCompanyNestedInput
+}
+
+export type CompanyUncheckedUpdateManyWithoutTenantInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   shortName?: Prisma.StringFieldUpdateOperationsInput | string
@@ -485,12 +667,14 @@ export type CompanyCountOutputTypeCountProjectsArgs<ExtArgs extends runtime.Type
 
 export type CompanySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  tenantId?: boolean
   name?: boolean
   shortName?: boolean
   color?: boolean
   cnpj?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   projects?: boolean | Prisma.Company$projectsArgs<ExtArgs>
   _count?: boolean | Prisma.CompanyCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["company"]>
@@ -499,6 +683,7 @@ export type CompanySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
 
 export type CompanySelectScalar = {
   id?: boolean
+  tenantId?: boolean
   name?: boolean
   shortName?: boolean
   color?: boolean
@@ -507,8 +692,9 @@ export type CompanySelectScalar = {
   updatedAt?: boolean
 }
 
-export type CompanyOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "shortName" | "color" | "cnpj" | "createdAt" | "updatedAt", ExtArgs["result"]["company"]>
+export type CompanyOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "name" | "shortName" | "color" | "cnpj" | "createdAt" | "updatedAt", ExtArgs["result"]["company"]>
 export type CompanyInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   projects?: boolean | Prisma.Company$projectsArgs<ExtArgs>
   _count?: boolean | Prisma.CompanyCountOutputTypeDefaultArgs<ExtArgs>
 }
@@ -516,10 +702,12 @@ export type CompanyInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs
 export type $CompanyPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Company"
   objects: {
+    tenant: Prisma.$TenantPayload<ExtArgs>
     projects: Prisma.$ProjectPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
+    tenantId: string
     name: string
     shortName: string
     color: string
@@ -866,6 +1054,7 @@ readonly fields: CompanyFieldRefs;
  */
 export interface Prisma__CompanyClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  tenant<T extends Prisma.TenantDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TenantDefaultArgs<ExtArgs>>): Prisma.Prisma__TenantClient<runtime.Types.Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   projects<T extends Prisma.Company$projectsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Company$projectsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -897,6 +1086,7 @@ export interface Prisma__CompanyClient<T, Null = never, ExtArgs extends runtime.
  */
 export interface CompanyFieldRefs {
   readonly id: Prisma.FieldRef<"Company", 'String'>
+  readonly tenantId: Prisma.FieldRef<"Company", 'String'>
   readonly name: Prisma.FieldRef<"Company", 'String'>
   readonly shortName: Prisma.FieldRef<"Company", 'String'>
   readonly color: Prisma.FieldRef<"Company", 'String'>

@@ -25,16 +25,19 @@ export type AggregateProjectDeveloper = {
 }
 
 export type ProjectDeveloperMinAggregateOutputType = {
+  tenantId: string | null
   projectId: string | null
   userId: string | null
 }
 
 export type ProjectDeveloperMaxAggregateOutputType = {
+  tenantId: string | null
   projectId: string | null
   userId: string | null
 }
 
 export type ProjectDeveloperCountAggregateOutputType = {
+  tenantId: number
   projectId: number
   userId: number
   _all: number
@@ -42,16 +45,19 @@ export type ProjectDeveloperCountAggregateOutputType = {
 
 
 export type ProjectDeveloperMinAggregateInputType = {
+  tenantId?: true
   projectId?: true
   userId?: true
 }
 
 export type ProjectDeveloperMaxAggregateInputType = {
+  tenantId?: true
   projectId?: true
   userId?: true
 }
 
 export type ProjectDeveloperCountAggregateInputType = {
+  tenantId?: true
   projectId?: true
   userId?: true
   _all?: true
@@ -130,6 +136,7 @@ export type ProjectDeveloperGroupByArgs<ExtArgs extends runtime.Types.Extensions
 }
 
 export type ProjectDeveloperGroupByOutputType = {
+  tenantId: string
   projectId: string
   userId: string
   _count: ProjectDeveloperCountAggregateOutputType | null
@@ -156,15 +163,19 @@ export type ProjectDeveloperWhereInput = {
   AND?: Prisma.ProjectDeveloperWhereInput | Prisma.ProjectDeveloperWhereInput[]
   OR?: Prisma.ProjectDeveloperWhereInput[]
   NOT?: Prisma.ProjectDeveloperWhereInput | Prisma.ProjectDeveloperWhereInput[]
+  tenantId?: Prisma.StringFilter<"ProjectDeveloper"> | string
   projectId?: Prisma.StringFilter<"ProjectDeveloper"> | string
   userId?: Prisma.StringFilter<"ProjectDeveloper"> | string
+  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
   project?: Prisma.XOR<Prisma.ProjectScalarRelationFilter, Prisma.ProjectWhereInput>
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }
 
 export type ProjectDeveloperOrderByWithRelationInput = {
+  tenantId?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
+  tenant?: Prisma.TenantOrderByWithRelationInput
   project?: Prisma.ProjectOrderByWithRelationInput
   user?: Prisma.UserOrderByWithRelationInput
   _relevance?: Prisma.ProjectDeveloperOrderByRelevanceInput
@@ -175,13 +186,16 @@ export type ProjectDeveloperWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.ProjectDeveloperWhereInput | Prisma.ProjectDeveloperWhereInput[]
   OR?: Prisma.ProjectDeveloperWhereInput[]
   NOT?: Prisma.ProjectDeveloperWhereInput | Prisma.ProjectDeveloperWhereInput[]
+  tenantId?: Prisma.StringFilter<"ProjectDeveloper"> | string
   projectId?: Prisma.StringFilter<"ProjectDeveloper"> | string
   userId?: Prisma.StringFilter<"ProjectDeveloper"> | string
+  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
   project?: Prisma.XOR<Prisma.ProjectScalarRelationFilter, Prisma.ProjectWhereInput>
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }, "projectId_userId">
 
 export type ProjectDeveloperOrderByWithAggregationInput = {
+  tenantId?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   _count?: Prisma.ProjectDeveloperCountOrderByAggregateInput
@@ -193,31 +207,37 @@ export type ProjectDeveloperScalarWhereWithAggregatesInput = {
   AND?: Prisma.ProjectDeveloperScalarWhereWithAggregatesInput | Prisma.ProjectDeveloperScalarWhereWithAggregatesInput[]
   OR?: Prisma.ProjectDeveloperScalarWhereWithAggregatesInput[]
   NOT?: Prisma.ProjectDeveloperScalarWhereWithAggregatesInput | Prisma.ProjectDeveloperScalarWhereWithAggregatesInput[]
+  tenantId?: Prisma.StringWithAggregatesFilter<"ProjectDeveloper"> | string
   projectId?: Prisma.StringWithAggregatesFilter<"ProjectDeveloper"> | string
   userId?: Prisma.StringWithAggregatesFilter<"ProjectDeveloper"> | string
 }
 
 export type ProjectDeveloperCreateInput = {
+  tenant?: Prisma.TenantCreateNestedOneWithoutProjectDevelopersInput
   project: Prisma.ProjectCreateNestedOneWithoutDevelopersInput
   user: Prisma.UserCreateNestedOneWithoutProjectsInput
 }
 
 export type ProjectDeveloperUncheckedCreateInput = {
+  tenantId?: string
   projectId: string
   userId: string
 }
 
 export type ProjectDeveloperUpdateInput = {
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutProjectDevelopersNestedInput
   project?: Prisma.ProjectUpdateOneRequiredWithoutDevelopersNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutProjectsNestedInput
 }
 
 export type ProjectDeveloperUncheckedUpdateInput = {
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type ProjectDeveloperCreateManyInput = {
+  tenantId?: string
   projectId: string
   userId: string
 }
@@ -227,6 +247,7 @@ export type ProjectDeveloperUpdateManyMutationInput = {
 }
 
 export type ProjectDeveloperUncheckedUpdateManyInput = {
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
 }
@@ -253,18 +274,63 @@ export type ProjectDeveloperProjectIdUserIdCompoundUniqueInput = {
 }
 
 export type ProjectDeveloperCountOrderByAggregateInput = {
+  tenantId?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
 }
 
 export type ProjectDeveloperMaxOrderByAggregateInput = {
+  tenantId?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
 }
 
 export type ProjectDeveloperMinOrderByAggregateInput = {
+  tenantId?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
+}
+
+export type ProjectDeveloperCreateNestedManyWithoutTenantInput = {
+  create?: Prisma.XOR<Prisma.ProjectDeveloperCreateWithoutTenantInput, Prisma.ProjectDeveloperUncheckedCreateWithoutTenantInput> | Prisma.ProjectDeveloperCreateWithoutTenantInput[] | Prisma.ProjectDeveloperUncheckedCreateWithoutTenantInput[]
+  connectOrCreate?: Prisma.ProjectDeveloperCreateOrConnectWithoutTenantInput | Prisma.ProjectDeveloperCreateOrConnectWithoutTenantInput[]
+  createMany?: Prisma.ProjectDeveloperCreateManyTenantInputEnvelope
+  connect?: Prisma.ProjectDeveloperWhereUniqueInput | Prisma.ProjectDeveloperWhereUniqueInput[]
+}
+
+export type ProjectDeveloperUncheckedCreateNestedManyWithoutTenantInput = {
+  create?: Prisma.XOR<Prisma.ProjectDeveloperCreateWithoutTenantInput, Prisma.ProjectDeveloperUncheckedCreateWithoutTenantInput> | Prisma.ProjectDeveloperCreateWithoutTenantInput[] | Prisma.ProjectDeveloperUncheckedCreateWithoutTenantInput[]
+  connectOrCreate?: Prisma.ProjectDeveloperCreateOrConnectWithoutTenantInput | Prisma.ProjectDeveloperCreateOrConnectWithoutTenantInput[]
+  createMany?: Prisma.ProjectDeveloperCreateManyTenantInputEnvelope
+  connect?: Prisma.ProjectDeveloperWhereUniqueInput | Prisma.ProjectDeveloperWhereUniqueInput[]
+}
+
+export type ProjectDeveloperUpdateManyWithoutTenantNestedInput = {
+  create?: Prisma.XOR<Prisma.ProjectDeveloperCreateWithoutTenantInput, Prisma.ProjectDeveloperUncheckedCreateWithoutTenantInput> | Prisma.ProjectDeveloperCreateWithoutTenantInput[] | Prisma.ProjectDeveloperUncheckedCreateWithoutTenantInput[]
+  connectOrCreate?: Prisma.ProjectDeveloperCreateOrConnectWithoutTenantInput | Prisma.ProjectDeveloperCreateOrConnectWithoutTenantInput[]
+  upsert?: Prisma.ProjectDeveloperUpsertWithWhereUniqueWithoutTenantInput | Prisma.ProjectDeveloperUpsertWithWhereUniqueWithoutTenantInput[]
+  createMany?: Prisma.ProjectDeveloperCreateManyTenantInputEnvelope
+  set?: Prisma.ProjectDeveloperWhereUniqueInput | Prisma.ProjectDeveloperWhereUniqueInput[]
+  disconnect?: Prisma.ProjectDeveloperWhereUniqueInput | Prisma.ProjectDeveloperWhereUniqueInput[]
+  delete?: Prisma.ProjectDeveloperWhereUniqueInput | Prisma.ProjectDeveloperWhereUniqueInput[]
+  connect?: Prisma.ProjectDeveloperWhereUniqueInput | Prisma.ProjectDeveloperWhereUniqueInput[]
+  update?: Prisma.ProjectDeveloperUpdateWithWhereUniqueWithoutTenantInput | Prisma.ProjectDeveloperUpdateWithWhereUniqueWithoutTenantInput[]
+  updateMany?: Prisma.ProjectDeveloperUpdateManyWithWhereWithoutTenantInput | Prisma.ProjectDeveloperUpdateManyWithWhereWithoutTenantInput[]
+  deleteMany?: Prisma.ProjectDeveloperScalarWhereInput | Prisma.ProjectDeveloperScalarWhereInput[]
+}
+
+export type ProjectDeveloperUncheckedUpdateManyWithoutTenantNestedInput = {
+  create?: Prisma.XOR<Prisma.ProjectDeveloperCreateWithoutTenantInput, Prisma.ProjectDeveloperUncheckedCreateWithoutTenantInput> | Prisma.ProjectDeveloperCreateWithoutTenantInput[] | Prisma.ProjectDeveloperUncheckedCreateWithoutTenantInput[]
+  connectOrCreate?: Prisma.ProjectDeveloperCreateOrConnectWithoutTenantInput | Prisma.ProjectDeveloperCreateOrConnectWithoutTenantInput[]
+  upsert?: Prisma.ProjectDeveloperUpsertWithWhereUniqueWithoutTenantInput | Prisma.ProjectDeveloperUpsertWithWhereUniqueWithoutTenantInput[]
+  createMany?: Prisma.ProjectDeveloperCreateManyTenantInputEnvelope
+  set?: Prisma.ProjectDeveloperWhereUniqueInput | Prisma.ProjectDeveloperWhereUniqueInput[]
+  disconnect?: Prisma.ProjectDeveloperWhereUniqueInput | Prisma.ProjectDeveloperWhereUniqueInput[]
+  delete?: Prisma.ProjectDeveloperWhereUniqueInput | Prisma.ProjectDeveloperWhereUniqueInput[]
+  connect?: Prisma.ProjectDeveloperWhereUniqueInput | Prisma.ProjectDeveloperWhereUniqueInput[]
+  update?: Prisma.ProjectDeveloperUpdateWithWhereUniqueWithoutTenantInput | Prisma.ProjectDeveloperUpdateWithWhereUniqueWithoutTenantInput[]
+  updateMany?: Prisma.ProjectDeveloperUpdateManyWithWhereWithoutTenantInput | Prisma.ProjectDeveloperUpdateManyWithWhereWithoutTenantInput[]
+  deleteMany?: Prisma.ProjectDeveloperScalarWhereInput | Prisma.ProjectDeveloperScalarWhereInput[]
 }
 
 export type ProjectDeveloperCreateNestedManyWithoutUserInput = {
@@ -351,11 +417,58 @@ export type ProjectDeveloperUncheckedUpdateManyWithoutProjectNestedInput = {
   deleteMany?: Prisma.ProjectDeveloperScalarWhereInput | Prisma.ProjectDeveloperScalarWhereInput[]
 }
 
+export type ProjectDeveloperCreateWithoutTenantInput = {
+  project: Prisma.ProjectCreateNestedOneWithoutDevelopersInput
+  user: Prisma.UserCreateNestedOneWithoutProjectsInput
+}
+
+export type ProjectDeveloperUncheckedCreateWithoutTenantInput = {
+  projectId: string
+  userId: string
+}
+
+export type ProjectDeveloperCreateOrConnectWithoutTenantInput = {
+  where: Prisma.ProjectDeveloperWhereUniqueInput
+  create: Prisma.XOR<Prisma.ProjectDeveloperCreateWithoutTenantInput, Prisma.ProjectDeveloperUncheckedCreateWithoutTenantInput>
+}
+
+export type ProjectDeveloperCreateManyTenantInputEnvelope = {
+  data: Prisma.ProjectDeveloperCreateManyTenantInput | Prisma.ProjectDeveloperCreateManyTenantInput[]
+  skipDuplicates?: boolean
+}
+
+export type ProjectDeveloperUpsertWithWhereUniqueWithoutTenantInput = {
+  where: Prisma.ProjectDeveloperWhereUniqueInput
+  update: Prisma.XOR<Prisma.ProjectDeveloperUpdateWithoutTenantInput, Prisma.ProjectDeveloperUncheckedUpdateWithoutTenantInput>
+  create: Prisma.XOR<Prisma.ProjectDeveloperCreateWithoutTenantInput, Prisma.ProjectDeveloperUncheckedCreateWithoutTenantInput>
+}
+
+export type ProjectDeveloperUpdateWithWhereUniqueWithoutTenantInput = {
+  where: Prisma.ProjectDeveloperWhereUniqueInput
+  data: Prisma.XOR<Prisma.ProjectDeveloperUpdateWithoutTenantInput, Prisma.ProjectDeveloperUncheckedUpdateWithoutTenantInput>
+}
+
+export type ProjectDeveloperUpdateManyWithWhereWithoutTenantInput = {
+  where: Prisma.ProjectDeveloperScalarWhereInput
+  data: Prisma.XOR<Prisma.ProjectDeveloperUpdateManyMutationInput, Prisma.ProjectDeveloperUncheckedUpdateManyWithoutTenantInput>
+}
+
+export type ProjectDeveloperScalarWhereInput = {
+  AND?: Prisma.ProjectDeveloperScalarWhereInput | Prisma.ProjectDeveloperScalarWhereInput[]
+  OR?: Prisma.ProjectDeveloperScalarWhereInput[]
+  NOT?: Prisma.ProjectDeveloperScalarWhereInput | Prisma.ProjectDeveloperScalarWhereInput[]
+  tenantId?: Prisma.StringFilter<"ProjectDeveloper"> | string
+  projectId?: Prisma.StringFilter<"ProjectDeveloper"> | string
+  userId?: Prisma.StringFilter<"ProjectDeveloper"> | string
+}
+
 export type ProjectDeveloperCreateWithoutUserInput = {
+  tenant?: Prisma.TenantCreateNestedOneWithoutProjectDevelopersInput
   project: Prisma.ProjectCreateNestedOneWithoutDevelopersInput
 }
 
 export type ProjectDeveloperUncheckedCreateWithoutUserInput = {
+  tenantId?: string
   projectId: string
 }
 
@@ -385,19 +498,13 @@ export type ProjectDeveloperUpdateManyWithWhereWithoutUserInput = {
   data: Prisma.XOR<Prisma.ProjectDeveloperUpdateManyMutationInput, Prisma.ProjectDeveloperUncheckedUpdateManyWithoutUserInput>
 }
 
-export type ProjectDeveloperScalarWhereInput = {
-  AND?: Prisma.ProjectDeveloperScalarWhereInput | Prisma.ProjectDeveloperScalarWhereInput[]
-  OR?: Prisma.ProjectDeveloperScalarWhereInput[]
-  NOT?: Prisma.ProjectDeveloperScalarWhereInput | Prisma.ProjectDeveloperScalarWhereInput[]
-  projectId?: Prisma.StringFilter<"ProjectDeveloper"> | string
-  userId?: Prisma.StringFilter<"ProjectDeveloper"> | string
-}
-
 export type ProjectDeveloperCreateWithoutProjectInput = {
+  tenant?: Prisma.TenantCreateNestedOneWithoutProjectDevelopersInput
   user: Prisma.UserCreateNestedOneWithoutProjectsInput
 }
 
 export type ProjectDeveloperUncheckedCreateWithoutProjectInput = {
+  tenantId?: string
   userId: string
 }
 
@@ -427,43 +534,73 @@ export type ProjectDeveloperUpdateManyWithWhereWithoutProjectInput = {
   data: Prisma.XOR<Prisma.ProjectDeveloperUpdateManyMutationInput, Prisma.ProjectDeveloperUncheckedUpdateManyWithoutProjectInput>
 }
 
+export type ProjectDeveloperCreateManyTenantInput = {
+  projectId: string
+  userId: string
+}
+
+export type ProjectDeveloperUpdateWithoutTenantInput = {
+  project?: Prisma.ProjectUpdateOneRequiredWithoutDevelopersNestedInput
+  user?: Prisma.UserUpdateOneRequiredWithoutProjectsNestedInput
+}
+
+export type ProjectDeveloperUncheckedUpdateWithoutTenantInput = {
+  projectId?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+}
+
+export type ProjectDeveloperUncheckedUpdateManyWithoutTenantInput = {
+  projectId?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+}
+
 export type ProjectDeveloperCreateManyUserInput = {
+  tenantId?: string
   projectId: string
 }
 
 export type ProjectDeveloperUpdateWithoutUserInput = {
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutProjectDevelopersNestedInput
   project?: Prisma.ProjectUpdateOneRequiredWithoutDevelopersNestedInput
 }
 
 export type ProjectDeveloperUncheckedUpdateWithoutUserInput = {
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type ProjectDeveloperUncheckedUpdateManyWithoutUserInput = {
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type ProjectDeveloperCreateManyProjectInput = {
+  tenantId?: string
   userId: string
 }
 
 export type ProjectDeveloperUpdateWithoutProjectInput = {
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutProjectDevelopersNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutProjectsNestedInput
 }
 
 export type ProjectDeveloperUncheckedUpdateWithoutProjectInput = {
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type ProjectDeveloperUncheckedUpdateManyWithoutProjectInput = {
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 
 
 export type ProjectDeveloperSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  tenantId?: boolean
   projectId?: boolean
   userId?: boolean
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["projectDeveloper"]>
@@ -471,12 +608,14 @@ export type ProjectDeveloperSelect<ExtArgs extends runtime.Types.Extensions.Inte
 
 
 export type ProjectDeveloperSelectScalar = {
+  tenantId?: boolean
   projectId?: boolean
   userId?: boolean
 }
 
-export type ProjectDeveloperOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"projectId" | "userId", ExtArgs["result"]["projectDeveloper"]>
+export type ProjectDeveloperOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"tenantId" | "projectId" | "userId", ExtArgs["result"]["projectDeveloper"]>
 export type ProjectDeveloperInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
@@ -484,10 +623,12 @@ export type ProjectDeveloperInclude<ExtArgs extends runtime.Types.Extensions.Int
 export type $ProjectDeveloperPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "ProjectDeveloper"
   objects: {
+    tenant: Prisma.$TenantPayload<ExtArgs>
     project: Prisma.$ProjectPayload<ExtArgs>
     user: Prisma.$UserPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
+    tenantId: string
     projectId: string
     userId: string
   }, ExtArgs["result"]["projectDeveloper"]>
@@ -573,8 +714,8 @@ export interface ProjectDeveloperDelegate<ExtArgs extends runtime.Types.Extensio
    * // Get first 10 ProjectDevelopers
    * const projectDevelopers = await prisma.projectDeveloper.findMany({ take: 10 })
    * 
-   * // Only select the `projectId`
-   * const projectDeveloperWithProjectIdOnly = await prisma.projectDeveloper.findMany({ select: { projectId: true } })
+   * // Only select the `tenantId`
+   * const projectDeveloperWithTenantIdOnly = await prisma.projectDeveloper.findMany({ select: { tenantId: true } })
    * 
    */
   findMany<T extends ProjectDeveloperFindManyArgs>(args?: Prisma.SelectSubset<T, ProjectDeveloperFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProjectDeveloperPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
@@ -830,6 +971,7 @@ readonly fields: ProjectDeveloperFieldRefs;
  */
 export interface Prisma__ProjectDeveloperClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  tenant<T extends Prisma.TenantDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TenantDefaultArgs<ExtArgs>>): Prisma.Prisma__TenantClient<runtime.Types.Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   project<T extends Prisma.ProjectDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProjectDefaultArgs<ExtArgs>>): Prisma.Prisma__ProjectClient<runtime.Types.Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
@@ -861,6 +1003,7 @@ export interface Prisma__ProjectDeveloperClient<T, Null = never, ExtArgs extends
  * Fields of the ProjectDeveloper model
  */
 export interface ProjectDeveloperFieldRefs {
+  readonly tenantId: Prisma.FieldRef<"ProjectDeveloper", 'String'>
   readonly projectId: Prisma.FieldRef<"ProjectDeveloper", 'String'>
   readonly userId: Prisma.FieldRef<"ProjectDeveloper", 'String'>
 }

@@ -4,6 +4,9 @@ import { resolve } from 'node:path';
 import { PrismaClient } from '../generated/prisma/client';
 import { createPrismaMariaDbAdapter } from '../infra/config/mysql.config';
 import { assertValidManifest, runDevlogImport } from '../devlog/import-devlog.runner';
+import { tenantExtension } from '../infra/tenancy/tenant.extension';
+import { TenantContext } from '../infra/tenancy/tenant-context';
+import { TENANT_SLUGS } from '../infra/tenancy/tenant.constants';
 
 function resolveManifestPath(): string {
   if (process.env.DEVLOG_PATH) {
@@ -19,10 +22,19 @@ async function main() {
   const raw = JSON.parse(readFileSync(manifestPath, 'utf8'));
   const manifest = assertValidManifest(raw);
 
-  const prisma = new PrismaClient({ adapter: createPrismaMariaDbAdapter() });
+  const base = new PrismaClient({ adapter: createPrismaMariaDbAdapter() });
+  // Import pertence ao grupo Desenvolvimento (configurável via DEVLOG_TENANT_SLUG).
+  const prisma = base.$extends(tenantExtension) as unknown as PrismaClient;
 
   try {
-    const result = await runDevlogImport(prisma, manifest);
+    const slug = process.env.DEVLOG_TENANT_SLUG ?? TENANT_SLUGS.DESENVOLVIMENTO;
+    const tenant = await base.tenant.findUnique({ where: { slug } });
+    if (!tenant) {
+      throw new Error(`Grupo (tenant) "${slug}" não encontrado. Rode as migrations primeiro.`);
+    }
+    const result = await TenantContext.run(tenant.id, () =>
+      runDevlogImport(prisma, manifest),
+    );
     console.log('\nImportação concluída:');
     console.log(`  Projetos criados: ${result.projectsCreated}`);
     console.log(`  Projetos atualizados: ${result.projectsUpdated}`);
@@ -37,7 +49,7 @@ async function main() {
       console.log(line);
     }
   } finally {
-    await prisma.$disconnect();
+    await base.$disconnect();
   }
 }
 

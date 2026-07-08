@@ -1,9 +1,22 @@
 import { Global, Module } from '@nestjs/common';
-import { PrismaService } from './prisma.service';
+import {
+  BasePrismaService,
+  PrismaService,
+  createTenantPrismaClient,
+} from './prisma.service';
 
 @Global()
 @Module({
-  providers: [PrismaService],
-  exports: [PrismaService],
+  providers: [
+    BasePrismaService,
+    {
+      // Client estendido (isolado por tenant) — injetado por repositories/controllers.
+      provide: PrismaService,
+      useFactory: (base: BasePrismaService) =>
+        createTenantPrismaClient(base) as unknown as PrismaService,
+      inject: [BasePrismaService],
+    },
+  ],
+  exports: [BasePrismaService, PrismaService],
 })
 export class PrismaModule {}

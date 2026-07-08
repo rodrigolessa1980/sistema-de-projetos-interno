@@ -7,4 +7,8 @@ export class LoginDto {
   @IsString()
   @MinLength(1, { message: 'Senha obrigatória' })
   password!: string;
+
+  @IsString()
+  @MinLength(1, { message: 'Selecione um grupo' })
+  tenantSlug!: string;
 }

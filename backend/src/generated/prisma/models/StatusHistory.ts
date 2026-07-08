@@ -36,6 +36,7 @@ export type StatusHistorySumAggregateOutputType = {
 
 export type StatusHistoryMinAggregateOutputType = {
   id: string | null
+  tenantId: string | null
   taskId: string | null
   fromStatus: $Enums.TaskStatus | null
   toStatus: $Enums.TaskStatus | null
@@ -46,6 +47,7 @@ export type StatusHistoryMinAggregateOutputType = {
 
 export type StatusHistoryMaxAggregateOutputType = {
   id: string | null
+  tenantId: string | null
   taskId: string | null
   fromStatus: $Enums.TaskStatus | null
   toStatus: $Enums.TaskStatus | null
@@ -56,6 +58,7 @@ export type StatusHistoryMaxAggregateOutputType = {
 
 export type StatusHistoryCountAggregateOutputType = {
   id: number
+  tenantId: number
   taskId: number
   fromStatus: number
   toStatus: number
@@ -76,6 +79,7 @@ export type StatusHistorySumAggregateInputType = {
 
 export type StatusHistoryMinAggregateInputType = {
   id?: true
+  tenantId?: true
   taskId?: true
   fromStatus?: true
   toStatus?: true
@@ -86,6 +90,7 @@ export type StatusHistoryMinAggregateInputType = {
 
 export type StatusHistoryMaxAggregateInputType = {
   id?: true
+  tenantId?: true
   taskId?: true
   fromStatus?: true
   toStatus?: true
@@ -96,6 +101,7 @@ export type StatusHistoryMaxAggregateInputType = {
 
 export type StatusHistoryCountAggregateInputType = {
   id?: true
+  tenantId?: true
   taskId?: true
   fromStatus?: true
   toStatus?: true
@@ -193,6 +199,7 @@ export type StatusHistoryGroupByArgs<ExtArgs extends runtime.Types.Extensions.In
 
 export type StatusHistoryGroupByOutputType = {
   id: string
+  tenantId: string
   taskId: string
   fromStatus: $Enums.TaskStatus
   toStatus: $Enums.TaskStatus
@@ -226,24 +233,28 @@ export type StatusHistoryWhereInput = {
   OR?: Prisma.StatusHistoryWhereInput[]
   NOT?: Prisma.StatusHistoryWhereInput | Prisma.StatusHistoryWhereInput[]
   id?: Prisma.StringFilter<"StatusHistory"> | string
+  tenantId?: Prisma.StringFilter<"StatusHistory"> | string
   taskId?: Prisma.StringFilter<"StatusHistory"> | string
   fromStatus?: Prisma.EnumTaskStatusFilter<"StatusHistory"> | $Enums.TaskStatus
   toStatus?: Prisma.EnumTaskStatusFilter<"StatusHistory"> | $Enums.TaskStatus
   userId?: Prisma.StringFilter<"StatusHistory"> | string
   duration?: Prisma.IntFilter<"StatusHistory"> | number
   createdAt?: Prisma.DateTimeFilter<"StatusHistory"> | Date | string
+  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
   task?: Prisma.XOR<Prisma.TaskScalarRelationFilter, Prisma.TaskWhereInput>
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }
 
 export type StatusHistoryOrderByWithRelationInput = {
   id?: Prisma.SortOrder
+  tenantId?: Prisma.SortOrder
   taskId?: Prisma.SortOrder
   fromStatus?: Prisma.SortOrder
   toStatus?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   duration?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  tenant?: Prisma.TenantOrderByWithRelationInput
   task?: Prisma.TaskOrderByWithRelationInput
   user?: Prisma.UserOrderByWithRelationInput
   _relevance?: Prisma.StatusHistoryOrderByRelevanceInput
@@ -254,18 +265,21 @@ export type StatusHistoryWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.StatusHistoryWhereInput | Prisma.StatusHistoryWhereInput[]
   OR?: Prisma.StatusHistoryWhereInput[]
   NOT?: Prisma.StatusHistoryWhereInput | Prisma.StatusHistoryWhereInput[]
+  tenantId?: Prisma.StringFilter<"StatusHistory"> | string
   taskId?: Prisma.StringFilter<"StatusHistory"> | string
   fromStatus?: Prisma.EnumTaskStatusFilter<"StatusHistory"> | $Enums.TaskStatus
   toStatus?: Prisma.EnumTaskStatusFilter<"StatusHistory"> | $Enums.TaskStatus
   userId?: Prisma.StringFilter<"StatusHistory"> | string
   duration?: Prisma.IntFilter<"StatusHistory"> | number
   createdAt?: Prisma.DateTimeFilter<"StatusHistory"> | Date | string
+  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
   task?: Prisma.XOR<Prisma.TaskScalarRelationFilter, Prisma.TaskWhereInput>
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }, "id">
 
 export type StatusHistoryOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
+  tenantId?: Prisma.SortOrder
   taskId?: Prisma.SortOrder
   fromStatus?: Prisma.SortOrder
   toStatus?: Prisma.SortOrder
@@ -284,6 +298,7 @@ export type StatusHistoryScalarWhereWithAggregatesInput = {
   OR?: Prisma.StatusHistoryScalarWhereWithAggregatesInput[]
   NOT?: Prisma.StatusHistoryScalarWhereWithAggregatesInput | Prisma.StatusHistoryScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"StatusHistory"> | string
+  tenantId?: Prisma.StringWithAggregatesFilter<"StatusHistory"> | string
   taskId?: Prisma.StringWithAggregatesFilter<"StatusHistory"> | string
   fromStatus?: Prisma.EnumTaskStatusWithAggregatesFilter<"StatusHistory"> | $Enums.TaskStatus
   toStatus?: Prisma.EnumTaskStatusWithAggregatesFilter<"StatusHistory"> | $Enums.TaskStatus
@@ -298,12 +313,14 @@ export type StatusHistoryCreateInput = {
   toStatus: $Enums.TaskStatus
   duration?: number
   createdAt?: Date | string
+  tenant?: Prisma.TenantCreateNestedOneWithoutStatusHistoriesInput
   task: Prisma.TaskCreateNestedOneWithoutStatusHistoriesInput
   user: Prisma.UserCreateNestedOneWithoutStatusHistoriesInput
 }
 
 export type StatusHistoryUncheckedCreateInput = {
   id?: string
+  tenantId?: string
   taskId: string
   fromStatus: $Enums.TaskStatus
   toStatus: $Enums.TaskStatus
@@ -318,12 +335,14 @@ export type StatusHistoryUpdateInput = {
   toStatus?: Prisma.EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
   duration?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutStatusHistoriesNestedInput
   task?: Prisma.TaskUpdateOneRequiredWithoutStatusHistoriesNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutStatusHistoriesNestedInput
 }
 
 export type StatusHistoryUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   taskId?: Prisma.StringFieldUpdateOperationsInput | string
   fromStatus?: Prisma.EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
   toStatus?: Prisma.EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
@@ -334,6 +353,7 @@ export type StatusHistoryUncheckedUpdateInput = {
 
 export type StatusHistoryCreateManyInput = {
   id?: string
+  tenantId?: string
   taskId: string
   fromStatus: $Enums.TaskStatus
   toStatus: $Enums.TaskStatus
@@ -352,6 +372,7 @@ export type StatusHistoryUpdateManyMutationInput = {
 
 export type StatusHistoryUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   taskId?: Prisma.StringFieldUpdateOperationsInput | string
   fromStatus?: Prisma.EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
   toStatus?: Prisma.EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
@@ -378,6 +399,7 @@ export type StatusHistoryOrderByRelevanceInput = {
 
 export type StatusHistoryCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  tenantId?: Prisma.SortOrder
   taskId?: Prisma.SortOrder
   fromStatus?: Prisma.SortOrder
   toStatus?: Prisma.SortOrder
@@ -392,6 +414,7 @@ export type StatusHistoryAvgOrderByAggregateInput = {
 
 export type StatusHistoryMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  tenantId?: Prisma.SortOrder
   taskId?: Prisma.SortOrder
   fromStatus?: Prisma.SortOrder
   toStatus?: Prisma.SortOrder
@@ -402,6 +425,7 @@ export type StatusHistoryMaxOrderByAggregateInput = {
 
 export type StatusHistoryMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  tenantId?: Prisma.SortOrder
   taskId?: Prisma.SortOrder
   fromStatus?: Prisma.SortOrder
   toStatus?: Prisma.SortOrder
@@ -412,6 +436,48 @@ export type StatusHistoryMinOrderByAggregateInput = {
 
 export type StatusHistorySumOrderByAggregateInput = {
   duration?: Prisma.SortOrder
+}
+
+export type StatusHistoryCreateNestedManyWithoutTenantInput = {
+  create?: Prisma.XOR<Prisma.StatusHistoryCreateWithoutTenantInput, Prisma.StatusHistoryUncheckedCreateWithoutTenantInput> | Prisma.StatusHistoryCreateWithoutTenantInput[] | Prisma.StatusHistoryUncheckedCreateWithoutTenantInput[]
+  connectOrCreate?: Prisma.StatusHistoryCreateOrConnectWithoutTenantInput | Prisma.StatusHistoryCreateOrConnectWithoutTenantInput[]
+  createMany?: Prisma.StatusHistoryCreateManyTenantInputEnvelope
+  connect?: Prisma.StatusHistoryWhereUniqueInput | Prisma.StatusHistoryWhereUniqueInput[]
+}
+
+export type StatusHistoryUncheckedCreateNestedManyWithoutTenantInput = {
+  create?: Prisma.XOR<Prisma.StatusHistoryCreateWithoutTenantInput, Prisma.StatusHistoryUncheckedCreateWithoutTenantInput> | Prisma.StatusHistoryCreateWithoutTenantInput[] | Prisma.StatusHistoryUncheckedCreateWithoutTenantInput[]
+  connectOrCreate?: Prisma.StatusHistoryCreateOrConnectWithoutTenantInput | Prisma.StatusHistoryCreateOrConnectWithoutTenantInput[]
+  createMany?: Prisma.StatusHistoryCreateManyTenantInputEnvelope
+  connect?: Prisma.StatusHistoryWhereUniqueInput | Prisma.StatusHistoryWhereUniqueInput[]
+}
+
+export type StatusHistoryUpdateManyWithoutTenantNestedInput = {
+  create?: Prisma.XOR<Prisma.StatusHistoryCreateWithoutTenantInput, Prisma.StatusHistoryUncheckedCreateWithoutTenantInput> | Prisma.StatusHistoryCreateWithoutTenantInput[] | Prisma.StatusHistoryUncheckedCreateWithoutTenantInput[]
+  connectOrCreate?: Prisma.StatusHistoryCreateOrConnectWithoutTenantInput | Prisma.StatusHistoryCreateOrConnectWithoutTenantInput[]
+  upsert?: Prisma.StatusHistoryUpsertWithWhereUniqueWithoutTenantInput | Prisma.StatusHistoryUpsertWithWhereUniqueWithoutTenantInput[]
+  createMany?: Prisma.StatusHistoryCreateManyTenantInputEnvelope
+  set?: Prisma.StatusHistoryWhereUniqueInput | Prisma.StatusHistoryWhereUniqueInput[]
+  disconnect?: Prisma.StatusHistoryWhereUniqueInput | Prisma.StatusHistoryWhereUniqueInput[]
+  delete?: Prisma.StatusHistoryWhereUniqueInput | Prisma.StatusHistoryWhereUniqueInput[]
+  connect?: Prisma.StatusHistoryWhereUniqueInput | Prisma.StatusHistoryWhereUniqueInput[]
+  update?: Prisma.StatusHistoryUpdateWithWhereUniqueWithoutTenantInput | Prisma.StatusHistoryUpdateWithWhereUniqueWithoutTenantInput[]
+  updateMany?: Prisma.StatusHistoryUpdateManyWithWhereWithoutTenantInput | Prisma.StatusHistoryUpdateManyWithWhereWithoutTenantInput[]
+  deleteMany?: Prisma.StatusHistoryScalarWhereInput | Prisma.StatusHistoryScalarWhereInput[]
+}
+
+export type StatusHistoryUncheckedUpdateManyWithoutTenantNestedInput = {
+  create?: Prisma.XOR<Prisma.StatusHistoryCreateWithoutTenantInput, Prisma.StatusHistoryUncheckedCreateWithoutTenantInput> | Prisma.StatusHistoryCreateWithoutTenantInput[] | Prisma.StatusHistoryUncheckedCreateWithoutTenantInput[]
+  connectOrCreate?: Prisma.StatusHistoryCreateOrConnectWithoutTenantInput | Prisma.StatusHistoryCreateOrConnectWithoutTenantInput[]
+  upsert?: Prisma.StatusHistoryUpsertWithWhereUniqueWithoutTenantInput | Prisma.StatusHistoryUpsertWithWhereUniqueWithoutTenantInput[]
+  createMany?: Prisma.StatusHistoryCreateManyTenantInputEnvelope
+  set?: Prisma.StatusHistoryWhereUniqueInput | Prisma.StatusHistoryWhereUniqueInput[]
+  disconnect?: Prisma.StatusHistoryWhereUniqueInput | Prisma.StatusHistoryWhereUniqueInput[]
+  delete?: Prisma.StatusHistoryWhereUniqueInput | Prisma.StatusHistoryWhereUniqueInput[]
+  connect?: Prisma.StatusHistoryWhereUniqueInput | Prisma.StatusHistoryWhereUniqueInput[]
+  update?: Prisma.StatusHistoryUpdateWithWhereUniqueWithoutTenantInput | Prisma.StatusHistoryUpdateWithWhereUniqueWithoutTenantInput[]
+  updateMany?: Prisma.StatusHistoryUpdateManyWithWhereWithoutTenantInput | Prisma.StatusHistoryUpdateManyWithWhereWithoutTenantInput[]
+  deleteMany?: Prisma.StatusHistoryScalarWhereInput | Prisma.StatusHistoryScalarWhereInput[]
 }
 
 export type StatusHistoryCreateNestedManyWithoutUserInput = {
@@ -498,17 +564,79 @@ export type StatusHistoryUncheckedUpdateManyWithoutTaskNestedInput = {
   deleteMany?: Prisma.StatusHistoryScalarWhereInput | Prisma.StatusHistoryScalarWhereInput[]
 }
 
-export type StatusHistoryCreateWithoutUserInput = {
+export type StatusHistoryCreateWithoutTenantInput = {
   id?: string
   fromStatus: $Enums.TaskStatus
   toStatus: $Enums.TaskStatus
   duration?: number
   createdAt?: Date | string
   task: Prisma.TaskCreateNestedOneWithoutStatusHistoriesInput
+  user: Prisma.UserCreateNestedOneWithoutStatusHistoriesInput
+}
+
+export type StatusHistoryUncheckedCreateWithoutTenantInput = {
+  id?: string
+  taskId: string
+  fromStatus: $Enums.TaskStatus
+  toStatus: $Enums.TaskStatus
+  userId: string
+  duration?: number
+  createdAt?: Date | string
+}
+
+export type StatusHistoryCreateOrConnectWithoutTenantInput = {
+  where: Prisma.StatusHistoryWhereUniqueInput
+  create: Prisma.XOR<Prisma.StatusHistoryCreateWithoutTenantInput, Prisma.StatusHistoryUncheckedCreateWithoutTenantInput>
+}
+
+export type StatusHistoryCreateManyTenantInputEnvelope = {
+  data: Prisma.StatusHistoryCreateManyTenantInput | Prisma.StatusHistoryCreateManyTenantInput[]
+  skipDuplicates?: boolean
+}
+
+export type StatusHistoryUpsertWithWhereUniqueWithoutTenantInput = {
+  where: Prisma.StatusHistoryWhereUniqueInput
+  update: Prisma.XOR<Prisma.StatusHistoryUpdateWithoutTenantInput, Prisma.StatusHistoryUncheckedUpdateWithoutTenantInput>
+  create: Prisma.XOR<Prisma.StatusHistoryCreateWithoutTenantInput, Prisma.StatusHistoryUncheckedCreateWithoutTenantInput>
+}
+
+export type StatusHistoryUpdateWithWhereUniqueWithoutTenantInput = {
+  where: Prisma.StatusHistoryWhereUniqueInput
+  data: Prisma.XOR<Prisma.StatusHistoryUpdateWithoutTenantInput, Prisma.StatusHistoryUncheckedUpdateWithoutTenantInput>
+}
+
+export type StatusHistoryUpdateManyWithWhereWithoutTenantInput = {
+  where: Prisma.StatusHistoryScalarWhereInput
+  data: Prisma.XOR<Prisma.StatusHistoryUpdateManyMutationInput, Prisma.StatusHistoryUncheckedUpdateManyWithoutTenantInput>
+}
+
+export type StatusHistoryScalarWhereInput = {
+  AND?: Prisma.StatusHistoryScalarWhereInput | Prisma.StatusHistoryScalarWhereInput[]
+  OR?: Prisma.StatusHistoryScalarWhereInput[]
+  NOT?: Prisma.StatusHistoryScalarWhereInput | Prisma.StatusHistoryScalarWhereInput[]
+  id?: Prisma.StringFilter<"StatusHistory"> | string
+  tenantId?: Prisma.StringFilter<"StatusHistory"> | string
+  taskId?: Prisma.StringFilter<"StatusHistory"> | string
+  fromStatus?: Prisma.EnumTaskStatusFilter<"StatusHistory"> | $Enums.TaskStatus
+  toStatus?: Prisma.EnumTaskStatusFilter<"StatusHistory"> | $Enums.TaskStatus
+  userId?: Prisma.StringFilter<"StatusHistory"> | string
+  duration?: Prisma.IntFilter<"StatusHistory"> | number
+  createdAt?: Prisma.DateTimeFilter<"StatusHistory"> | Date | string
+}
+
+export type StatusHistoryCreateWithoutUserInput = {
+  id?: string
+  fromStatus: $Enums.TaskStatus
+  toStatus: $Enums.TaskStatus
+  duration?: number
+  createdAt?: Date | string
+  tenant?: Prisma.TenantCreateNestedOneWithoutStatusHistoriesInput
+  task: Prisma.TaskCreateNestedOneWithoutStatusHistoriesInput
 }
 
 export type StatusHistoryUncheckedCreateWithoutUserInput = {
   id?: string
+  tenantId?: string
   taskId: string
   fromStatus: $Enums.TaskStatus
   toStatus: $Enums.TaskStatus
@@ -542,30 +670,19 @@ export type StatusHistoryUpdateManyWithWhereWithoutUserInput = {
   data: Prisma.XOR<Prisma.StatusHistoryUpdateManyMutationInput, Prisma.StatusHistoryUncheckedUpdateManyWithoutUserInput>
 }
 
-export type StatusHistoryScalarWhereInput = {
-  AND?: Prisma.StatusHistoryScalarWhereInput | Prisma.StatusHistoryScalarWhereInput[]
-  OR?: Prisma.StatusHistoryScalarWhereInput[]
-  NOT?: Prisma.StatusHistoryScalarWhereInput | Prisma.StatusHistoryScalarWhereInput[]
-  id?: Prisma.StringFilter<"StatusHistory"> | string
-  taskId?: Prisma.StringFilter<"StatusHistory"> | string
-  fromStatus?: Prisma.EnumTaskStatusFilter<"StatusHistory"> | $Enums.TaskStatus
-  toStatus?: Prisma.EnumTaskStatusFilter<"StatusHistory"> | $Enums.TaskStatus
-  userId?: Prisma.StringFilter<"StatusHistory"> | string
-  duration?: Prisma.IntFilter<"StatusHistory"> | number
-  createdAt?: Prisma.DateTimeFilter<"StatusHistory"> | Date | string
-}
-
 export type StatusHistoryCreateWithoutTaskInput = {
   id?: string
   fromStatus: $Enums.TaskStatus
   toStatus: $Enums.TaskStatus
   duration?: number
   createdAt?: Date | string
+  tenant?: Prisma.TenantCreateNestedOneWithoutStatusHistoriesInput
   user: Prisma.UserCreateNestedOneWithoutStatusHistoriesInput
 }
 
 export type StatusHistoryUncheckedCreateWithoutTaskInput = {
   id?: string
+  tenantId?: string
   fromStatus: $Enums.TaskStatus
   toStatus: $Enums.TaskStatus
   userId: string
@@ -599,8 +716,49 @@ export type StatusHistoryUpdateManyWithWhereWithoutTaskInput = {
   data: Prisma.XOR<Prisma.StatusHistoryUpdateManyMutationInput, Prisma.StatusHistoryUncheckedUpdateManyWithoutTaskInput>
 }
 
+export type StatusHistoryCreateManyTenantInput = {
+  id?: string
+  taskId: string
+  fromStatus: $Enums.TaskStatus
+  toStatus: $Enums.TaskStatus
+  userId: string
+  duration?: number
+  createdAt?: Date | string
+}
+
+export type StatusHistoryUpdateWithoutTenantInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  fromStatus?: Prisma.EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+  toStatus?: Prisma.EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+  duration?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  task?: Prisma.TaskUpdateOneRequiredWithoutStatusHistoriesNestedInput
+  user?: Prisma.UserUpdateOneRequiredWithoutStatusHistoriesNestedInput
+}
+
+export type StatusHistoryUncheckedUpdateWithoutTenantInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  taskId?: Prisma.StringFieldUpdateOperationsInput | string
+  fromStatus?: Prisma.EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+  toStatus?: Prisma.EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  duration?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type StatusHistoryUncheckedUpdateManyWithoutTenantInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  taskId?: Prisma.StringFieldUpdateOperationsInput | string
+  fromStatus?: Prisma.EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+  toStatus?: Prisma.EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  duration?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
 export type StatusHistoryCreateManyUserInput = {
   id?: string
+  tenantId?: string
   taskId: string
   fromStatus: $Enums.TaskStatus
   toStatus: $Enums.TaskStatus
@@ -614,11 +772,13 @@ export type StatusHistoryUpdateWithoutUserInput = {
   toStatus?: Prisma.EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
   duration?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutStatusHistoriesNestedInput
   task?: Prisma.TaskUpdateOneRequiredWithoutStatusHistoriesNestedInput
 }
 
 export type StatusHistoryUncheckedUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   taskId?: Prisma.StringFieldUpdateOperationsInput | string
   fromStatus?: Prisma.EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
   toStatus?: Prisma.EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
@@ -628,6 +788,7 @@ export type StatusHistoryUncheckedUpdateWithoutUserInput = {
 
 export type StatusHistoryUncheckedUpdateManyWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   taskId?: Prisma.StringFieldUpdateOperationsInput | string
   fromStatus?: Prisma.EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
   toStatus?: Prisma.EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
@@ -637,6 +798,7 @@ export type StatusHistoryUncheckedUpdateManyWithoutUserInput = {
 
 export type StatusHistoryCreateManyTaskInput = {
   id?: string
+  tenantId?: string
   fromStatus: $Enums.TaskStatus
   toStatus: $Enums.TaskStatus
   userId: string
@@ -650,11 +812,13 @@ export type StatusHistoryUpdateWithoutTaskInput = {
   toStatus?: Prisma.EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
   duration?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutStatusHistoriesNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutStatusHistoriesNestedInput
 }
 
 export type StatusHistoryUncheckedUpdateWithoutTaskInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   fromStatus?: Prisma.EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
   toStatus?: Prisma.EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
   userId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -664,6 +828,7 @@ export type StatusHistoryUncheckedUpdateWithoutTaskInput = {
 
 export type StatusHistoryUncheckedUpdateManyWithoutTaskInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   fromStatus?: Prisma.EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
   toStatus?: Prisma.EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
   userId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -675,12 +840,14 @@ export type StatusHistoryUncheckedUpdateManyWithoutTaskInput = {
 
 export type StatusHistorySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  tenantId?: boolean
   taskId?: boolean
   fromStatus?: boolean
   toStatus?: boolean
   userId?: boolean
   duration?: boolean
   createdAt?: boolean
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   task?: boolean | Prisma.TaskDefaultArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["statusHistory"]>
@@ -689,6 +856,7 @@ export type StatusHistorySelect<ExtArgs extends runtime.Types.Extensions.Interna
 
 export type StatusHistorySelectScalar = {
   id?: boolean
+  tenantId?: boolean
   taskId?: boolean
   fromStatus?: boolean
   toStatus?: boolean
@@ -697,8 +865,9 @@ export type StatusHistorySelectScalar = {
   createdAt?: boolean
 }
 
-export type StatusHistoryOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "taskId" | "fromStatus" | "toStatus" | "userId" | "duration" | "createdAt", ExtArgs["result"]["statusHistory"]>
+export type StatusHistoryOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "taskId" | "fromStatus" | "toStatus" | "userId" | "duration" | "createdAt", ExtArgs["result"]["statusHistory"]>
 export type StatusHistoryInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   task?: boolean | Prisma.TaskDefaultArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
@@ -706,11 +875,13 @@ export type StatusHistoryInclude<ExtArgs extends runtime.Types.Extensions.Intern
 export type $StatusHistoryPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "StatusHistory"
   objects: {
+    tenant: Prisma.$TenantPayload<ExtArgs>
     task: Prisma.$TaskPayload<ExtArgs>
     user: Prisma.$UserPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
+    tenantId: string
     taskId: string
     fromStatus: $Enums.TaskStatus
     toStatus: $Enums.TaskStatus
@@ -1057,6 +1228,7 @@ readonly fields: StatusHistoryFieldRefs;
  */
 export interface Prisma__StatusHistoryClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  tenant<T extends Prisma.TenantDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TenantDefaultArgs<ExtArgs>>): Prisma.Prisma__TenantClient<runtime.Types.Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   task<T extends Prisma.TaskDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TaskDefaultArgs<ExtArgs>>): Prisma.Prisma__TaskClient<runtime.Types.Result.GetResult<Prisma.$TaskPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
@@ -1089,6 +1261,7 @@ export interface Prisma__StatusHistoryClient<T, Null = never, ExtArgs extends ru
  */
 export interface StatusHistoryFieldRefs {
   readonly id: Prisma.FieldRef<"StatusHistory", 'String'>
+  readonly tenantId: Prisma.FieldRef<"StatusHistory", 'String'>
   readonly taskId: Prisma.FieldRef<"StatusHistory", 'String'>
   readonly fromStatus: Prisma.FieldRef<"StatusHistory", 'TaskStatus'>
   readonly toStatus: Prisma.FieldRef<"StatusHistory", 'TaskStatus'>

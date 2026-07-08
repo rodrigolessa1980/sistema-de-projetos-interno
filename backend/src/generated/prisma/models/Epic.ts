@@ -36,6 +36,7 @@ export type EpicSumAggregateOutputType = {
 
 export type EpicMinAggregateOutputType = {
   id: string | null
+  tenantId: string | null
   projectId: string | null
   moduleId: string | null
   name: string | null
@@ -50,6 +51,7 @@ export type EpicMinAggregateOutputType = {
 
 export type EpicMaxAggregateOutputType = {
   id: string | null
+  tenantId: string | null
   projectId: string | null
   moduleId: string | null
   name: string | null
@@ -64,6 +66,7 @@ export type EpicMaxAggregateOutputType = {
 
 export type EpicCountAggregateOutputType = {
   id: number
+  tenantId: number
   projectId: number
   moduleId: number
   name: number
@@ -88,6 +91,7 @@ export type EpicSumAggregateInputType = {
 
 export type EpicMinAggregateInputType = {
   id?: true
+  tenantId?: true
   projectId?: true
   moduleId?: true
   name?: true
@@ -102,6 +106,7 @@ export type EpicMinAggregateInputType = {
 
 export type EpicMaxAggregateInputType = {
   id?: true
+  tenantId?: true
   projectId?: true
   moduleId?: true
   name?: true
@@ -116,6 +121,7 @@ export type EpicMaxAggregateInputType = {
 
 export type EpicCountAggregateInputType = {
   id?: true
+  tenantId?: true
   projectId?: true
   moduleId?: true
   name?: true
@@ -217,6 +223,7 @@ export type EpicGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
 
 export type EpicGroupByOutputType = {
   id: string
+  tenantId: string
   projectId: string
   moduleId: string
   name: string
@@ -254,6 +261,7 @@ export type EpicWhereInput = {
   OR?: Prisma.EpicWhereInput[]
   NOT?: Prisma.EpicWhereInput | Prisma.EpicWhereInput[]
   id?: Prisma.StringFilter<"Epic"> | string
+  tenantId?: Prisma.StringFilter<"Epic"> | string
   projectId?: Prisma.StringFilter<"Epic"> | string
   moduleId?: Prisma.StringFilter<"Epic"> | string
   name?: Prisma.StringFilter<"Epic"> | string
@@ -264,6 +272,7 @@ export type EpicWhereInput = {
   progress?: Prisma.IntFilter<"Epic"> | number
   createdAt?: Prisma.DateTimeFilter<"Epic"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Epic"> | Date | string
+  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
   project?: Prisma.XOR<Prisma.ProjectScalarRelationFilter, Prisma.ProjectWhereInput>
   module?: Prisma.XOR<Prisma.ModuleScalarRelationFilter, Prisma.ModuleWhereInput>
   tasks?: Prisma.TaskListRelationFilter
@@ -272,6 +281,7 @@ export type EpicWhereInput = {
 
 export type EpicOrderByWithRelationInput = {
   id?: Prisma.SortOrder
+  tenantId?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
   moduleId?: Prisma.SortOrder
   name?: Prisma.SortOrder
@@ -282,6 +292,7 @@ export type EpicOrderByWithRelationInput = {
   progress?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  tenant?: Prisma.TenantOrderByWithRelationInput
   project?: Prisma.ProjectOrderByWithRelationInput
   module?: Prisma.ModuleOrderByWithRelationInput
   tasks?: Prisma.TaskOrderByRelationAggregateInput
@@ -294,6 +305,7 @@ export type EpicWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.EpicWhereInput | Prisma.EpicWhereInput[]
   OR?: Prisma.EpicWhereInput[]
   NOT?: Prisma.EpicWhereInput | Prisma.EpicWhereInput[]
+  tenantId?: Prisma.StringFilter<"Epic"> | string
   projectId?: Prisma.StringFilter<"Epic"> | string
   moduleId?: Prisma.StringFilter<"Epic"> | string
   name?: Prisma.StringFilter<"Epic"> | string
@@ -304,6 +316,7 @@ export type EpicWhereUniqueInput = Prisma.AtLeast<{
   progress?: Prisma.IntFilter<"Epic"> | number
   createdAt?: Prisma.DateTimeFilter<"Epic"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Epic"> | Date | string
+  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
   project?: Prisma.XOR<Prisma.ProjectScalarRelationFilter, Prisma.ProjectWhereInput>
   module?: Prisma.XOR<Prisma.ModuleScalarRelationFilter, Prisma.ModuleWhereInput>
   tasks?: Prisma.TaskListRelationFilter
@@ -312,6 +325,7 @@ export type EpicWhereUniqueInput = Prisma.AtLeast<{
 
 export type EpicOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
+  tenantId?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
   moduleId?: Prisma.SortOrder
   name?: Prisma.SortOrder
@@ -334,6 +348,7 @@ export type EpicScalarWhereWithAggregatesInput = {
   OR?: Prisma.EpicScalarWhereWithAggregatesInput[]
   NOT?: Prisma.EpicScalarWhereWithAggregatesInput | Prisma.EpicScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Epic"> | string
+  tenantId?: Prisma.StringWithAggregatesFilter<"Epic"> | string
   projectId?: Prisma.StringWithAggregatesFilter<"Epic"> | string
   moduleId?: Prisma.StringWithAggregatesFilter<"Epic"> | string
   name?: Prisma.StringWithAggregatesFilter<"Epic"> | string
@@ -356,6 +371,7 @@ export type EpicCreateInput = {
   progress?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  tenant?: Prisma.TenantCreateNestedOneWithoutEpicsInput
   project: Prisma.ProjectCreateNestedOneWithoutEpicsInput
   module: Prisma.ModuleCreateNestedOneWithoutEpicsInput
   tasks?: Prisma.TaskCreateNestedManyWithoutEpicInput
@@ -364,6 +380,7 @@ export type EpicCreateInput = {
 
 export type EpicUncheckedCreateInput = {
   id?: string
+  tenantId?: string
   projectId: string
   moduleId: string
   name: string
@@ -388,6 +405,7 @@ export type EpicUpdateInput = {
   progress?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutEpicsNestedInput
   project?: Prisma.ProjectUpdateOneRequiredWithoutEpicsNestedInput
   module?: Prisma.ModuleUpdateOneRequiredWithoutEpicsNestedInput
   tasks?: Prisma.TaskUpdateManyWithoutEpicNestedInput
@@ -396,6 +414,7 @@ export type EpicUpdateInput = {
 
 export type EpicUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   moduleId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
@@ -412,6 +431,7 @@ export type EpicUncheckedUpdateInput = {
 
 export type EpicCreateManyInput = {
   id?: string
+  tenantId?: string
   projectId: string
   moduleId: string
   name: string
@@ -438,6 +458,7 @@ export type EpicUpdateManyMutationInput = {
 
 export type EpicUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   moduleId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
@@ -468,6 +489,7 @@ export type EpicOrderByRelevanceInput = {
 
 export type EpicCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  tenantId?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
   moduleId?: Prisma.SortOrder
   name?: Prisma.SortOrder
@@ -486,6 +508,7 @@ export type EpicAvgOrderByAggregateInput = {
 
 export type EpicMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  tenantId?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
   moduleId?: Prisma.SortOrder
   name?: Prisma.SortOrder
@@ -500,6 +523,7 @@ export type EpicMaxOrderByAggregateInput = {
 
 export type EpicMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  tenantId?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
   moduleId?: Prisma.SortOrder
   name?: Prisma.SortOrder
@@ -519,6 +543,48 @@ export type EpicSumOrderByAggregateInput = {
 export type EpicScalarRelationFilter = {
   is?: Prisma.EpicWhereInput
   isNot?: Prisma.EpicWhereInput
+}
+
+export type EpicCreateNestedManyWithoutTenantInput = {
+  create?: Prisma.XOR<Prisma.EpicCreateWithoutTenantInput, Prisma.EpicUncheckedCreateWithoutTenantInput> | Prisma.EpicCreateWithoutTenantInput[] | Prisma.EpicUncheckedCreateWithoutTenantInput[]
+  connectOrCreate?: Prisma.EpicCreateOrConnectWithoutTenantInput | Prisma.EpicCreateOrConnectWithoutTenantInput[]
+  createMany?: Prisma.EpicCreateManyTenantInputEnvelope
+  connect?: Prisma.EpicWhereUniqueInput | Prisma.EpicWhereUniqueInput[]
+}
+
+export type EpicUncheckedCreateNestedManyWithoutTenantInput = {
+  create?: Prisma.XOR<Prisma.EpicCreateWithoutTenantInput, Prisma.EpicUncheckedCreateWithoutTenantInput> | Prisma.EpicCreateWithoutTenantInput[] | Prisma.EpicUncheckedCreateWithoutTenantInput[]
+  connectOrCreate?: Prisma.EpicCreateOrConnectWithoutTenantInput | Prisma.EpicCreateOrConnectWithoutTenantInput[]
+  createMany?: Prisma.EpicCreateManyTenantInputEnvelope
+  connect?: Prisma.EpicWhereUniqueInput | Prisma.EpicWhereUniqueInput[]
+}
+
+export type EpicUpdateManyWithoutTenantNestedInput = {
+  create?: Prisma.XOR<Prisma.EpicCreateWithoutTenantInput, Prisma.EpicUncheckedCreateWithoutTenantInput> | Prisma.EpicCreateWithoutTenantInput[] | Prisma.EpicUncheckedCreateWithoutTenantInput[]
+  connectOrCreate?: Prisma.EpicCreateOrConnectWithoutTenantInput | Prisma.EpicCreateOrConnectWithoutTenantInput[]
+  upsert?: Prisma.EpicUpsertWithWhereUniqueWithoutTenantInput | Prisma.EpicUpsertWithWhereUniqueWithoutTenantInput[]
+  createMany?: Prisma.EpicCreateManyTenantInputEnvelope
+  set?: Prisma.EpicWhereUniqueInput | Prisma.EpicWhereUniqueInput[]
+  disconnect?: Prisma.EpicWhereUniqueInput | Prisma.EpicWhereUniqueInput[]
+  delete?: Prisma.EpicWhereUniqueInput | Prisma.EpicWhereUniqueInput[]
+  connect?: Prisma.EpicWhereUniqueInput | Prisma.EpicWhereUniqueInput[]
+  update?: Prisma.EpicUpdateWithWhereUniqueWithoutTenantInput | Prisma.EpicUpdateWithWhereUniqueWithoutTenantInput[]
+  updateMany?: Prisma.EpicUpdateManyWithWhereWithoutTenantInput | Prisma.EpicUpdateManyWithWhereWithoutTenantInput[]
+  deleteMany?: Prisma.EpicScalarWhereInput | Prisma.EpicScalarWhereInput[]
+}
+
+export type EpicUncheckedUpdateManyWithoutTenantNestedInput = {
+  create?: Prisma.XOR<Prisma.EpicCreateWithoutTenantInput, Prisma.EpicUncheckedCreateWithoutTenantInput> | Prisma.EpicCreateWithoutTenantInput[] | Prisma.EpicUncheckedCreateWithoutTenantInput[]
+  connectOrCreate?: Prisma.EpicCreateOrConnectWithoutTenantInput | Prisma.EpicCreateOrConnectWithoutTenantInput[]
+  upsert?: Prisma.EpicUpsertWithWhereUniqueWithoutTenantInput | Prisma.EpicUpsertWithWhereUniqueWithoutTenantInput[]
+  createMany?: Prisma.EpicCreateManyTenantInputEnvelope
+  set?: Prisma.EpicWhereUniqueInput | Prisma.EpicWhereUniqueInput[]
+  disconnect?: Prisma.EpicWhereUniqueInput | Prisma.EpicWhereUniqueInput[]
+  delete?: Prisma.EpicWhereUniqueInput | Prisma.EpicWhereUniqueInput[]
+  connect?: Prisma.EpicWhereUniqueInput | Prisma.EpicWhereUniqueInput[]
+  update?: Prisma.EpicUpdateWithWhereUniqueWithoutTenantInput | Prisma.EpicUpdateWithWhereUniqueWithoutTenantInput[]
+  updateMany?: Prisma.EpicUpdateManyWithWhereWithoutTenantInput | Prisma.EpicUpdateManyWithWhereWithoutTenantInput[]
+  deleteMany?: Prisma.EpicScalarWhereInput | Prisma.EpicScalarWhereInput[]
 }
 
 export type EpicCreateNestedManyWithoutProjectInput = {
@@ -633,6 +699,82 @@ export type EpicUpdateOneRequiredWithoutTasksNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.EpicUpdateToOneWithWhereWithoutTasksInput, Prisma.EpicUpdateWithoutTasksInput>, Prisma.EpicUncheckedUpdateWithoutTasksInput>
 }
 
+export type EpicCreateWithoutTenantInput = {
+  id?: string
+  name: string
+  description: string
+  status?: $Enums.ProjectStatus
+  startDate: Date | string
+  endDate?: Date | string | null
+  progress?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  project: Prisma.ProjectCreateNestedOneWithoutEpicsInput
+  module: Prisma.ModuleCreateNestedOneWithoutEpicsInput
+  tasks?: Prisma.TaskCreateNestedManyWithoutEpicInput
+  developers?: Prisma.EpicDeveloperCreateNestedManyWithoutEpicInput
+}
+
+export type EpicUncheckedCreateWithoutTenantInput = {
+  id?: string
+  projectId: string
+  moduleId: string
+  name: string
+  description: string
+  status?: $Enums.ProjectStatus
+  startDate: Date | string
+  endDate?: Date | string | null
+  progress?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutEpicInput
+  developers?: Prisma.EpicDeveloperUncheckedCreateNestedManyWithoutEpicInput
+}
+
+export type EpicCreateOrConnectWithoutTenantInput = {
+  where: Prisma.EpicWhereUniqueInput
+  create: Prisma.XOR<Prisma.EpicCreateWithoutTenantInput, Prisma.EpicUncheckedCreateWithoutTenantInput>
+}
+
+export type EpicCreateManyTenantInputEnvelope = {
+  data: Prisma.EpicCreateManyTenantInput | Prisma.EpicCreateManyTenantInput[]
+  skipDuplicates?: boolean
+}
+
+export type EpicUpsertWithWhereUniqueWithoutTenantInput = {
+  where: Prisma.EpicWhereUniqueInput
+  update: Prisma.XOR<Prisma.EpicUpdateWithoutTenantInput, Prisma.EpicUncheckedUpdateWithoutTenantInput>
+  create: Prisma.XOR<Prisma.EpicCreateWithoutTenantInput, Prisma.EpicUncheckedCreateWithoutTenantInput>
+}
+
+export type EpicUpdateWithWhereUniqueWithoutTenantInput = {
+  where: Prisma.EpicWhereUniqueInput
+  data: Prisma.XOR<Prisma.EpicUpdateWithoutTenantInput, Prisma.EpicUncheckedUpdateWithoutTenantInput>
+}
+
+export type EpicUpdateManyWithWhereWithoutTenantInput = {
+  where: Prisma.EpicScalarWhereInput
+  data: Prisma.XOR<Prisma.EpicUpdateManyMutationInput, Prisma.EpicUncheckedUpdateManyWithoutTenantInput>
+}
+
+export type EpicScalarWhereInput = {
+  AND?: Prisma.EpicScalarWhereInput | Prisma.EpicScalarWhereInput[]
+  OR?: Prisma.EpicScalarWhereInput[]
+  NOT?: Prisma.EpicScalarWhereInput | Prisma.EpicScalarWhereInput[]
+  id?: Prisma.StringFilter<"Epic"> | string
+  tenantId?: Prisma.StringFilter<"Epic"> | string
+  projectId?: Prisma.StringFilter<"Epic"> | string
+  moduleId?: Prisma.StringFilter<"Epic"> | string
+  name?: Prisma.StringFilter<"Epic"> | string
+  description?: Prisma.StringFilter<"Epic"> | string
+  status?: Prisma.EnumProjectStatusFilter<"Epic"> | $Enums.ProjectStatus
+  startDate?: Prisma.DateTimeFilter<"Epic"> | Date | string
+  endDate?: Prisma.DateTimeNullableFilter<"Epic"> | Date | string | null
+  progress?: Prisma.IntFilter<"Epic"> | number
+  createdAt?: Prisma.DateTimeFilter<"Epic"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"Epic"> | Date | string
+}
+
 export type EpicCreateWithoutProjectInput = {
   id?: string
   name: string
@@ -643,6 +785,7 @@ export type EpicCreateWithoutProjectInput = {
   progress?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  tenant?: Prisma.TenantCreateNestedOneWithoutEpicsInput
   module: Prisma.ModuleCreateNestedOneWithoutEpicsInput
   tasks?: Prisma.TaskCreateNestedManyWithoutEpicInput
   developers?: Prisma.EpicDeveloperCreateNestedManyWithoutEpicInput
@@ -650,6 +793,7 @@ export type EpicCreateWithoutProjectInput = {
 
 export type EpicUncheckedCreateWithoutProjectInput = {
   id?: string
+  tenantId?: string
   moduleId: string
   name: string
   description: string
@@ -689,23 +833,6 @@ export type EpicUpdateManyWithWhereWithoutProjectInput = {
   data: Prisma.XOR<Prisma.EpicUpdateManyMutationInput, Prisma.EpicUncheckedUpdateManyWithoutProjectInput>
 }
 
-export type EpicScalarWhereInput = {
-  AND?: Prisma.EpicScalarWhereInput | Prisma.EpicScalarWhereInput[]
-  OR?: Prisma.EpicScalarWhereInput[]
-  NOT?: Prisma.EpicScalarWhereInput | Prisma.EpicScalarWhereInput[]
-  id?: Prisma.StringFilter<"Epic"> | string
-  projectId?: Prisma.StringFilter<"Epic"> | string
-  moduleId?: Prisma.StringFilter<"Epic"> | string
-  name?: Prisma.StringFilter<"Epic"> | string
-  description?: Prisma.StringFilter<"Epic"> | string
-  status?: Prisma.EnumProjectStatusFilter<"Epic"> | $Enums.ProjectStatus
-  startDate?: Prisma.DateTimeFilter<"Epic"> | Date | string
-  endDate?: Prisma.DateTimeNullableFilter<"Epic"> | Date | string | null
-  progress?: Prisma.IntFilter<"Epic"> | number
-  createdAt?: Prisma.DateTimeFilter<"Epic"> | Date | string
-  updatedAt?: Prisma.DateTimeFilter<"Epic"> | Date | string
-}
-
 export type EpicCreateWithoutModuleInput = {
   id?: string
   name: string
@@ -716,6 +843,7 @@ export type EpicCreateWithoutModuleInput = {
   progress?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  tenant?: Prisma.TenantCreateNestedOneWithoutEpicsInput
   project: Prisma.ProjectCreateNestedOneWithoutEpicsInput
   tasks?: Prisma.TaskCreateNestedManyWithoutEpicInput
   developers?: Prisma.EpicDeveloperCreateNestedManyWithoutEpicInput
@@ -723,6 +851,7 @@ export type EpicCreateWithoutModuleInput = {
 
 export type EpicUncheckedCreateWithoutModuleInput = {
   id?: string
+  tenantId?: string
   projectId: string
   name: string
   description: string
@@ -772,6 +901,7 @@ export type EpicCreateWithoutDevelopersInput = {
   progress?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  tenant?: Prisma.TenantCreateNestedOneWithoutEpicsInput
   project: Prisma.ProjectCreateNestedOneWithoutEpicsInput
   module: Prisma.ModuleCreateNestedOneWithoutEpicsInput
   tasks?: Prisma.TaskCreateNestedManyWithoutEpicInput
@@ -779,6 +909,7 @@ export type EpicCreateWithoutDevelopersInput = {
 
 export type EpicUncheckedCreateWithoutDevelopersInput = {
   id?: string
+  tenantId?: string
   projectId: string
   moduleId: string
   name: string
@@ -818,6 +949,7 @@ export type EpicUpdateWithoutDevelopersInput = {
   progress?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutEpicsNestedInput
   project?: Prisma.ProjectUpdateOneRequiredWithoutEpicsNestedInput
   module?: Prisma.ModuleUpdateOneRequiredWithoutEpicsNestedInput
   tasks?: Prisma.TaskUpdateManyWithoutEpicNestedInput
@@ -825,6 +957,7 @@ export type EpicUpdateWithoutDevelopersInput = {
 
 export type EpicUncheckedUpdateWithoutDevelopersInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   moduleId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
@@ -848,6 +981,7 @@ export type EpicCreateWithoutTasksInput = {
   progress?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  tenant?: Prisma.TenantCreateNestedOneWithoutEpicsInput
   project: Prisma.ProjectCreateNestedOneWithoutEpicsInput
   module: Prisma.ModuleCreateNestedOneWithoutEpicsInput
   developers?: Prisma.EpicDeveloperCreateNestedManyWithoutEpicInput
@@ -855,6 +989,7 @@ export type EpicCreateWithoutTasksInput = {
 
 export type EpicUncheckedCreateWithoutTasksInput = {
   id?: string
+  tenantId?: string
   projectId: string
   moduleId: string
   name: string
@@ -894,6 +1029,7 @@ export type EpicUpdateWithoutTasksInput = {
   progress?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutEpicsNestedInput
   project?: Prisma.ProjectUpdateOneRequiredWithoutEpicsNestedInput
   module?: Prisma.ModuleUpdateOneRequiredWithoutEpicsNestedInput
   developers?: Prisma.EpicDeveloperUpdateManyWithoutEpicNestedInput
@@ -901,6 +1037,7 @@ export type EpicUpdateWithoutTasksInput = {
 
 export type EpicUncheckedUpdateWithoutTasksInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   moduleId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
@@ -914,8 +1051,69 @@ export type EpicUncheckedUpdateWithoutTasksInput = {
   developers?: Prisma.EpicDeveloperUncheckedUpdateManyWithoutEpicNestedInput
 }
 
+export type EpicCreateManyTenantInput = {
+  id?: string
+  projectId: string
+  moduleId: string
+  name: string
+  description: string
+  status?: $Enums.ProjectStatus
+  startDate: Date | string
+  endDate?: Date | string | null
+  progress?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type EpicUpdateWithoutTenantInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
+  startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  progress?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  project?: Prisma.ProjectUpdateOneRequiredWithoutEpicsNestedInput
+  module?: Prisma.ModuleUpdateOneRequiredWithoutEpicsNestedInput
+  tasks?: Prisma.TaskUpdateManyWithoutEpicNestedInput
+  developers?: Prisma.EpicDeveloperUpdateManyWithoutEpicNestedInput
+}
+
+export type EpicUncheckedUpdateWithoutTenantInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  projectId?: Prisma.StringFieldUpdateOperationsInput | string
+  moduleId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
+  startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  progress?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tasks?: Prisma.TaskUncheckedUpdateManyWithoutEpicNestedInput
+  developers?: Prisma.EpicDeveloperUncheckedUpdateManyWithoutEpicNestedInput
+}
+
+export type EpicUncheckedUpdateManyWithoutTenantInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  projectId?: Prisma.StringFieldUpdateOperationsInput | string
+  moduleId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
+  startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  progress?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
 export type EpicCreateManyProjectInput = {
   id?: string
+  tenantId?: string
   moduleId: string
   name: string
   description: string
@@ -937,6 +1135,7 @@ export type EpicUpdateWithoutProjectInput = {
   progress?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutEpicsNestedInput
   module?: Prisma.ModuleUpdateOneRequiredWithoutEpicsNestedInput
   tasks?: Prisma.TaskUpdateManyWithoutEpicNestedInput
   developers?: Prisma.EpicDeveloperUpdateManyWithoutEpicNestedInput
@@ -944,6 +1143,7 @@ export type EpicUpdateWithoutProjectInput = {
 
 export type EpicUncheckedUpdateWithoutProjectInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   moduleId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
@@ -959,6 +1159,7 @@ export type EpicUncheckedUpdateWithoutProjectInput = {
 
 export type EpicUncheckedUpdateManyWithoutProjectInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   moduleId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
@@ -972,6 +1173,7 @@ export type EpicUncheckedUpdateManyWithoutProjectInput = {
 
 export type EpicCreateManyModuleInput = {
   id?: string
+  tenantId?: string
   projectId: string
   name: string
   description: string
@@ -993,6 +1195,7 @@ export type EpicUpdateWithoutModuleInput = {
   progress?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutEpicsNestedInput
   project?: Prisma.ProjectUpdateOneRequiredWithoutEpicsNestedInput
   tasks?: Prisma.TaskUpdateManyWithoutEpicNestedInput
   developers?: Prisma.EpicDeveloperUpdateManyWithoutEpicNestedInput
@@ -1000,6 +1203,7 @@ export type EpicUpdateWithoutModuleInput = {
 
 export type EpicUncheckedUpdateWithoutModuleInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1015,6 +1219,7 @@ export type EpicUncheckedUpdateWithoutModuleInput = {
 
 export type EpicUncheckedUpdateManyWithoutModuleInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1068,6 +1273,7 @@ export type EpicCountOutputTypeCountDevelopersArgs<ExtArgs extends runtime.Types
 
 export type EpicSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  tenantId?: boolean
   projectId?: boolean
   moduleId?: boolean
   name?: boolean
@@ -1078,6 +1284,7 @@ export type EpicSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   progress?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
   module?: boolean | Prisma.ModuleDefaultArgs<ExtArgs>
   tasks?: boolean | Prisma.Epic$tasksArgs<ExtArgs>
@@ -1089,6 +1296,7 @@ export type EpicSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
 
 export type EpicSelectScalar = {
   id?: boolean
+  tenantId?: boolean
   projectId?: boolean
   moduleId?: boolean
   name?: boolean
@@ -1101,8 +1309,9 @@ export type EpicSelectScalar = {
   updatedAt?: boolean
 }
 
-export type EpicOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "projectId" | "moduleId" | "name" | "description" | "status" | "startDate" | "endDate" | "progress" | "createdAt" | "updatedAt", ExtArgs["result"]["epic"]>
+export type EpicOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "projectId" | "moduleId" | "name" | "description" | "status" | "startDate" | "endDate" | "progress" | "createdAt" | "updatedAt", ExtArgs["result"]["epic"]>
 export type EpicInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
   module?: boolean | Prisma.ModuleDefaultArgs<ExtArgs>
   tasks?: boolean | Prisma.Epic$tasksArgs<ExtArgs>
@@ -1113,6 +1322,7 @@ export type EpicInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
 export type $EpicPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Epic"
   objects: {
+    tenant: Prisma.$TenantPayload<ExtArgs>
     project: Prisma.$ProjectPayload<ExtArgs>
     module: Prisma.$ModulePayload<ExtArgs>
     tasks: Prisma.$TaskPayload<ExtArgs>[]
@@ -1120,6 +1330,7 @@ export type $EpicPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
+    tenantId: string
     projectId: string
     moduleId: string
     name: string
@@ -1470,6 +1681,7 @@ readonly fields: EpicFieldRefs;
  */
 export interface Prisma__EpicClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  tenant<T extends Prisma.TenantDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TenantDefaultArgs<ExtArgs>>): Prisma.Prisma__TenantClient<runtime.Types.Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   project<T extends Prisma.ProjectDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProjectDefaultArgs<ExtArgs>>): Prisma.Prisma__ProjectClient<runtime.Types.Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   module<T extends Prisma.ModuleDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ModuleDefaultArgs<ExtArgs>>): Prisma.Prisma__ModuleClient<runtime.Types.Result.GetResult<Prisma.$ModulePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   tasks<T extends Prisma.Epic$tasksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Epic$tasksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -1504,6 +1716,7 @@ export interface Prisma__EpicClient<T, Null = never, ExtArgs extends runtime.Typ
  */
 export interface EpicFieldRefs {
   readonly id: Prisma.FieldRef<"Epic", 'String'>
+  readonly tenantId: Prisma.FieldRef<"Epic", 'String'>
   readonly projectId: Prisma.FieldRef<"Epic", 'String'>
   readonly moduleId: Prisma.FieldRef<"Epic", 'String'>
   readonly name: Prisma.FieldRef<"Epic", 'String'>

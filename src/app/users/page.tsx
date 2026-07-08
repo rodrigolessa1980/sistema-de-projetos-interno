@@ -47,6 +47,7 @@ interface ApiUser {
   position: string;
   department: string;
   isActive: boolean;
+  isApproved: boolean;
   lastLoginAt: string | null;
   permissions: { module: string; action: string; granted: boolean }[];
 }
@@ -98,7 +99,7 @@ function formatLastLogin(date: string | null): string {
 // ──────────────────────────────────────────────
 export default function UsersPage() {
   const { isAdmin } = useAuth();
-  const { users: storeUsers, fetchUsers, updateUserPermissions } = useUserStore();
+  const { users: storeUsers, fetchUsers, updateUserPermissions, approveUser } = useUserStore();
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [permMap, setPermMap] = useState<PermissionMap>({});
   const [isSaving, setIsSaving] = useState(false);
@@ -113,9 +114,19 @@ export default function UsersPage() {
     position: u.position,
     department: u.department,
     isActive: true,
+    isApproved: u.isApproved ?? true,
     lastLoginAt: null,
     permissions: u.permissions ?? [],
   })), [storeUsers]);
+
+  const handleApprove = useCallback(async (id: string) => {
+    try {
+      await approveUser(id);
+      toast.success("Usuário aprovado");
+    } catch {
+      toast.error("Erro ao aprovar usuário");
+    }
+  }, [approveUser]);
 
   const selectedUser = users.find((u) => u.id === selectedId) ?? users[0] ?? null;
   const activePermMap = useMemo(
@@ -253,11 +264,35 @@ export default function UsersPage() {
                         >
                           {user.role === "ADMIN" ? "ADMIN" : "DEV"}
                         </Badge>
+                        {!user.isApproved && (
+                          <Badge className="text-[9px] px-1 py-0 shrink-0 bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-400">
+                            PENDENTE
+                          </Badge>
+                        )}
                       </div>
                       <p className="text-xs text-zinc-500 truncate">{user.email}</p>
                       <p className="text-[10px] text-zinc-400 mt-0.5">
                         {user.permissions.filter((p) => p.granted).length} permissões · último login {formatLastLogin(user.lastLoginAt)}
                       </p>
+                      {isAdmin && !user.isApproved && (
+                        <span
+                          role="button"
+                          tabIndex={0}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            void handleApprove(user.id);
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter" || e.key === " ") {
+                              e.stopPropagation();
+                              void handleApprove(user.id);
+                            }
+                          }}
+                          className="mt-1.5 inline-flex items-center gap-1 rounded-md bg-emerald-600 px-2 py-1 text-[11px] font-medium text-white hover:bg-emerald-700 cursor-pointer"
+                        >
+                          Aprovar acesso
+                        </span>
+                      )}
                     </div>
                   </div>
                 </button>

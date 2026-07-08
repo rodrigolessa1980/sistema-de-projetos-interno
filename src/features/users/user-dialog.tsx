@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -18,6 +18,8 @@ import { useUserStore } from "@/stores/ui-store";
 import { useProjectStore, useTaskStore } from "@/stores";
 import type { User } from "@/types";
 import { api } from "@/lib/api";
+import { useAuth } from "@/hooks/use-auth";
+import { listTenants } from "@/lib/auth";
 import { CheckSquare, FolderKanban, Check, UserPlus, Pencil, Eye, EyeOff } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -47,11 +49,24 @@ function UserDialogForm({ open, onOpenChange, editUser }: UserDialogProps) {
   const { createUser, updateUser } = useUserStore();
   const { projects, addDeveloperToProject, removeDeveloperFromProject } = useProjectStore();
   const { tasks, updateTask } = useTaskStore();
+  const { user: currentUser } = useAuth();
 
   const [selectedProjects, setSelectedProjects] = useState<string[]>(() => editUser?.projectIds ?? []);
   const [selectedTaskId, setSelectedTaskId] = useState<string>("");
   const [isSaving, setIsSaving] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  // Slug do grupo do admin logado — novos usuários entram no MESMO grupo.
+  const [adminTenantSlug, setAdminTenantSlug] = useState<string>("");
+
+  useEffect(() => {
+    if (!currentUser?.tenantId) return;
+    listTenants()
+      .then((ts) => {
+        const match = ts.find((t) => t.id === currentUser.tenantId);
+        if (match) setAdminTenantSlug(match.slug);
+      })
+      .catch(() => {});
+  }, [currentUser?.tenantId]);
 
   const isEditing = !!editUser;
 
@@ -110,6 +125,9 @@ function UserDialogForm({ open, onOpenChange, editUser }: UserDialogProps) {
         removed.forEach((pId) => removeDeveloperFromProject(pId, userId));
       } else {
         if (normalizedValues.password) {
+          if (!adminTenantSlug) {
+            throw new Error("Não foi possível identificar o grupo do administrador.");
+          }
           const now = new Date().toISOString();
           const result = await api.post<{ user: { id: string; name: string; email: string; role: string; avatar: string | null; position: string; department: string; createdAt: string } }>("auth/register", {
             name: normalizedValues.name,
@@ -117,7 +135,7 @@ function UserDialogForm({ open, onOpenChange, editUser }: UserDialogProps) {
             password: normalizedValues.password,
             position: normalizedValues.position,
             department: normalizedValues.department,
-            role: normalizedValues.role,
+            tenantSlug: adminTenantSlug,
           });
           const u = result.user;
           useUserStore.getState().upsertUser({

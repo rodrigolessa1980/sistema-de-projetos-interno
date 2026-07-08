@@ -36,6 +36,7 @@ export type ModuleAttachmentSumAggregateOutputType = {
 
 export type ModuleAttachmentMinAggregateOutputType = {
   id: string | null
+  tenantId: string | null
   moduleId: string | null
   userId: string | null
   name: string | null
@@ -47,6 +48,7 @@ export type ModuleAttachmentMinAggregateOutputType = {
 
 export type ModuleAttachmentMaxAggregateOutputType = {
   id: string | null
+  tenantId: string | null
   moduleId: string | null
   userId: string | null
   name: string | null
@@ -58,6 +60,7 @@ export type ModuleAttachmentMaxAggregateOutputType = {
 
 export type ModuleAttachmentCountAggregateOutputType = {
   id: number
+  tenantId: number
   moduleId: number
   userId: number
   name: number
@@ -79,6 +82,7 @@ export type ModuleAttachmentSumAggregateInputType = {
 
 export type ModuleAttachmentMinAggregateInputType = {
   id?: true
+  tenantId?: true
   moduleId?: true
   userId?: true
   name?: true
@@ -90,6 +94,7 @@ export type ModuleAttachmentMinAggregateInputType = {
 
 export type ModuleAttachmentMaxAggregateInputType = {
   id?: true
+  tenantId?: true
   moduleId?: true
   userId?: true
   name?: true
@@ -101,6 +106,7 @@ export type ModuleAttachmentMaxAggregateInputType = {
 
 export type ModuleAttachmentCountAggregateInputType = {
   id?: true
+  tenantId?: true
   moduleId?: true
   userId?: true
   name?: true
@@ -199,6 +205,7 @@ export type ModuleAttachmentGroupByArgs<ExtArgs extends runtime.Types.Extensions
 
 export type ModuleAttachmentGroupByOutputType = {
   id: string
+  tenantId: string
   moduleId: string
   userId: string
   name: string
@@ -233,6 +240,7 @@ export type ModuleAttachmentWhereInput = {
   OR?: Prisma.ModuleAttachmentWhereInput[]
   NOT?: Prisma.ModuleAttachmentWhereInput | Prisma.ModuleAttachmentWhereInput[]
   id?: Prisma.StringFilter<"ModuleAttachment"> | string
+  tenantId?: Prisma.StringFilter<"ModuleAttachment"> | string
   moduleId?: Prisma.StringFilter<"ModuleAttachment"> | string
   userId?: Prisma.StringFilter<"ModuleAttachment"> | string
   name?: Prisma.StringFilter<"ModuleAttachment"> | string
@@ -240,12 +248,14 @@ export type ModuleAttachmentWhereInput = {
   size?: Prisma.IntFilter<"ModuleAttachment"> | number
   dataUrl?: Prisma.StringFilter<"ModuleAttachment"> | string
   createdAt?: Prisma.DateTimeFilter<"ModuleAttachment"> | Date | string
+  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
   module?: Prisma.XOR<Prisma.ModuleScalarRelationFilter, Prisma.ModuleWhereInput>
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }
 
 export type ModuleAttachmentOrderByWithRelationInput = {
   id?: Prisma.SortOrder
+  tenantId?: Prisma.SortOrder
   moduleId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   name?: Prisma.SortOrder
@@ -253,6 +263,7 @@ export type ModuleAttachmentOrderByWithRelationInput = {
   size?: Prisma.SortOrder
   dataUrl?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  tenant?: Prisma.TenantOrderByWithRelationInput
   module?: Prisma.ModuleOrderByWithRelationInput
   user?: Prisma.UserOrderByWithRelationInput
   _relevance?: Prisma.ModuleAttachmentOrderByRelevanceInput
@@ -263,6 +274,7 @@ export type ModuleAttachmentWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.ModuleAttachmentWhereInput | Prisma.ModuleAttachmentWhereInput[]
   OR?: Prisma.ModuleAttachmentWhereInput[]
   NOT?: Prisma.ModuleAttachmentWhereInput | Prisma.ModuleAttachmentWhereInput[]
+  tenantId?: Prisma.StringFilter<"ModuleAttachment"> | string
   moduleId?: Prisma.StringFilter<"ModuleAttachment"> | string
   userId?: Prisma.StringFilter<"ModuleAttachment"> | string
   name?: Prisma.StringFilter<"ModuleAttachment"> | string
@@ -270,12 +282,14 @@ export type ModuleAttachmentWhereUniqueInput = Prisma.AtLeast<{
   size?: Prisma.IntFilter<"ModuleAttachment"> | number
   dataUrl?: Prisma.StringFilter<"ModuleAttachment"> | string
   createdAt?: Prisma.DateTimeFilter<"ModuleAttachment"> | Date | string
+  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
   module?: Prisma.XOR<Prisma.ModuleScalarRelationFilter, Prisma.ModuleWhereInput>
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }, "id">
 
 export type ModuleAttachmentOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
+  tenantId?: Prisma.SortOrder
   moduleId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   name?: Prisma.SortOrder
@@ -295,6 +309,7 @@ export type ModuleAttachmentScalarWhereWithAggregatesInput = {
   OR?: Prisma.ModuleAttachmentScalarWhereWithAggregatesInput[]
   NOT?: Prisma.ModuleAttachmentScalarWhereWithAggregatesInput | Prisma.ModuleAttachmentScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"ModuleAttachment"> | string
+  tenantId?: Prisma.StringWithAggregatesFilter<"ModuleAttachment"> | string
   moduleId?: Prisma.StringWithAggregatesFilter<"ModuleAttachment"> | string
   userId?: Prisma.StringWithAggregatesFilter<"ModuleAttachment"> | string
   name?: Prisma.StringWithAggregatesFilter<"ModuleAttachment"> | string
@@ -311,12 +326,14 @@ export type ModuleAttachmentCreateInput = {
   size: number
   dataUrl: string
   createdAt?: Date | string
+  tenant?: Prisma.TenantCreateNestedOneWithoutModuleAttachmentsInput
   module: Prisma.ModuleCreateNestedOneWithoutAttachmentsInput
   user: Prisma.UserCreateNestedOneWithoutModuleAttachmentsInput
 }
 
 export type ModuleAttachmentUncheckedCreateInput = {
   id?: string
+  tenantId?: string
   moduleId: string
   userId: string
   name: string
@@ -333,12 +350,14 @@ export type ModuleAttachmentUpdateInput = {
   size?: Prisma.IntFieldUpdateOperationsInput | number
   dataUrl?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutModuleAttachmentsNestedInput
   module?: Prisma.ModuleUpdateOneRequiredWithoutAttachmentsNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutModuleAttachmentsNestedInput
 }
 
 export type ModuleAttachmentUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   moduleId?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
@@ -350,6 +369,7 @@ export type ModuleAttachmentUncheckedUpdateInput = {
 
 export type ModuleAttachmentCreateManyInput = {
   id?: string
+  tenantId?: string
   moduleId: string
   userId: string
   name: string
@@ -370,6 +390,7 @@ export type ModuleAttachmentUpdateManyMutationInput = {
 
 export type ModuleAttachmentUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   moduleId?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
@@ -397,6 +418,7 @@ export type ModuleAttachmentOrderByRelevanceInput = {
 
 export type ModuleAttachmentCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  tenantId?: Prisma.SortOrder
   moduleId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   name?: Prisma.SortOrder
@@ -412,6 +434,7 @@ export type ModuleAttachmentAvgOrderByAggregateInput = {
 
 export type ModuleAttachmentMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  tenantId?: Prisma.SortOrder
   moduleId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   name?: Prisma.SortOrder
@@ -423,6 +446,7 @@ export type ModuleAttachmentMaxOrderByAggregateInput = {
 
 export type ModuleAttachmentMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  tenantId?: Prisma.SortOrder
   moduleId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   name?: Prisma.SortOrder
@@ -434,6 +458,48 @@ export type ModuleAttachmentMinOrderByAggregateInput = {
 
 export type ModuleAttachmentSumOrderByAggregateInput = {
   size?: Prisma.SortOrder
+}
+
+export type ModuleAttachmentCreateNestedManyWithoutTenantInput = {
+  create?: Prisma.XOR<Prisma.ModuleAttachmentCreateWithoutTenantInput, Prisma.ModuleAttachmentUncheckedCreateWithoutTenantInput> | Prisma.ModuleAttachmentCreateWithoutTenantInput[] | Prisma.ModuleAttachmentUncheckedCreateWithoutTenantInput[]
+  connectOrCreate?: Prisma.ModuleAttachmentCreateOrConnectWithoutTenantInput | Prisma.ModuleAttachmentCreateOrConnectWithoutTenantInput[]
+  createMany?: Prisma.ModuleAttachmentCreateManyTenantInputEnvelope
+  connect?: Prisma.ModuleAttachmentWhereUniqueInput | Prisma.ModuleAttachmentWhereUniqueInput[]
+}
+
+export type ModuleAttachmentUncheckedCreateNestedManyWithoutTenantInput = {
+  create?: Prisma.XOR<Prisma.ModuleAttachmentCreateWithoutTenantInput, Prisma.ModuleAttachmentUncheckedCreateWithoutTenantInput> | Prisma.ModuleAttachmentCreateWithoutTenantInput[] | Prisma.ModuleAttachmentUncheckedCreateWithoutTenantInput[]
+  connectOrCreate?: Prisma.ModuleAttachmentCreateOrConnectWithoutTenantInput | Prisma.ModuleAttachmentCreateOrConnectWithoutTenantInput[]
+  createMany?: Prisma.ModuleAttachmentCreateManyTenantInputEnvelope
+  connect?: Prisma.ModuleAttachmentWhereUniqueInput | Prisma.ModuleAttachmentWhereUniqueInput[]
+}
+
+export type ModuleAttachmentUpdateManyWithoutTenantNestedInput = {
+  create?: Prisma.XOR<Prisma.ModuleAttachmentCreateWithoutTenantInput, Prisma.ModuleAttachmentUncheckedCreateWithoutTenantInput> | Prisma.ModuleAttachmentCreateWithoutTenantInput[] | Prisma.ModuleAttachmentUncheckedCreateWithoutTenantInput[]
+  connectOrCreate?: Prisma.ModuleAttachmentCreateOrConnectWithoutTenantInput | Prisma.ModuleAttachmentCreateOrConnectWithoutTenantInput[]
+  upsert?: Prisma.ModuleAttachmentUpsertWithWhereUniqueWithoutTenantInput | Prisma.ModuleAttachmentUpsertWithWhereUniqueWithoutTenantInput[]
+  createMany?: Prisma.ModuleAttachmentCreateManyTenantInputEnvelope
+  set?: Prisma.ModuleAttachmentWhereUniqueInput | Prisma.ModuleAttachmentWhereUniqueInput[]
+  disconnect?: Prisma.ModuleAttachmentWhereUniqueInput | Prisma.ModuleAttachmentWhereUniqueInput[]
+  delete?: Prisma.ModuleAttachmentWhereUniqueInput | Prisma.ModuleAttachmentWhereUniqueInput[]
+  connect?: Prisma.ModuleAttachmentWhereUniqueInput | Prisma.ModuleAttachmentWhereUniqueInput[]
+  update?: Prisma.ModuleAttachmentUpdateWithWhereUniqueWithoutTenantInput | Prisma.ModuleAttachmentUpdateWithWhereUniqueWithoutTenantInput[]
+  updateMany?: Prisma.ModuleAttachmentUpdateManyWithWhereWithoutTenantInput | Prisma.ModuleAttachmentUpdateManyWithWhereWithoutTenantInput[]
+  deleteMany?: Prisma.ModuleAttachmentScalarWhereInput | Prisma.ModuleAttachmentScalarWhereInput[]
+}
+
+export type ModuleAttachmentUncheckedUpdateManyWithoutTenantNestedInput = {
+  create?: Prisma.XOR<Prisma.ModuleAttachmentCreateWithoutTenantInput, Prisma.ModuleAttachmentUncheckedCreateWithoutTenantInput> | Prisma.ModuleAttachmentCreateWithoutTenantInput[] | Prisma.ModuleAttachmentUncheckedCreateWithoutTenantInput[]
+  connectOrCreate?: Prisma.ModuleAttachmentCreateOrConnectWithoutTenantInput | Prisma.ModuleAttachmentCreateOrConnectWithoutTenantInput[]
+  upsert?: Prisma.ModuleAttachmentUpsertWithWhereUniqueWithoutTenantInput | Prisma.ModuleAttachmentUpsertWithWhereUniqueWithoutTenantInput[]
+  createMany?: Prisma.ModuleAttachmentCreateManyTenantInputEnvelope
+  set?: Prisma.ModuleAttachmentWhereUniqueInput | Prisma.ModuleAttachmentWhereUniqueInput[]
+  disconnect?: Prisma.ModuleAttachmentWhereUniqueInput | Prisma.ModuleAttachmentWhereUniqueInput[]
+  delete?: Prisma.ModuleAttachmentWhereUniqueInput | Prisma.ModuleAttachmentWhereUniqueInput[]
+  connect?: Prisma.ModuleAttachmentWhereUniqueInput | Prisma.ModuleAttachmentWhereUniqueInput[]
+  update?: Prisma.ModuleAttachmentUpdateWithWhereUniqueWithoutTenantInput | Prisma.ModuleAttachmentUpdateWithWhereUniqueWithoutTenantInput[]
+  updateMany?: Prisma.ModuleAttachmentUpdateManyWithWhereWithoutTenantInput | Prisma.ModuleAttachmentUpdateManyWithWhereWithoutTenantInput[]
+  deleteMany?: Prisma.ModuleAttachmentScalarWhereInput | Prisma.ModuleAttachmentScalarWhereInput[]
 }
 
 export type ModuleAttachmentCreateNestedManyWithoutUserInput = {
@@ -520,7 +586,7 @@ export type ModuleAttachmentUncheckedUpdateManyWithoutModuleNestedInput = {
   deleteMany?: Prisma.ModuleAttachmentScalarWhereInput | Prisma.ModuleAttachmentScalarWhereInput[]
 }
 
-export type ModuleAttachmentCreateWithoutUserInput = {
+export type ModuleAttachmentCreateWithoutTenantInput = {
   id?: string
   name: string
   type: string
@@ -528,10 +594,75 @@ export type ModuleAttachmentCreateWithoutUserInput = {
   dataUrl: string
   createdAt?: Date | string
   module: Prisma.ModuleCreateNestedOneWithoutAttachmentsInput
+  user: Prisma.UserCreateNestedOneWithoutModuleAttachmentsInput
+}
+
+export type ModuleAttachmentUncheckedCreateWithoutTenantInput = {
+  id?: string
+  moduleId: string
+  userId: string
+  name: string
+  type: string
+  size: number
+  dataUrl: string
+  createdAt?: Date | string
+}
+
+export type ModuleAttachmentCreateOrConnectWithoutTenantInput = {
+  where: Prisma.ModuleAttachmentWhereUniqueInput
+  create: Prisma.XOR<Prisma.ModuleAttachmentCreateWithoutTenantInput, Prisma.ModuleAttachmentUncheckedCreateWithoutTenantInput>
+}
+
+export type ModuleAttachmentCreateManyTenantInputEnvelope = {
+  data: Prisma.ModuleAttachmentCreateManyTenantInput | Prisma.ModuleAttachmentCreateManyTenantInput[]
+  skipDuplicates?: boolean
+}
+
+export type ModuleAttachmentUpsertWithWhereUniqueWithoutTenantInput = {
+  where: Prisma.ModuleAttachmentWhereUniqueInput
+  update: Prisma.XOR<Prisma.ModuleAttachmentUpdateWithoutTenantInput, Prisma.ModuleAttachmentUncheckedUpdateWithoutTenantInput>
+  create: Prisma.XOR<Prisma.ModuleAttachmentCreateWithoutTenantInput, Prisma.ModuleAttachmentUncheckedCreateWithoutTenantInput>
+}
+
+export type ModuleAttachmentUpdateWithWhereUniqueWithoutTenantInput = {
+  where: Prisma.ModuleAttachmentWhereUniqueInput
+  data: Prisma.XOR<Prisma.ModuleAttachmentUpdateWithoutTenantInput, Prisma.ModuleAttachmentUncheckedUpdateWithoutTenantInput>
+}
+
+export type ModuleAttachmentUpdateManyWithWhereWithoutTenantInput = {
+  where: Prisma.ModuleAttachmentScalarWhereInput
+  data: Prisma.XOR<Prisma.ModuleAttachmentUpdateManyMutationInput, Prisma.ModuleAttachmentUncheckedUpdateManyWithoutTenantInput>
+}
+
+export type ModuleAttachmentScalarWhereInput = {
+  AND?: Prisma.ModuleAttachmentScalarWhereInput | Prisma.ModuleAttachmentScalarWhereInput[]
+  OR?: Prisma.ModuleAttachmentScalarWhereInput[]
+  NOT?: Prisma.ModuleAttachmentScalarWhereInput | Prisma.ModuleAttachmentScalarWhereInput[]
+  id?: Prisma.StringFilter<"ModuleAttachment"> | string
+  tenantId?: Prisma.StringFilter<"ModuleAttachment"> | string
+  moduleId?: Prisma.StringFilter<"ModuleAttachment"> | string
+  userId?: Prisma.StringFilter<"ModuleAttachment"> | string
+  name?: Prisma.StringFilter<"ModuleAttachment"> | string
+  type?: Prisma.StringFilter<"ModuleAttachment"> | string
+  size?: Prisma.IntFilter<"ModuleAttachment"> | number
+  dataUrl?: Prisma.StringFilter<"ModuleAttachment"> | string
+  createdAt?: Prisma.DateTimeFilter<"ModuleAttachment"> | Date | string
+}
+
+export type ModuleAttachmentCreateWithoutUserInput = {
+  id?: string
+  name: string
+  type: string
+  size: number
+  dataUrl: string
+  createdAt?: Date | string
+  tenant?: Prisma.TenantCreateNestedOneWithoutModuleAttachmentsInput
+  module: Prisma.ModuleCreateNestedOneWithoutAttachmentsInput
 }
 
 export type ModuleAttachmentUncheckedCreateWithoutUserInput = {
   id?: string
+  tenantId?: string
   moduleId: string
   name: string
   type: string
@@ -566,20 +697,6 @@ export type ModuleAttachmentUpdateManyWithWhereWithoutUserInput = {
   data: Prisma.XOR<Prisma.ModuleAttachmentUpdateManyMutationInput, Prisma.ModuleAttachmentUncheckedUpdateManyWithoutUserInput>
 }
 
-export type ModuleAttachmentScalarWhereInput = {
-  AND?: Prisma.ModuleAttachmentScalarWhereInput | Prisma.ModuleAttachmentScalarWhereInput[]
-  OR?: Prisma.ModuleAttachmentScalarWhereInput[]
-  NOT?: Prisma.ModuleAttachmentScalarWhereInput | Prisma.ModuleAttachmentScalarWhereInput[]
-  id?: Prisma.StringFilter<"ModuleAttachment"> | string
-  moduleId?: Prisma.StringFilter<"ModuleAttachment"> | string
-  userId?: Prisma.StringFilter<"ModuleAttachment"> | string
-  name?: Prisma.StringFilter<"ModuleAttachment"> | string
-  type?: Prisma.StringFilter<"ModuleAttachment"> | string
-  size?: Prisma.IntFilter<"ModuleAttachment"> | number
-  dataUrl?: Prisma.StringFilter<"ModuleAttachment"> | string
-  createdAt?: Prisma.DateTimeFilter<"ModuleAttachment"> | Date | string
-}
-
 export type ModuleAttachmentCreateWithoutModuleInput = {
   id?: string
   name: string
@@ -587,11 +704,13 @@ export type ModuleAttachmentCreateWithoutModuleInput = {
   size: number
   dataUrl: string
   createdAt?: Date | string
+  tenant?: Prisma.TenantCreateNestedOneWithoutModuleAttachmentsInput
   user: Prisma.UserCreateNestedOneWithoutModuleAttachmentsInput
 }
 
 export type ModuleAttachmentUncheckedCreateWithoutModuleInput = {
   id?: string
+  tenantId?: string
   userId: string
   name: string
   type: string
@@ -626,8 +745,53 @@ export type ModuleAttachmentUpdateManyWithWhereWithoutModuleInput = {
   data: Prisma.XOR<Prisma.ModuleAttachmentUpdateManyMutationInput, Prisma.ModuleAttachmentUncheckedUpdateManyWithoutModuleInput>
 }
 
+export type ModuleAttachmentCreateManyTenantInput = {
+  id?: string
+  moduleId: string
+  userId: string
+  name: string
+  type: string
+  size: number
+  dataUrl: string
+  createdAt?: Date | string
+}
+
+export type ModuleAttachmentUpdateWithoutTenantInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.StringFieldUpdateOperationsInput | string
+  size?: Prisma.IntFieldUpdateOperationsInput | number
+  dataUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  module?: Prisma.ModuleUpdateOneRequiredWithoutAttachmentsNestedInput
+  user?: Prisma.UserUpdateOneRequiredWithoutModuleAttachmentsNestedInput
+}
+
+export type ModuleAttachmentUncheckedUpdateWithoutTenantInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  moduleId?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.StringFieldUpdateOperationsInput | string
+  size?: Prisma.IntFieldUpdateOperationsInput | number
+  dataUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type ModuleAttachmentUncheckedUpdateManyWithoutTenantInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  moduleId?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.StringFieldUpdateOperationsInput | string
+  size?: Prisma.IntFieldUpdateOperationsInput | number
+  dataUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
 export type ModuleAttachmentCreateManyUserInput = {
   id?: string
+  tenantId?: string
   moduleId: string
   name: string
   type: string
@@ -643,11 +807,13 @@ export type ModuleAttachmentUpdateWithoutUserInput = {
   size?: Prisma.IntFieldUpdateOperationsInput | number
   dataUrl?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutModuleAttachmentsNestedInput
   module?: Prisma.ModuleUpdateOneRequiredWithoutAttachmentsNestedInput
 }
 
 export type ModuleAttachmentUncheckedUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   moduleId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
@@ -658,6 +824,7 @@ export type ModuleAttachmentUncheckedUpdateWithoutUserInput = {
 
 export type ModuleAttachmentUncheckedUpdateManyWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   moduleId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
@@ -668,6 +835,7 @@ export type ModuleAttachmentUncheckedUpdateManyWithoutUserInput = {
 
 export type ModuleAttachmentCreateManyModuleInput = {
   id?: string
+  tenantId?: string
   userId: string
   name: string
   type: string
@@ -683,11 +851,13 @@ export type ModuleAttachmentUpdateWithoutModuleInput = {
   size?: Prisma.IntFieldUpdateOperationsInput | number
   dataUrl?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutModuleAttachmentsNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutModuleAttachmentsNestedInput
 }
 
 export type ModuleAttachmentUncheckedUpdateWithoutModuleInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
@@ -698,6 +868,7 @@ export type ModuleAttachmentUncheckedUpdateWithoutModuleInput = {
 
 export type ModuleAttachmentUncheckedUpdateManyWithoutModuleInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
@@ -710,6 +881,7 @@ export type ModuleAttachmentUncheckedUpdateManyWithoutModuleInput = {
 
 export type ModuleAttachmentSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  tenantId?: boolean
   moduleId?: boolean
   userId?: boolean
   name?: boolean
@@ -717,6 +889,7 @@ export type ModuleAttachmentSelect<ExtArgs extends runtime.Types.Extensions.Inte
   size?: boolean
   dataUrl?: boolean
   createdAt?: boolean
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   module?: boolean | Prisma.ModuleDefaultArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["moduleAttachment"]>
@@ -725,6 +898,7 @@ export type ModuleAttachmentSelect<ExtArgs extends runtime.Types.Extensions.Inte
 
 export type ModuleAttachmentSelectScalar = {
   id?: boolean
+  tenantId?: boolean
   moduleId?: boolean
   userId?: boolean
   name?: boolean
@@ -734,8 +908,9 @@ export type ModuleAttachmentSelectScalar = {
   createdAt?: boolean
 }
 
-export type ModuleAttachmentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "moduleId" | "userId" | "name" | "type" | "size" | "dataUrl" | "createdAt", ExtArgs["result"]["moduleAttachment"]>
+export type ModuleAttachmentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "moduleId" | "userId" | "name" | "type" | "size" | "dataUrl" | "createdAt", ExtArgs["result"]["moduleAttachment"]>
 export type ModuleAttachmentInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   module?: boolean | Prisma.ModuleDefaultArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
@@ -743,11 +918,13 @@ export type ModuleAttachmentInclude<ExtArgs extends runtime.Types.Extensions.Int
 export type $ModuleAttachmentPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "ModuleAttachment"
   objects: {
+    tenant: Prisma.$TenantPayload<ExtArgs>
     module: Prisma.$ModulePayload<ExtArgs>
     user: Prisma.$UserPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
+    tenantId: string
     moduleId: string
     userId: string
     name: string
@@ -1095,6 +1272,7 @@ readonly fields: ModuleAttachmentFieldRefs;
  */
 export interface Prisma__ModuleAttachmentClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  tenant<T extends Prisma.TenantDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TenantDefaultArgs<ExtArgs>>): Prisma.Prisma__TenantClient<runtime.Types.Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   module<T extends Prisma.ModuleDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ModuleDefaultArgs<ExtArgs>>): Prisma.Prisma__ModuleClient<runtime.Types.Result.GetResult<Prisma.$ModulePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
@@ -1127,6 +1305,7 @@ export interface Prisma__ModuleAttachmentClient<T, Null = never, ExtArgs extends
  */
 export interface ModuleAttachmentFieldRefs {
   readonly id: Prisma.FieldRef<"ModuleAttachment", 'String'>
+  readonly tenantId: Prisma.FieldRef<"ModuleAttachment", 'String'>
   readonly moduleId: Prisma.FieldRef<"ModuleAttachment", 'String'>
   readonly userId: Prisma.FieldRef<"ModuleAttachment", 'String'>
   readonly name: Prisma.FieldRef<"ModuleAttachment", 'String'>

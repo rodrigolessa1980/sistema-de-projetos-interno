@@ -20,6 +20,8 @@ import { IEpicRepositoryToken } from '../../core/domain/repositories/epic-reposi
 import { PrismaEpicRepository } from './repositories/prisma-epic.repository';
 import { IApiTokenRepositoryToken } from '../../core/domain/repositories/api-token-repository.interface';
 import { PrismaApiTokenRepository } from './repositories/prisma-api-token.repository';
+import { ITenantRepositoryToken } from '../../core/domain/repositories/tenant-repository.interface';
+import { PrismaTenantRepository } from './repositories/prisma-tenant.repository';
 
 @Global()
 @Module({
@@ -35,6 +37,7 @@ import { PrismaApiTokenRepository } from './repositories/prisma-api-token.reposi
     { provide: IModuleAttachmentRepositoryToken, useClass: PrismaModuleAttachmentRepository },
     { provide: IEpicRepositoryToken, useClass: PrismaEpicRepository },
     { provide: IApiTokenRepositoryToken, useClass: PrismaApiTokenRepository },
+    { provide: ITenantRepositoryToken, useClass: PrismaTenantRepository },
   ],
   exports: [
     IUserRepositoryToken,
@@ -47,6 +50,7 @@ import { PrismaApiTokenRepository } from './repositories/prisma-api-token.reposi
     IModuleAttachmentRepositoryToken,
     IEpicRepositoryToken,
     IApiTokenRepositoryToken,
+    ITenantRepositoryToken,
   ],
 })
 export class DatabaseModule {}

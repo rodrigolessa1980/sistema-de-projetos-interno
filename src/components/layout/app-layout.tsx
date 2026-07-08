@@ -8,6 +8,7 @@ import { useRouter, usePathname } from "@/lib/router";
 import { useEffect } from "react";
 import { useProjectStore, useTaskStore, useUIStore, useUserStore } from "@/stores";
 import { preloadMainPages } from "@/lib/page-loaders";
+import { AwaitingApproval } from "@/components/auth/awaiting-approval";
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -15,7 +16,10 @@ interface AppLayoutProps {
 }
 
 export function AppLayout({ children, title }: AppLayoutProps) {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, session, logout } = useAuth();
+  // Fonte autoritativa do status de aprovação: a resposta do login (não o user
+  // mesclado do store, que pode não carregar isApproved).
+  const isPending = isAuthenticated && session?.user?.isApproved === false;
   const router = useRouter();
   const pathname = usePathname();
   const fetchProjects = useProjectStore((s) => s.fetchProjects);
@@ -23,7 +27,7 @@ export function AppLayout({ children, title }: AppLayoutProps) {
   const fetchAllTimeLogs = useTaskStore((s) => s.fetchAllTimeLogs);
   const fetchNotifications = useUIStore((s) => s.fetchNotifications);
   const fetchUsers = useUserStore((s) => s.fetchUsers);
-  useSyncWorkSession(isAuthenticated);
+  useSyncWorkSession(isAuthenticated && !isPending);
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated && pathname !== "/login") {
@@ -32,7 +36,7 @@ export function AppLayout({ children, title }: AppLayoutProps) {
   }, [isAuthenticated, isLoading, pathname, router]);
 
   useEffect(() => {
-    if (isAuthenticated) {
+    if (isAuthenticated && !isPending) {
       void preloadMainPages();
       fetchProjects()
         .then(() => {
@@ -44,7 +48,7 @@ export function AppLayout({ children, title }: AppLayoutProps) {
       fetchUsers().catch(() => {});
       fetchNotifications().catch(() => {});
     }
-  }, [isAuthenticated, fetchNotifications, fetchProjects, fetchTasksForProjects, fetchAllTimeLogs, fetchUsers]);
+  }, [isAuthenticated, isPending, fetchNotifications, fetchProjects, fetchTasksForProjects, fetchAllTimeLogs, fetchUsers]);
 
   if (isLoading) {
     return (
@@ -58,6 +62,10 @@ export function AppLayout({ children, title }: AppLayoutProps) {
   }
 
   if (!isAuthenticated) return null;
+
+  if (isPending) {
+    return <AwaitingApproval userName={session?.user?.name} onLogout={logout} />;
+  }
 
   return (
     <div className="flex h-screen bg-zinc-950 overflow-hidden">

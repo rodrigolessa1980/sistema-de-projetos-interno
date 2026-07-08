@@ -26,6 +26,7 @@ export type AggregateTaskNote = {
 
 export type TaskNoteMinAggregateOutputType = {
   id: string | null
+  tenantId: string | null
   taskId: string | null
   userId: string | null
   content: string | null
@@ -36,6 +37,7 @@ export type TaskNoteMinAggregateOutputType = {
 
 export type TaskNoteMaxAggregateOutputType = {
   id: string | null
+  tenantId: string | null
   taskId: string | null
   userId: string | null
   content: string | null
@@ -46,6 +48,7 @@ export type TaskNoteMaxAggregateOutputType = {
 
 export type TaskNoteCountAggregateOutputType = {
   id: number
+  tenantId: number
   taskId: number
   userId: number
   content: number
@@ -58,6 +61,7 @@ export type TaskNoteCountAggregateOutputType = {
 
 export type TaskNoteMinAggregateInputType = {
   id?: true
+  tenantId?: true
   taskId?: true
   userId?: true
   content?: true
@@ -68,6 +72,7 @@ export type TaskNoteMinAggregateInputType = {
 
 export type TaskNoteMaxAggregateInputType = {
   id?: true
+  tenantId?: true
   taskId?: true
   userId?: true
   content?: true
@@ -78,6 +83,7 @@ export type TaskNoteMaxAggregateInputType = {
 
 export type TaskNoteCountAggregateInputType = {
   id?: true
+  tenantId?: true
   taskId?: true
   userId?: true
   content?: true
@@ -161,6 +167,7 @@ export type TaskNoteGroupByArgs<ExtArgs extends runtime.Types.Extensions.Interna
 
 export type TaskNoteGroupByOutputType = {
   id: string
+  tenantId: string
   taskId: string
   userId: string
   content: string
@@ -192,24 +199,28 @@ export type TaskNoteWhereInput = {
   OR?: Prisma.TaskNoteWhereInput[]
   NOT?: Prisma.TaskNoteWhereInput | Prisma.TaskNoteWhereInput[]
   id?: Prisma.StringFilter<"TaskNote"> | string
+  tenantId?: Prisma.StringFilter<"TaskNote"> | string
   taskId?: Prisma.StringFilter<"TaskNote"> | string
   userId?: Prisma.StringFilter<"TaskNote"> | string
   content?: Prisma.StringFilter<"TaskNote"> | string
   isPinned?: Prisma.BoolFilter<"TaskNote"> | boolean
   createdAt?: Prisma.DateTimeFilter<"TaskNote"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"TaskNote"> | Date | string
+  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
   task?: Prisma.XOR<Prisma.TaskScalarRelationFilter, Prisma.TaskWhereInput>
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }
 
 export type TaskNoteOrderByWithRelationInput = {
   id?: Prisma.SortOrder
+  tenantId?: Prisma.SortOrder
   taskId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   content?: Prisma.SortOrder
   isPinned?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  tenant?: Prisma.TenantOrderByWithRelationInput
   task?: Prisma.TaskOrderByWithRelationInput
   user?: Prisma.UserOrderByWithRelationInput
   _relevance?: Prisma.TaskNoteOrderByRelevanceInput
@@ -220,18 +231,21 @@ export type TaskNoteWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.TaskNoteWhereInput | Prisma.TaskNoteWhereInput[]
   OR?: Prisma.TaskNoteWhereInput[]
   NOT?: Prisma.TaskNoteWhereInput | Prisma.TaskNoteWhereInput[]
+  tenantId?: Prisma.StringFilter<"TaskNote"> | string
   taskId?: Prisma.StringFilter<"TaskNote"> | string
   userId?: Prisma.StringFilter<"TaskNote"> | string
   content?: Prisma.StringFilter<"TaskNote"> | string
   isPinned?: Prisma.BoolFilter<"TaskNote"> | boolean
   createdAt?: Prisma.DateTimeFilter<"TaskNote"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"TaskNote"> | Date | string
+  tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
   task?: Prisma.XOR<Prisma.TaskScalarRelationFilter, Prisma.TaskWhereInput>
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }, "id">
 
 export type TaskNoteOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
+  tenantId?: Prisma.SortOrder
   taskId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   content?: Prisma.SortOrder
@@ -248,6 +262,7 @@ export type TaskNoteScalarWhereWithAggregatesInput = {
   OR?: Prisma.TaskNoteScalarWhereWithAggregatesInput[]
   NOT?: Prisma.TaskNoteScalarWhereWithAggregatesInput | Prisma.TaskNoteScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"TaskNote"> | string
+  tenantId?: Prisma.StringWithAggregatesFilter<"TaskNote"> | string
   taskId?: Prisma.StringWithAggregatesFilter<"TaskNote"> | string
   userId?: Prisma.StringWithAggregatesFilter<"TaskNote"> | string
   content?: Prisma.StringWithAggregatesFilter<"TaskNote"> | string
@@ -262,12 +277,14 @@ export type TaskNoteCreateInput = {
   isPinned?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  tenant?: Prisma.TenantCreateNestedOneWithoutTaskNotesInput
   task: Prisma.TaskCreateNestedOneWithoutNotesInput
   user: Prisma.UserCreateNestedOneWithoutTaskNotesInput
 }
 
 export type TaskNoteUncheckedCreateInput = {
   id?: string
+  tenantId?: string
   taskId: string
   userId: string
   content: string
@@ -282,12 +299,14 @@ export type TaskNoteUpdateInput = {
   isPinned?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutTaskNotesNestedInput
   task?: Prisma.TaskUpdateOneRequiredWithoutNotesNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutTaskNotesNestedInput
 }
 
 export type TaskNoteUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   taskId?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
@@ -298,6 +317,7 @@ export type TaskNoteUncheckedUpdateInput = {
 
 export type TaskNoteCreateManyInput = {
   id?: string
+  tenantId?: string
   taskId: string
   userId: string
   content: string
@@ -316,6 +336,7 @@ export type TaskNoteUpdateManyMutationInput = {
 
 export type TaskNoteUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   taskId?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
@@ -342,6 +363,7 @@ export type TaskNoteOrderByRelevanceInput = {
 
 export type TaskNoteCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  tenantId?: Prisma.SortOrder
   taskId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   content?: Prisma.SortOrder
@@ -352,6 +374,7 @@ export type TaskNoteCountOrderByAggregateInput = {
 
 export type TaskNoteMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  tenantId?: Prisma.SortOrder
   taskId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   content?: Prisma.SortOrder
@@ -362,12 +385,55 @@ export type TaskNoteMaxOrderByAggregateInput = {
 
 export type TaskNoteMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  tenantId?: Prisma.SortOrder
   taskId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   content?: Prisma.SortOrder
   isPinned?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+}
+
+export type TaskNoteCreateNestedManyWithoutTenantInput = {
+  create?: Prisma.XOR<Prisma.TaskNoteCreateWithoutTenantInput, Prisma.TaskNoteUncheckedCreateWithoutTenantInput> | Prisma.TaskNoteCreateWithoutTenantInput[] | Prisma.TaskNoteUncheckedCreateWithoutTenantInput[]
+  connectOrCreate?: Prisma.TaskNoteCreateOrConnectWithoutTenantInput | Prisma.TaskNoteCreateOrConnectWithoutTenantInput[]
+  createMany?: Prisma.TaskNoteCreateManyTenantInputEnvelope
+  connect?: Prisma.TaskNoteWhereUniqueInput | Prisma.TaskNoteWhereUniqueInput[]
+}
+
+export type TaskNoteUncheckedCreateNestedManyWithoutTenantInput = {
+  create?: Prisma.XOR<Prisma.TaskNoteCreateWithoutTenantInput, Prisma.TaskNoteUncheckedCreateWithoutTenantInput> | Prisma.TaskNoteCreateWithoutTenantInput[] | Prisma.TaskNoteUncheckedCreateWithoutTenantInput[]
+  connectOrCreate?: Prisma.TaskNoteCreateOrConnectWithoutTenantInput | Prisma.TaskNoteCreateOrConnectWithoutTenantInput[]
+  createMany?: Prisma.TaskNoteCreateManyTenantInputEnvelope
+  connect?: Prisma.TaskNoteWhereUniqueInput | Prisma.TaskNoteWhereUniqueInput[]
+}
+
+export type TaskNoteUpdateManyWithoutTenantNestedInput = {
+  create?: Prisma.XOR<Prisma.TaskNoteCreateWithoutTenantInput, Prisma.TaskNoteUncheckedCreateWithoutTenantInput> | Prisma.TaskNoteCreateWithoutTenantInput[] | Prisma.TaskNoteUncheckedCreateWithoutTenantInput[]
+  connectOrCreate?: Prisma.TaskNoteCreateOrConnectWithoutTenantInput | Prisma.TaskNoteCreateOrConnectWithoutTenantInput[]
+  upsert?: Prisma.TaskNoteUpsertWithWhereUniqueWithoutTenantInput | Prisma.TaskNoteUpsertWithWhereUniqueWithoutTenantInput[]
+  createMany?: Prisma.TaskNoteCreateManyTenantInputEnvelope
+  set?: Prisma.TaskNoteWhereUniqueInput | Prisma.TaskNoteWhereUniqueInput[]
+  disconnect?: Prisma.TaskNoteWhereUniqueInput | Prisma.TaskNoteWhereUniqueInput[]
+  delete?: Prisma.TaskNoteWhereUniqueInput | Prisma.TaskNoteWhereUniqueInput[]
+  connect?: Prisma.TaskNoteWhereUniqueInput | Prisma.TaskNoteWhereUniqueInput[]
+  update?: Prisma.TaskNoteUpdateWithWhereUniqueWithoutTenantInput | Prisma.TaskNoteUpdateWithWhereUniqueWithoutTenantInput[]
+  updateMany?: Prisma.TaskNoteUpdateManyWithWhereWithoutTenantInput | Prisma.TaskNoteUpdateManyWithWhereWithoutTenantInput[]
+  deleteMany?: Prisma.TaskNoteScalarWhereInput | Prisma.TaskNoteScalarWhereInput[]
+}
+
+export type TaskNoteUncheckedUpdateManyWithoutTenantNestedInput = {
+  create?: Prisma.XOR<Prisma.TaskNoteCreateWithoutTenantInput, Prisma.TaskNoteUncheckedCreateWithoutTenantInput> | Prisma.TaskNoteCreateWithoutTenantInput[] | Prisma.TaskNoteUncheckedCreateWithoutTenantInput[]
+  connectOrCreate?: Prisma.TaskNoteCreateOrConnectWithoutTenantInput | Prisma.TaskNoteCreateOrConnectWithoutTenantInput[]
+  upsert?: Prisma.TaskNoteUpsertWithWhereUniqueWithoutTenantInput | Prisma.TaskNoteUpsertWithWhereUniqueWithoutTenantInput[]
+  createMany?: Prisma.TaskNoteCreateManyTenantInputEnvelope
+  set?: Prisma.TaskNoteWhereUniqueInput | Prisma.TaskNoteWhereUniqueInput[]
+  disconnect?: Prisma.TaskNoteWhereUniqueInput | Prisma.TaskNoteWhereUniqueInput[]
+  delete?: Prisma.TaskNoteWhereUniqueInput | Prisma.TaskNoteWhereUniqueInput[]
+  connect?: Prisma.TaskNoteWhereUniqueInput | Prisma.TaskNoteWhereUniqueInput[]
+  update?: Prisma.TaskNoteUpdateWithWhereUniqueWithoutTenantInput | Prisma.TaskNoteUpdateWithWhereUniqueWithoutTenantInput[]
+  updateMany?: Prisma.TaskNoteUpdateManyWithWhereWithoutTenantInput | Prisma.TaskNoteUpdateManyWithWhereWithoutTenantInput[]
+  deleteMany?: Prisma.TaskNoteScalarWhereInput | Prisma.TaskNoteScalarWhereInput[]
 }
 
 export type TaskNoteCreateNestedManyWithoutUserInput = {
@@ -454,17 +520,79 @@ export type TaskNoteUncheckedUpdateManyWithoutTaskNestedInput = {
   deleteMany?: Prisma.TaskNoteScalarWhereInput | Prisma.TaskNoteScalarWhereInput[]
 }
 
-export type TaskNoteCreateWithoutUserInput = {
+export type TaskNoteCreateWithoutTenantInput = {
   id?: string
   content: string
   isPinned?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   task: Prisma.TaskCreateNestedOneWithoutNotesInput
+  user: Prisma.UserCreateNestedOneWithoutTaskNotesInput
+}
+
+export type TaskNoteUncheckedCreateWithoutTenantInput = {
+  id?: string
+  taskId: string
+  userId: string
+  content: string
+  isPinned?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type TaskNoteCreateOrConnectWithoutTenantInput = {
+  where: Prisma.TaskNoteWhereUniqueInput
+  create: Prisma.XOR<Prisma.TaskNoteCreateWithoutTenantInput, Prisma.TaskNoteUncheckedCreateWithoutTenantInput>
+}
+
+export type TaskNoteCreateManyTenantInputEnvelope = {
+  data: Prisma.TaskNoteCreateManyTenantInput | Prisma.TaskNoteCreateManyTenantInput[]
+  skipDuplicates?: boolean
+}
+
+export type TaskNoteUpsertWithWhereUniqueWithoutTenantInput = {
+  where: Prisma.TaskNoteWhereUniqueInput
+  update: Prisma.XOR<Prisma.TaskNoteUpdateWithoutTenantInput, Prisma.TaskNoteUncheckedUpdateWithoutTenantInput>
+  create: Prisma.XOR<Prisma.TaskNoteCreateWithoutTenantInput, Prisma.TaskNoteUncheckedCreateWithoutTenantInput>
+}
+
+export type TaskNoteUpdateWithWhereUniqueWithoutTenantInput = {
+  where: Prisma.TaskNoteWhereUniqueInput
+  data: Prisma.XOR<Prisma.TaskNoteUpdateWithoutTenantInput, Prisma.TaskNoteUncheckedUpdateWithoutTenantInput>
+}
+
+export type TaskNoteUpdateManyWithWhereWithoutTenantInput = {
+  where: Prisma.TaskNoteScalarWhereInput
+  data: Prisma.XOR<Prisma.TaskNoteUpdateManyMutationInput, Prisma.TaskNoteUncheckedUpdateManyWithoutTenantInput>
+}
+
+export type TaskNoteScalarWhereInput = {
+  AND?: Prisma.TaskNoteScalarWhereInput | Prisma.TaskNoteScalarWhereInput[]
+  OR?: Prisma.TaskNoteScalarWhereInput[]
+  NOT?: Prisma.TaskNoteScalarWhereInput | Prisma.TaskNoteScalarWhereInput[]
+  id?: Prisma.StringFilter<"TaskNote"> | string
+  tenantId?: Prisma.StringFilter<"TaskNote"> | string
+  taskId?: Prisma.StringFilter<"TaskNote"> | string
+  userId?: Prisma.StringFilter<"TaskNote"> | string
+  content?: Prisma.StringFilter<"TaskNote"> | string
+  isPinned?: Prisma.BoolFilter<"TaskNote"> | boolean
+  createdAt?: Prisma.DateTimeFilter<"TaskNote"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"TaskNote"> | Date | string
+}
+
+export type TaskNoteCreateWithoutUserInput = {
+  id?: string
+  content: string
+  isPinned?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  tenant?: Prisma.TenantCreateNestedOneWithoutTaskNotesInput
+  task: Prisma.TaskCreateNestedOneWithoutNotesInput
 }
 
 export type TaskNoteUncheckedCreateWithoutUserInput = {
   id?: string
+  tenantId?: string
   taskId: string
   content: string
   isPinned?: boolean
@@ -498,30 +626,19 @@ export type TaskNoteUpdateManyWithWhereWithoutUserInput = {
   data: Prisma.XOR<Prisma.TaskNoteUpdateManyMutationInput, Prisma.TaskNoteUncheckedUpdateManyWithoutUserInput>
 }
 
-export type TaskNoteScalarWhereInput = {
-  AND?: Prisma.TaskNoteScalarWhereInput | Prisma.TaskNoteScalarWhereInput[]
-  OR?: Prisma.TaskNoteScalarWhereInput[]
-  NOT?: Prisma.TaskNoteScalarWhereInput | Prisma.TaskNoteScalarWhereInput[]
-  id?: Prisma.StringFilter<"TaskNote"> | string
-  taskId?: Prisma.StringFilter<"TaskNote"> | string
-  userId?: Prisma.StringFilter<"TaskNote"> | string
-  content?: Prisma.StringFilter<"TaskNote"> | string
-  isPinned?: Prisma.BoolFilter<"TaskNote"> | boolean
-  createdAt?: Prisma.DateTimeFilter<"TaskNote"> | Date | string
-  updatedAt?: Prisma.DateTimeFilter<"TaskNote"> | Date | string
-}
-
 export type TaskNoteCreateWithoutTaskInput = {
   id?: string
   content: string
   isPinned?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  tenant?: Prisma.TenantCreateNestedOneWithoutTaskNotesInput
   user: Prisma.UserCreateNestedOneWithoutTaskNotesInput
 }
 
 export type TaskNoteUncheckedCreateWithoutTaskInput = {
   id?: string
+  tenantId?: string
   userId: string
   content: string
   isPinned?: boolean
@@ -555,8 +672,49 @@ export type TaskNoteUpdateManyWithWhereWithoutTaskInput = {
   data: Prisma.XOR<Prisma.TaskNoteUpdateManyMutationInput, Prisma.TaskNoteUncheckedUpdateManyWithoutTaskInput>
 }
 
+export type TaskNoteCreateManyTenantInput = {
+  id?: string
+  taskId: string
+  userId: string
+  content: string
+  isPinned?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type TaskNoteUpdateWithoutTenantInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  content?: Prisma.StringFieldUpdateOperationsInput | string
+  isPinned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  task?: Prisma.TaskUpdateOneRequiredWithoutNotesNestedInput
+  user?: Prisma.UserUpdateOneRequiredWithoutTaskNotesNestedInput
+}
+
+export type TaskNoteUncheckedUpdateWithoutTenantInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  taskId?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  content?: Prisma.StringFieldUpdateOperationsInput | string
+  isPinned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type TaskNoteUncheckedUpdateManyWithoutTenantInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  taskId?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  content?: Prisma.StringFieldUpdateOperationsInput | string
+  isPinned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
 export type TaskNoteCreateManyUserInput = {
   id?: string
+  tenantId?: string
   taskId: string
   content: string
   isPinned?: boolean
@@ -570,11 +728,13 @@ export type TaskNoteUpdateWithoutUserInput = {
   isPinned?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutTaskNotesNestedInput
   task?: Prisma.TaskUpdateOneRequiredWithoutNotesNestedInput
 }
 
 export type TaskNoteUncheckedUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   taskId?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
   isPinned?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -584,6 +744,7 @@ export type TaskNoteUncheckedUpdateWithoutUserInput = {
 
 export type TaskNoteUncheckedUpdateManyWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   taskId?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
   isPinned?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -593,6 +754,7 @@ export type TaskNoteUncheckedUpdateManyWithoutUserInput = {
 
 export type TaskNoteCreateManyTaskInput = {
   id?: string
+  tenantId?: string
   userId: string
   content: string
   isPinned?: boolean
@@ -606,11 +768,13 @@ export type TaskNoteUpdateWithoutTaskInput = {
   isPinned?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutTaskNotesNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutTaskNotesNestedInput
 }
 
 export type TaskNoteUncheckedUpdateWithoutTaskInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
   isPinned?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -620,6 +784,7 @@ export type TaskNoteUncheckedUpdateWithoutTaskInput = {
 
 export type TaskNoteUncheckedUpdateManyWithoutTaskInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
   isPinned?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -631,12 +796,14 @@ export type TaskNoteUncheckedUpdateManyWithoutTaskInput = {
 
 export type TaskNoteSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  tenantId?: boolean
   taskId?: boolean
   userId?: boolean
   content?: boolean
   isPinned?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   task?: boolean | Prisma.TaskDefaultArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["taskNote"]>
@@ -645,6 +812,7 @@ export type TaskNoteSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
 
 export type TaskNoteSelectScalar = {
   id?: boolean
+  tenantId?: boolean
   taskId?: boolean
   userId?: boolean
   content?: boolean
@@ -653,8 +821,9 @@ export type TaskNoteSelectScalar = {
   updatedAt?: boolean
 }
 
-export type TaskNoteOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "taskId" | "userId" | "content" | "isPinned" | "createdAt" | "updatedAt", ExtArgs["result"]["taskNote"]>
+export type TaskNoteOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "taskId" | "userId" | "content" | "isPinned" | "createdAt" | "updatedAt", ExtArgs["result"]["taskNote"]>
 export type TaskNoteInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   task?: boolean | Prisma.TaskDefaultArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
@@ -662,11 +831,13 @@ export type TaskNoteInclude<ExtArgs extends runtime.Types.Extensions.InternalArg
 export type $TaskNotePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "TaskNote"
   objects: {
+    tenant: Prisma.$TenantPayload<ExtArgs>
     task: Prisma.$TaskPayload<ExtArgs>
     user: Prisma.$UserPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
+    tenantId: string
     taskId: string
     userId: string
     content: string
@@ -1013,6 +1184,7 @@ readonly fields: TaskNoteFieldRefs;
  */
 export interface Prisma__TaskNoteClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  tenant<T extends Prisma.TenantDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TenantDefaultArgs<ExtArgs>>): Prisma.Prisma__TenantClient<runtime.Types.Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   task<T extends Prisma.TaskDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TaskDefaultArgs<ExtArgs>>): Prisma.Prisma__TaskClient<runtime.Types.Result.GetResult<Prisma.$TaskPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
@@ -1045,6 +1217,7 @@ export interface Prisma__TaskNoteClient<T, Null = never, ExtArgs extends runtime
  */
 export interface TaskNoteFieldRefs {
   readonly id: Prisma.FieldRef<"TaskNote", 'String'>
+  readonly tenantId: Prisma.FieldRef<"TaskNote", 'String'>
   readonly taskId: Prisma.FieldRef<"TaskNote", 'String'>
   readonly userId: Prisma.FieldRef<"TaskNote", 'String'>
   readonly content: Prisma.FieldRef<"TaskNote", 'String'>

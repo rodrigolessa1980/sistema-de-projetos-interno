@@ -25,13 +25,14 @@ const SCOPES = [
 async function main() {
   const admin = await prisma.user.findFirst({
     where: { role: 'ADMIN', isActive: true },
-    select: { id: true, name: true, email: true },
+    select: { id: true, name: true, email: true, tenantId: true },
   });
   if (!admin) throw new Error('Nenhum usuário ADMIN ativo encontrado.');
 
   const plainToken = generateApiTokenValue();
   const record = await prisma.apiToken.create({
     data: {
+      tenantId: admin.tenantId,
       userId: admin.id,
       name: 'TESTE-AUTOMATIZADO (temporário)',
       tokenHash: hashApiToken(plainToken),

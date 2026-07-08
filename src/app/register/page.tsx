@@ -13,6 +13,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { useAuth } from "@/hooks/use-auth";
+import { listTenants } from "@/lib/auth";
+import type { TenantOption } from "@/types";
 
 const registerSchema = z.object({
   name: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
@@ -20,7 +22,7 @@ const registerSchema = z.object({
   password: z.string().min(6, "A senha deve ter pelo menos 6 caracteres"),
   position: z.string().min(2, "Cargo deve ter pelo menos 2 caracteres"),
   department: z.string().min(2, "Departamento deve ter pelo menos 2 caracteres"),
-  role: z.enum(["ADMIN", "DEVELOPER"]),
+  tenantSlug: z.string().min(1, "Selecione um grupo"),
 });
 
 type RegisterForm = z.infer<typeof registerSchema>;
@@ -29,10 +31,17 @@ export default function RegisterPage() {
   const { register, isLoading, error, isAuthenticated, clearError } = useAuth();
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
+  const [tenants, setTenants] = useState<TenantOption[]>([]);
 
   useEffect(() => {
     if (isAuthenticated) router.push("/dashboard");
   }, [isAuthenticated, router]);
+
+  useEffect(() => {
+    listTenants()
+      .then(setTenants)
+      .catch(() => setTenants([]));
+  }, []);
 
   const form = useForm<RegisterForm>({
     resolver: zodResolver(registerSchema),
@@ -42,7 +51,7 @@ export default function RegisterPage() {
       password: "",
       position: "",
       department: "",
-      role: "DEVELOPER",
+      tenantSlug: "",
     },
   });
 
@@ -232,23 +241,31 @@ export default function RegisterPage() {
 
               <FormField
                 control={form.control}
-                name="role"
+                name="tenantSlug"
                 render={({ field }) => (
                   <FormItem>
-                    <Label className="text-zinc-300 text-sm">Nível de Permissão</Label>
+                    <Label className="text-zinc-300 text-sm">Grupo</Label>
                     <FormControl>
                       <select
                         {...field}
                         className="h-9 w-full rounded-lg border border-zinc-700/50 bg-zinc-800/50 px-2.5 py-1 text-sm text-zinc-100 placeholder-zinc-500 focus:border-violet-500/50 focus:outline-none"
                       >
-                        <option value="DEVELOPER" className="bg-zinc-900 text-zinc-100">Desenvolvedor (Developer)</option>
-                        <option value="ADMIN" className="bg-zinc-900 text-zinc-100">Administrador (Admin)</option>
+                        <option value="" className="bg-zinc-900 text-zinc-100">Selecione seu grupo…</option>
+                        {tenants.map((t) => (
+                          <option key={t.id} value={t.slug} className="bg-zinc-900 text-zinc-100">
+                            {t.name}
+                          </option>
+                        ))}
                       </select>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
+
+              <p className="text-xs text-zinc-500">
+                Após o cadastro, um administrador do grupo precisa aprovar seu acesso.
+              </p>
 
               {error && (
                 <motion.div

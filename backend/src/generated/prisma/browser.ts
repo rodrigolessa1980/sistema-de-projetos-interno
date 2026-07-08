@@ -18,6 +18,12 @@ export { Prisma }
 export * as $Enums from './enums.js'
 export * from './enums.js';
 /**
+ * Model Tenant
+ * Grupo/base lógica (ex.: Desenvolvimento, Marketing). Todo dado de domínio
+ * pertence a exatamente um Tenant e o isolamento é aplicado automaticamente.
+ */
+export type Tenant = Prisma.TenantModel
+/**
  * Model Company
  * 
  */

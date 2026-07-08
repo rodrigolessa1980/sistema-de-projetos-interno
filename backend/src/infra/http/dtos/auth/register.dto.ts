@@ -21,6 +21,14 @@ export class RegisterDto {
   @MinLength(2, { message: 'Departamento deve ter pelo menos 2 caracteres' })
   department!: string;
 
+  // Grupo (tenant) que o usuário deseja ingressar. Ele entra como pendente
+  // e um admin desse grupo precisa aprovar.
+  @IsString({ message: 'Selecione um grupo' })
+  @MinLength(1, { message: 'Selecione um grupo' })
+  tenantSlug!: string;
+
+  // Ignorado no registro público (papel é sempre DEVELOPER). Mantido apenas
+  // para compatibilidade de payload.
   @IsEnum(UserRole, { message: 'Regra de usuário inválida (ADMIN ou DEVELOPER)' })
   @IsOptional()
   role?: UserRole;

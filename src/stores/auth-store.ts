@@ -12,12 +12,14 @@ function syncUserToStore(user: User) {
   const now = new Date().toISOString();
   useUserStore.getState().upsertUser({
     id: user.id,
+    tenantId: user.tenantId,
     name: user.name,
     email: user.email,
     role: user.role,
     avatar: user.avatar,
     position: user.position ?? "",
     department: user.department ?? "",
+    isApproved: user.isApproved,
     projectIds: user.projectIds ?? [],
     permissions: user.permissions ?? [],
     createdAt: user.createdAt ?? now,
@@ -59,6 +61,12 @@ export const useAuthStore = create<AuthStore>()(
         const session = getStoredSession();
         if (session) {
           set({ session, isLoading: false });
+          // Usuário pendente: rotas protegidas (auth/me) são bloqueadas pelo guard.
+          // Mantém a sessão para exibir a tela de "aguardando autorização".
+          if (session.user?.isApproved === false) {
+            syncUserToStore(session.user);
+            return;
+          }
           try {
             const [meData, permsData] = await Promise.all([
               api.get<{ user: User }>("auth/me"),
