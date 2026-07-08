@@ -5,6 +5,7 @@ import { PageHeader } from "@/components/shared/page-header";
 import { useProjectStore, useTaskStore, useUserStore } from "@/stores";
 import { useAuth } from "@/hooks/use-auth";
 import { formatDate, cn } from "@/lib/utils";
+import { quickLogModuleIds } from "@/lib/worklog";
 import { motion } from "@/lib/motion";
 import { ChevronRight, ExternalLink, FolderKanban, Layers, ListTodo, Users } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
@@ -57,6 +58,9 @@ export default function EpicsPage() {
   const { tasks } = useTaskStore();
   const { users } = useUserStore();
   const { isAdmin } = useAuth();
+  // Esconde os "andaimes" criados pelo lançamento rápido de horas (timesheet).
+  const quickLog = quickLogModuleIds(modules);
+  const planningEpics = epics.filter((e) => !quickLog.has(e.moduleId));
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [selectedEpicId, setSelectedEpicId] = useState<string | null>(null);
   const selectedEpic = epics.find((e) => e.id === selectedEpicId) ?? null;
@@ -74,9 +78,11 @@ export default function EpicsPage() {
   const projectId = useWatch({ control: form.control, name: "projectId" });
   const selectedDeveloperIds = useWatch({ control: form.control, name: "developerIds" });
   const projectsWithModules = projects.filter((project) =>
-    modules.some((module) => module.projectId === project.id)
+    modules.some((module) => module.projectId === project.id && !quickLog.has(module.id))
   );
-  const filteredModules = modules.filter((module) => module.projectId === projectId);
+  const filteredModules = modules.filter(
+    (module) => module.projectId === projectId && !quickLog.has(module.id)
+  );
   const selectedProject = projects.find((p) => p.id === projectId);
   const projectDevelopers = users.filter((u) => selectedProject?.developerIds.includes(u.id));
 
@@ -142,12 +148,12 @@ export default function EpicsPage() {
         actions={isAdmin ? [{ label: "Novo Epic", onClick: openCreateDialog }] : undefined}
       />
       <div className="p-6 w-full">
-        {epics.length === 0 ? (
+        {planningEpics.length === 0 ? (
           <EmptyState icon={Layers} title="Nenhum epic" description="Os epics serão exibidos aqui." />
         ) : (
           <div className="space-y-6">
             {projects.map((project) => {
-              const projectEpics = epics.filter((e) => e.projectId === project.id);
+              const projectEpics = planningEpics.filter((e) => e.projectId === project.id);
               if (projectEpics.length === 0) return null;
               return (
                 <div key={project.id}>

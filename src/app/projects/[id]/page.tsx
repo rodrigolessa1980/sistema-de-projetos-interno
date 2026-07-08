@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useProjectStore, useTaskStore, useUserStore } from "@/stores";
+import { isQuickLogModule } from "@/lib/worklog";
 import { useAuth } from "@/hooks/use-auth";
 import { StatusBadge, ComplexityBadge } from "@/components/shared/task-badge";
 import { motion, AnimatePresence } from "@/lib/motion";
@@ -212,7 +213,9 @@ export default function ProjectDetailPage() {
     setDemandDescExpanded(false);
   }, [id, project.demandDescription]);
 
-  const modules = getModulesByProject(id);
+  // Só módulos de planejamento; os "andaimes" do lançamento rápido de horas
+  // (timesheet) ficam fora da aba Módulos. As horas seguem no relatório (aba Horas).
+  const modules = getModulesByProject(id).filter((m) => !isQuickLogModule(m));
   const epics = getEpicsByProject(id);
   const tasks = getTasksByProject(id);
   const showcaseAttachments = getShowcaseAttachmentsByProject(id);

@@ -23,6 +23,7 @@ const navItems = [
   { group: "Principal", items: [
     { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard, adminOnly: false },
   ]},
+  // Estrutura de planejamento: projeto, fila, estrutura e clientes.
   { group: "Projetos", items: [
     { href: "/projects", label: "Projetos", icon: FolderKanban, adminOnly: false },
     { href: "/queue", label: "Fila de Dev", icon: ListOrdered, adminOnly: false },
@@ -30,6 +31,7 @@ const navItems = [
     { href: "/epics", label: "Epics", icon: Layers, adminOnly: false },
     { href: "/companies", label: "Empresas", icon: Building2, adminOnly: false },
   ]},
+  // Execução do trabalho: minhas tarefas e visualizações.
   { group: "Trabalho", items: [
     { href: "/my-queue", label: "Minha Fila", icon: Inbox, adminOnly: false },
     { href: "/tasks", label: "Tarefas", icon: ListTodo, adminOnly: false },
@@ -37,18 +39,21 @@ const navItems = [
     { href: "/gantt", label: "Timeline", icon: GitBranch, adminOnly: false },
     { href: "/dependencies", label: "Dependências", icon: Network, adminOnly: false },
   ]},
-  { group: "Análise", items: [
-    { href: "/metrics", label: "Métricas", icon: BarChart3, adminOnly: false },
+  // Registro e acompanhamento de horas (lançamento + consulta).
+  { group: "Tempo & Horas", items: [
+    { href: "/reports/daily", label: "Horas por Dia", icon: CalendarDays, adminOnly: false },
+    { href: "/reports/hours", label: "Horas por Tarefa", icon: Timer, adminOnly: false },
     { href: "/time-logs", label: "Logs de Tempo", icon: Clock, adminOnly: false },
   ]},
+  // Análises e relatórios consolidados.
   { group: "Relatórios", items: [
+    { href: "/metrics", label: "Métricas", icon: BarChart3, adminOnly: false },
     { href: "/reports/productivity", label: "Produtividade", icon: TrendingUp, adminOnly: false },
-    { href: "/reports/hours", label: "Horas por Tarefa", icon: Timer, adminOnly: false },
-    { href: "/reports/daily", label: "Horas por Dia", icon: CalendarDays, adminOnly: false },
     { href: "/reports/projects", label: "Progresso Projetos", icon: ClipboardList, adminOnly: false },
     { href: "/reports/overview", label: "Visão Geral", icon: FileBarChart2, adminOnly: true },
   ]},
-  { group: "Admin", items: [
+  // Administração (só admin).
+  { group: "Administração", items: [
     { href: "/users", label: "Usuários", icon: Users, adminOnly: true },
   ]},
 ];
