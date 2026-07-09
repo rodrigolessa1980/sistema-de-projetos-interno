@@ -43,6 +43,12 @@ export class PrismaUserRepository implements IUserRepository {
     return raw ? this.mapToDomain(raw) : null;
   }
 
+  async findByEmailCurrentTenant(email: string): Promise<User | null> {
+    // Client estendido: filtra automaticamente pelo tenant do admin logado.
+    const raw = await this.prisma.user.findFirst({ where: { email } });
+    return raw ? this.mapToDomain(raw) : null;
+  }
+
   async create(user: User): Promise<User> {
     const raw = await this.prisma.user.create({
       data: {

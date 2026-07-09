@@ -120,13 +120,26 @@ export const useUIStore = create<UIStore>()(
   )
 );
 
+interface CreateUserRemoteInput {
+  name: string;
+  email: string;
+  password: string;
+  position: string;
+  department: string;
+  role: User["role"];
+}
+
 interface UserStore {
   users: User[];
   getUserById: (id: string) => User | undefined;
   fetchUsers: () => Promise<void>;
   createUser: (data: Omit<User, "id" | "createdAt" | "updatedAt">) => User;
+  /** Cria o usuário DE VERDADE no backend (papel respeitado, já aprovado). */
+  createUserRemote: (data: CreateUserRemoteInput) => Promise<User>;
   upsertUser: (user: User) => void;
-  updateUser: (id: string, data: Partial<User>) => void;
+  updateUser: (id: string, data: Partial<User>) => Promise<void>;
+  /** Atalho direto para promover/rebaixar admin (persiste no backend). */
+  setUserRole: (id: string, role: User["role"]) => Promise<void>;
   deleteUser: (id: string) => void;
   updateUserPermissions: (userId: string, permissions: UserPermission[]) => Promise<void>;
   approveUser: (id: string) => Promise<void>;
@@ -172,6 +185,39 @@ export const useUserStore = create<UserStore>()(
         return user;
       },
 
+      createUserRemote: async (data) => {
+        const u = await api.post<{
+          id: string;
+          tenantId: string;
+          name: string;
+          email: string;
+          role: User["role"];
+          avatar: string | null;
+          position: string;
+          department: string;
+          isApproved: boolean;
+          createdAt: string;
+          updatedAt: string;
+        }>("users", data);
+        const created: User = {
+          id: u.id,
+          tenantId: u.tenantId,
+          name: u.name,
+          email: u.email,
+          role: u.role,
+          avatar: u.avatar ?? undefined,
+          position: u.position,
+          department: u.department,
+          isApproved: u.isApproved,
+          projectIds: [],
+          permissions: [],
+          createdAt: u.createdAt,
+          updatedAt: u.updatedAt,
+        };
+        set((state) => ({ users: [...state.users, created] }));
+        return created;
+      },
+
       upsertUser: (user) => {
         const normalized = normalizeUser(user);
         set((state) => {
@@ -187,11 +233,32 @@ export const useUserStore = create<UserStore>()(
         });
       },
 
-      updateUser: (id, data) => {
+      updateUser: async (id, data) => {
+        // Persiste no backend os campos editáveis por admin; ignora contas
+        // locais (sem id do servidor) que ainda não foram para o banco.
+        const isRemote = !id.startsWith("user-");
+        if (isRemote) {
+          await api.put(`users/${id}`, {
+            name: data.name,
+            position: data.position,
+            department: data.department,
+            role: data.role,
+          });
+        }
         const now = new Date().toISOString();
         set((state) => ({
           users: state.users.map((user) =>
             user.id === id ? { ...user, ...data, updatedAt: now } : user
+          ),
+        }));
+      },
+
+      setUserRole: async (id, role) => {
+        await api.put(`users/${id}`, { role });
+        const now = new Date().toISOString();
+        set((state) => ({
+          users: state.users.map((user) =>
+            user.id === id ? { ...user, role, updatedAt: now } : user
           ),
         }));
       },

@@ -4,6 +4,8 @@ export interface IUserRepository {
   findById(id: string): Promise<User | null>;
   /** Busca por e-mail DENTRO de um tenant (e-mail é único por grupo) — login/registro. */
   findByEmailAndTenant(email: string, tenantId: string): Promise<User | null>;
+  /** Busca por e-mail no tenant do request corrente (client estendido) — criação por admin. */
+  findByEmailCurrentTenant(email: string): Promise<User | null>;
   create(user: User): Promise<User>;
   /** Cria usuário pendente de aprovação em um tenant específico (registro público). */
   registerPending(user: User, tenantId: string): Promise<User>;

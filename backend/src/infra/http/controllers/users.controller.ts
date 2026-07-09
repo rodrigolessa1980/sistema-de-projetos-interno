@@ -6,7 +6,11 @@ import { ListUsersUseCase } from '../../../core/use-cases/users/list-users.use-c
 import { GetUserPermissionsUseCase } from '../../../core/use-cases/users/get-user-permissions.use-case';
 import { UpdateUserPermissionsUseCase } from '../../../core/use-cases/users/update-user-permissions.use-case';
 import { ApproveUserUseCase } from '../../../core/use-cases/users/approve-user.use-case';
+import { CreateUserUseCase } from '../../../core/use-cases/users/create-user.use-case';
+import { UpdateUserUseCase } from '../../../core/use-cases/users/update-user.use-case';
 import { UpdatePermissionsDto } from '../dtos/users/update-permissions.dto';
+import { CreateUserDto } from '../dtos/users/create-user.dto';
+import { UpdateUserDto } from '../dtos/users/update-user.dto';
 import { UserPresenter } from '../presenters/user.presenter';
 
 @Controller('users')
@@ -17,7 +21,39 @@ export class UsersController {
     private readonly getUserPermissionsUseCase: GetUserPermissionsUseCase,
     private readonly updateUserPermissionsUseCase: UpdateUserPermissionsUseCase,
     private readonly approveUserUseCase: ApproveUserUseCase,
+    private readonly createUserUseCase: CreateUserUseCase,
+    private readonly updateUserUseCase: UpdateUserUseCase,
   ) {}
+
+  @Post()
+  @RequirePermission('users:create')
+  @RequireAdmin()
+  async create(@Body() body: CreateUserDto) {
+    // Tenant é o do admin logado (injetado pelo client estendido no create).
+    const user = await this.createUserUseCase.execute({
+      name: body.name,
+      email: body.email,
+      password: body.password,
+      position: body.position,
+      department: body.department,
+      role: body.role,
+    });
+    return UserPresenter.toHTTP(user);
+  }
+
+  @Put(':id')
+  @RequirePermission('users:update')
+  @RequireAdmin()
+  async update(@Param('id') id: string, @Body() body: UpdateUserDto) {
+    // Escopo de tenant no use-case: admin só edita usuários do próprio grupo.
+    const user = await this.updateUserUseCase.execute(id, {
+      name: body.name,
+      position: body.position,
+      department: body.department,
+      role: body.role,
+    });
+    return UserPresenter.toHTTP(user);
+  }
 
   @Get()
   @RequirePermission('users:read')

@@ -62,6 +62,8 @@ import { ListUsersUseCase } from './users/list-users.use-case';
 import { GetUserPermissionsUseCase } from './users/get-user-permissions.use-case';
 import { UpdateUserPermissionsUseCase } from './users/update-user-permissions.use-case';
 import { ApproveUserUseCase } from './users/approve-user.use-case';
+import { CreateUserUseCase } from './users/create-user.use-case';
+import { UpdateUserUseCase } from './users/update-user.use-case';
 // Tenant Use Cases
 import { ListTenantsUseCase } from './tenants/list-tenants.use-case';
 import { CreateApiTokenUseCase } from './api-tokens/create-api-token.use-case';
@@ -137,6 +139,8 @@ const useCases = [
   GetUserPermissionsUseCase,
   UpdateUserPermissionsUseCase,
   ApproveUserUseCase,
+  CreateUserUseCase,
+  UpdateUserUseCase,
   // Tenants
   ListTenantsUseCase,
   CreateApiTokenUseCase,

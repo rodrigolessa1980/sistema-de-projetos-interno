@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo, useCallback } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { useUserStore } from "@/stores";
 import { EmptyState } from "@/components/shared/empty-state";
-import { Users, Save, RotateCcw } from "lucide-react";
+import { Users, Save, RotateCcw, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -99,7 +99,8 @@ function formatLastLogin(date: string | null): string {
 // ──────────────────────────────────────────────
 export default function UsersPage() {
   const { isAdmin } = useAuth();
-  const { users: storeUsers, fetchUsers, updateUserPermissions, approveUser } = useUserStore();
+  const { users: storeUsers, fetchUsers, updateUserPermissions, approveUser, setUserRole } = useUserStore();
+  const [rolePendingId, setRolePendingId] = useState<string | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [permMap, setPermMap] = useState<PermissionMap>({});
   const [isSaving, setIsSaving] = useState(false);
@@ -127,6 +128,23 @@ export default function UsersPage() {
       toast.error("Erro ao aprovar usuário");
     }
   }, [approveUser]);
+
+  const handleToggleRole = useCallback(async (user: ApiUser) => {
+    const next = user.role === "ADMIN" ? "DEVELOPER" : "ADMIN";
+    setRolePendingId(user.id);
+    try {
+      await setUserRole(user.id, next);
+      toast.success(
+        next === "ADMIN"
+          ? "Usuário promovido a administrador"
+          : "Usuário definido como developer"
+      );
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Erro ao alterar papel");
+    } finally {
+      setRolePendingId(null);
+    }
+  }, [setUserRole]);
 
   const selectedUser = users.find((u) => u.id === selectedId) ?? users[0] ?? null;
   const activePermMap = useMemo(
@@ -311,11 +329,46 @@ export default function UsersPage() {
             <>
               {/* Header */}
               <div className="p-6 border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 flex items-start justify-between gap-4">
-                <div>
-                  <h2 className="text-lg font-bold text-zinc-800 dark:text-zinc-100">
-                    Permissões — {selectedUser.name}
-                  </h2>
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h2 className="text-lg font-bold text-zinc-800 dark:text-zinc-100">
+                      {selectedUser.name}
+                    </h2>
+                    <Badge
+                      className={cn(
+                        "text-[10px] px-1.5 py-0 shrink-0",
+                        selectedUser.role === "ADMIN"
+                          ? "bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-400"
+                          : "bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400"
+                      )}
+                    >
+                      {selectedUser.role === "ADMIN" ? "ADMINISTRADOR" : "DEVELOPER"}
+                    </Badge>
+                  </div>
                   <p className="text-sm text-zinc-500">{selectedUser.email}</p>
+                  {/* Fluxo direto para alternar admin ↔ developer */}
+                  <button
+                    onClick={() => handleToggleRole(selectedUser)}
+                    disabled={rolePendingId === selectedUser.id}
+                    className={cn(
+                      "mt-3 inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-semibold transition-colors disabled:opacity-60",
+                      selectedUser.role === "ADMIN"
+                        ? "bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700"
+                        : "bg-amber-500 text-white hover:bg-amber-600"
+                    )}
+                  >
+                    <ShieldCheck className="w-3.5 h-3.5" />
+                    {rolePendingId === selectedUser.id
+                      ? "Salvando..."
+                      : selectedUser.role === "ADMIN"
+                        ? "Rebaixar para Developer"
+                        : "Tornar Administrador"}
+                  </button>
+                  {selectedUser.role === "ADMIN" && (
+                    <p className="mt-1.5 text-[11px] text-zinc-400 dark:text-zinc-500">
+                      Administradores têm acesso total — as permissões abaixo não se aplicam.
+                    </p>
+                  )}
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
                   <Button

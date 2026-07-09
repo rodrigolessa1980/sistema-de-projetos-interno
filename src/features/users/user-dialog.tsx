@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -17,9 +17,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useUserStore } from "@/stores/ui-store";
 import { useProjectStore, useTaskStore } from "@/stores";
 import type { User } from "@/types";
-import { api } from "@/lib/api";
-import { useAuth } from "@/hooks/use-auth";
-import { listTenants } from "@/lib/auth";
 import { CheckSquare, FolderKanban, Check, UserPlus, Pencil, Eye, EyeOff } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -46,27 +43,15 @@ export function UserDialog(props: UserDialogProps) {
 }
 
 function UserDialogForm({ open, onOpenChange, editUser }: UserDialogProps) {
-  const { createUser, updateUser } = useUserStore();
+  const { createUser, createUserRemote, updateUser } = useUserStore();
   const { projects, addDeveloperToProject, removeDeveloperFromProject } = useProjectStore();
   const { tasks, updateTask } = useTaskStore();
-  const { user: currentUser } = useAuth();
 
   const [selectedProjects, setSelectedProjects] = useState<string[]>(() => editUser?.projectIds ?? []);
   const [selectedTaskId, setSelectedTaskId] = useState<string>("");
   const [isSaving, setIsSaving] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  // Slug do grupo do admin logado — novos usuários entram no MESMO grupo.
-  const [adminTenantSlug, setAdminTenantSlug] = useState<string>("");
-
-  useEffect(() => {
-    if (!currentUser?.tenantId) return;
-    listTenants()
-      .then((ts) => {
-        const match = ts.find((t) => t.id === currentUser.tenantId);
-        if (match) setAdminTenantSlug(match.slug);
-      })
-      .catch(() => {});
-  }, [currentUser?.tenantId]);
+  const [error, setError] = useState<string | null>(null);
 
   const isEditing = !!editUser;
 
@@ -102,6 +87,7 @@ function UserDialogForm({ open, onOpenChange, editUser }: UserDialogProps) {
 
   async function onSubmit(values: FormValues) {
     setIsSaving(true);
+    setError(null);
     try {
       let userId: string;
       const timestamp = Date.now();
@@ -115,7 +101,8 @@ function UserDialogForm({ open, onOpenChange, editUser }: UserDialogProps) {
       };
 
       if (isEditing && editUser) {
-        updateUser(editUser.id, { ...normalizedValues, projectIds: selectedProjects });
+        // Persiste papel/dados no backend (agora async).
+        await updateUser(editUser.id, { ...normalizedValues, projectIds: selectedProjects });
         userId = editUser.id;
 
         const prevProjects = editUser.projectIds ?? [];
@@ -125,32 +112,16 @@ function UserDialogForm({ open, onOpenChange, editUser }: UserDialogProps) {
         removed.forEach((pId) => removeDeveloperFromProject(pId, userId));
       } else {
         if (normalizedValues.password) {
-          if (!adminTenantSlug) {
-            throw new Error("Não foi possível identificar o grupo do administrador.");
-          }
-          const now = new Date().toISOString();
-          const result = await api.post<{ user: { id: string; name: string; email: string; role: string; avatar: string | null; position: string; department: string; createdAt: string } }>("auth/register", {
+          // Cria a conta DE VERDADE no grupo do admin, com o papel escolhido.
+          const created = await createUserRemote({
             name: normalizedValues.name,
             email: normalizedValues.email,
             password: normalizedValues.password,
             position: normalizedValues.position,
             department: normalizedValues.department,
-            tenantSlug: adminTenantSlug,
-          });
-          const u = result.user;
-          useUserStore.getState().upsertUser({
-            id: u.id,
-            name: u.name,
-            email: u.email,
             role: normalizedValues.role,
-            avatar: u.avatar ?? undefined,
-            position: u.position,
-            department: u.department,
-            projectIds: selectedProjects,
-            createdAt: u.createdAt ?? now,
-            updatedAt: u.createdAt ?? now,
           });
-          userId = u.id;
+          userId = created.id;
         } else {
           const user = createUser({ ...normalizedValues, projectIds: selectedProjects, avatar: undefined });
           userId = user.id;
@@ -163,6 +134,8 @@ function UserDialogForm({ open, onOpenChange, editUser }: UserDialogProps) {
       }
 
       onOpenChange(false);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Erro ao salvar usuário.");
     } finally {
       setIsSaving(false);
     }
@@ -255,17 +228,45 @@ function UserDialogForm({ open, onOpenChange, editUser }: UserDialogProps) {
               <FormField control={form.control} name="role" render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-zinc-400 text-xs">Papel no sistema</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <FormControl>
-                      <SelectTrigger className="bg-zinc-900 border-zinc-700 text-zinc-100">
-                        <SelectValue />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent className="bg-zinc-900 border-zinc-700">
-                      <SelectItem value="DEVELOPER" className="text-zinc-200 focus:bg-zinc-800">Developer</SelectItem>
-                      <SelectItem value="ADMIN" className="text-zinc-200 focus:bg-zinc-800">Admin</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <div className="grid grid-cols-2 gap-2">
+                    {([
+                      { value: "DEVELOPER", title: "Developer", desc: "Acesso padrão" },
+                      { value: "ADMIN", title: "Administrador", desc: "Acesso total" },
+                    ] as const).map((opt) => {
+                      const active = field.value === opt.value;
+                      const isAdmin = opt.value === "ADMIN";
+                      return (
+                        <button
+                          key={opt.value}
+                          type="button"
+                          onClick={() => field.onChange(opt.value)}
+                          className={cn(
+                            "flex flex-col items-start gap-0.5 rounded-lg border p-3 text-left transition-all",
+                            active
+                              ? isAdmin
+                                ? "border-amber-500/60 bg-amber-500/10"
+                                : "border-violet-500/60 bg-violet-500/10"
+                              : "border-zinc-700 bg-zinc-900/40 hover:border-zinc-600"
+                          )}
+                        >
+                          <span className="flex items-center gap-1.5 text-sm font-semibold">
+                            <span className={cn(
+                              "w-3.5 h-3.5 rounded-full border flex items-center justify-center shrink-0",
+                              active
+                                ? isAdmin ? "border-amber-400 bg-amber-400" : "border-violet-400 bg-violet-400"
+                                : "border-zinc-600"
+                            )}>
+                              {active && <Check className="w-2 h-2 text-zinc-950" />}
+                            </span>
+                            <span className={cn(active ? (isAdmin ? "text-amber-300" : "text-violet-300") : "text-zinc-300")}>
+                              {opt.title}
+                            </span>
+                          </span>
+                          <span className="text-[11px] text-zinc-500 pl-5">{opt.desc}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
                   <FormMessage />
                 </FormItem>
               )} />
@@ -343,6 +344,12 @@ function UserDialogForm({ open, onOpenChange, editUser }: UserDialogProps) {
                 </Select>
               )}
             </div>
+
+            {error && (
+              <p className="text-xs text-red-400 bg-red-500/10 border border-red-500/30 rounded-md px-3 py-2">
+                {error}
+              </p>
+            )}
 
             <DialogFooter className="pt-2 gap-2">
               <Button
