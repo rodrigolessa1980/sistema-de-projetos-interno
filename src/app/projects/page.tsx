@@ -188,52 +188,60 @@ export default function ProjectsPage() {
   const onSubmit = async (data: CreateProjectForm) => {
     const fallbackName = `Projeto ${new Date().toLocaleString("pt-BR")}`;
     const startDate = data.startDate || new Date().toISOString().split("T")[0];
-    const newProject = await createProject({
-      ...data,
-      name: data.name?.trim() || fallbackName,
-      description: data.description?.trim() || "Projeto criado sem descricao.",
-      requestedBy: data.requestedBy?.trim() || undefined,
-      status: data.status ?? "ATIVO",
-      companyId: data.companyId || undefined,
-      ownerId: user?.id ?? "",
-      developerIds: [],
-      actualHours: 0,
-      progress: 0,
-      estimatedHours: data.estimatedHours ?? 0,
-      avatar: avatarPreview ?? undefined,
-      color: data.color || projectColors[0],
-      startDate,
-      testUrl: data.testUrl || undefined,
-      endDate: data.endDate || null,
-    });
-    if (moduleDrafts.length > 0) {
-      await createModulesBulk(newProject.id, moduleDrafts.map((m) => ({ name: m.name, description: m.description })));
+    try {
+      const newProject = await createProject({
+        ...data,
+        name: data.name?.trim() || fallbackName,
+        description: data.description?.trim() || "Projeto criado sem descricao.",
+        requestedBy: data.requestedBy?.trim() || undefined,
+        status: data.status ?? "ATIVO",
+        companyId: data.companyId || undefined,
+        ownerId: user?.id ?? "",
+        developerIds: [],
+        actualHours: 0,
+        progress: 0,
+        estimatedHours: data.estimatedHours ?? 0,
+        avatar: avatarPreview ?? undefined,
+        color: data.color || projectColors[0],
+        startDate,
+        testUrl: data.testUrl || undefined,
+        endDate: data.endDate || null,
+      });
+      if (moduleDrafts.length > 0) {
+        await createModulesBulk(newProject.id, moduleDrafts.map((m) => ({ name: m.name, description: m.description })));
+      }
+      toast.success(`Projeto criado com ${moduleDrafts.length > 0 ? `${moduleDrafts.length} módulo(s)` : "sucesso"}!`);
+      setIsCreateOpen(false);
+      setAvatarPreview(null);
+      setModuleDrafts([]);
+      setNewModuleName("");
+      form.reset();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Não foi possível criar o projeto.");
     }
-    toast.success(`Projeto criado com ${moduleDrafts.length > 0 ? `${moduleDrafts.length} módulo(s)` : "sucesso"}!`);
-    setIsCreateOpen(false);
-    setAvatarPreview(null);
-    setModuleDrafts([]);
-    setNewModuleName("");
-    form.reset();
   };
 
   const onEditSubmit = async (data: CreateProjectForm) => {
     if (!editingProject) return;
-    await updateProject(editingProject.id, {
-      companyId: data.companyId || null,
-      name: data.name?.trim() || editingProject.name,
-      description: data.description?.trim() || "",
-      requestedBy: data.requestedBy?.trim() || null,
-      ownerId: data.ownerId || editingProject.ownerId,
-      status: data.status ?? editingProject.status,
-      startDate: data.startDate || editingProject.startDate.split("T")[0],
-      endDate: data.endDate || undefined,
-      estimatedHours: data.estimatedHours ?? editingProject.estimatedHours,
-      color: data.color || editingProject.color,
-      testUrl: data.testUrl || null,
-    });
-    setEditingProject(null);
-    toast.success("Projeto atualizado");
+    try {
+      await updateProject(editingProject.id, {
+        companyId: data.companyId || null,
+        name: data.name?.trim() || editingProject.name,
+        description: data.description?.trim() || "",
+        requestedBy: data.requestedBy?.trim() || null,
+        ownerId: data.ownerId || editingProject.ownerId,
+        status: data.status ?? editingProject.status,
+        startDate: data.startDate || editingProject.startDate.split("T")[0],
+        endDate: data.endDate || undefined,
+        estimatedHours: data.estimatedHours ?? editingProject.estimatedHours,
+        color: data.color || editingProject.color,
+        testUrl: data.testUrl || null,
+      });
+      setEditingProject(null);
+      toast.success("Projeto atualizado");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Não foi possível atualizar o projeto.");
+    }
   };
 
   return (

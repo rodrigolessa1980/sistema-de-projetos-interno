@@ -172,39 +172,51 @@ export default function CompaniesPage() {
 
   const createDefaults: CompanyForm = { name: "", shortName: "", color: companyColors[0], cnpj: "" };
 
-  function handleCreate(data: CompanyForm) {
-    createCompany({
-      ...data,
-      name: data.name?.trim() || `Empresa ${new Date().toLocaleString("pt-BR")}`,
-      shortName: data.shortName?.trim() || "EMP",
-      color: data.color || companyColors[0],
-      cnpj: data.cnpj || undefined,
-    });
-    toast.success("Empresa cadastrada com sucesso!");
-    setIsCreateOpen(false);
+  async function handleCreate(data: CompanyForm) {
+    try {
+      await createCompany({
+        ...data,
+        name: data.name?.trim() || `Empresa ${new Date().toLocaleString("pt-BR")}`,
+        shortName: data.shortName?.trim() || "EMP",
+        color: data.color || companyColors[0],
+        cnpj: data.cnpj || undefined,
+      });
+      toast.success("Empresa cadastrada com sucesso!");
+      setIsCreateOpen(false);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Não foi possível cadastrar a empresa.");
+    }
   }
 
-  function handleEdit(data: CompanyForm) {
+  async function handleEdit(data: CompanyForm) {
     if (!editingCompany) return;
-    updateCompany(editingCompany.id, {
-      ...data,
-      name: data.name?.trim() || editingCompany.name,
-      shortName: data.shortName?.trim() || editingCompany.shortName,
-      color: data.color || editingCompany.color,
-      cnpj: data.cnpj || undefined,
-    });
-    toast.success("Empresa atualizada!");
-    setEditingCompany(null);
+    try {
+      await updateCompany(editingCompany.id, {
+        ...data,
+        name: data.name?.trim() || editingCompany.name,
+        shortName: data.shortName?.trim() || editingCompany.shortName,
+        color: data.color || editingCompany.color,
+        cnpj: data.cnpj || undefined,
+      });
+      toast.success("Empresa atualizada!");
+      setEditingCompany(null);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Não foi possível atualizar a empresa.");
+    }
   }
 
-  function handleDelete(company: Company) {
+  async function handleDelete(company: Company) {
     const linked = projects.filter((p) => p.companyId === company.id).length;
     if (linked > 0) {
       toast.error(`Não é possível excluir: ${linked} projeto${linked > 1 ? "s" : ""} vinculado${linked > 1 ? "s" : ""}.`);
       return;
     }
-    deleteCompany(company.id);
-    toast.success("Empresa removida.");
+    try {
+      await deleteCompany(company.id);
+      toast.success("Empresa removida.");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Não foi possível remover a empresa.");
+    }
   }
 
   return (

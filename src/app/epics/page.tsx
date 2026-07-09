@@ -125,19 +125,23 @@ export default function EpicsPage() {
       return;
     }
 
-    await createEpic({
-      ...data,
-      projectId: finalProjectId,
-      moduleId: finalModuleId,
-      name: data.name?.trim() || `Epic ${new Date().toLocaleString("pt-BR")}`,
-      description: data.description?.trim() || "Epic criado sem descricao.",
-      startDate: data.startDate || new Date().toISOString().split("T")[0],
-      endDate: data.endDate || undefined,
-      developerIds: data.developerIds ?? [],
-    });
-    toast.success("Epic criado com sucesso");
-    setIsCreateOpen(false);
-    form.reset();
+    try {
+      await createEpic({
+        ...data,
+        projectId: finalProjectId,
+        moduleId: finalModuleId,
+        name: data.name?.trim() || `Epic ${new Date().toLocaleString("pt-BR")}`,
+        description: data.description?.trim() || "Epic criado sem descricao.",
+        startDate: data.startDate || new Date().toISOString().split("T")[0],
+        endDate: data.endDate || undefined,
+        developerIds: data.developerIds ?? [],
+      });
+      toast.success("Epic criado com sucesso");
+      setIsCreateOpen(false);
+      form.reset();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Não foi possível criar o epic.");
+    }
   };
 
   return (

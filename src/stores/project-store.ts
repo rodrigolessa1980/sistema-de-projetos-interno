@@ -43,9 +43,9 @@ interface ProjectStore {
   isLoading: boolean;
 
   getCompanyById: (id: string) => Company | undefined;
-  createCompany: (data: Omit<Company, "id" | "createdAt" | "updatedAt">) => Company;
-  updateCompany: (id: string, data: Partial<Company>) => void;
-  deleteCompany: (id: string) => void;
+  createCompany: (data: Omit<Company, "id" | "createdAt" | "updatedAt">) => Promise<Company>;
+  updateCompany: (id: string, data: Partial<Company>) => Promise<Company>;
+  deleteCompany: (id: string) => Promise<void>;
 
   fetchProjects: () => Promise<void>;
   getProjectById: (id: string) => Project | undefined;
@@ -102,43 +102,33 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
 
   getCompanyById: (id) => get().companies.find((c) => c.id === id),
 
-  createCompany: (data) => {
-    const now = new Date().toISOString();
-    // INC-04: id estável gerado no cliente e enviado no POST -> a resposta do servidor
-    // tem o MESMO id, então a reconciliação não troca a key (sem remount/flicker).
-    const id = crypto.randomUUID();
-    const company: Company = { ...data, id, createdAt: now, updatedAt: now };
-    void api.post<{ company: Company }>("companies", { ...data, id }).then((response) => {
-      set((state) => ({
-        companies: state.companies.map((item) => (item.id === id ? response.company : item)),
-      }));
-    }).catch(() => {
-      set((state) => ({ companies: state.companies.filter((item) => item.id !== id) }));
-    });
-    set((state) => ({ companies: [...state.companies, company] }));
-    return company;
+  createCompany: async (data) => {
+    // O id é gerado pelo servidor (como em createProject/createUserRemote). Enviar
+    // um id do cliente fazia o POST ser rejeitado pelo backend (ValidationPipe
+    // forbidNonWhitelisted -> 400) quando a build implantada não conhecia o campo,
+    // e o erro era engolido -> o cadastro "sumia" sem aviso.
+    const response = await api.post<{ company: Company }>("companies", data);
+    set((state) => ({ companies: [...state.companies, response.company] }));
+    return response.company;
   },
 
-  updateCompany: (id, data) => {
-    const now = new Date().toISOString();
+  updateCompany: async (id, data) => {
+    const response = await api.patch<{ company: Company }>(`companies/${id}`, data);
     set((state) => ({
-      companies: state.companies.map((c) => c.id === id ? { ...c, ...data, updatedAt: now } : c),
+      companies: state.companies.map((c) => (c.id === id ? response.company : c)),
     }));
-    void api.patch<{ company: Company }>(`companies/${id}`, data).then((response) => {
-      set((state) => ({
-        companies: state.companies.map((c) => (c.id === id ? response.company : c)),
-      }));
-    }).catch(() => {
-      // mantém atualização local otimista
-    });
+    return response.company;
   },
 
-  deleteCompany: (id) => {
+  deleteCompany: async (id) => {
     const previous = get().companies;
     set((state) => ({ companies: state.companies.filter((c) => c.id !== id) }));
-    void api.delete(`companies/${id}`).catch(() => {
+    try {
+      await api.delete(`companies/${id}`);
+    } catch (error) {
       set({ companies: previous });
-    });
+      throw error;
+    }
   },
 
   fetchProjects: async () => {
