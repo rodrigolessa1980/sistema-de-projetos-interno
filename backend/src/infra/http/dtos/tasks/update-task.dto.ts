@@ -1,5 +1,6 @@
-import { IsDateString, IsEnum, IsInt, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsDateString, IsEnum, IsInt, IsNumber, IsOptional, IsString, Max, MaxLength, Min } from 'class-validator';
 import { TaskStatus } from '../../../../core/domain/entities/enums';
+import { LIMITS } from '../field-limits';
 
 export class UpdateTaskDto {
   @IsOptional()
@@ -20,10 +21,12 @@ export class UpdateTaskDto {
 
   @IsOptional()
   @IsString()
+  @MaxLength(LIMITS.task.title, { message: `O título deve ter no máximo ${LIMITS.task.title} caracteres` })
   title?: string;
 
   @IsOptional()
   @IsString()
+  @MaxLength(LIMITS.task.description, { message: `A descrição deve ter no máximo ${LIMITS.task.description} caracteres` })
   description?: string;
 
   @IsOptional()
@@ -32,6 +35,8 @@ export class UpdateTaskDto {
 
   @IsOptional()
   @IsInt()
+  @Min(LIMITS.task.complexityMin, { message: `A complexidade deve ser no mínimo ${LIMITS.task.complexityMin}` })
+  @Max(LIMITS.task.complexityMax, { message: `A complexidade deve ser no máximo ${LIMITS.task.complexityMax}` })
   complexity?: number;
 
   @IsOptional()
@@ -44,6 +49,8 @@ export class UpdateTaskDto {
 
   @IsOptional()
   @IsInt()
+  @Min(0, { message: 'Horas estimadas não podem ser negativas' })
+  @Max(LIMITS.task.estimatedHoursMax, { message: `Horas estimadas devem ser no máximo ${LIMITS.task.estimatedHoursMax}` })
   estimatedHours?: number;
 
   @IsOptional()
@@ -63,5 +70,6 @@ export class UpdateTaskDto {
 
   @IsOptional()
   @IsString()
+  @MaxLength(LIMITS.task.blockedReason, { message: `O motivo do bloqueio deve ter no máximo ${LIMITS.task.blockedReason} caracteres` })
   blockedReason?: string | null;
 }

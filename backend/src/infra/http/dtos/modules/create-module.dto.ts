@@ -8,10 +8,12 @@ import {
   IsNumber,
   IsOptional,
   IsString,
+  MaxLength,
   Min,
   ValidateNested,
 } from 'class-validator';
 import { ModuleStatus } from '../../../../core/domain/entities/enums';
+import { LIMITS } from '../field-limits';
 
 export class ModuleAttachmentInputDto {
   @IsString()
@@ -39,10 +41,12 @@ export class CreateModuleDto {
 
   @IsString()
   @IsNotEmpty()
+  @MaxLength(LIMITS.module.name, { message: `O nome do módulo deve ter no máximo ${LIMITS.module.name} caracteres` })
   name: string;
 
   @IsOptional()
   @IsString()
+  @MaxLength(LIMITS.module.description, { message: `A descrição do módulo deve ter no máximo ${LIMITS.module.description} caracteres` })
   description?: string;
 
   @IsOptional()

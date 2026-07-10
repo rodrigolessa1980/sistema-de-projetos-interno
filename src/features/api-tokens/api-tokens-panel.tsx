@@ -8,6 +8,8 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { Copy, KeyRound, Plus, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { CharCounter } from "@/components/shared/char-counter";
+import { FIELD_LIMITS } from "@/lib/field-limits";
 
 interface ApiTokenSummary {
   id: string;
@@ -178,13 +180,19 @@ DEVFLOW_TOKEN=df_xxx node scripts/criar-tarefa-api.mjs`}</pre>
           </div>
         </details>
 
-        <div className="grid gap-3 md:grid-cols-[1fr_auto]">
-          <Input
-            value={name}
-            onChange={(event) => setName(event.target.value)}
-            placeholder="Nome do token (ex: Script CI, Automação local)"
-            className="bg-zinc-950 border-zinc-800"
-          />
+        <div className="grid gap-3 md:grid-cols-[1fr_auto] items-start">
+          <div className="space-y-1">
+            <Input
+              value={name}
+              onChange={(event) => setName(event.target.value)}
+              maxLength={FIELD_LIMITS.apiToken.name}
+              placeholder="Nome do token (ex: Script CI, Automação local)"
+              className="bg-zinc-950 border-zinc-800"
+            />
+            <div className="flex justify-end">
+              <CharCounter value={name} max={FIELD_LIMITS.apiToken.name} />
+            </div>
+          </div>
           <Button onClick={handleCreate} disabled={isCreating} className="gap-2">
             <Plus className="w-4 h-4" />
             Gerar token

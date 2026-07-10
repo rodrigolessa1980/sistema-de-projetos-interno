@@ -16,6 +16,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
 import { listTenants } from "@/lib/auth";
 import type { TenantOption } from "@/types";
+import { FIELD_LIMITS } from "@/lib/field-limits";
 
 const loginSchema = z.object({
   tenantSlug: z.string().min(1, "Selecione um grupo"),
@@ -136,6 +137,7 @@ export default function LoginPage() {
                       <Input
                         {...field}
                         type="email"
+                        maxLength={FIELD_LIMITS.user.email}
                         placeholder="seu@email.com"
                         className="bg-zinc-800/50 border-zinc-700/50 text-zinc-100 placeholder-zinc-500 focus:border-violet-500/50"
                       />
@@ -155,6 +157,7 @@ export default function LoginPage() {
                         <Input
                           {...field}
                           type={showPassword ? "text" : "password"}
+                          maxLength={FIELD_LIMITS.user.passwordMax}
                           placeholder="••••••••"
                           className="bg-zinc-800/50 border-zinc-700/50 text-zinc-100 placeholder-zinc-500 focus:border-violet-500/50 pr-10"
                         />

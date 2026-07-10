@@ -47,6 +47,8 @@ import { toast } from "sonner";
 import { ModuleDetailDialog } from "@/features/modules/module-detail-dialog";
 import { ModuleAttachmentUploadField, type PendingModuleFile } from "@/features/modules/module-attachment-upload-field";
 import { api } from "@/lib/api";
+import { CharCounter } from "@/components/shared/char-counter";
+import { FIELD_LIMITS } from "@/lib/field-limits";
 import type { ModuleStatus } from "@/types";
 
 interface DevStats {
@@ -1103,20 +1105,34 @@ export default function ProjectDetailPage() {
                   <p className="text-[11px] text-zinc-500">
                     Registre o trabalho realizado — as horas entram no banco de horas deste projeto para você.
                   </p>
-                  <input
-                    autoFocus
-                    value={newModuleName}
-                    onChange={(e) => setNewModuleName(e.target.value)}
-                    placeholder="Título..."
-                    className="w-full h-8 text-sm bg-zinc-800 border border-zinc-700 rounded-lg px-3 text-zinc-200 placeholder-zinc-600 outline-none focus:border-violet-500/50 transition-colors"
-                  />
-                  <textarea
-                    value={newModuleDesc}
-                    onChange={(e) => setNewModuleDesc(e.target.value)}
-                    placeholder="Observação (opcional)..."
-                    rows={2}
-                    className="w-full text-sm bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-zinc-200 placeholder-zinc-600 outline-none focus:border-violet-500/50 transition-colors resize-none"
-                  />
+                  <div className="space-y-1">
+                    <div className="flex items-center justify-between">
+                      <label className="text-[11px] text-zinc-500">Título</label>
+                      <CharCounter value={newModuleName} max={FIELD_LIMITS.module.name} />
+                    </div>
+                    <input
+                      autoFocus
+                      value={newModuleName}
+                      onChange={(e) => setNewModuleName(e.target.value)}
+                      maxLength={FIELD_LIMITS.module.name}
+                      placeholder="Título..."
+                      className="w-full h-8 text-sm bg-zinc-800 border border-zinc-700 rounded-lg px-3 text-zinc-200 placeholder-zinc-600 outline-none focus:border-violet-500/50 transition-colors"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <div className="flex items-center justify-between">
+                      <label className="text-[11px] text-zinc-500">Observação (opcional)</label>
+                      <CharCounter value={newModuleDesc} max={FIELD_LIMITS.module.description} />
+                    </div>
+                    <textarea
+                      value={newModuleDesc}
+                      onChange={(e) => setNewModuleDesc(e.target.value)}
+                      maxLength={FIELD_LIMITS.module.description}
+                      placeholder="Observação (opcional)..."
+                      rows={2}
+                      className="w-full text-sm bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-zinc-200 placeholder-zinc-600 outline-none focus:border-violet-500/50 transition-colors resize-none"
+                    />
+                  </div>
                   <div className="space-y-1">
                     <label className="text-[11px] text-zinc-500 flex items-center gap-1">
                       <Layers className="w-3 h-3" /> Status
@@ -1218,20 +1234,34 @@ export default function ProjectDetailPage() {
                 {editingModuleId === module.id ? (
                   /* Modo de edição */
                   <div className="space-y-3">
-                    <input
-                      autoFocus
-                      value={editingName}
-                      onChange={(e) => setEditingName(e.target.value)}
-                      onKeyDown={(e) => e.key === "Enter" && handleSaveEdit(module.id)}
-                      className="w-full h-8 text-sm bg-zinc-800 border border-zinc-700 rounded-lg px-3 text-zinc-200 outline-none focus:border-violet-500/50 transition-colors"
-                    />
-                    <textarea
-                      value={editingDesc}
-                      onChange={(e) => setEditingDesc(e.target.value)}
-                      placeholder="Descrição..."
-                      rows={2}
-                      className="w-full text-sm bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-zinc-200 placeholder-zinc-600 outline-none focus:border-violet-500/50 transition-colors resize-none"
-                    />
+                    <div className="space-y-1">
+                      <div className="flex items-center justify-between">
+                        <label className="text-[11px] text-zinc-500">Título</label>
+                        <CharCounter value={editingName} max={FIELD_LIMITS.module.name} />
+                      </div>
+                      <input
+                        autoFocus
+                        value={editingName}
+                        onChange={(e) => setEditingName(e.target.value)}
+                        onKeyDown={(e) => e.key === "Enter" && handleSaveEdit(module.id)}
+                        maxLength={FIELD_LIMITS.module.name}
+                        className="w-full h-8 text-sm bg-zinc-800 border border-zinc-700 rounded-lg px-3 text-zinc-200 outline-none focus:border-violet-500/50 transition-colors"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <div className="flex items-center justify-between">
+                        <label className="text-[11px] text-zinc-500">Descrição</label>
+                        <CharCounter value={editingDesc} max={FIELD_LIMITS.module.description} />
+                      </div>
+                      <textarea
+                        value={editingDesc}
+                        onChange={(e) => setEditingDesc(e.target.value)}
+                        placeholder="Descrição..."
+                        maxLength={FIELD_LIMITS.module.description}
+                        rows={2}
+                        className="w-full text-sm bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-zinc-200 placeholder-zinc-600 outline-none focus:border-violet-500/50 transition-colors resize-none"
+                      />
+                    </div>
                     <div className="space-y-1">
                       <label className="text-[11px] text-zinc-500 flex items-center gap-1">
                         <Layers className="w-3 h-3" /> Status

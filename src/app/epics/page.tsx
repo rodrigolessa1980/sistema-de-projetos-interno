@@ -24,6 +24,8 @@ import Link from "@/lib/router";
 import { StatusBadge } from "@/components/shared/task-badge";
 import type { Epic, ProjectStatus } from "@/types";
 import { z } from "zod";
+import { CharCounter } from "@/components/shared/char-counter";
+import { FIELD_LIMITS } from "@/lib/field-limits";
 
 const statusLabels: Record<ProjectStatus, string> = {
   ATIVO: "Ativo",
@@ -44,8 +46,8 @@ const statusColors: Record<ProjectStatus, string> = {
 const epicSchema = z.object({
   projectId: z.string().optional(),
   moduleId: z.string().optional(),
-  name: z.string().optional(),
-  description: z.string().optional(),
+  name: z.string().max(FIELD_LIMITS.epic.name, `O nome deve ter no máximo ${FIELD_LIMITS.epic.name} caracteres`).optional(),
+  description: z.string().max(FIELD_LIMITS.epic.description, `A descrição deve ter no máximo ${FIELD_LIMITS.epic.description} caracteres`).optional(),
   startDate: z.string().optional(),
   endDate: z.string().optional(),
   developerIds: z.array(z.string()).optional(),
@@ -291,18 +293,24 @@ export default function EpicsPage() {
               </div>
               <FormField control={form.control} name="name" render={({ field }) => (
                 <FormItem>
-                  <Label className="text-zinc-300 text-sm">Nome</Label>
+                  <div className="flex items-center justify-between">
+                    <Label className="text-zinc-300 text-sm">Nome</Label>
+                    <CharCounter value={field.value} max={FIELD_LIMITS.epic.name} />
+                  </div>
                   <FormControl>
-                    <Input {...field} placeholder="Nome do epic" className="bg-zinc-800 border-zinc-700 text-zinc-100" />
+                    <Input {...field} maxLength={FIELD_LIMITS.epic.name} placeholder="Nome do epic" className="bg-zinc-800 border-zinc-700 text-zinc-100" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
               <FormField control={form.control} name="description" render={({ field }) => (
                 <FormItem>
-                  <Label className="text-zinc-300 text-sm">Descricao</Label>
+                  <div className="flex items-center justify-between">
+                    <Label className="text-zinc-300 text-sm">Descricao</Label>
+                    <CharCounter value={field.value} max={FIELD_LIMITS.epic.description} />
+                  </div>
                   <FormControl>
-                    <Textarea {...field} rows={3} placeholder="Objetivo e escopo do epic" className="bg-zinc-800 border-zinc-700 text-zinc-100 resize-none" />
+                    <Textarea {...field} maxLength={FIELD_LIMITS.epic.description} rows={3} placeholder="Objetivo e escopo do epic" className="bg-zinc-800 border-zinc-700 text-zinc-100 resize-none" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

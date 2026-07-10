@@ -17,10 +17,12 @@ import { ALL_STATUSES, getStatusLabel, COMPLEXITY_OPTIONS, getComplexityLabel } 
 import type { TaskComplexity, TaskStatus } from "@/types";
 import { toast } from "sonner";
 import { Link2, X, AlertTriangle, Flame, ShieldAlert } from "lucide-react";
+import { CharCounter } from "@/components/shared/char-counter";
+import { FIELD_LIMITS } from "@/lib/field-limits";
 
 const schema = z.object({
-  title: z.string().optional(),
-  description: z.string().optional(),
+  title: z.string().max(FIELD_LIMITS.task.title, `O título deve ter no máximo ${FIELD_LIMITS.task.title} caracteres`).optional(),
+  description: z.string().max(FIELD_LIMITS.task.description, `A descrição deve ter no máximo ${FIELD_LIMITS.task.description} caracteres`).optional(),
   projectId: z.string().optional(),
   moduleId: z.string().optional(),
   epicId: z.string().optional(),
@@ -161,18 +163,24 @@ export function TaskCreateDialog({ open, onOpenChange }: Props) {
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField control={form.control} name="title" render={({ field }) => (
               <FormItem>
-                <Label className="text-zinc-300 text-sm">Título</Label>
+                <div className="flex items-center justify-between">
+                  <Label className="text-zinc-300 text-sm">Título</Label>
+                  <CharCounter value={field.value} max={FIELD_LIMITS.task.title} />
+                </div>
                 <FormControl>
-                  <Input {...field} placeholder="Título da tarefa" className="bg-zinc-800 border-zinc-700 text-zinc-100" />
+                  <Input {...field} maxLength={FIELD_LIMITS.task.title} placeholder="Título da tarefa" className="bg-zinc-800 border-zinc-700 text-zinc-100" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )} />
             <FormField control={form.control} name="description" render={({ field }) => (
               <FormItem>
-                <Label className="text-zinc-300 text-sm">Descrição</Label>
+                <div className="flex items-center justify-between">
+                  <Label className="text-zinc-300 text-sm">Descrição</Label>
+                  <CharCounter value={field.value} max={FIELD_LIMITS.task.description} />
+                </div>
                 <FormControl>
-                  <Textarea {...field} placeholder="Descreva o que precisa ser feito..." className="bg-zinc-800 border-zinc-700 text-zinc-100 resize-none" rows={3} />
+                  <Textarea {...field} maxLength={FIELD_LIMITS.task.description} placeholder="Descreva o que precisa ser feito..." className="bg-zinc-800 border-zinc-700 text-zinc-100 resize-none" rows={3} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

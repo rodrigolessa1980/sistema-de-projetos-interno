@@ -1,4 +1,5 @@
 import { IsOptional, IsString, IsUUID, Matches, MaxLength } from 'class-validator';
+import { HEX_COLOR, LIMITS } from '../field-limits';
 
 export class CreateCompanyDto {
   // INC-04: id opcional gerado no cliente (otimismo estável, sem swap de id no front).
@@ -8,21 +9,21 @@ export class CreateCompanyDto {
 
   @IsOptional()
   @IsString()
-  @MaxLength(100)
+  @MaxLength(LIMITS.company.name, { message: 'O nome da empresa deve ter no máximo 100 caracteres' })
   name?: string;
 
   @IsOptional()
   @IsString()
-  @MaxLength(10)
+  @MaxLength(LIMITS.company.shortName, { message: 'A sigla deve ter no máximo 10 caracteres' })
   shortName?: string;
 
   @IsOptional()
   @IsString()
-  @Matches(/^#[0-9A-Fa-f]{6}$/, { message: 'Cor deve ser um hex válido (#RRGGBB)' })
+  @Matches(HEX_COLOR, { message: 'Cor deve ser um hex válido (#RRGGBB)' })
   color?: string;
 
   @IsOptional()
   @IsString()
-  @MaxLength(18)
+  @MaxLength(LIMITS.company.cnpj, { message: 'O CNPJ deve ter no máximo 18 caracteres' })
   cnpj?: string;
 }

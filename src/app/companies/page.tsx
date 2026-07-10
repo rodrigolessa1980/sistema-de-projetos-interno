@@ -21,6 +21,8 @@ import { motion } from "@/lib/motion";
 import {
   Building2, MoreVertical, Pencil, Trash2, FolderKanban, Plus, Hash,
 } from "lucide-react";
+import { CharCounter } from "@/components/shared/char-counter";
+import { FIELD_LIMITS, HEX_COLOR } from "@/lib/field-limits";
 import type { Company } from "@/types";
 
 const companyColors = [
@@ -29,10 +31,10 @@ const companyColors = [
 ];
 
 const companySchema = z.object({
-  name: z.string().optional(),
-  shortName: z.string().max(10, "Máximo 10 caracteres").optional(),
-  color: z.string().optional(),
-  cnpj: z.string().optional(),
+  name: z.string().max(FIELD_LIMITS.company.name, "O nome deve ter no máximo 100 caracteres").optional(),
+  shortName: z.string().max(FIELD_LIMITS.company.shortName, "A sigla deve ter no máximo 10 caracteres").optional(),
+  color: z.string().regex(HEX_COLOR, "Cor inválida").optional(),
+  cnpj: z.string().max(FIELD_LIMITS.company.cnpj, "O CNPJ deve ter no máximo 18 caracteres").optional(),
 });
 
 type CompanyForm = z.infer<typeof companySchema>;
@@ -99,9 +101,12 @@ function CompanyFormDialog({
 
             <FormField control={form.control} name="name" render={({ field }) => (
               <FormItem>
-                <Label className="text-zinc-300 text-sm">Razão Social / Nome</Label>
+                <div className="flex items-center justify-between">
+                  <Label className="text-zinc-300 text-sm">Razão Social / Nome</Label>
+                  <CharCounter value={field.value} max={FIELD_LIMITS.company.name} />
+                </div>
                 <FormControl>
-                  <Input {...field} placeholder="Ex: Tech Solutions Ltda." className="bg-zinc-800 border-zinc-700 text-zinc-100" />
+                  <Input {...field} maxLength={FIELD_LIMITS.company.name} placeholder="Ex: Tech Solutions Ltda." className="bg-zinc-800 border-zinc-700 text-zinc-100" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -110,11 +115,14 @@ function CompanyFormDialog({
             <div className="grid grid-cols-2 gap-3">
               <FormField control={form.control} name="shortName" render={({ field }) => (
                 <FormItem>
-                  <Label className="text-zinc-300 text-sm flex items-center gap-1">
-                    <Hash className="w-3 h-3 text-zinc-500" /> Sigla
-                  </Label>
+                  <div className="flex items-center justify-between">
+                    <Label className="text-zinc-300 text-sm flex items-center gap-1">
+                      <Hash className="w-3 h-3 text-zinc-500" /> Sigla
+                    </Label>
+                    <CharCounter value={field.value} max={FIELD_LIMITS.company.shortName} />
+                  </div>
                   <FormControl>
-                    <Input {...field} placeholder="Ex: Tech" maxLength={10} className="bg-zinc-800 border-zinc-700 text-zinc-100" />
+                    <Input {...field} placeholder="Ex: Tech" maxLength={FIELD_LIMITS.company.shortName} className="bg-zinc-800 border-zinc-700 text-zinc-100" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -122,9 +130,12 @@ function CompanyFormDialog({
 
               <FormField control={form.control} name="cnpj" render={({ field }) => (
                 <FormItem>
-                  <Label className="text-zinc-300 text-sm">CNPJ</Label>
+                  <div className="flex items-center justify-between">
+                    <Label className="text-zinc-300 text-sm">CNPJ</Label>
+                    <CharCounter value={field.value} max={FIELD_LIMITS.company.cnpj} />
+                  </div>
                   <FormControl>
-                    <Input {...field} placeholder="00.000.000/0001-00" className="bg-zinc-800 border-zinc-700 text-zinc-100" />
+                    <Input {...field} maxLength={FIELD_LIMITS.company.cnpj} placeholder="00.000.000/0001-00" className="bg-zinc-800 border-zinc-700 text-zinc-100" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

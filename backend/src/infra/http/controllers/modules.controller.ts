@@ -14,7 +14,8 @@ import { DeleteModuleAttachmentUseCase } from '../../../core/use-cases/modules/d
 import { CreateEpicUseCase } from '../../../core/use-cases/epics/create-epic.use-case';
 import { UpdateEpicUseCase } from '../../../core/use-cases/epics/update-epic.use-case';
 import { ListEpicsByProjectUseCase } from '../../../core/use-cases/epics/list-epics-by-project.use-case';
-import { IsInt, IsNotEmpty, IsNumber, IsOptional, IsString, IsDateString, IsArray, IsEnum, Max, Min } from 'class-validator';
+import { IsInt, IsNotEmpty, IsNumber, IsOptional, IsString, IsDateString, IsArray, IsEnum, Max, MaxLength, Min } from 'class-validator';
+import { LIMITS } from '../dtos/field-limits';
 import { CreateModuleDto } from '../dtos/modules/create-module.dto';
 import { CreateModuleAttachmentDto } from '../dtos/modules/create-module-attachment.dto';
 import { TaskPresenter } from '../presenters/task.presenter';
@@ -22,8 +23,8 @@ import { TimeLogPresenter } from '../presenters/time-log.presenter';
 import { ModuleStatus, ProjectStatus, UserRole } from '../../../core/domain/entities/enums';
 
 class UpdateModuleDto {
-  @IsOptional() @IsString() @IsNotEmpty() name?: string;
-  @IsOptional() @IsString() description?: string;
+  @IsOptional() @IsString() @IsNotEmpty() @MaxLength(LIMITS.module.name, { message: `O nome do módulo deve ter no máximo ${LIMITS.module.name} caracteres` }) name?: string;
+  @IsOptional() @IsString() @MaxLength(LIMITS.module.description, { message: `A descrição do módulo deve ter no máximo ${LIMITS.module.description} caracteres` }) description?: string;
   @IsOptional() @IsEnum(ModuleStatus) status?: ModuleStatus;
   @IsOptional() @IsDateString() workDate?: string;
   @IsOptional() @IsNumber() hours?: number;
@@ -33,8 +34,8 @@ class UpdateModuleDto {
 class CreateEpicDto {
   @IsString() @IsNotEmpty() projectId: string;
   @IsString() @IsNotEmpty() moduleId: string;
-  @IsString() @IsNotEmpty() name: string;
-  @IsOptional() @IsString() description?: string;
+  @IsString() @IsNotEmpty() @MaxLength(LIMITS.epic.name, { message: `O nome do epic deve ter no máximo ${LIMITS.epic.name} caracteres` }) name: string;
+  @IsOptional() @IsString() @MaxLength(LIMITS.epic.description, { message: `A descrição do epic deve ter no máximo ${LIMITS.epic.description} caracteres` }) description?: string;
   @IsOptional() @IsDateString() startDate?: string;
   @IsOptional() @IsDateString() endDate?: string;
   @IsOptional() @IsArray() @IsString({ each: true }) developerIds?: string[];
@@ -42,8 +43,8 @@ class CreateEpicDto {
 
 class UpdateEpicDto {
   @IsOptional() @IsString() @IsNotEmpty() moduleId?: string;
-  @IsOptional() @IsString() @IsNotEmpty() name?: string;
-  @IsOptional() @IsString() description?: string;
+  @IsOptional() @IsString() @IsNotEmpty() @MaxLength(LIMITS.epic.name, { message: `O nome do epic deve ter no máximo ${LIMITS.epic.name} caracteres` }) name?: string;
+  @IsOptional() @IsString() @MaxLength(LIMITS.epic.description, { message: `A descrição do epic deve ter no máximo ${LIMITS.epic.description} caracteres` }) description?: string;
   @IsOptional() @IsEnum(ProjectStatus) status?: ProjectStatus;
   @IsOptional() @IsDateString() startDate?: string;
   @IsOptional() @IsDateString() endDate?: string | null;

@@ -1,5 +1,6 @@
-import { IsDateString, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, Min } from 'class-validator';
+import { IsDateString, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, MaxLength, Min } from 'class-validator';
 import { TaskStatus, TimeLogSource } from '../../../../core/domain/entities/enums';
+import { LIMITS } from '../field-limits';
 
 export class CreateTimeLogDto {
   @IsString()
@@ -16,6 +17,7 @@ export class CreateTimeLogDto {
 
   @IsString()
   @IsNotEmpty()
+  @MaxLength(LIMITS.timeLog.description, { message: `A descrição deve ter no máximo ${LIMITS.timeLog.description} caracteres` })
   description: string;
 
   @IsDateString()

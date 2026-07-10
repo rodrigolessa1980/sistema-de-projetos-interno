@@ -25,6 +25,7 @@ import Link from "@/lib/router";
 import { toast } from "sonner";
 import type { TaskStatus } from "@/types";
 import { useTask, useUpdateTaskStatus, useLogTime } from "@/hooks/use-tasks";
+import { FIELD_LIMITS } from "@/lib/field-limits";
 import { WorkTimer } from "@/components/shared/work-timer";
 import { NotesPanel } from "@/features/tasks/notes-panel";
 import { AttachmentsPanel } from "@/features/tasks/attachments-panel";
@@ -379,6 +380,7 @@ export default function TaskDetailPage() {
                     />
                     <Input
                       value={logDesc} onChange={(e) => setLogDesc(e.target.value)}
+                      maxLength={FIELD_LIMITS.timeLog.description}
                       placeholder="Descrição do trabalho realizado..."
                       className="flex-1 h-8 text-xs bg-zinc-800 border-zinc-700 text-zinc-300"
                     />

@@ -19,14 +19,16 @@ import { useProjectStore, useTaskStore } from "@/stores";
 import type { User } from "@/types";
 import { CheckSquare, FolderKanban, Check, UserPlus, Pencil, Eye, EyeOff } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { CharCounter } from "@/components/shared/char-counter";
+import { FIELD_LIMITS } from "@/lib/field-limits";
 
 const schema = z.object({
-  name: z.string().optional(),
-  email: z.string().optional(),
+  name: z.string().max(FIELD_LIMITS.user.name, `O nome deve ter no máximo ${FIELD_LIMITS.user.name} caracteres`).optional(),
+  email: z.string().max(FIELD_LIMITS.user.email, `O email deve ter no máximo ${FIELD_LIMITS.user.email} caracteres`).optional(),
   password: z.string().optional(),
   role: z.enum(["ADMIN", "DEVELOPER"]).optional(),
-  position: z.string().optional(),
-  department: z.string().optional(),
+  position: z.string().max(FIELD_LIMITS.user.position, `O cargo deve ter no máximo ${FIELD_LIMITS.user.position} caracteres`).optional(),
+  department: z.string().max(FIELD_LIMITS.user.department, `O departamento deve ter no máximo ${FIELD_LIMITS.user.department} caracteres`).optional(),
 });
 
 type FormValues = z.infer<typeof schema>;
@@ -159,9 +161,12 @@ function UserDialogForm({ open, onOpenChange, editUser }: UserDialogProps) {
 
               <FormField control={form.control} name="name" render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-zinc-400 text-xs">Nome completo</FormLabel>
+                  <div className="flex items-center justify-between">
+                    <FormLabel className="text-zinc-400 text-xs">Nome completo</FormLabel>
+                    <CharCounter value={field.value} max={FIELD_LIMITS.user.name} />
+                  </div>
                   <FormControl>
-                    <Input {...field} placeholder="Ex: João Silva" className="bg-zinc-900 border-zinc-700 text-zinc-100 focus:border-violet-500" />
+                    <Input {...field} maxLength={FIELD_LIMITS.user.name} placeholder="Ex: João Silva" className="bg-zinc-900 border-zinc-700 text-zinc-100 focus:border-violet-500" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -169,9 +174,12 @@ function UserDialogForm({ open, onOpenChange, editUser }: UserDialogProps) {
 
               <FormField control={form.control} name="email" render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-zinc-400 text-xs">E-mail</FormLabel>
+                  <div className="flex items-center justify-between">
+                    <FormLabel className="text-zinc-400 text-xs">E-mail</FormLabel>
+                    <CharCounter value={field.value} max={FIELD_LIMITS.user.email} />
+                  </div>
                   <FormControl>
-                    <Input {...field} type="email" placeholder="joao@empresa.com" className="bg-zinc-900 border-zinc-700 text-zinc-100 focus:border-violet-500" />
+                    <Input {...field} type="email" maxLength={FIELD_LIMITS.user.email} placeholder="joao@empresa.com" className="bg-zinc-900 border-zinc-700 text-zinc-100 focus:border-violet-500" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -186,6 +194,7 @@ function UserDialogForm({ open, onOpenChange, editUser }: UserDialogProps) {
                         <Input
                           {...field}
                           type={showPassword ? "text" : "password"}
+                          maxLength={FIELD_LIMITS.user.passwordMax}
                           placeholder="Mínimo 6 caracteres"
                           className="bg-zinc-900 border-zinc-700 text-zinc-100 focus:border-violet-500 pr-10"
                         />
@@ -206,9 +215,12 @@ function UserDialogForm({ open, onOpenChange, editUser }: UserDialogProps) {
               <div className="grid grid-cols-2 gap-3">
                 <FormField control={form.control} name="position" render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-zinc-400 text-xs">Cargo</FormLabel>
+                    <div className="flex items-center justify-between">
+                      <FormLabel className="text-zinc-400 text-xs">Cargo</FormLabel>
+                      <CharCounter value={field.value} max={FIELD_LIMITS.user.position} />
+                    </div>
                     <FormControl>
-                      <Input {...field} placeholder="Ex: Dev Frontend" className="bg-zinc-900 border-zinc-700 text-zinc-100 focus:border-violet-500" />
+                      <Input {...field} maxLength={FIELD_LIMITS.user.position} placeholder="Ex: Dev Frontend" className="bg-zinc-900 border-zinc-700 text-zinc-100 focus:border-violet-500" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -216,9 +228,12 @@ function UserDialogForm({ open, onOpenChange, editUser }: UserDialogProps) {
 
                 <FormField control={form.control} name="department" render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-zinc-400 text-xs">Departamento</FormLabel>
+                    <div className="flex items-center justify-between">
+                      <FormLabel className="text-zinc-400 text-xs">Departamento</FormLabel>
+                      <CharCounter value={field.value} max={FIELD_LIMITS.user.department} />
+                    </div>
                     <FormControl>
-                      <Input {...field} placeholder="Ex: Engenharia" className="bg-zinc-900 border-zinc-700 text-zinc-100 focus:border-violet-500" />
+                      <Input {...field} maxLength={FIELD_LIMITS.user.department} placeholder="Ex: Engenharia" className="bg-zinc-900 border-zinc-700 text-zinc-100 focus:border-violet-500" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

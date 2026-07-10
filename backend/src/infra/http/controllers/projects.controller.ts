@@ -1,6 +1,7 @@
 import { Body, Controller, Delete, Get, HttpCode, Param, Post, Put, Req, UseGuards } from '@nestjs/common';
 import { Type } from 'class-transformer';
-import { IsInt, IsNotEmpty, IsOptional, IsString, Min } from 'class-validator';
+import { IsInt, IsNotEmpty, IsOptional, IsString, MaxLength, Min } from 'class-validator';
+import { PROJECT_LIMITS } from '../dtos/projects/project.constraints';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { PermissionsGuard } from '../guards/permissions.guard';
 import { RequirePermission } from '../decorators/require-permission.decorator';
@@ -23,12 +24,14 @@ import { PrismaService } from '../../database/prisma/prisma.service';
 class UpdateProjectShowcaseDto {
   @IsOptional()
   @IsString()
+  @MaxLength(PROJECT_LIMITS.technicalDescription, { message: `A descrição técnica deve ter no máximo ${PROJECT_LIMITS.technicalDescription} caracteres` })
   technicalDescription?: string | null;
 }
 
 class UpdateProjectDemandDto {
   @IsOptional()
   @IsString()
+  @MaxLength(PROJECT_LIMITS.demandDescription, { message: `A descrição da demanda deve ter no máximo ${PROJECT_LIMITS.demandDescription} caracteres` })
   demandDescription?: string | null;
 }
 

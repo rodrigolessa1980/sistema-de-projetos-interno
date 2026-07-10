@@ -7,11 +7,12 @@ import {
   IsString,
   MaxLength,
 } from 'class-validator';
+import { LIMITS } from '../field-limits';
 
 export class CreateApiTokenDto {
   @IsString()
   @IsNotEmpty()
-  @MaxLength(100)
+  @MaxLength(LIMITS.apiToken.name, { message: `O nome do token deve ter no máximo ${LIMITS.apiToken.name} caracteres` })
   name!: string;
 
   @IsOptional()

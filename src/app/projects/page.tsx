@@ -31,6 +31,8 @@ import Link from "@/lib/router";
 import type { ProjectStatus } from "@/types";
 import type { Project } from "@/types";
 import { ReassignPopover } from "@/components/shared/reassign-popover";
+import { CharCounter } from "@/components/shared/char-counter";
+import { PROJECT_FIELD_LIMITS, FIELD_LIMITS, HEX_COLOR } from "@/lib/field-limits";
 
 const projectColors = ["#6366f1", "#22c55e", "#f59e0b", "#ef4444", "#8b5cf6", "#06b6d4", "#f97316"];
 
@@ -52,16 +54,19 @@ const statusColors: Record<ProjectStatus, string> = {
 
 const createProjectSchema = z.object({
   companyId: z.string().optional(),
-  name: z.string().optional(),
-  description: z.string().optional(),
-  requestedBy: z.string().optional(),
+  name: z.string().max(PROJECT_FIELD_LIMITS.name, `O nome deve ter no máximo ${PROJECT_FIELD_LIMITS.name} caracteres`).optional(),
+  description: z.string().max(PROJECT_FIELD_LIMITS.description, `A descrição deve ter no máximo ${PROJECT_FIELD_LIMITS.description} caracteres`).optional(),
+  requestedBy: z.string().max(PROJECT_FIELD_LIMITS.requestedBy, `"Solicitado por" deve ter no máximo ${PROJECT_FIELD_LIMITS.requestedBy} caracteres`).optional(),
   ownerId: z.string().optional(),
   status: z.enum(["ATIVO", "PAUSADO", "CONCLUIDO", "CANCELADO", "NA_FILA"]).optional(),
   startDate: z.string().optional(),
   endDate: z.string().optional(),
-  estimatedHours: z.number().optional(),
-  color: z.string().optional(),
-  testUrl: z.string().optional(),
+  estimatedHours: z.number()
+    .min(0, "As horas estimadas não podem ser negativas")
+    .max(PROJECT_FIELD_LIMITS.estimatedHoursMax, `As horas estimadas devem ser no máximo ${PROJECT_FIELD_LIMITS.estimatedHoursMax}`)
+    .optional(),
+  color: z.string().regex(HEX_COLOR, "Cor inválida").optional(),
+  testUrl: z.string().max(PROJECT_FIELD_LIMITS.testUrl, `A URL deve ter no máximo ${PROJECT_FIELD_LIMITS.testUrl} caracteres`).optional(),
 });
 
 type CreateProjectForm = z.infer<typeof createProjectSchema>;
@@ -528,18 +533,24 @@ export default function ProjectsPage() {
 
               <FormField control={form.control} name="name" render={({ field }) => (
                 <FormItem>
-                  <Label className="text-zinc-300 text-sm">Nome</Label>
+                  <div className="flex items-center justify-between">
+                    <Label className="text-zinc-300 text-sm">Nome</Label>
+                    <CharCounter value={field.value} max={PROJECT_FIELD_LIMITS.name} />
+                  </div>
                   <FormControl>
-                    <Input {...field} placeholder="Nome do projeto" className="bg-zinc-800 border-zinc-700 text-zinc-100" />
+                    <Input {...field} maxLength={PROJECT_FIELD_LIMITS.name} placeholder="Nome do projeto" className="bg-zinc-800 border-zinc-700 text-zinc-100" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
               <FormField control={form.control} name="description" render={({ field }) => (
                 <FormItem>
-                  <Label className="text-zinc-300 text-sm">Descrição</Label>
+                  <div className="flex items-center justify-between">
+                    <Label className="text-zinc-300 text-sm">Descrição</Label>
+                    <CharCounter value={field.value} max={PROJECT_FIELD_LIMITS.description} />
+                  </div>
                   <FormControl>
-                    <Textarea {...field} placeholder="Descrição do projeto" className="bg-zinc-800 border-zinc-700 text-zinc-100 resize-none" rows={3} />
+                    <Textarea {...field} maxLength={PROJECT_FIELD_LIMITS.description} placeholder="Descrição do projeto" className="bg-zinc-800 border-zinc-700 text-zinc-100 resize-none" rows={3} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -547,10 +558,14 @@ export default function ProjectsPage() {
               {/* Prazo de entrega — define posição na fila */}
               <FormField control={form.control} name="requestedBy" render={({ field }) => (
                 <FormItem>
-                  <Label className="text-zinc-300 text-sm">Solicitado por</Label>
+                  <div className="flex items-center justify-between">
+                    <Label className="text-zinc-300 text-sm">Solicitado por</Label>
+                    <CharCounter value={field.value} max={PROJECT_FIELD_LIMITS.requestedBy} />
+                  </div>
                   <FormControl>
-                    <Input {...field} placeholder="Nome de quem solicitou" className="bg-zinc-800 border-zinc-700 text-zinc-100" />
+                    <Input {...field} maxLength={PROJECT_FIELD_LIMITS.requestedBy} placeholder="Nome de quem solicitou" className="bg-zinc-800 border-zinc-700 text-zinc-100" />
                   </FormControl>
+                  <p className="text-[11px] text-zinc-500 -mt-1">Apenas o nome de quem pediu — até {PROJECT_FIELD_LIMITS.requestedBy} caracteres.</p>
                   <FormMessage />
                 </FormItem>
               )} />
@@ -623,6 +638,7 @@ export default function ProjectsPage() {
                       <Link2 className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-zinc-500" />
                       <Input
                         {...field}
+                        maxLength={PROJECT_FIELD_LIMITS.testUrl}
                         placeholder="https://staging.meuapp.com"
                         className="bg-zinc-800 border-zinc-700 text-zinc-100 pl-9"
                       />
@@ -668,6 +684,7 @@ export default function ProjectsPage() {
                         <input
                           value={mod.description}
                           onChange={(e) => updateModuleDraftDesc(mod.id, e.target.value)}
+                          maxLength={FIELD_LIMITS.module.description}
                           placeholder="Descrição do módulo (opcional)..."
                           className="w-full text-[11px] bg-transparent text-zinc-400 placeholder-zinc-600 outline-none border-b border-zinc-700/50 focus:border-violet-500/50 pb-0.5 transition-colors"
                         />
@@ -682,6 +699,7 @@ export default function ProjectsPage() {
                     value={newModuleName}
                     onChange={(e) => setNewModuleName(e.target.value)}
                     onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addModuleDraft(); } }}
+                    maxLength={FIELD_LIMITS.module.name}
                     placeholder="Ex: Autenticação, Painel Admin, API..."
                     className="flex-1 h-8 text-xs bg-zinc-800 border border-zinc-700 rounded-md px-3 text-zinc-300 placeholder-zinc-600 outline-none focus:border-violet-500/50 transition-colors"
                   />
@@ -746,9 +764,12 @@ export default function ProjectsPage() {
 
               <FormField control={editForm.control} name="name" render={({ field }) => (
                 <FormItem>
-                  <Label className="text-zinc-300 text-sm">Título</Label>
+                  <div className="flex items-center justify-between">
+                    <Label className="text-zinc-300 text-sm">Título</Label>
+                    <CharCounter value={field.value} max={PROJECT_FIELD_LIMITS.name} />
+                  </div>
                   <FormControl>
-                    <Input {...field} placeholder="Nome do projeto" className="bg-zinc-800 border-zinc-700 text-zinc-100" />
+                    <Input {...field} maxLength={PROJECT_FIELD_LIMITS.name} placeholder="Nome do projeto" className="bg-zinc-800 border-zinc-700 text-zinc-100" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -756,9 +777,12 @@ export default function ProjectsPage() {
 
               <FormField control={editForm.control} name="description" render={({ field }) => (
                 <FormItem>
-                  <Label className="text-zinc-300 text-sm">Explicação</Label>
+                  <div className="flex items-center justify-between">
+                    <Label className="text-zinc-300 text-sm">Explicação</Label>
+                    <CharCounter value={field.value} max={PROJECT_FIELD_LIMITS.description} />
+                  </div>
                   <FormControl>
-                    <Textarea {...field} placeholder="Explique o projeto" className="bg-zinc-800 border-zinc-700 text-zinc-100 resize-none" rows={3} />
+                    <Textarea {...field} maxLength={PROJECT_FIELD_LIMITS.description} placeholder="Explique o projeto" className="bg-zinc-800 border-zinc-700 text-zinc-100 resize-none" rows={3} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -766,9 +790,12 @@ export default function ProjectsPage() {
 
               <FormField control={editForm.control} name="requestedBy" render={({ field }) => (
                 <FormItem>
-                  <Label className="text-zinc-300 text-sm">Quem fez a solicitação</Label>
+                  <div className="flex items-center justify-between">
+                    <Label className="text-zinc-300 text-sm">Quem fez a solicitação</Label>
+                    <CharCounter value={field.value} max={PROJECT_FIELD_LIMITS.requestedBy} />
+                  </div>
                   <FormControl>
-                    <Input {...field} placeholder="Nome do solicitante" className="bg-zinc-800 border-zinc-700 text-zinc-100" />
+                    <Input {...field} maxLength={PROJECT_FIELD_LIMITS.requestedBy} placeholder="Nome do solicitante" className="bg-zinc-800 border-zinc-700 text-zinc-100" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -853,7 +880,7 @@ export default function ProjectsPage() {
                   <FormItem>
                     <Label className="text-zinc-300 text-sm">URL de teste</Label>
                     <FormControl>
-                      <Input {...field} placeholder="https://..." className="bg-zinc-800 border-zinc-700 text-zinc-100" />
+                      <Input {...field} maxLength={PROJECT_FIELD_LIMITS.testUrl} placeholder="https://..." className="bg-zinc-800 border-zinc-700 text-zinc-100" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

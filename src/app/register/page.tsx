@@ -15,13 +15,15 @@ import { Form, FormControl, FormField, FormItem, FormMessage } from "@/component
 import { useAuth } from "@/hooks/use-auth";
 import { listTenants } from "@/lib/auth";
 import type { TenantOption } from "@/types";
+import { CharCounter } from "@/components/shared/char-counter";
+import { FIELD_LIMITS } from "@/lib/field-limits";
 
 const registerSchema = z.object({
-  name: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
-  email: z.string().email("Email inválido"),
-  password: z.string().min(6, "A senha deve ter pelo menos 6 caracteres"),
-  position: z.string().min(2, "Cargo deve ter pelo menos 2 caracteres"),
-  department: z.string().min(2, "Departamento deve ter pelo menos 2 caracteres"),
+  name: z.string().min(2, "Nome deve ter pelo menos 2 caracteres").max(FIELD_LIMITS.user.name, `O nome deve ter no máximo ${FIELD_LIMITS.user.name} caracteres`),
+  email: z.string().email("Email inválido").max(FIELD_LIMITS.user.email, `O email deve ter no máximo ${FIELD_LIMITS.user.email} caracteres`),
+  password: z.string().min(6, "A senha deve ter pelo menos 6 caracteres").max(FIELD_LIMITS.user.passwordMax, `A senha deve ter no máximo ${FIELD_LIMITS.user.passwordMax} caracteres`),
+  position: z.string().min(2, "Cargo deve ter pelo menos 2 caracteres").max(FIELD_LIMITS.user.position, `O cargo deve ter no máximo ${FIELD_LIMITS.user.position} caracteres`),
+  department: z.string().min(2, "Departamento deve ter pelo menos 2 caracteres").max(FIELD_LIMITS.user.department, `O departamento deve ter no máximo ${FIELD_LIMITS.user.department} caracteres`),
   tenantSlug: z.string().min(1, "Selecione um grupo"),
 });
 
@@ -119,11 +121,15 @@ export default function RegisterPage() {
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <Label className="text-zinc-300 text-sm">Nome Completo</Label>
+                    <div className="flex items-center justify-between">
+                      <Label className="text-zinc-300 text-sm">Nome Completo</Label>
+                      <CharCounter value={field.value} max={FIELD_LIMITS.user.name} />
+                    </div>
                     <FormControl>
                       <Input
                         {...field}
                         type="text"
+                        maxLength={FIELD_LIMITS.user.name}
                         placeholder="Seu nome"
                         className="bg-zinc-800/50 border-zinc-700/50 text-zinc-100 placeholder-zinc-500 focus:border-violet-500/50"
                       />
@@ -138,11 +144,15 @@ export default function RegisterPage() {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <Label className="text-zinc-300 text-sm">E-mail</Label>
+                    <div className="flex items-center justify-between">
+                      <Label className="text-zinc-300 text-sm">E-mail</Label>
+                      <CharCounter value={field.value} max={FIELD_LIMITS.user.email} />
+                    </div>
                     <FormControl>
                       <Input
                         {...field}
                         type="email"
+                        maxLength={FIELD_LIMITS.user.email}
                         placeholder="seu@email.com"
                         className="bg-zinc-800/50 border-zinc-700/50 text-zinc-100 placeholder-zinc-500 focus:border-violet-500/50"
                       />
@@ -163,6 +173,7 @@ export default function RegisterPage() {
                         <Input
                           {...field}
                           type={showPassword ? "text" : "password"}
+                          maxLength={FIELD_LIMITS.user.passwordMax}
                           placeholder="Mínimo 6 caracteres"
                           className="bg-zinc-800/50 border-zinc-700/50 text-zinc-100 placeholder-zinc-500 focus:border-violet-500/50 pr-10"
                         />
@@ -186,11 +197,15 @@ export default function RegisterPage() {
                   name="position"
                   render={({ field }) => (
                     <FormItem>
-                      <Label className="text-zinc-300 text-sm">Cargo</Label>
+                      <div className="flex items-center justify-between">
+                        <Label className="text-zinc-300 text-sm">Cargo</Label>
+                        <CharCounter value={field.value} max={FIELD_LIMITS.user.position} />
+                      </div>
                       <FormControl>
                         <Input
                           {...field}
                           type="text"
+                          maxLength={FIELD_LIMITS.user.position}
                           placeholder="Ex: Dev Frontend"
                           className="bg-zinc-800/50 border-zinc-700/50 text-zinc-100 placeholder-zinc-500 focus:border-violet-500/50"
                         />
@@ -205,11 +220,15 @@ export default function RegisterPage() {
                   name="department"
                   render={({ field }) => (
                     <FormItem>
-                      <Label className="text-zinc-300 text-sm">Departamento</Label>
+                      <div className="flex items-center justify-between">
+                        <Label className="text-zinc-300 text-sm">Departamento</Label>
+                        <CharCounter value={field.value} max={FIELD_LIMITS.user.department} />
+                      </div>
                       <FormControl>
                         <Input
                           {...field}
                           type="text"
+                          maxLength={FIELD_LIMITS.user.department}
                           placeholder="Ex: Engenharia"
                           className="bg-zinc-800/50 border-zinc-700/50 text-zinc-100 placeholder-zinc-500 focus:border-violet-500/50"
                         />
