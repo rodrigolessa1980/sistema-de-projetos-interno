@@ -20,7 +20,7 @@ import { toISODate, DatePicker } from "@/components/ui/date-picker";
 import { type DateRange } from "@/components/shared/period-filter";
 import { cn } from "@/lib/utils";
 import Link from "@/lib/router";
-import type { ModuleStatus } from "@/types";
+import type { ModuleStatus, TaskStatus } from "@/types";
 
 const WEEKDAYS = ["D", "S", "T", "Q", "Q", "S", "S"];
 const NEW = "__new__";
@@ -30,6 +30,13 @@ const moduleStatusLabels: Record<ModuleStatus, string> = {
   EM_PROCESSO: "Em processo",
   CONCLUIDO: "Concluído",
 };
+
+/** Status da TAREFA no lançamento rápido (rótulo simples → status real). */
+const WORK_STATUS: { value: TaskStatus; label: string }[] = [
+  { value: "CONCLUIDA", label: "Concluído" },
+  { value: "EM_DESENVOLVIMENTO", label: "Em andamento" },
+  { value: "BACKLOG", label: "A fazer" },
+];
 
 function fmtH(h: number): string {
   return h >= 1 ? `${h.toFixed(1)}h` : `${Math.round(h * 60)}m`;
@@ -396,7 +403,8 @@ function EntryRow({
  * lápis na linha do registro acima.
  */
 function DayEditor({ day, ownerId }: { day: string; ownerId: string }) {
-  const { projects, createProject, createModule } = useProjectStore();
+  const { projects, modules, epics, createProject, createModule, createEpic } = useProjectStore();
+  const { createTask, logTime } = useTaskStore();
   const { users } = useUserStore();
   const { isAdmin } = useAuth();
 
@@ -404,16 +412,26 @@ function DayEditor({ day, ownerId }: { day: string; ownerId: string }) {
   const [assignedUserId, setAssignedUserId] = useState(ownerId);
   const [projChoice, setProjChoice] = useState("");
   const [newProjName, setNewProjName] = useState("");
+  const [moduleChoice, setModuleChoice] = useState("");
+  const [newModuleName, setNewModuleName] = useState("");
   const [title, setTitle] = useState("");
   const [desc, setDesc] = useState("");
   const [hours, setHours] = useState("");
   const [wd, setWd] = useState(day);
-  const [status, setStatus] = useState<ModuleStatus>("CONCLUIDO");
+  const [status, setStatus] = useState<TaskStatus>("CONCLUIDA");
   const [saving, setSaving] = useState(false);
 
   const isNewProject = projChoice === NEW;
+  // Módulos do projeto escolhido (para o seletor central de módulo).
+  const projectModules = useMemo(
+    () => (!projChoice || isNewProject ? [] : modules.filter((m) => m.projectId === projChoice).sort((a, b) => a.name.localeCompare(b.name, "pt-BR"))),
+    [modules, projChoice, isNewProject],
+  );
+  // Projeto novo (ou existente sem módulos) => cria um módulo novo.
+  const isNewModule = isNewProject || moduleChoice === NEW || (!!projChoice && projectModules.length === 0);
   const projectResolved = isNewProject ? newProjName.trim().length > 0 : projChoice.length > 0;
-  const canSubmit = projectResolved && title.trim().length > 0 && Number(hours) > 0;
+  const moduleResolved = isNewModule ? newModuleName.trim().length > 0 : moduleChoice.length > 0;
+  const canSubmit = projectResolved && moduleResolved && title.trim().length > 0 && Number(hours) > 0;
 
   // Número estável por projeto (ordem de criação) — serve de "código" para achar fácil.
   const projectNumber = useMemo(() => {
@@ -431,25 +449,27 @@ function DayEditor({ day, ownerId }: { day: string; ownerId: string }) {
   const selectedProject = projects.find((p) => p.id === projChoice);
 
   function reset() {
-    setProjChoice(""); setNewProjName(""); setTitle(""); setDesc("");
-    setHours(""); setWd(day); setStatus("CONCLUIDO"); setAssignedUserId(ownerId);
-    setOpen(false);
+    setProjChoice(""); setNewProjName(""); setModuleChoice(""); setNewModuleName("");
+    setTitle(""); setDesc(""); setHours(""); setWd(day); setStatus("CONCLUIDA");
+    setAssignedUserId(ownerId); setOpen(false);
   }
 
   async function save() {
     if (!canSubmit) {
       if (!projectResolved) toast.error("Escolha (ou nomeie) o projeto");
-      else if (!title.trim()) toast.error("Descreva o que você fez");
+      else if (!moduleResolved) toast.error("Escolha (ou nomeie) o módulo");
+      else if (!title.trim()) toast.error("Descreva a tarefa (o que foi feito)");
       else toast.error("Informe as horas (maior que 0)");
       return;
     }
     setSaving(true);
     try {
+      // 1) Projeto (cria se for novo)
       let projectId = projChoice;
       if (isNewProject) {
         const proj = await createProject({
           name: newProjName.trim(),
-          description: "Criado pelo calendário de atividades.",
+          description: "Criado pelo calendário.",
           status: "ATIVO",
           ownerId,
           developerIds: [],
@@ -463,20 +483,62 @@ function DayEditor({ day, ownerId }: { day: string; ownerId: string }) {
         projectId = proj.id;
       }
 
+      // 2) Módulo (a "atividade do setor") — cria SEM horas se for novo.
+      let moduleId = moduleChoice;
+      if (isNewModule) {
+        const mod = await createModule({ projectId, name: newModuleName.trim(), description: "" });
+        moduleId = mod.id;
+      }
+
+      // 3) Epic interno (guarda-chuva do módulo, exigido pelo backend).
+      let epicId = epics.find((e) => e.moduleId === moduleId)?.id ?? "";
+      if (!epicId) {
+        const modObj = modules.find((m) => m.id === moduleId);
+        const ep = await createEpic({
+          projectId,
+          moduleId,
+          name: modObj?.name ?? (newModuleName.trim() || "Geral"),
+          description: "",
+          startDate: day,
+          endDate: undefined,
+          developerIds: [],
+        });
+        epicId = ep.id;
+      }
+
+      // 4) Tarefa dentro do módulo.
+      const assignee = isAdmin ? assignedUserId : ownerId;
       const h = Number(hours);
-      await createModule({
+      const task = await createTask({
         projectId,
-        name: title.trim(),
+        moduleId,
+        epicId,
+        title: title.trim(),
         description: desc.trim() || title.trim(),
         status,
-        hours: h,
-        workDate: wd,
-        assignedUserId: isAdmin ? assignedUserId : undefined,
+        complexity: 1,
+        assigneeId: assignee,
+        reporterId: ownerId,
+        estimatedHours: 0,
+        actualHours: 0,
+        dependencyIds: [],
+        tags: [],
+        order: 0,
+        isUrgent: false,
       });
-      // INC-13: createModule já adiciona o timeLog retornado à store (otimista);
-      // não é preciso re-baixar TODOS os logs do tenant.
-      const who = users.find((u) => u.id === assignedUserId)?.name;
-      toast.success(`Registrado: ${h}h em ${wd.split("-").reverse().join("/")}${isAdmin && who ? ` para ${who.split(" ")[0]}` : ""}`);
+
+      // 5) Registro de horas na tarefa.
+      await logTime({
+        projectId,
+        taskId: task.id,
+        hours: h,
+        description: desc.trim() || title.trim(),
+        date: wd,
+        status,
+      });
+
+      const who = users.find((u) => u.id === assignee)?.name;
+      toast.success(`Tarefa registrada: ${h}h em ${wd.split("-").reverse().join("/")}${isAdmin && who ? ` para ${who.split(" ")[0]}` : ""}`);
       reset();
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Erro ao salvar");
@@ -489,7 +551,7 @@ function DayEditor({ day, ownerId }: { day: string; ownerId: string }) {
     return (
       <button type="button" onClick={() => setOpen(true)}
         className="w-full flex items-center justify-center gap-1.5 py-2 rounded-lg border border-dashed border-zinc-700 text-xs text-zinc-400 hover:text-violet-300 hover:border-violet-500/50 transition-colors">
-        <Plus className="w-3.5 h-3.5" /> Adicionar trabalho neste dia
+        <Plus className="w-3.5 h-3.5" /> Adicionar tarefa neste dia
       </button>
     );
   }
@@ -500,7 +562,7 @@ function DayEditor({ day, ownerId }: { day: string; ownerId: string }) {
       className="rounded-lg border border-zinc-700/60 bg-zinc-950/50 p-3 space-y-3"
     >
       <div className="flex items-center justify-between">
-        <p className="text-xs font-semibold text-zinc-300">Adicionar trabalho</p>
+        <p className="text-xs font-semibold text-zinc-300">Adicionar tarefa ao módulo</p>
         <button type="button" onClick={reset} className="text-zinc-500 hover:text-zinc-300"><X className="w-4 h-4" /></button>
       </div>
 
@@ -558,9 +620,45 @@ function DayEditor({ day, ownerId }: { day: string; ownerId: string }) {
         )}
       </div>
 
-      {/* 3) O que foi feito */}
+      {/* 3) Módulo — a atividade do setor onde a tarefa entra */}
+      {projChoice && (
+        <div className="space-y-1">
+          <label className="text-[10px] uppercase tracking-wide text-zinc-500">Módulo</label>
+          {!isNewProject && projectModules.length > 0 && (
+            <Select value={moduleChoice} onValueChange={(v) => { if (v) setModuleChoice(v); }}>
+              <SelectTrigger className="h-9 w-full text-sm bg-zinc-900 border-zinc-700">
+                <SelectValue placeholder="Selecione um módulo">
+                  {(value: unknown) =>
+                    value === NEW
+                      ? "➕ Criar novo módulo"
+                      : projectModules.find((m) => m.id === value)?.name ?? "Selecione um módulo"}
+                </SelectValue>
+              </SelectTrigger>
+              <SelectContent className="bg-zinc-900 border-zinc-700/50 max-h-72 min-w-64">
+                {projectModules.map((m) => (
+                  <SelectItem key={m.id} value={m.id} label={m.name}>{m.name}</SelectItem>
+                ))}
+                <SelectItem value={NEW} label="Criar novo módulo" className="text-violet-300">➕ Criar novo módulo</SelectItem>
+              </SelectContent>
+            </Select>
+          )}
+          {isNewModule && (
+            <Input
+              value={newModuleName}
+              onChange={(e) => setNewModuleName(e.target.value)}
+              placeholder="Nome do módulo (ex.: Backend, Front, Design...)"
+              className="h-8 bg-zinc-900 border-zinc-700 text-sm mt-1"
+            />
+          )}
+          {!isNewProject && projectModules.length === 0 && (
+            <p className="text-[11px] text-zinc-500">O projeto ainda não tem módulos — este será o primeiro.</p>
+          )}
+        </div>
+      )}
+
+      {/* 4) O que foi feito (vira uma tarefa dentro do módulo) */}
       <div className="space-y-1">
-        <label className="text-[10px] uppercase tracking-wide text-zinc-500">O que você fez</label>
+        <label className="text-[10px] uppercase tracking-wide text-zinc-500">O que você fez <span className="text-zinc-600 normal-case">(vira uma tarefa)</span></label>
         <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Ex: Ajuste no login, correção do TLS..."
           className="h-8 bg-zinc-900 border-zinc-700 text-sm" />
       </div>
@@ -588,10 +686,10 @@ function DayEditor({ day, ownerId }: { day: string; ownerId: string }) {
       {/* 6) Status */}
       <div className="space-y-1">
         <label className="text-[10px] uppercase tracking-wide text-zinc-500">Status</label>
-        <Select value={status} onValueChange={(v) => v && setStatus(v as ModuleStatus)}>
+        <Select value={status} onValueChange={(v) => v && setStatus(v as TaskStatus)}>
           <SelectTrigger className="h-8 text-xs bg-zinc-900 border-zinc-700 w-full"><SelectValue /></SelectTrigger>
           <SelectContent>
-            {Object.entries(moduleStatusLabels).map(([v, label]) => <SelectItem key={v} value={v}>{label}</SelectItem>)}
+            {WORK_STATUS.map((s) => <SelectItem key={s.value} value={s.value} label={s.label}>{s.label}</SelectItem>)}
           </SelectContent>
         </Select>
       </div>
@@ -599,7 +697,7 @@ function DayEditor({ day, ownerId }: { day: string; ownerId: string }) {
       {/* 7) Ação */}
       <Button type="submit" disabled={saving || !canSubmit} className="w-full h-9 text-xs bg-violet-600 hover:bg-violet-700 disabled:opacity-40 gap-1.5">
         {saving ? <div className="w-3.5 h-3.5 border-2 border-white/40 border-t-white rounded-full animate-spin" /> : <Plus className="w-3.5 h-3.5" />}
-        Adicionar trabalho
+        Adicionar tarefa
       </Button>
     </form>
   );

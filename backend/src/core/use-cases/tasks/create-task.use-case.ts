@@ -54,15 +54,16 @@ export class CreateTaskUseCase {
 
     const savedTask = await this.taskRepository.create(task);
 
-    // Se a tarefa foi criada como urgente, bloqueamos as outras
+    // Se a tarefa foi criada como urgente, bloqueamos as outras num único bulkUpdate.
+    // INC-08: era N updates sequenciais (await dentro do for); agora 1 transação,
+    // consistente com set-task-urgent/update-task/release-urgency-blocks.
     if (savedTask.isUrgent) {
       const assigneeTasks = await this.taskRepository.findByAssignee(savedTask.assigneeId);
-      for (const t of assigneeTasks) {
-        if (t.id !== savedTask.id && t.status !== TaskStatus.CONCLUIDA && t.status !== TaskStatus.CANCELADA) {
-          t.blockDueToUrgency(savedTask.id);
-          await this.taskRepository.update(t);
-        }
-      }
+      const toBlock = assigneeTasks.filter(
+        (t) => t.id !== savedTask.id && t.status !== TaskStatus.CONCLUIDA && t.status !== TaskStatus.CANCELADA,
+      );
+      for (const t of toBlock) t.blockDueToUrgency(savedTask.id);
+      await this.taskRepository.bulkUpdate(toBlock);
     }
 
     return savedTask;
