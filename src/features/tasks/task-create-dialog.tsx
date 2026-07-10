@@ -16,9 +16,10 @@ import { useAuth } from "@/hooks/use-auth";
 import { ALL_STATUSES, getStatusLabel, COMPLEXITY_OPTIONS, getComplexityLabel, moduleColorFromId, shortId } from "@/lib/utils";
 import type { TaskComplexity, TaskStatus } from "@/types";
 import { toast } from "sonner";
-import { Link2, X, AlertTriangle, Flame, ShieldAlert } from "lucide-react";
+import { Link2, X, AlertTriangle, Flame, ShieldAlert, Plus } from "lucide-react";
 import { CharCounter } from "@/components/shared/char-counter";
 import { FIELD_LIMITS } from "@/lib/field-limits";
+import { isQuickLogModule } from "@/lib/worklog";
 
 /** Explica o que cada marcador de complexidade significa (escala de esforço). */
 const COMPLEXITY_DESCRIPTIONS: Record<number, string> = {
@@ -54,13 +55,15 @@ interface Props {
 
 export function TaskCreateDialog({ open, onOpenChange, defaultProjectId, defaultModuleId }: Props) {
   const { createTask, addDependency, tasks, getUrgentTaskForDev } = useTaskStore();
-  const { projects, modules, epics, createEpic } = useProjectStore();
+  const { projects, modules, epics, createEpic, createModule } = useProjectStore();
   const { users } = useUserStore();
   const { user } = useAuth();
 
   const [selectedDepIds, setSelectedDepIds] = useState<string[]>([]);
   const [depSearch, setDepSearch] = useState("");
   const [isUrgent, setIsUrgent] = useState(false);
+  const [newModuleName, setNewModuleName] = useState("");
+  const [creatingModule, setCreatingModule] = useState(false);
   // Hoje (YYYY-MM-DD) — usado como mínimo dos campos de prazo (sem datas passadas).
   const today = new Date().toISOString().split("T")[0];
 
@@ -89,7 +92,26 @@ export function TaskCreateDialog({ open, onOpenChange, defaultProjectId, default
   const willBlockCount = isUrgent && assigneeId
     ? tasks.filter((t) => t.assigneeId === assigneeId && !["CONCLUIDA", "CANCELADA"].includes(t.status)).length
     : 0;
-  const filteredModules = modules.filter((m) => m.projectId === projectId);
+  // Só módulos de planejamento (exclui os "andaimes" de lançamento rápido de
+  // horas). Tarefas nesses andaimes ficam escondidas do Kanban/Timeline.
+  const filteredModules = modules.filter((m) => m.projectId === projectId && !isQuickLogModule(m));
+
+  const handleCreateModule = async () => {
+    const name = newModuleName.trim();
+    if (!name || !projectId) return;
+    setCreatingModule(true);
+    try {
+      const mod = await createModule({ projectId, name, description: "" });
+      form.setValue("moduleId", mod.id);
+      form.setValue("epicId", "");
+      setNewModuleName("");
+      toast.success(`Módulo "${mod.name}" criado`);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Não foi possível criar o módulo.");
+    } finally {
+      setCreatingModule(false);
+    }
+  };
 
   // Tarefas disponíveis para serem dependências (mesmo projeto, exceto a própria)
   const availableDeps = tasks.filter(
@@ -111,14 +133,23 @@ export function TaskCreateDialog({ open, onOpenChange, defaultProjectId, default
   }
 
   const onSubmit = async (data: FormData) => {
-    const fallbackProject = projects[0];
-    const finalProjectId = data.projectId || fallbackProject?.id || "";
-    const fallbackModule = modules.find((module) => module.projectId === finalProjectId) ?? modules[0];
-    const finalModuleId = data.moduleId || fallbackModule?.id || "";
+    const finalProjectId = data.projectId || "";
+    // Sem fallback silencioso de módulo: toda tarefa PRECISA de um módulo de
+    // planejamento escolhido explicitamente (senão poderia cair num "andaime"
+    // de lançamento rápido e sumir do Kanban/Timeline).
+    const finalModuleId = data.moduleId || "";
     const finalAssigneeId = data.assigneeId || users[0]?.id || user?.id || "";
 
-    if (!finalProjectId || !finalModuleId || !finalAssigneeId) {
-      toast.error("Selecione um projeto, um módulo e um responsável para criar a tarefa.");
+    if (!finalProjectId) {
+      toast.error("Selecione um projeto para a tarefa.");
+      return;
+    }
+    if (!finalModuleId) {
+      toast.error("Toda tarefa precisa de um módulo. Selecione (ou crie) um módulo para continuar.");
+      return;
+    }
+    if (!finalAssigneeId) {
+      toast.error("Selecione um responsável para a tarefa.");
       return;
     }
 
@@ -149,6 +180,9 @@ export function TaskCreateDialog({ open, onOpenChange, defaultProjectId, default
         description: data.description?.trim() || "Tarefa criada sem descricao.",
         // dueDate vazio ("") quebra a validação ISO do backend — envia undefined.
         dueDate: data.dueDate?.trim() || undefined,
+        // A Timeline (Gantt) só lista tarefas com startDate OU dueDate. Garante um
+        // startDate (hoje) para que TODA tarefa criada apareça na Timeline.
+        startDate: today,
         projectId: finalProjectId,
         moduleId: finalModuleId,
         epicId: finalEpicId,
@@ -184,6 +218,7 @@ export function TaskCreateDialog({ open, onOpenChange, defaultProjectId, default
       setSelectedDepIds([]);
       setDepSearch("");
       setIsUrgent(false);
+      setNewModuleName("");
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Não foi possível criar a tarefa.");
     }
@@ -240,23 +275,55 @@ export function TaskCreateDialog({ open, onOpenChange, defaultProjectId, default
               )} />
               <FormField control={form.control} name="moduleId" render={({ field }) => (
                 <FormItem>
-                  <Label className="text-zinc-300 text-sm">Módulo</Label>
-                  <Select value={field.value ?? ""} items={filteredModules.map((m) => ({ value: m.id, label: m.name }))} onValueChange={(v) => { field.onChange(v); form.setValue("epicId", ""); }} disabled={!projectId}>
-                    <FormControl>
-                      <SelectTrigger className="w-full bg-zinc-800 border-zinc-700 text-zinc-300">
-                        <SelectValue placeholder="Selecionar..." />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent className="bg-zinc-900 border-zinc-700/50">
-                      {filteredModules.map((m) => (
-                        <SelectItem key={m.id} value={m.id} label={m.name}>
-                          <span className="w-2 h-2 rounded-full shrink-0" style={{ background: moduleColorFromId(m.id) }} />
-                          <span className="truncate">{m.name}</span>
-                          <span className="ml-auto pl-2 text-[10px] font-mono text-zinc-500 shrink-0">{shortId(m.id)}</span>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <Label className="text-zinc-300 text-sm flex items-center gap-1">
+                    Módulo <span className="text-red-400">*</span>
+                  </Label>
+                  {!projectId ? (
+                    <p className="text-[11px] text-zinc-500 py-1.5">Selecione um projeto primeiro.</p>
+                  ) : filteredModules.length === 0 ? (
+                    // Projeto sem módulos: libera criar um inline para poder prosseguir.
+                    <div className="space-y-1.5">
+                      <p className="text-[11px] text-amber-400/90 flex items-center gap-1">
+                        <AlertTriangle className="w-3 h-3 shrink-0" /> Este projeto não tem módulos. Crie um para continuar.
+                      </p>
+                      <div className="flex gap-2">
+                        <input
+                          value={newModuleName}
+                          onChange={(e) => setNewModuleName(e.target.value)}
+                          onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleCreateModule(); } }}
+                          maxLength={FIELD_LIMITS.module.name}
+                          placeholder="Nome do novo módulo"
+                          className="flex-1 min-w-0 h-8 text-xs bg-zinc-800 border border-zinc-700 rounded-md px-3 text-zinc-300 placeholder-zinc-600 outline-none focus:border-violet-500/50 transition-colors"
+                        />
+                        <Button
+                          type="button"
+                          size="sm"
+                          onClick={handleCreateModule}
+                          disabled={!newModuleName.trim() || creatingModule}
+                          className="h-8 px-3 shrink-0 bg-violet-600 hover:bg-violet-700 text-white gap-1 text-xs disabled:opacity-40"
+                        >
+                          <Plus className="w-3.5 h-3.5" /> {creatingModule ? "Criando..." : "Criar módulo"}
+                        </Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <Select value={field.value ?? ""} items={filteredModules.map((m) => ({ value: m.id, label: m.name }))} onValueChange={(v) => { field.onChange(v); form.setValue("epicId", ""); }}>
+                      <FormControl>
+                        <SelectTrigger className="w-full bg-zinc-800 border-zinc-700 text-zinc-300">
+                          <SelectValue placeholder="Selecionar..." />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent className="bg-zinc-900 border-zinc-700/50">
+                        {filteredModules.map((m) => (
+                          <SelectItem key={m.id} value={m.id} label={m.name}>
+                            <span className="w-2 h-2 rounded-full shrink-0" style={{ background: moduleColorFromId(m.id) }} />
+                            <span className="truncate">{m.name}</span>
+                            <span className="ml-auto pl-2 text-[10px] font-mono text-zinc-500 shrink-0">{shortId(m.id)}</span>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
                   <FormMessage />
                 </FormItem>
               )} />
