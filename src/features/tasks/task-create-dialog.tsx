@@ -187,7 +187,7 @@ export function TaskCreateDialog({ open, onOpenChange, defaultProjectId, default
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-zinc-900 border-zinc-700/50 max-w-xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="bg-zinc-900 border-zinc-700/50 max-w-5xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-zinc-100">Nova Tarefa</DialogTitle>
         </DialogHeader>

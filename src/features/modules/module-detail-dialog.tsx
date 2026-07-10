@@ -135,7 +135,7 @@ export function ModuleDetailDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-zinc-900 border-zinc-700/50 text-zinc-100 sm:max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="bg-zinc-900 border-zinc-700/50 text-zinc-100 max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-zinc-100 pr-8">
             <Box className="w-5 h-5 text-violet-400 shrink-0" />

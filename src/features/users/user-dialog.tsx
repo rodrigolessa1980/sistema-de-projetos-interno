@@ -145,7 +145,7 @@ function UserDialogForm({ open, onOpenChange, editUser }: UserDialogProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-zinc-950 border-zinc-800 max-w-lg max-h-[90vh] overflow-y-auto">
+      <DialogContent className="bg-zinc-950 border-zinc-800 max-w-5xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-zinc-100 flex items-center gap-2">
             {isEditing ? <Pencil className="w-4 h-4 text-violet-400" /> : <UserPlus className="w-4 h-4 text-violet-400" />}
@@ -159,6 +159,7 @@ function UserDialogForm({ open, onOpenChange, editUser }: UserDialogProps) {
             <div className="space-y-3">
               <p className="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider">Dados Pessoais</p>
 
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <FormField control={form.control} name="name" render={({ field }) => (
                 <FormItem>
                   <div className="flex items-center justify-between">
@@ -184,6 +185,7 @@ function UserDialogForm({ open, onOpenChange, editUser }: UserDialogProps) {
                   <FormMessage />
                 </FormItem>
               )} />
+              </div>
 
               {!isEditing && (
                 <FormField control={form.control} name="password" render={({ field }) => (
@@ -287,6 +289,7 @@ function UserDialogForm({ open, onOpenChange, editUser }: UserDialogProps) {
               )} />
             </div>
 
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-start">
             {/* Alocação em Projetos */}
             <div className="space-y-2">
               <p className="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider flex items-center gap-1.5">
@@ -358,6 +361,7 @@ function UserDialogForm({ open, onOpenChange, editUser }: UserDialogProps) {
                   </SelectContent>
                 </Select>
               )}
+            </div>
             </div>
 
             {error && (

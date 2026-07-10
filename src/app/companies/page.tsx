@@ -69,7 +69,7 @@ function CompanyFormDialog({
 
   return (
     <Dialog open={open} onOpenChange={(v) => { onOpenChange(v); if (!v) form.reset(defaultValues); }}>
-      <DialogContent className="bg-zinc-900 border-zinc-700/50 max-w-md">
+      <DialogContent className="bg-zinc-900 border-zinc-700/50 max-w-3xl">
         <DialogHeader>
           <DialogTitle className="text-zinc-100">{title}</DialogTitle>
         </DialogHeader>

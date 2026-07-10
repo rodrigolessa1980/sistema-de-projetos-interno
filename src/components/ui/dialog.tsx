@@ -54,10 +54,18 @@ function DialogContent({
         data-slot="dialog-content"
         className={cn(
           // w-[calc(100%-2rem)] (não w-full) garante margem lateral no mobile MESMO
-          // quando a página sobrescreve o max-w (ex.: max-w-lg). max-h-[90dvh] +
-          // overflow-y-auto deixam diálogos altos rolarem; overflow-x-hidden e
-          // min-w-0 impedem qualquer conteúdo longo de estourar a largura.
-          "fixed top-1/2 left-1/2 z-50 grid min-w-0 w-[calc(100%-2rem)] max-w-[calc(100%-2rem)] max-h-[90dvh] -translate-x-1/2 -translate-y-1/2 gap-4 overflow-x-hidden overflow-y-auto rounded-xl bg-popover p-4 text-sm text-popover-foreground ring-1 ring-foreground/10 duration-100 outline-none sm:max-w-sm data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
+          // quando a página sobrescreve o max-w. max-h-[90dvh] + overflow-y-auto
+          // deixam diálogos altos rolarem; overflow-x-hidden e min-w-0 impedem
+          // qualquer conteúdo longo de estourar a largura.
+          //
+          // IMPORTANTE: o max-w padrão é SEM prefixo de breakpoint (max-w-lg, e
+          // não sm:max-w-sm). tailwind-merge não funde classes de variantes
+          // diferentes, então um sm:max-w-* aqui NÃO seria sobrescrito por um
+          // max-w-* (sem prefixo) vindo da página — o diálogo ficaria travado
+          // com largura de "mobile" no desktop. Mantendo o padrão sem prefixo,
+          // qualquer max-w-* passado pela página cai no mesmo grupo de merge e
+          // vence corretamente em todas as larguras.
+          "fixed top-1/2 left-1/2 z-50 grid min-w-0 w-[calc(100%-2rem)] max-w-lg max-h-[90dvh] -translate-x-1/2 -translate-y-1/2 gap-4 overflow-x-hidden overflow-y-auto rounded-xl bg-popover p-4 text-sm text-popover-foreground ring-1 ring-foreground/10 duration-100 outline-none data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
           className
         )}
         {...props}

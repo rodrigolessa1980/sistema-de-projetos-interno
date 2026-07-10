@@ -245,7 +245,7 @@ export default function EpicsPage() {
       </div>
 
       <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-        <DialogContent className="bg-zinc-900 border-zinc-700/50 max-w-lg">
+        <DialogContent className="bg-zinc-900 border-zinc-700/50 max-w-4xl">
           <DialogHeader>
             <DialogTitle className="text-zinc-100">Novo Epic</DialogTitle>
           </DialogHeader>
@@ -345,7 +345,7 @@ export default function EpicsPage() {
                     <Users className="w-3.5 h-3.5" />
                     Desenvolvedores
                   </Label>
-                  <div className="space-y-1.5 max-h-36 overflow-y-auto pr-1">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 max-h-36 overflow-y-auto pr-1">
                     {projectDevelopers.map((dev) => {
                       const checked = (selectedDeveloperIds ?? []).includes(dev.id);
                       return (

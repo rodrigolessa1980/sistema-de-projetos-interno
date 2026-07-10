@@ -457,15 +457,15 @@ export default function ProjectsPage() {
       </div>
 
       <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-        <DialogContent className="bg-zinc-900 border-zinc-700/50 max-w-lg max-h-[90vh] overflow-y-auto">
+        <DialogContent className="bg-zinc-900 border-zinc-700/50 max-w-[1200px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-zinc-100">Novo Projeto</DialogTitle>
           </DialogHeader>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-4 items-start">
 
               {/* Avatar do projeto */}
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-4 sm:col-span-2">
                 <div className="relative shrink-0">
                   <ProjectAvatar
                     name={watchedName || "PR"}
@@ -510,7 +510,7 @@ export default function ProjectsPage() {
                   </Label>
                   <Select value={field.value ?? ""} onValueChange={(v) => field.onChange(v === "__none__" ? "" : v)}>
                     <FormControl>
-                      <SelectTrigger className="bg-zinc-800 border-zinc-700 text-zinc-100">
+                      <SelectTrigger className="w-full bg-zinc-800 border-zinc-700 text-zinc-100">
                         <SelectValue placeholder="Nenhuma (opcional)" />
                       </SelectTrigger>
                     </FormControl>
@@ -548,7 +548,7 @@ export default function ProjectsPage() {
                 </FormItem>
               )} />
               <FormField control={form.control} name="description" render={({ field }) => (
-                <FormItem>
+                <FormItem className="sm:col-span-2">
                   <div className="flex items-center justify-between">
                     <Label className="text-zinc-300 text-sm">Descrição</Label>
                     <CharCounter value={field.value} max={PROJECT_FIELD_LIMITS.description} />
@@ -592,7 +592,7 @@ export default function ProjectsPage() {
                 </FormItem>
               )} />
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-3 sm:col-span-2">
                 <FormField control={form.control} name="startDate" render={({ field }) => (
                   <FormItem>
                     <Label className="text-zinc-300 text-sm">Data de Início</Label>
@@ -613,7 +613,7 @@ export default function ProjectsPage() {
                 )} />
               </div>
               <FormField control={form.control} name="color" render={({ field }) => (
-                <FormItem>
+                <FormItem className="sm:col-span-2">
                   <Label className="text-zinc-300 text-sm">
                     Cor de destaque {avatarPreview && <span className="text-zinc-500 font-normal">(usada como fallback)</span>}
                   </Label>
@@ -631,7 +631,7 @@ export default function ProjectsPage() {
               )} />
 
               <FormField control={form.control} name="testUrl" render={({ field }) => (
-                <FormItem>
+                <FormItem className="sm:col-span-2">
                   <Label className="text-zinc-300 text-sm flex items-center gap-1.5">
                     <Link2 className="w-3.5 h-3.5 text-zinc-500" />
                     URL de Homologação / Teste
@@ -653,7 +653,7 @@ export default function ProjectsPage() {
               )} />
 
               {/* Módulos do projeto */}
-              <div className="space-y-2 pt-1">
+              <div className="space-y-2 pt-1 sm:col-span-2">
                 <div className="flex items-center justify-between">
                   <Label className="text-zinc-300 text-sm flex items-center gap-1.5">
                     <Box className="w-3.5 h-3.5 text-zinc-500" />
@@ -719,7 +719,7 @@ export default function ProjectsPage() {
                 </div>
               </div>
 
-              <div className="flex justify-end gap-2 pt-2">
+              <div className="flex justify-end gap-2 pt-2 sm:col-span-2">
                 <Button type="button" variant="ghost" onClick={() => setIsCreateOpen(false)} className="text-zinc-400">Cancelar</Button>
                 <Button type="submit" disabled={form.formState.isSubmitting} className="bg-violet-600 hover:bg-violet-700 disabled:opacity-60">
                   {form.formState.isSubmitting
@@ -733,12 +733,13 @@ export default function ProjectsPage() {
       </Dialog>
 
       <Dialog open={!!editingProject} onOpenChange={(open) => { if (!open) setEditingProject(null); }}>
-        <DialogContent className="bg-zinc-900 border-zinc-700/50 max-w-lg max-h-[90vh] overflow-y-auto">
+        <DialogContent className="bg-zinc-900 border-zinc-700/50 max-w-[1200px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-zinc-100">Editar Projeto</DialogTitle>
           </DialogHeader>
           <Form {...editForm}>
             <form onSubmit={editForm.handleSubmit(onEditSubmit)} className="space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <FormField control={editForm.control} name="companyId" render={({ field }) => (
                 <FormItem>
                   <Label className="text-zinc-300 text-sm flex items-center gap-1.5">
@@ -747,7 +748,7 @@ export default function ProjectsPage() {
                   </Label>
                   <Select value={field.value ?? ""} onValueChange={(v) => field.onChange(v === "__none__" ? "" : v)}>
                     <FormControl>
-                      <SelectTrigger className="bg-zinc-800 border-zinc-700 text-zinc-100">
+                      <SelectTrigger className="w-full bg-zinc-800 border-zinc-700 text-zinc-100">
                         <SelectValue placeholder="Nenhuma" />
                       </SelectTrigger>
                     </FormControl>
@@ -778,6 +779,7 @@ export default function ProjectsPage() {
                   <FormMessage />
                 </FormItem>
               )} />
+              </div>
 
               <FormField control={editForm.control} name="description" render={({ field }) => (
                 <FormItem>
@@ -811,7 +813,7 @@ export default function ProjectsPage() {
                     <Label className="text-zinc-300 text-sm">Dev que recebeu a demanda</Label>
                     <Select value={field.value ?? ""} onValueChange={field.onChange}>
                       <FormControl>
-                        <SelectTrigger className="bg-zinc-800 border-zinc-700 text-zinc-100">
+                        <SelectTrigger className="w-full bg-zinc-800 border-zinc-700 text-zinc-100">
                           <SelectValue placeholder="Dev que recebeu a demanda" />
                         </SelectTrigger>
                       </FormControl>
@@ -832,7 +834,7 @@ export default function ProjectsPage() {
                     <Label className="text-zinc-300 text-sm">Status</Label>
                     <Select value={field.value ?? "ATIVO"} onValueChange={field.onChange}>
                       <FormControl>
-                        <SelectTrigger className="bg-zinc-800 border-zinc-700 text-zinc-100">
+                        <SelectTrigger className="w-full bg-zinc-800 border-zinc-700 text-zinc-100">
                           <SelectValue />
                         </SelectTrigger>
                       </FormControl>
