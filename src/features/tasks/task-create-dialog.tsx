@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useTaskStore, useProjectStore, useUserStore } from "@/stores";
 import { useAuth } from "@/hooks/use-auth";
-import { ALL_STATUSES, getStatusLabel, COMPLEXITY_OPTIONS, getComplexityLabel } from "@/lib/utils";
+import { ALL_STATUSES, getStatusLabel, COMPLEXITY_OPTIONS, getComplexityLabel, moduleColorFromId, shortId } from "@/lib/utils";
 import type { TaskComplexity, TaskStatus } from "@/types";
 import { toast } from "sonner";
 import { Link2, X, AlertTriangle, Flame, ShieldAlert } from "lucide-react";
@@ -61,6 +61,8 @@ export function TaskCreateDialog({ open, onOpenChange, defaultProjectId, default
   const [selectedDepIds, setSelectedDepIds] = useState<string[]>([]);
   const [depSearch, setDepSearch] = useState("");
   const [isUrgent, setIsUrgent] = useState(false);
+  // Hoje (YYYY-MM-DD) — usado como mínimo dos campos de prazo (sem datas passadas).
+  const today = new Date().toISOString().split("T")[0];
 
   const form = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -145,6 +147,8 @@ export function TaskCreateDialog({ open, onOpenChange, defaultProjectId, default
         ...data,
         title: data.title?.trim() || `Tarefa ${new Date().toLocaleString("pt-BR")}`,
         description: data.description?.trim() || "Tarefa criada sem descricao.",
+        // dueDate vazio ("") quebra a validação ISO do backend — envia undefined.
+        dueDate: data.dueDate?.trim() || undefined,
         projectId: finalProjectId,
         moduleId: finalModuleId,
         epicId: finalEpicId,
@@ -221,7 +225,7 @@ export function TaskCreateDialog({ open, onOpenChange, defaultProjectId, default
               <FormField control={form.control} name="projectId" render={({ field }) => (
                 <FormItem>
                   <Label className="text-zinc-300 text-sm">Projeto</Label>
-                  <Select value={field.value ?? ""} onValueChange={(v) => { field.onChange(v); form.setValue("moduleId", ""); form.setValue("epicId", ""); }}>
+                  <Select value={field.value ?? ""} items={projects.map((p) => ({ value: p.id, label: p.name }))} onValueChange={(v) => { field.onChange(v); form.setValue("moduleId", ""); form.setValue("epicId", ""); }}>
                     <FormControl>
                       <SelectTrigger className="w-full bg-zinc-800 border-zinc-700 text-zinc-300">
                         <SelectValue placeholder="Selecionar..." />
@@ -237,14 +241,20 @@ export function TaskCreateDialog({ open, onOpenChange, defaultProjectId, default
               <FormField control={form.control} name="moduleId" render={({ field }) => (
                 <FormItem>
                   <Label className="text-zinc-300 text-sm">Módulo</Label>
-                  <Select value={field.value ?? ""} onValueChange={(v) => { field.onChange(v); form.setValue("epicId", ""); }} disabled={!projectId}>
+                  <Select value={field.value ?? ""} items={filteredModules.map((m) => ({ value: m.id, label: m.name }))} onValueChange={(v) => { field.onChange(v); form.setValue("epicId", ""); }} disabled={!projectId}>
                     <FormControl>
                       <SelectTrigger className="w-full bg-zinc-800 border-zinc-700 text-zinc-300">
                         <SelectValue placeholder="Selecionar..." />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent className="bg-zinc-900 border-zinc-700/50">
-                      {filteredModules.map((m) => <SelectItem key={m.id} value={m.id} label={m.name}>{m.name}</SelectItem>)}
+                      {filteredModules.map((m) => (
+                        <SelectItem key={m.id} value={m.id} label={m.name}>
+                          <span className="w-2 h-2 rounded-full shrink-0" style={{ background: moduleColorFromId(m.id) }} />
+                          <span className="truncate">{m.name}</span>
+                          <span className="ml-auto pl-2 text-[10px] font-mono text-zinc-500 shrink-0">{shortId(m.id)}</span>
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -254,7 +264,7 @@ export function TaskCreateDialog({ open, onOpenChange, defaultProjectId, default
             <FormField control={form.control} name="assigneeId" render={({ field }) => (
               <FormItem>
                 <Label className="text-zinc-300 text-sm">Responsável</Label>
-                <Select value={field.value ?? ""} onValueChange={field.onChange}>
+                <Select value={field.value ?? ""} items={users.map((u) => ({ value: u.id, label: u.name }))} onValueChange={field.onChange}>
                   <FormControl>
                     <SelectTrigger className="w-full bg-zinc-800 border-zinc-700 text-zinc-300">
                       <SelectValue placeholder="Selecionar..." />
@@ -267,11 +277,11 @@ export function TaskCreateDialog({ open, onOpenChange, defaultProjectId, default
                 <FormMessage />
               </FormItem>
             )} />
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 items-start">
               <FormField control={form.control} name="status" render={({ field }) => (
                 <FormItem>
                   <Label className="text-zinc-300 text-sm">Status</Label>
-                  <Select value={field.value ?? "BACKLOG"} onValueChange={field.onChange}>
+                  <Select value={field.value ?? "BACKLOG"} items={ALL_STATUSES.map((s) => ({ value: s, label: getStatusLabel(s) }))} onValueChange={field.onChange}>
                     <FormControl>
                       <SelectTrigger className="w-full bg-zinc-800 border-zinc-700 text-zinc-300">
                         <SelectValue />
@@ -287,7 +297,7 @@ export function TaskCreateDialog({ open, onOpenChange, defaultProjectId, default
               <FormField control={form.control} name="complexity" render={({ field }) => (
                 <FormItem>
                   <Label className="text-zinc-300 text-sm">Complexidade</Label>
-                  <Select value={String(field.value ?? 3)} onValueChange={(v) => field.onChange(Number(v))}>
+                  <Select value={String(field.value ?? 3)} items={COMPLEXITY_OPTIONS.map((c) => ({ value: String(c), label: `${c} · ${COMPLEXITY_DESCRIPTIONS[c]}` }))} onValueChange={(v) => field.onChange(Number(v))}>
                     <FormControl>
                       <SelectTrigger className="w-full bg-zinc-800 border-zinc-700 text-zinc-300">
                         <SelectValue />
@@ -321,7 +331,7 @@ export function TaskCreateDialog({ open, onOpenChange, defaultProjectId, default
               <FormItem>
                 <Label className="text-zinc-300 text-sm">Prazo (opcional)</Label>
                 <FormControl>
-                  <Input {...field} type="date" className="bg-zinc-800 border-zinc-700 text-zinc-100" />
+                  <Input {...field} type="date" min={today} className="bg-zinc-800 border-zinc-700 text-zinc-100" />
                 </FormControl>
                 <FormMessage />
               </FormItem>

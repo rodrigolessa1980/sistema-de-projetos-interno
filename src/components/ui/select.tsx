@@ -6,21 +6,52 @@ import { Select as SelectPrimitive } from "@base-ui/react/select"
 import { cn } from "@/lib/utils"
 import { ChevronDownIcon, CheckIcon, ChevronUpIcon } from "lucide-react"
 
-// Registry context — maps value strings to display labels.
-// Populated by SelectItem on mount; read by SelectValue via render function.
-const LabelRegistryContext = React.createContext<React.MutableRefObject<Record<string, string>>>(
-  { current: {} }
-)
+// Registry — mapeia valores para rótulos, para o <SelectValue> mostrar o NOME
+// (não o id cru) mesmo quando o popup nunca foi aberto.
+// - `seed`: rótulos conhecidos de imediato via prop `items` ({value,label}[]).
+//   Resolve valores pré-selecionados no load (ex.: formulários de edição).
+// - `dynamic`: rótulos registrados pelos <SelectItem> ao montarem. Usa ESTADO
+//   (não ref) para forçar o re-render do trigger quando um rótulo novo chega —
+//   antes, o ref não disparava re-render e o trigger ficava com o id.
+type LabelRegistry = {
+  labels: Record<string, string>
+  register: (value: string, label: string) => void
+}
+const LabelRegistryContext = React.createContext<LabelRegistry>({
+  labels: {},
+  register: () => {},
+})
 
 // Wrap Select.Root to provide a fresh label registry per select instance.
 // Keep generics so callers' onValueChange handlers retain proper value types.
 function Select<Value = string, Multiple extends boolean = false>(
-  props: SelectPrimitive.Root.Props<Value, Multiple>
+  { items, ...props }: SelectPrimitive.Root.Props<Value, Multiple>
 ) {
-  const labelsRef = React.useRef<Record<string, string>>({})
+  const seed = React.useMemo(() => {
+    const map: Record<string, string> = {}
+    if (Array.isArray(items)) {
+      for (const it of items as ReadonlyArray<{ value: unknown; label: React.ReactNode }>) {
+        if (it && it.value != null && typeof it.label === "string") {
+          map[String(it.value)] = it.label
+        }
+      }
+    }
+    return map
+  }, [items])
+
+  const [dynamic, setDynamic] = React.useState<Record<string, string>>({})
+  const register = React.useCallback((value: string, label: string) => {
+    setDynamic((prev) => (prev[value] === label ? prev : { ...prev, [value]: label }))
+  }, [])
+
+  const ctx = React.useMemo<LabelRegistry>(
+    () => ({ labels: { ...seed, ...dynamic }, register }),
+    [seed, dynamic, register]
+  )
+
   return (
-    <LabelRegistryContext.Provider value={labelsRef}>
-      <SelectPrimitive.Root<Value, Multiple> {...props} />
+    <LabelRegistryContext.Provider value={ctx}>
+      <SelectPrimitive.Root<Value, Multiple> items={items} {...props} />
     </LabelRegistryContext.Provider>
   )
 }
@@ -36,7 +67,7 @@ function SelectGroup({ className, ...props }: SelectPrimitive.Group.Props) {
 }
 
 function SelectValue({ className, placeholder, children, ...props }: SelectPrimitive.Value.Props) {
-  const labelsRef = React.useContext(LabelRegistryContext)
+  const { labels } = React.useContext(LabelRegistryContext)
 
   // If caller passes explicit children, use them as-is (allows manual overrides).
   if (children !== undefined) {
@@ -67,7 +98,7 @@ function SelectValue({ className, placeholder, children, ...props }: SelectPrimi
         if (value == null || value === "") return placeholder ?? null
         // Trunca com reticências em vez de esticar o trigger (nomes longos de
         // projeto/módulo estouravam a largura do formulário).
-        return <span className="truncate">{labelsRef.current[String(value)] ?? String(value)}</span>
+        return <span className="truncate">{labels[String(value)] ?? String(value)}</span>
       }}
     </SelectPrimitive.Value>
   )
@@ -159,19 +190,18 @@ function SelectItem({
   label,
   ...props
 }: SelectPrimitive.Item.Props) {
-  const labelsRef = React.useContext(LabelRegistryContext)
+  const { register } = React.useContext(LabelRegistryContext)
   const value = props.value
 
   // Derive the display text: prefer explicit label prop, then string children.
   const displayLabel = label ?? (typeof children === "string" ? children : undefined)
 
-  // Register label every render so the registry stays current.
-  // SelectItem only renders when the popup is open, so this is infrequent.
+  // Registra o rótulo no registry (via estado) para o trigger refletir o NOME.
   React.useEffect(() => {
     if (value != null && displayLabel != null) {
-      labelsRef.current[String(value)] = String(displayLabel)
+      register(String(value), String(displayLabel))
     }
-  })
+  }, [value, displayLabel, register])
 
   return (
     <SelectPrimitive.Item
@@ -183,7 +213,7 @@ function SelectItem({
       label={label}
       {...props}
     >
-      <SelectPrimitive.ItemText className="flex flex-1 shrink-0 gap-2 whitespace-nowrap">
+      <SelectPrimitive.ItemText className="flex min-w-0 flex-1 items-center gap-2 break-words">
         {children}
       </SelectPrimitive.ItemText>
       <SelectPrimitive.ItemIndicator

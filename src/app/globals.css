@@ -136,6 +136,17 @@
   html {
     @apply font-sans;
   }
+  /*
+   * Rede de segurança contra estouro de layout. Nomes/descrições longos sem
+   * espaço (ex.: "TesteTesteTeste…") nunca devem empurrar ou estourar o
+   * container. `anywhere` quebra a palavra só quando necessário E reduz a
+   * largura mínima do texto, deixando itens flex/grid encolherem mesmo sem
+   * `min-w-0` explícito. Elementos com `truncate`/`whitespace-nowrap` não são
+   * afetados (nowrap tem prioridade), então continuam cortando com reticências.
+   */
+  h1, h2, h3, h4, h5, h6, p, li, dd, dt, blockquote, figcaption {
+    overflow-wrap: anywhere;
+  }
 }
 
 /*

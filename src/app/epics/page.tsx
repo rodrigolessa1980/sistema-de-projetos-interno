@@ -4,7 +4,7 @@ import { useState } from "react";
 import { PageHeader } from "@/components/shared/page-header";
 import { useProjectStore, useTaskStore, useUserStore } from "@/stores";
 import { useAuth } from "@/hooks/use-auth";
-import { formatDate, cn } from "@/lib/utils";
+import { formatDate, cn, moduleColorFromId, shortId } from "@/lib/utils";
 import { quickLogModuleIds } from "@/lib/worklog";
 import { motion } from "@/lib/motion";
 import { ChevronRight, ExternalLink, FolderKanban, Layers, ListTodo, Users } from "lucide-react";
@@ -68,6 +68,7 @@ export default function EpicsPage() {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [selectedEpicId, setSelectedEpicId] = useState<string | null>(null);
   const [creatingEpic, setCreatingEpic] = useState(false);
+  const today = new Date().toISOString().split("T")[0];
   const selectedEpic = epics.find((e) => e.id === selectedEpicId) ?? null;
   const form = useForm<EpicForm>({
     defaultValues: {
@@ -257,6 +258,7 @@ export default function EpicsPage() {
                     <Label className="text-zinc-300 text-sm">Projeto</Label>
                     <Select
                       value={field.value || undefined}
+                      items={projectsWithModules.map((p) => ({ value: p.id, label: p.name }))}
                       onValueChange={(value) => {
                         field.onChange(value ?? "");
                         form.setValue("moduleId", "");
@@ -279,7 +281,7 @@ export default function EpicsPage() {
                 <FormField control={form.control} name="moduleId" render={({ field }) => (
                   <FormItem>
                     <Label className="text-zinc-300 text-sm">Modulo</Label>
-                    <Select value={field.value || undefined} onValueChange={(value) => field.onChange(value ?? "")} disabled={!projectId}>
+                    <Select value={field.value || undefined} items={filteredModules.map((m) => ({ value: m.id, label: m.name }))} onValueChange={(value) => field.onChange(value ?? "")} disabled={!projectId}>
                       <FormControl>
                         <SelectTrigger className="w-full bg-zinc-800 border-zinc-700 text-zinc-300">
                           <SelectValue placeholder="Selecionar..." />
@@ -287,7 +289,11 @@ export default function EpicsPage() {
                       </FormControl>
                       <SelectContent className="bg-zinc-900 border-zinc-700/50">
                         {filteredModules.map((module) => (
-                          <SelectItem key={module.id} value={module.id} label={module.name}>{module.name}</SelectItem>
+                          <SelectItem key={module.id} value={module.id} label={module.name}>
+                            <span className="w-2 h-2 rounded-full shrink-0" style={{ background: moduleColorFromId(module.id) }} />
+                            <span className="truncate">{module.name}</span>
+                            <span className="ml-auto pl-2 text-[10px] font-mono text-zinc-500 shrink-0">{shortId(module.id)}</span>
+                          </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
@@ -333,7 +339,7 @@ export default function EpicsPage() {
                   <FormItem>
                     <Label className="text-zinc-300 text-sm">Prazo</Label>
                     <FormControl>
-                      <Input {...field} type="date" className="bg-zinc-800 border-zinc-700 text-zinc-100" />
+                      <Input {...field} type="date" min={today} className="bg-zinc-800 border-zinc-700 text-zinc-100" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

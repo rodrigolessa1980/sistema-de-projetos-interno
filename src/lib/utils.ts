@@ -109,6 +109,25 @@ export function delay(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+// Paleta para categorizar módulos por cor. Como o backend não guarda uma cor
+// por módulo, derivamos uma cor determinística do id: o mesmo módulo sempre
+// aparece com a mesma cor, em qualquer tela.
+const MODULE_COLORS = [
+  "#8b5cf6", "#06b6d4", "#f97316", "#10b981", "#ef4444",
+  "#eab308", "#ec4899", "#3b82f6", "#14b8a6", "#a855f7",
+];
+
+export function moduleColorFromId(id: string): string {
+  let hash = 0;
+  for (let i = 0; i < id.length; i++) hash = (hash * 31 + id.charCodeAt(i)) >>> 0;
+  return MODULE_COLORS[hash % MODULE_COLORS.length];
+}
+
+// Prefixo curto do id — rótulo rápido para diferenciar módulos de nome parecido.
+export function shortId(id: string): string {
+  return id.slice(0, 4).toUpperCase();
+}
+
 export const ALL_STATUSES: TaskStatus[] = [
   "BACKLOG", "PLANEJADA", "BLOQUEADA", "EM_DESENVOLVIMENTO",
   "EM_REVISAO", "HOMOLOGACAO", "CONCLUIDA", "CANCELADA",

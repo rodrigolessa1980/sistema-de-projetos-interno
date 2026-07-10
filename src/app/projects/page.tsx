@@ -84,6 +84,9 @@ export default function ProjectsPage() {
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [moduleDrafts, setModuleDrafts] = useState<ModuleDraft[]>([]);
   const [newModuleName, setNewModuleName] = useState("");
+  const today = new Date().toISOString().split("T")[0];
+  const companyItems = useMemo(() => companies.map((c) => ({ value: c.id, label: c.name })), [companies]);
+  const userItems = useMemo(() => users.map((u) => ({ value: u.id, label: u.name })), [users]);
 
   const visibleProjects = useMemo(
     () => (isAdmin ? projects : projects.filter((p) => p.developerIds.includes(user?.id ?? "") || p.ownerId === user?.id)),
@@ -294,10 +297,10 @@ export default function ProjectsPage() {
                     className="absolute inset-0 z-[1] rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-violet-500/60"
                   />
                   <div className="flex items-start justify-between mb-4">
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3 min-w-0 flex-1">
                       <ProjectAvatar name={project.name} color={project.color} avatar={project.avatar} size="md" />
-                      <div>
-                        <h3 className="text-sm font-semibold text-zinc-100 group-hover:text-white">{project.name}</h3>
+                      <div className="min-w-0 flex-1">
+                        <h3 className="text-sm font-semibold text-zinc-100 group-hover:text-white line-clamp-2 break-words">{project.name}</h3>
                         <div className="flex items-center gap-1 mt-0.5 flex-wrap">
                           <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-medium border ${statusColors[project.status]}`}>
                             {statusLabels[project.status]}
@@ -508,7 +511,7 @@ export default function ProjectsPage() {
                     <Building2 className="w-3.5 h-3.5 text-zinc-400" />
                     Empresa do Grupo
                   </Label>
-                  <Select value={field.value ?? ""} onValueChange={(v) => field.onChange(v === "__none__" ? "" : v)}>
+                  <Select value={field.value ?? ""} items={companyItems} onValueChange={(v) => field.onChange(v === "__none__" ? "" : v)}>
                     <FormControl>
                       <SelectTrigger className="w-full bg-zinc-800 border-zinc-700 text-zinc-100">
                         <SelectValue placeholder="Nenhuma (opcional)" />
@@ -583,7 +586,7 @@ export default function ProjectsPage() {
                     </span>
                   </Label>
                   <FormControl>
-                    <Input {...field} type="date" className="bg-zinc-800 border-amber-500/30 text-zinc-100 focus-visible:ring-amber-500/40" />
+                    <Input {...field} type="date" min={today} className="bg-zinc-800 border-amber-500/30 text-zinc-100 focus-visible:ring-amber-500/40" />
                   </FormControl>
                   <p className="text-[11px] text-zinc-500 -mt-1">
                     Projetos com prazo mais próximo ficam no topo da fila de desenvolvimento.
@@ -746,7 +749,7 @@ export default function ProjectsPage() {
                     <Building2 className="w-3.5 h-3.5 text-zinc-400" />
                     Empresa do Grupo
                   </Label>
-                  <Select value={field.value ?? ""} onValueChange={(v) => field.onChange(v === "__none__" ? "" : v)}>
+                  <Select value={field.value ?? ""} items={companyItems} onValueChange={(v) => field.onChange(v === "__none__" ? "" : v)}>
                     <FormControl>
                       <SelectTrigger className="w-full bg-zinc-800 border-zinc-700 text-zinc-100">
                         <SelectValue placeholder="Nenhuma" />
@@ -811,7 +814,7 @@ export default function ProjectsPage() {
                 <FormField control={editForm.control} name="ownerId" render={({ field }) => (
                   <FormItem>
                     <Label className="text-zinc-300 text-sm">Dev que recebeu a demanda</Label>
-                    <Select value={field.value ?? ""} onValueChange={field.onChange}>
+                    <Select value={field.value ?? ""} items={userItems} onValueChange={field.onChange}>
                       <FormControl>
                         <SelectTrigger className="w-full bg-zinc-800 border-zinc-700 text-zinc-100">
                           <SelectValue placeholder="Dev que recebeu a demanda" />

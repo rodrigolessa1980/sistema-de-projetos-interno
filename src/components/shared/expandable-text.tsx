@@ -48,6 +48,9 @@ export function ExpandableText({
           "text-sm text-zinc-300 leading-relaxed whitespace-pre-wrap break-words",
           isEmpty && "text-zinc-500 italic",
           !expanded && "overflow-hidden",
+          // Ao expandir, NÃO despeja o texto inteiro (rolagem gigante da página).
+          // Limita a altura e rola dentro do próprio bloco.
+          expanded && "max-h-[40vh] overflow-y-auto scrollbar-thin pr-1",
         )}
         style={
           !expanded

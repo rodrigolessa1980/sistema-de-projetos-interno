@@ -9,7 +9,7 @@ import { Progress } from "@/components/ui/progress";
 import { EmptyState } from "@/components/shared/empty-state";
 import { PageLoading } from "@/components/shared/page-loading";
 import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
+import { cn, moduleColorFromId, shortId } from "@/lib/utils";
 import Link from "@/lib/router";
 import type { ModuleStatus } from "@/types";
 
@@ -79,12 +79,14 @@ export default function ModulesPage() {
                           />
                           <div className="flex items-start justify-between gap-2 mb-2">
                             <div className="flex items-center gap-2 min-w-0">
+                              <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: moduleColorFromId(mod.id) }} title={`Módulo ${shortId(mod.id)}`} />
                               <h3 className="text-sm font-semibold text-zinc-100 truncate group-hover:text-white transition-colors">
                                 {mod.name}
                               </h3>
                               <Badge className={`text-[9px] shrink-0 border ${moduleStatusClasses[status]}`}>
                                 {moduleStatusLabels[status]}
                               </Badge>
+                              <span className="text-[9px] font-mono text-zinc-600 shrink-0">{shortId(mod.id)}</span>
                             </div>
                             <div className="flex items-center gap-1 shrink-0">
                               <span className="text-xs font-bold text-zinc-300">{mod.progress}%</span>

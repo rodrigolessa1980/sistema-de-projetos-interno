@@ -17,7 +17,7 @@ import {
   ArrowLeft, Box, Calendar, Clock, User2, MessageSquare, Paperclip,
   Plus, ListTodo, ChevronRight, Download, FileText, FileImage, File as FileIcon,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, moduleColorFromId, shortId } from "@/lib/utils";
 import { toast } from "sonner";
 import type { ModuleStatus, ModuleAttachment } from "@/types";
 
@@ -140,13 +140,17 @@ export default function ModuleDetailPage() {
       </Link>
 
       <div className="flex items-start gap-3 mb-2 flex-wrap">
-        <div className="w-10 h-10 rounded-xl bg-violet-500/15 border border-violet-500/25 flex items-center justify-center shrink-0">
-          <Box className="w-5 h-5 text-violet-400" />
+        <div
+          className="w-10 h-10 rounded-xl border flex items-center justify-center shrink-0"
+          style={{ background: `${moduleColorFromId(projectModule.id)}22`, borderColor: `${moduleColorFromId(projectModule.id)}55` }}
+        >
+          <Box className="w-5 h-5" style={{ color: moduleColorFromId(projectModule.id) }} />
         </div>
         <div className="min-w-0 flex-1">
           <h1 className="text-lg font-semibold text-zinc-100 break-words">{projectModule.name}</h1>
           <div className="flex items-center gap-2 mt-1 flex-wrap">
             <Badge className={`text-[10px] border ${moduleStatusClasses[status]}`}>{moduleStatusLabels[status]}</Badge>
+            <span className="text-[10px] font-mono text-zinc-500 px-1.5 py-0.5 rounded bg-zinc-800 border border-zinc-700">{shortId(projectModule.id)}</span>
             {project && (
               <Link href={`/projects/${project.id}`} className="inline-flex items-center gap-1.5 text-xs text-zinc-400 hover:text-violet-300 transition-colors">
                 <ProjectAvatar name={project.name} color={project.color} avatar={project.avatar} size="xs" />

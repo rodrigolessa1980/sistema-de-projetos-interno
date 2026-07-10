@@ -12,7 +12,7 @@ import {
   Box, Calendar, Clock, File, FileImage, FileText, Download,
   User2, MessageSquare, Paperclip,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, moduleColorFromId, shortId } from "@/lib/utils";
 import { toast } from "sonner";
 import type { Module, Task, TimeLog, ModuleAttachment, User } from "@/types";
 import type { ModuleStatus } from "@/types";
@@ -137,9 +137,11 @@ export function ModuleDetailDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="bg-zinc-900 border-zinc-700/50 text-zinc-100 max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-zinc-100 pr-8">
+          <DialogTitle className="flex items-center gap-2 text-zinc-100 pr-8 min-w-0">
+            <span className="w-3 h-3 rounded-full shrink-0" style={{ background: moduleColorFromId(module.id) }} />
             <Box className="w-5 h-5 text-violet-400 shrink-0" />
-            {module.name}
+            <span className="truncate">{module.name}</span>
+            <span className="ml-1 shrink-0 rounded bg-zinc-800 border border-zinc-700 px-1.5 py-0.5 text-[10px] font-mono text-zinc-400">{shortId(module.id)}</span>
           </DialogTitle>
         </DialogHeader>
 

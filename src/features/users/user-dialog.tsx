@@ -347,8 +347,8 @@ function UserDialogForm({ open, onOpenChange, editUser }: UserDialogProps) {
                     : "Sem tarefas sem responsável nos projetos selecionados"}
                 </p>
               ) : (
-                <Select value={selectedTaskId} onValueChange={(value) => setSelectedTaskId(value ?? "")}>
-                  <SelectTrigger className="bg-zinc-900 border-zinc-700 text-zinc-300 text-sm">
+                <Select value={selectedTaskId} items={availableTasks.map((t) => ({ value: t.id, label: t.title }))} onValueChange={(value) => setSelectedTaskId(value ?? "")}>
+                  <SelectTrigger className="w-full bg-zinc-900 border-zinc-700 text-zinc-300 text-sm">
                     <SelectValue placeholder="Selecionar tarefa..." />
                   </SelectTrigger>
                   <SelectContent className="bg-zinc-900 border-zinc-700 max-h-48">
