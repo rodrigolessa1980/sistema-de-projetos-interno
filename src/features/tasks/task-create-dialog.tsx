@@ -106,45 +106,49 @@ export function TaskCreateDialog({ open, onOpenChange }: Props) {
     // Se há dependências pendentes, força status BLOQUEADA
     const finalStatus: TaskStatus = hasPendingDeps ? "BLOQUEADA" : ((data.status ?? "BACKLOG") as TaskStatus);
 
-    const task = await createTask({
-      ...data,
-      title: data.title?.trim() || `Tarefa ${new Date().toLocaleString("pt-BR")}`,
-      description: data.description?.trim() || "Tarefa criada sem descricao.",
-      projectId: finalProjectId,
-      moduleId: finalModuleId,
-      epicId: finalEpicId,
-      assigneeId: finalAssigneeId,
-      estimatedHours: data.estimatedHours ?? 0,
-      complexity: (data.complexity ?? 1) as TaskComplexity,
-      status: finalStatus,
-      reporterId: user?.id ?? "",
-      actualHours: 0,
-      order: 0,
-      dependencyIds: [],
-      tags: [],
-      isUrgent,
-      blockedReason: hasPendingDeps
-        ? `Aguardando conclusão de: ${selectedDepTasks.filter((t) => t.status !== "CONCLUIDA" && t.status !== "CANCELADA").map((t) => t.title).join(", ")}`
-        : undefined,
-    });
+    try {
+      const task = await createTask({
+        ...data,
+        title: data.title?.trim() || `Tarefa ${new Date().toLocaleString("pt-BR")}`,
+        description: data.description?.trim() || "Tarefa criada sem descricao.",
+        projectId: finalProjectId,
+        moduleId: finalModuleId,
+        epicId: finalEpicId,
+        assigneeId: finalAssigneeId,
+        estimatedHours: data.estimatedHours ?? 0,
+        complexity: (data.complexity ?? 1) as TaskComplexity,
+        status: finalStatus,
+        reporterId: user?.id ?? "",
+        actualHours: 0,
+        order: 0,
+        dependencyIds: [],
+        tags: [],
+        isUrgent,
+        blockedReason: hasPendingDeps
+          ? `Aguardando conclusão de: ${selectedDepTasks.filter((t) => t.status !== "CONCLUIDA" && t.status !== "CANCELADA").map((t) => t.title).join(", ")}`
+          : undefined,
+      });
 
-    // Cria os registros de dependência
-    for (const depId of selectedDepIds) {
-      await addDependency({ taskId: task.id, dependsOnTaskId: depId, type: "BLOCKED_BY" });
-    }
+      // Cria os registros de dependência
+      for (const depId of selectedDepIds) {
+        await addDependency({ taskId: task.id, dependsOnTaskId: depId, type: "BLOCKED_BY" });
+      }
 
-    if (isUrgent) {
-      toast.warning(`Tarefa URGENTE criada — ${willBlockCount} tarefa(s) do desenvolvedor foram bloqueadas`);
-    } else if (hasPendingDeps) {
-      toast.warning("Tarefa criada como BLOQUEADA até que as dependências sejam concluídas");
-    } else {
-      toast.success("Tarefa criada com sucesso!");
+      if (isUrgent) {
+        toast.warning(`Tarefa URGENTE criada — ${willBlockCount} tarefa(s) do desenvolvedor foram bloqueadas`);
+      } else if (hasPendingDeps) {
+        toast.warning("Tarefa criada como BLOQUEADA até que as dependências sejam concluídas");
+      } else {
+        toast.success("Tarefa criada com sucesso!");
+      }
+      onOpenChange(false);
+      form.reset();
+      setSelectedDepIds([]);
+      setDepSearch("");
+      setIsUrgent(false);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Não foi possível criar a tarefa.");
     }
-    onOpenChange(false);
-    form.reset();
-    setSelectedDepIds([]);
-    setDepSearch("");
-    setIsUrgent(false);
   };
 
   return (
@@ -418,8 +422,8 @@ export function TaskCreateDialog({ open, onOpenChange }: Props) {
 
             <div className="flex justify-end gap-2 pt-2">
               <Button type="button" variant="ghost" onClick={() => { onOpenChange(false); setSelectedDepIds([]); setDepSearch(""); }} className="text-zinc-400">Cancelar</Button>
-              <Button type="submit" className="bg-violet-600 hover:bg-violet-700">
-                {hasPendingDeps ? "Criar como Bloqueada" : "Criar Tarefa"}
+              <Button type="submit" disabled={form.formState.isSubmitting} className="bg-violet-600 hover:bg-violet-700 disabled:opacity-60">
+                {form.formState.isSubmitting ? "Criando..." : hasPendingDeps ? "Criar como Bloqueada" : "Criar Tarefa"}
               </Button>
             </div>
           </form>

@@ -63,6 +63,7 @@ export default function EpicsPage() {
   const planningEpics = epics.filter((e) => !quickLog.has(e.moduleId));
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [selectedEpicId, setSelectedEpicId] = useState<string | null>(null);
+  const [creatingEpic, setCreatingEpic] = useState(false);
   const selectedEpic = epics.find((e) => e.id === selectedEpicId) ?? null;
   const form = useForm<EpicForm>({
     defaultValues: {
@@ -366,8 +367,20 @@ export default function EpicsPage() {
                 <Button type="button" variant="ghost" onClick={() => setIsCreateOpen(false)} className="text-zinc-400">
                   Cancelar
                 </Button>
-                <Button type="button" onClick={() => void handleCreate(form.getValues())} className="bg-violet-600 hover:bg-violet-700">
-                  Criar Epic
+                <Button
+                  type="button"
+                  disabled={creatingEpic}
+                  onClick={async () => {
+                    setCreatingEpic(true);
+                    try {
+                      await handleCreate(form.getValues());
+                    } finally {
+                      setCreatingEpic(false);
+                    }
+                  }}
+                  className="bg-violet-600 hover:bg-violet-700 disabled:opacity-60"
+                >
+                  {creatingEpic ? "Criando..." : "Criar Epic"}
                 </Button>
               </div>
             </form>

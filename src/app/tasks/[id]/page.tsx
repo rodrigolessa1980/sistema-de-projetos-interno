@@ -91,34 +91,42 @@ export default function TaskDetailPage() {
   async function handleAddDep(depTaskId: string) {
     const depTask = tasks.find((t) => t.id === depTaskId);
     if (!depTask) return;
-    await addDependency({ taskId: id, dependsOnTaskId: depTaskId, type: "BLOCKED_BY" });
-    const isPending = depTask.status !== "CONCLUIDA" && depTask.status !== "CANCELADA";
-    if (isPending) {
-      await updateTask(id, {
-        status: "BLOQUEADA",
-        blockedReason: `Aguardando conclusão de: "${depTask.title}"`,
-      });
-      toast.warning(`Tarefa bloqueada por "${depTask.title}"`);
-    } else {
-      toast.success("Dependência adicionada");
+    try {
+      await addDependency({ taskId: id, dependsOnTaskId: depTaskId, type: "BLOCKED_BY" });
+      const isPending = depTask.status !== "CONCLUIDA" && depTask.status !== "CANCELADA";
+      if (isPending) {
+        await updateTask(id, {
+          status: "BLOQUEADA",
+          blockedReason: `Aguardando conclusão de: "${depTask.title}"`,
+        });
+        toast.warning(`Tarefa bloqueada por "${depTask.title}"`);
+      } else {
+        toast.success("Dependência adicionada");
+      }
+      setDepSearch("");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Não foi possível adicionar a dependência.");
     }
-    setDepSearch("");
   }
 
   async function handleRemoveDep(depRecord: import("@/types").TaskDependency) {
-    await removeDependency(depRecord.id);
-    // Se não há mais bloqueadores pendentes, desbloqueia a tarefa
-    const remaining = myDeps.filter((d) => d.id !== depRecord.id);
-    const stillBlocked = remaining.some((d) => {
-      const t = tasks.find((tt) => tt.id === d.dependsOnTaskId);
-      return t && t.status !== "CONCLUIDA" && t.status !== "CANCELADA";
-    });
-    const currentTask = getTaskById(id);
-    if (!stillBlocked && currentTask?.status === "BLOQUEADA") {
-      await updateTask(id, { status: "PLANEJADA", blockedReason: undefined });
-      toast.success("Dependência removida — tarefa desbloqueada");
-    } else {
-      toast.success("Dependência removida");
+    try {
+      await removeDependency(depRecord.id);
+      // Se não há mais bloqueadores pendentes, desbloqueia a tarefa
+      const remaining = myDeps.filter((d) => d.id !== depRecord.id);
+      const stillBlocked = remaining.some((d) => {
+        const t = tasks.find((tt) => tt.id === d.dependsOnTaskId);
+        return t && t.status !== "CONCLUIDA" && t.status !== "CANCELADA";
+      });
+      const currentTask = getTaskById(id);
+      if (!stillBlocked && currentTask?.status === "BLOQUEADA") {
+        await updateTask(id, { status: "PLANEJADA", blockedReason: undefined });
+        toast.success("Dependência removida — tarefa desbloqueada");
+      } else {
+        toast.success("Dependência removida");
+      }
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Não foi possível remover a dependência.");
     }
   }
 
@@ -449,8 +457,12 @@ export default function TaskDetailPage() {
                           label="Reatribuir"
                           allowClear
                           onReassign={async (userId) => {
-                            await updateTask(id, { assigneeId: userId ?? undefined });
-                            toast.success(userId ? "Task reatribuída" : "Responsável removido");
+                            try {
+                              await updateTask(id, { assigneeId: userId ?? undefined });
+                              toast.success(userId ? "Task reatribuída" : "Responsável removido");
+                            } catch (error) {
+                              toast.error(error instanceof Error ? error.message : "Não foi possível reatribuir a task.");
+                            }
                           }}
                         />
                       )}
@@ -476,8 +488,12 @@ export default function TaskDetailPage() {
                           label="Trocar"
                           onReassign={async (userId) => {
                             if (!userId) return;
-                            await updateTask(id, { reporterId: userId });
-                            toast.success("Criador atualizado");
+                            try {
+                              await updateTask(id, { reporterId: userId });
+                              toast.success("Criador atualizado");
+                            } catch (error) {
+                              toast.error(error instanceof Error ? error.message : "Não foi possível atualizar o criador.");
+                            }
                           }}
                         />
                       )}

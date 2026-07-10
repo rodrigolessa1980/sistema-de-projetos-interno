@@ -33,6 +33,7 @@ import { ListModuleAttachmentsByProjectUseCase } from './modules/list-module-att
 import { CreateModuleAttachmentUseCase } from './modules/create-module-attachment.use-case';
 import { DeleteModuleAttachmentUseCase } from './modules/delete-module-attachment.use-case';
 import { CreateEpicUseCase } from './epics/create-epic.use-case';
+import { UpdateEpicUseCase } from './epics/update-epic.use-case';
 import { ListEpicsByProjectUseCase } from './epics/list-epics-by-project.use-case';
 
 // Task Use Cases
@@ -110,6 +111,7 @@ const useCases = [
 
   // Epics
   CreateEpicUseCase,
+  UpdateEpicUseCase,
   ListEpicsByProjectUseCase,
 
   // Tasks

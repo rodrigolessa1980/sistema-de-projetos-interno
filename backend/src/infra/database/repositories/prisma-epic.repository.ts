@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { IEpicRepository } from '../../../core/domain/repositories/epic-repository.interface';
+import { IEpicRepository, UpdateEpicData } from '../../../core/domain/repositories/epic-repository.interface';
 import { Epic } from '../../../core/domain/entities/epic.entity';
 import { ProjectStatus } from '../../../core/domain/entities/enums';
 
@@ -46,6 +46,36 @@ export class PrismaEpicRepository implements IEpicRepository {
       raw.developers = [];
       for (const userId of epic.developerIds) {
         raw.developers.push(await tx.epicDeveloper.create({ data: { epicId: raw.id, userId } }));
+      }
+      return this.mapToDomain(raw);
+    });
+  }
+
+  async update(id: string, data: UpdateEpicData): Promise<Epic> {
+    return this.prisma.$transaction(async (tx) => {
+      const raw: any = await tx.epic.update({
+        where: { id },
+        data: {
+          moduleId: data.moduleId,
+          name: data.name,
+          description: data.description,
+          status: data.status,
+          startDate: data.startDate,
+          endDate: data.endDate,
+          progress: data.progress,
+        },
+      });
+      // developerIds só é reescrito quando enviado; senão preserva o vínculo atual.
+      // Como no create, EpicDeveloper é tenant-scoped -> chamadas top-level para a
+      // extensão injetar o tenantId (deleteMany/create passam pelo filtro do tenant).
+      if (data.developerIds) {
+        await tx.epicDeveloper.deleteMany({ where: { epicId: id } });
+        raw.developers = [];
+        for (const userId of data.developerIds) {
+          raw.developers.push(await tx.epicDeveloper.create({ data: { epicId: id, userId } }));
+        }
+      } else {
+        raw.developers = await tx.epicDeveloper.findMany({ where: { epicId: id } });
       }
       return this.mapToDomain(raw);
     });

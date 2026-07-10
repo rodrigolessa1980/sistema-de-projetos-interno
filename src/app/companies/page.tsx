@@ -47,7 +47,7 @@ function CompanyFormDialog({
   open: boolean;
   onOpenChange: (v: boolean) => void;
   defaultValues: CompanyForm;
-  onSubmit: (data: CompanyForm) => void;
+  onSubmit: (data: CompanyForm) => void | Promise<void>;
   title: string;
 }) {
   const form = useForm<CompanyForm>({
@@ -59,8 +59,8 @@ function CompanyFormDialog({
   const watchedColor = form.watch("color");
   const watchedShort = form.watch("shortName");
 
-  function handleSubmit(data: CompanyForm) {
-    onSubmit(data);
+  async function handleSubmit(data: CompanyForm) {
+    await onSubmit(data);
     form.reset(defaultValues);
   }
 
@@ -152,8 +152,8 @@ function CompanyFormDialog({
               <Button type="button" variant="ghost" onClick={() => onOpenChange(false)} className="text-zinc-400">
                 Cancelar
               </Button>
-              <Button type="submit" className="bg-violet-600 hover:bg-violet-700">
-                Salvar
+              <Button type="submit" disabled={form.formState.isSubmitting} className="bg-violet-600 hover:bg-violet-700 disabled:opacity-60">
+                {form.formState.isSubmitting ? "Salvando..." : "Salvar"}
               </Button>
             </div>
           </form>

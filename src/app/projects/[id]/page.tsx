@@ -246,8 +246,12 @@ export default function ProjectDetailPage() {
 
   async function handleChangeOwner(userId: string | null) {
     if (!userId) return;
-    await updateProject(id, { ownerId: userId });
-    toast.success("Dev que recebeu a demanda atualizado");
+    try {
+      await updateProject(id, { ownerId: userId });
+      toast.success("Dev que recebeu a demanda atualizado");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Não foi possível atualizar o dev responsável.");
+    }
   }
 
   function handleAddMember(userId: string) {
@@ -541,12 +545,17 @@ export default function ProjectDetailPage() {
               )}
               {isAdmin && (
                 <button
-                  onClick={() => {
+                  onClick={async () => {
                     const raw = prompt("URL de Homologação / Teste:", project.testUrl ?? "");
                     if (raw !== null) {
                       const trimmed = raw.trim();
                       const normalized = trimmed && !/^https?:\/\//i.test(trimmed) ? `https://${trimmed}` : trimmed;
-                      updateProject(id, { testUrl: normalized || undefined });
+                      try {
+                        await updateProject(id, { testUrl: normalized || undefined });
+                        toast.success("URL de teste atualizada");
+                      } catch (error) {
+                        toast.error(error instanceof Error ? error.message : "Não foi possível salvar a URL de teste.");
+                      }
                     }
                   }}
                   className="flex items-center gap-1 text-xs text-zinc-600 hover:text-zinc-400 transition-colors"
@@ -1378,8 +1387,12 @@ export default function ProjectDetailPage() {
                           allowClear
                           filterIds={[...project.developerIds, project.ownerId]}
                           onReassign={async (userId) => {
-                            await updateTask(task.id, { assigneeId: userId ?? undefined });
-                            toast.success(userId ? "Task reatribuída" : "Responsável removido");
+                            try {
+                              await updateTask(task.id, { assigneeId: userId ?? undefined });
+                              toast.success(userId ? "Task reatribuída" : "Responsável removido");
+                            } catch (error) {
+                              toast.error(error instanceof Error ? error.message : "Não foi possível reatribuir a task.");
+                            }
                           }}
                         />
                       )}

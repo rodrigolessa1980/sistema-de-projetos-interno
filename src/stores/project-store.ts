@@ -4,10 +4,10 @@ import { create } from "zustand";
 import type { Project, Module, Epic, Company, ModuleStatus, ProjectShowcaseAttachment, ProjectDemandAttachment } from "@/types";
 import type { Task, TimeLog, ModuleAttachment } from "@/types";
 // Module and Epic are fetched from API; types re-exported for clarity
-import { delay } from "@/lib/utils";
 import { api } from "@/lib/api";
+import { toast } from "sonner";
 import { useTaskStore } from "./task-store";
-import { createDirtyTracker, replacePreservingDirty } from "@/lib/reconcile";
+import { createDirtyTracker, replacePreservingDirty, upsertById } from "@/lib/reconcile";
 import { normalizeTask, taskDirty } from "./task-store";
 
 /**
@@ -108,7 +108,8 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
     // forbidNonWhitelisted -> 400) quando a build implantada não conhecia o campo,
     // e o erro era engolido -> o cadastro "sumia" sem aviso.
     const response = await api.post<{ company: Company }>("companies", data);
-    set((state) => ({ companies: [...state.companies, response.company] }));
+    // upsertById em vez de append: se o delta-sync já inseriu (POST lento), não duplica.
+    set((state) => ({ companies: upsertById(state.companies, response.company) }));
     return response.company;
   },
 
@@ -272,7 +273,8 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
   createProject: async (data) => {
     const project = await api.post<Project>("projects", data);
     const normalized = normalizeProject(project);
-    set((state) => ({ projects: [...state.projects, normalized] }));
+    // upsertById em vez de append: se o delta-sync já inseriu (POST lento), não duplica.
+    set((state) => ({ projects: upsertById(state.projects, normalized) }));
     return normalized;
   },
 
@@ -305,10 +307,10 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
     }>("modules", data);
     const { module: projectModule, epic, task, timeLog, attachments } = response;
 
-    set((state) => ({ modules: [...state.modules, projectModule] }));
+    set((state) => ({ modules: upsertById(state.modules, projectModule) }));
 
     if (epic) {
-      set((state) => ({ epics: [...state.epics, normalizeEpic(epic)] }));
+      set((state) => ({ epics: upsertById(state.epics, normalizeEpic(epic)) }));
     }
 
     useTaskStore.setState((state) => {
@@ -377,7 +379,7 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
         return response.module;
       })
     );
-    set((state) => ({ modules: [...state.modules, ...created] }));
+    set((state) => ({ modules: created.reduce((acc, m) => upsertById(acc, m), state.modules) }));
     return created;
   },
 
@@ -399,16 +401,23 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
   },
 
   updateEpic: async (id, data) => {
-    await delay(300);
-    const now = new Date().toISOString();
-    let updated!: Epic;
+    // Persiste no backend. Envia só os campos aceitos pelo UpdateEpicDto
+    // (forbidNonWhitelisted derruba qualquer campo extra com 400).
+    const response = await api.patch<{ epic: Epic }>(`epics/${id}`, {
+      moduleId: data.moduleId,
+      name: data.name,
+      description: data.description,
+      status: data.status,
+      startDate: data.startDate,
+      endDate: data.endDate,
+      progress: data.progress,
+      developerIds: data.developerIds,
+    });
+    const normalized = normalizeEpic(response.epic);
     set((state) => ({
-      epics: state.epics.map((e) => {
-        if (e.id === id) { updated = { ...e, ...data, updatedAt: now }; return updated; }
-        return e;
-      }),
+      epics: state.epics.map((e) => (e.id === id ? normalized : e)),
     }));
-    return updated;
+    return normalized;
   },
 
   setSelectedProject: (id) => set({ selectedProjectId: id }),
@@ -429,6 +438,7 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
             : p
         ),
       }));
+      toast.error("Não foi possível adicionar o membro ao projeto.");
     });
   },
 
@@ -443,6 +453,7 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
     }));
     void api.delete(`projects/${projectId}/developers/${userId}`).catch(() => {
       set({ projects: previous });
+      toast.error("Não foi possível remover o membro do projeto.");
     });
   },
 
@@ -464,6 +475,7 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
     }));
     void api.post("projects/queue/reorder", { orderedIds }).catch(() => {
       // mantém atualização otimista local; tela pode recarregar da API depois
+      toast.error("Não foi possível salvar a ordem da fila.");
     });
   },
 }));

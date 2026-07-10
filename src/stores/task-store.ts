@@ -6,8 +6,9 @@ import type { Task, Subtask, TimeLog, Comment, TaskDependency, StatusHistory, Ta
 import { generateId, delay } from "@/lib/utils";
 import type { AuditLog } from "@/types";
 import { api } from "@/lib/api";
+import { toast } from "sonner";
 import { useWorkSessionStore } from "@/stores/work-session-store";
-import { createDirtyTracker, replacePreservingDirty } from "@/lib/reconcile";
+import { createDirtyTracker, replacePreservingDirty, upsertById } from "@/lib/reconcile";
 
 /**
  * Ids de tasks com mutação otimista em voo (INC-03). Compartilhado com o delta sync
@@ -204,12 +205,15 @@ export const useTaskStore = create<TaskStore>()(
       set((state) => ({
         tasks: state.tasks.map((task) => (task.id === taskId ? normalized : task)),
       }));
+    }).catch(() => {
+      toast.error("Não foi possível atualizar a urgência da tarefa.");
     });
   },
 
   createTask: async (data) => {
     const task = normalizeTask(await api.post<ApiTask>("tasks", toCreateTaskPayload(data)));
-    set((state) => ({ tasks: [...state.tasks, task] }));
+    // upsertById em vez de append: se o delta-sync já inseriu (POST lento), não duplica.
+    set((state) => ({ tasks: upsertById(state.tasks, task) }));
     return task;
   },
 
@@ -420,6 +424,7 @@ export const useTaskStore = create<TaskStore>()(
         targetTaskIds: taskIds,
       }).catch(() => {
         // fallback local otimista
+        toast.error("Não foi possível salvar a nova ordem do quadro.");
       });
     }
   },

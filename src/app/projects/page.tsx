@@ -699,8 +699,10 @@ export default function ProjectsPage() {
 
               <div className="flex justify-end gap-2 pt-2">
                 <Button type="button" variant="ghost" onClick={() => setIsCreateOpen(false)} className="text-zinc-400">Cancelar</Button>
-                <Button type="submit" className="bg-violet-600 hover:bg-violet-700">
-                  Criar Projeto{moduleDrafts.length > 0 ? ` + ${moduleDrafts.length} módulo${moduleDrafts.length > 1 ? "s" : ""}` : ""}
+                <Button type="submit" disabled={form.formState.isSubmitting} className="bg-violet-600 hover:bg-violet-700 disabled:opacity-60">
+                  {form.formState.isSubmitting
+                    ? "Criando..."
+                    : `Criar Projeto${moduleDrafts.length > 0 ? ` + ${moduleDrafts.length} módulo${moduleDrafts.length > 1 ? "s" : ""}` : ""}`}
                 </Button>
               </div>
             </form>
@@ -879,8 +881,8 @@ export default function ProjectsPage() {
                 <Button type="button" variant="ghost" onClick={() => setEditingProject(null)} className="text-zinc-400">
                   Cancelar
                 </Button>
-                <Button type="submit" className="bg-violet-600 hover:bg-violet-700">
-                  Salvar alterações
+                <Button type="submit" disabled={editForm.formState.isSubmitting} className="bg-violet-600 hover:bg-violet-700 disabled:opacity-60">
+                  {editForm.formState.isSubmitting ? "Salvando..." : "Salvar alterações"}
                 </Button>
               </div>
             </form>

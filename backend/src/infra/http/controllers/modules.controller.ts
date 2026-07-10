@@ -12,13 +12,14 @@ import { ListModuleAttachmentsByProjectUseCase } from '../../../core/use-cases/m
 import { CreateModuleAttachmentUseCase } from '../../../core/use-cases/modules/create-module-attachment.use-case';
 import { DeleteModuleAttachmentUseCase } from '../../../core/use-cases/modules/delete-module-attachment.use-case';
 import { CreateEpicUseCase } from '../../../core/use-cases/epics/create-epic.use-case';
+import { UpdateEpicUseCase } from '../../../core/use-cases/epics/update-epic.use-case';
 import { ListEpicsByProjectUseCase } from '../../../core/use-cases/epics/list-epics-by-project.use-case';
-import { IsInt, IsNotEmpty, IsNumber, IsOptional, IsString, IsDateString, IsArray, IsEnum } from 'class-validator';
+import { IsInt, IsNotEmpty, IsNumber, IsOptional, IsString, IsDateString, IsArray, IsEnum, Max, Min } from 'class-validator';
 import { CreateModuleDto } from '../dtos/modules/create-module.dto';
 import { CreateModuleAttachmentDto } from '../dtos/modules/create-module-attachment.dto';
 import { TaskPresenter } from '../presenters/task.presenter';
 import { TimeLogPresenter } from '../presenters/time-log.presenter';
-import { ModuleStatus, UserRole } from '../../../core/domain/entities/enums';
+import { ModuleStatus, ProjectStatus, UserRole } from '../../../core/domain/entities/enums';
 
 class UpdateModuleDto {
   @IsOptional() @IsString() @IsNotEmpty() name?: string;
@@ -36,6 +37,17 @@ class CreateEpicDto {
   @IsOptional() @IsString() description?: string;
   @IsOptional() @IsDateString() startDate?: string;
   @IsOptional() @IsDateString() endDate?: string;
+  @IsOptional() @IsArray() @IsString({ each: true }) developerIds?: string[];
+}
+
+class UpdateEpicDto {
+  @IsOptional() @IsString() @IsNotEmpty() moduleId?: string;
+  @IsOptional() @IsString() @IsNotEmpty() name?: string;
+  @IsOptional() @IsString() description?: string;
+  @IsOptional() @IsEnum(ProjectStatus) status?: ProjectStatus;
+  @IsOptional() @IsDateString() startDate?: string;
+  @IsOptional() @IsDateString() endDate?: string | null;
+  @IsOptional() @IsInt() @Min(0) @Max(100) progress?: number;
   @IsOptional() @IsArray() @IsString({ each: true }) developerIds?: string[];
 }
 
@@ -105,6 +117,7 @@ export class ModulesController {
     private readonly createModuleAttachmentUseCase: CreateModuleAttachmentUseCase,
     private readonly deleteModuleAttachmentUseCase: DeleteModuleAttachmentUseCase,
     private readonly createEpicUseCase: CreateEpicUseCase,
+    private readonly updateEpicUseCase: UpdateEpicUseCase,
     private readonly listEpicsByProjectUseCase: ListEpicsByProjectUseCase,
   ) {}
 
@@ -233,6 +246,25 @@ export class ModulesController {
       startDate: body.startDate ? new Date(body.startDate) : new Date(),
       endDate: body.endDate ? new Date(body.endDate) : null,
       developerIds: body.developerIds ?? [],
+    });
+    return { epic: epicToHTTP(epic) };
+  }
+
+  @Patch('epics/:id')
+  @RequirePermission('epics:update')
+  async updateEpic(@Param('id') id: string, @Body() body: UpdateEpicDto) {
+    const epic = await this.updateEpicUseCase.execute({
+      id,
+      moduleId: body.moduleId,
+      name: body.name,
+      description: body.description,
+      status: body.status,
+      startDate: body.startDate ? new Date(body.startDate) : undefined,
+      // endDate ausente => não altera; null => limpa; string => define.
+      endDate:
+        body.endDate === undefined ? undefined : body.endDate ? new Date(body.endDate) : null,
+      progress: body.progress,
+      developerIds: body.developerIds,
     });
     return { epic: epicToHTTP(epic) };
   }
