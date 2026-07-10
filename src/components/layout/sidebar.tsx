@@ -4,9 +4,9 @@ import { usePathname, useRouter } from "@/lib/router";
 import Link from "@/lib/router";
 import { motion, AnimatePresence } from "@/lib/motion";
 import {
-  LayoutDashboard, FolderKanban, ListTodo, Kanban, GitBranch,
+  LayoutDashboard, FolderKanban, Kanban, GitBranch,
   BarChart3, Clock, Network, Users, ChevronLeft, ChevronRight,
-  Zap, Settings, LogOut, ChevronDown, Box, Layers,
+  Zap, Settings, LogOut, ChevronDown, Box,
   FileBarChart2, ClipboardList, Timer, TrendingUp, ListOrdered, Building2, Inbox,
   CalendarDays,
 } from "lucide-react";
@@ -23,18 +23,18 @@ const navItems = [
   { group: "Principal", items: [
     { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard, adminOnly: false },
   ]},
-  // Estrutura de planejamento: projeto, fila, estrutura e clientes.
+  // Estrutura de planejamento: projeto, fila de produção, módulos e clientes.
+  // Epics e Tarefas não aparecem aqui de propósito — vivem dentro do Módulo.
   { group: "Projetos", items: [
     { href: "/projects", label: "Projetos", icon: FolderKanban, adminOnly: false },
-    { href: "/queue", label: "Fila de Dev", icon: ListOrdered, adminOnly: false },
+    { href: "/queue", label: "Fila de Produção", icon: ListOrdered, adminOnly: false },
     { href: "/modules", label: "Módulos", icon: Box, adminOnly: false },
-    { href: "/epics", label: "Epics", icon: Layers, adminOnly: false },
     { href: "/companies", label: "Empresas", icon: Building2, adminOnly: false },
   ]},
-  // Execução do trabalho: minhas tarefas e visualizações.
+  // Execução do trabalho: visões gerais de acompanhamento (as tarefas são
+  // criadas/editadas dentro de cada módulo).
   { group: "Trabalho", items: [
     { href: "/my-queue", label: "Minha Fila", icon: Inbox, adminOnly: false },
-    { href: "/tasks", label: "Tarefas", icon: ListTodo, adminOnly: false },
     { href: "/kanban", label: "Kanban", icon: Kanban, adminOnly: false },
     { href: "/gantt", label: "Timeline", icon: GitBranch, adminOnly: false },
     { href: "/dependencies", label: "Dependências", icon: Network, adminOnly: false },

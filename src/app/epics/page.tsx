@@ -10,6 +10,7 @@ import { motion } from "@/lib/motion";
 import { ChevronRight, ExternalLink, FolderKanban, Layers, ListTodo, Users } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { EmptyState } from "@/components/shared/empty-state";
+import { PageLoading } from "@/components/shared/page-loading";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
@@ -57,6 +58,7 @@ type EpicForm = z.infer<typeof epicSchema>;
 
 export default function EpicsPage() {
   const { epics, projects, modules, createEpic, createModule } = useProjectStore();
+  const hasLoaded = useProjectStore((s) => s.hasLoaded);
   const { tasks } = useTaskStore();
   const { users } = useUserStore();
   const { isAdmin } = useAuth();
@@ -155,7 +157,9 @@ export default function EpicsPage() {
         actions={isAdmin ? [{ label: "Novo Epic", onClick: openCreateDialog }] : undefined}
       />
       <div className="p-6 w-full">
-        {planningEpics.length === 0 ? (
+        {!hasLoaded ? (
+          <PageLoading label="Carregando epics..." />
+        ) : planningEpics.length === 0 ? (
           <EmptyState icon={Layers} title="Nenhum epic" description="Os epics serão exibidos aqui." />
         ) : (
           <div className="space-y-6">
@@ -191,7 +195,7 @@ export default function EpicsPage() {
                           className={cn(
                             "group w-full text-left bg-zinc-900/60 border border-zinc-800/50 rounded-xl p-5",
                             "cursor-pointer transition-all hover:border-violet-500/30 hover:bg-zinc-900/80",
-                            "hover:shadow-lg hover:shadow-violet-500/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/60",
+                            "hover:shadow-blue-glow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/60",
                             selectedEpicId === epic.id && "border-violet-500/40 bg-violet-500/5"
                           )}
                         >

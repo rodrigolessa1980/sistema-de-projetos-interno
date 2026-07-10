@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo, useCallback } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { useUserStore } from "@/stores";
 import { EmptyState } from "@/components/shared/empty-state";
+import { PageLoading } from "@/components/shared/page-loading";
 import { Users, Save, RotateCcw, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -100,6 +101,7 @@ function formatLastLogin(date: string | null): string {
 export default function UsersPage() {
   const { isAdmin } = useAuth();
   const { users: storeUsers, fetchUsers, updateUserPermissions, approveUser, setUserRole } = useUserStore();
+  const hasLoaded = useUserStore((s) => s.hasLoaded);
   const [rolePendingId, setRolePendingId] = useState<string | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [permMap, setPermMap] = useState<PermissionMap>({});
@@ -244,10 +246,8 @@ export default function UsersPage() {
             </h2>
           </div>
 
-          {isLoading ? (
-            <div className="flex-1 flex items-center justify-center">
-              <div className="w-6 h-6 border-2 border-violet-500 border-t-transparent rounded-full animate-spin" />
-            </div>
+          {(isLoading || !hasLoaded) ? (
+            <PageLoading label="Carregando usuários..." />
           ) : (
             <div className="flex-1 divide-y divide-zinc-100 dark:divide-zinc-800">
               {users.map((user) => (
@@ -328,7 +328,7 @@ export default function UsersPage() {
           ) : (
             <>
               {/* Header */}
-              <div className="p-6 border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 flex items-start justify-between gap-4">
+              <div className="p-4 sm:p-6 border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 flex flex-wrap items-start justify-between gap-4">
                 <div className="min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
                     <h2 className="text-lg font-bold text-zinc-800 dark:text-zinc-100">
@@ -393,8 +393,9 @@ export default function UsersPage() {
               </div>
 
               {/* Tabela de Permissões */}
-              <div className="flex-1 overflow-auto p-6">
+              <div className="flex-1 overflow-auto p-4 sm:p-6">
                 <div className="bg-white dark:bg-zinc-950 rounded-xl border border-zinc-200 dark:border-zinc-800 overflow-hidden">
+                  <div className="overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead>
                       <tr className="border-b border-zinc-200 dark:border-zinc-800">
@@ -486,6 +487,7 @@ export default function UsersPage() {
                       })}
                     </tbody>
                   </table>
+                  </div>
 
                   {/* Resumo */}
                   <div className="px-5 py-3 border-t border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50 flex items-center justify-between">

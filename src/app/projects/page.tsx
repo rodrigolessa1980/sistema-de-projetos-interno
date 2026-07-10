@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { PageHeader } from "@/components/shared/page-header";
 import { EmptyState } from "@/components/shared/empty-state";
+import { PageLoading } from "@/components/shared/page-loading";
 import { useProjectStore } from "@/stores";
 import { useAuth } from "@/hooks/use-auth";
 import { useUserStore } from "@/stores";
@@ -75,6 +76,7 @@ type ModuleDraft = { id: string; name: string; description: string };
 
 export default function ProjectsPage() {
   const { projects, companies, createProject, deleteProject, updateProject, addDeveloperToProject, removeDeveloperFromProject, createModulesBulk } = useProjectStore();
+  const hasLoaded = useProjectStore((s) => s.hasLoaded);
   const { users } = useUserStore();
   const { user, isAdmin } = useAuth();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -258,7 +260,9 @@ export default function ProjectsPage() {
       />
 
       <div className="p-6 w-full">
-        {visibleProjects.length === 0 ? (
+        {!hasLoaded ? (
+          <PageLoading label="Carregando projetos..." />
+        ) : visibleProjects.length === 0 ? (
           <EmptyState
             icon={FolderKanban}
             title="Nenhum projeto encontrado"
@@ -282,7 +286,7 @@ export default function ProjectsPage() {
                   initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.05 }}
-                  className="group relative bg-zinc-900/60 border border-zinc-800/50 rounded-xl p-5 cursor-pointer hover:border-zinc-700/50 transition-all hover:shadow-lg hover:shadow-black/20"
+                  className="group relative bg-zinc-900/60 border border-zinc-800/50 rounded-xl p-5 cursor-pointer hover:border-zinc-700/50 transition-all hover:shadow-blue-glow-lg"
                 >
                   <Link
                     href={`/projects/${project.id}`}

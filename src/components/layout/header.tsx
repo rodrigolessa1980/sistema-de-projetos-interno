@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useEffect } from "react";
 import { useRouter } from "@/lib/router";
-import { Bell, Search, Command, X, Timer, AlertTriangle, Clock, CheckCheck } from "lucide-react";
+import { Bell, Search, Command, X, Timer, AlertTriangle, Clock, CheckCheck, Menu } from "lucide-react";
 import { motion, AnimatePresence } from "@/lib/motion";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -22,6 +22,7 @@ import { ThemeToggle } from "./theme-toggle";
 
 export function Header({ title }: { title?: string }) {
   const { notifications, markNotificationRead, markAllRead } = useUIStore();
+  const setSidebarMobileOpen = useUIStore((s) => s.setSidebarMobileOpen);
   const { user, isAdmin } = useAuth();
   const router = useRouter();
   const { tasks } = useTaskStore();
@@ -85,10 +86,17 @@ export function Header({ title }: { title?: string }) {
   };
 
   return (
-    <header className="h-14 border-b border-zinc-800/50 bg-zinc-950/80 backdrop-blur-sm flex items-center justify-between px-6 sticky top-0 z-10">
-      <div className="flex items-center gap-3">
+    <header className="h-14 border-b border-zinc-800/50 bg-zinc-950/80 backdrop-blur-sm flex items-center justify-between px-4 sm:px-6 sticky top-0 z-10">
+      <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+        <button
+          onClick={() => setSidebarMobileOpen(true)}
+          className="md:hidden p-1.5 -ml-1 rounded-md text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800 transition-colors shrink-0"
+          aria-label="Abrir menu"
+        >
+          <Menu className="w-5 h-5" />
+        </button>
         {title && (
-          <h1 className="text-base font-semibold text-zinc-100">{title}</h1>
+          <h1 className="text-base font-semibold text-zinc-100 truncate">{title}</h1>
         )}
       </div>
 
@@ -146,7 +154,7 @@ export function Header({ title }: { title?: string }) {
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.96, y: -8 }}
                   transition={{ duration: 0.15 }}
-                  className="absolute right-0 top-10 w-[480px] bg-zinc-900 border border-zinc-700/50 rounded-xl shadow-2xl z-50 overflow-hidden"
+                  className="absolute right-0 top-10 w-[min(480px,calc(100vw-2rem))] bg-zinc-900 border border-zinc-700/50 rounded-xl shadow-2xl z-50 overflow-hidden"
                 >
                   <div className="flex items-center gap-2 px-4 py-3 border-b border-zinc-800">
                     <Search className="w-4 h-4 text-zinc-400" />

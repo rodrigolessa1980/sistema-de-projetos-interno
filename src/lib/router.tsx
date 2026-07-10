@@ -81,6 +81,7 @@ export function useParams<T extends Record<string, string> = Record<string, stri
 
   if (segments[0] === "projects" && segments[1]) params.id = decodeURIComponent(segments[1]);
   if (segments[0] === "tasks" && segments[1]) params.id = decodeURIComponent(segments[1]);
+  if (segments[0] === "modules" && segments[1]) params.id = decodeURIComponent(segments[1]);
   if (segments[0] === "reports" && segments[1] === "projects" && segments[2]) {
     params.id = decodeURIComponent(segments[2]);
   }

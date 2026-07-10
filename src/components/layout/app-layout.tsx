@@ -10,6 +10,7 @@ import { useEffect } from "react";
 import { useProjectStore, useTaskStore, useUIStore, useUserStore } from "@/stores";
 import { preloadMainPages } from "@/lib/page-loaders";
 import { AwaitingApproval } from "@/components/auth/awaiting-approval";
+import { cn } from "@/lib/utils";
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -27,6 +28,8 @@ export function AppLayout({ children, title }: AppLayoutProps) {
   const fetchAllTimeLogs = useTaskStore((s) => s.fetchAllTimeLogs);
   const fetchNotifications = useUIStore((s) => s.fetchNotifications);
   const fetchUsers = useUserStore((s) => s.fetchUsers);
+  const sidebarMobileOpen = useUIStore((s) => s.sidebarMobileOpen);
+  const setSidebarMobileOpen = useUIStore((s) => s.setSidebarMobileOpen);
   useSyncWorkSession(isAuthenticated && !isPending);
   // INC-12: delta sync — vê mudanças de outros usuários sem recarregar a página.
   useDeltaSync(isAuthenticated && !isPending);
@@ -36,6 +39,11 @@ export function AppLayout({ children, title }: AppLayoutProps) {
       router.push("/login");
     }
   }, [isAuthenticated, isLoading, pathname, router]);
+
+  // Fecha o drawer da sidebar sempre que a rota muda (mobile).
+  useEffect(() => {
+    setSidebarMobileOpen(false);
+  }, [pathname, setSidebarMobileOpen]);
 
   useEffect(() => {
     if (isAuthenticated && !isPending) {
@@ -68,7 +76,23 @@ export function AppLayout({ children, title }: AppLayoutProps) {
 
   return (
     <div className="flex h-screen bg-zinc-950 overflow-hidden">
-      <div data-print-hide className="print:hidden">
+      {/* Backdrop do drawer — só no mobile, fecha ao tocar fora */}
+      {sidebarMobileOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/50 md:hidden"
+          onClick={() => setSidebarMobileOpen(false)}
+          aria-hidden
+        />
+      )}
+      {/* Sidebar: drawer deslizante no mobile, fixa no fluxo no desktop (md+) */}
+      <div
+        data-print-hide
+        className={cn(
+          "print:hidden z-50 shrink-0 transition-transform duration-200 ease-in-out",
+          "fixed inset-y-0 left-0 md:static md:translate-x-0",
+          sidebarMobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0",
+        )}
+      >
         <Sidebar />
       </div>
       <div className="flex flex-col flex-1 min-w-0 overflow-hidden">

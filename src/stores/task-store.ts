@@ -97,6 +97,8 @@ interface TaskStore {
   notes: TaskNote[];
   attachments: TaskAttachment[];
   isLoading: boolean;
+  /** True após a 1ª carga (bootstrap/timelogs). Gate anti "falso vazio". */
+  hasLoaded: boolean;
   selectedTaskId: string | null;
 
   getTaskById: (id: string) => Task | undefined;
@@ -173,6 +175,7 @@ export const useTaskStore = create<TaskStore>()(
   attachments: [],
   moduleAttachments: [],
   isLoading: false,
+  hasLoaded: false,
   selectedTaskId: null,
 
   getTaskById: (id) => get().tasks.find((t) => t.id === id),
@@ -318,7 +321,7 @@ export const useTaskStore = create<TaskStore>()(
     // Admin recebe todos os registros; demais usuários, só os próprios (regra do backend).
     const logs = await api.get<TimeLog[]>("time-logs").catch(() => [] as TimeLog[]);
     const normalized = logs.map((log) => ({ ...log, date: log.date.split("T")[0] }));
-    set({ timeLogs: normalized });
+    set({ timeLogs: normalized, hasLoaded: true });
   },
 
   fetchModuleAttachmentsForProject: async (projectId, moduleIds) => {

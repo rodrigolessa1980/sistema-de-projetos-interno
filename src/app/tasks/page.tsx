@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { PageHeader } from "@/components/shared/page-header";
+import { PageLoading } from "@/components/shared/page-loading";
 import { useTaskStore } from "@/stores";
 import { useAuth } from "@/hooks/use-auth";
 import { TaskCreateDialog } from "@/features/tasks/task-create-dialog";
@@ -9,6 +10,7 @@ import { TasksListView } from "@/features/tasks/tasks-list-view";
 
 export default function TasksPage() {
   const { tasks } = useTaskStore();
+  const hasLoaded = useTaskStore((s) => s.hasLoaded);
   const { user, isAdmin } = useAuth();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
 
@@ -28,11 +30,15 @@ export default function TasksPage() {
       />
 
       <div className="p-6 w-full">
-        <TasksListView
-          isAdmin={isAdmin}
-          userId={user?.id}
-          onCreateTask={isAdmin ? () => setIsCreateOpen(true) : undefined}
-        />
+        {!hasLoaded ? (
+          <PageLoading label="Carregando tarefas..." />
+        ) : (
+          <TasksListView
+            isAdmin={isAdmin}
+            userId={user?.id}
+            onCreateTask={isAdmin ? () => setIsCreateOpen(true) : undefined}
+          />
+        )}
       </div>
 
       {isAdmin && <TaskCreateDialog open={isCreateOpen} onOpenChange={setIsCreateOpen} />}

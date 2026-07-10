@@ -39,8 +39,8 @@ export default function MetricsPage() {
   ];
 
   return (
-      <div className="p-6 w-full space-y-6">
-        <div className="flex items-center justify-between">
+      <div className="p-4 sm:p-6 w-full space-y-6">
+        <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <h1 className="text-xl font-bold text-zinc-100">Dashboard de Métricas</h1>
             <p className="text-sm text-zinc-500">Análise de produtividade e desempenho</p>

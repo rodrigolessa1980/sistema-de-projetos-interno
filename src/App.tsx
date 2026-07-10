@@ -20,6 +20,7 @@ const GanttPage = lazyPage(pageLoaders.gantt);
 const KanbanPage = lazyPage(pageLoaders.kanban);
 const MetricsPage = lazyPage(pageLoaders.metrics);
 const ModulesPage = lazyPage(pageLoaders.modules);
+const ModuleDetailPage = lazyPage(pageLoaders.moduleDetail);
 const MyQueuePage = lazyPage(pageLoaders.myQueue);
 const ProfilePage = lazyPage(pageLoaders.profile);
 const ProjectsPage = lazyPage(pageLoaders.projects);
@@ -48,6 +49,7 @@ const routes = [
   { pattern: /^\/kanban\/?$/, component: KanbanPage },
   { pattern: /^\/metrics\/?$/, component: MetricsPage },
   { pattern: /^\/modules\/?$/, component: ModulesPage },
+  { pattern: /^\/modules\/([^/]+)\/?$/, component: ModuleDetailPage },
   { pattern: /^\/my-queue\/?$/, component: MyQueuePage },
   { pattern: /^\/profile\/?$/, component: ProfilePage },
   { pattern: /^\/projects\/?$/, component: ProjectsPage },

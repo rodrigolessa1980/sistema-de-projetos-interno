@@ -24,8 +24,8 @@ export default function DependenciesPage() {
   const blockedTasksWithDeps = visibleTasks.filter((t) => (t.dependencyIds ?? []).length > 0 || t.status === "BLOQUEADA");
 
   return (
-      <div className="p-6 w-full">
-        <div className="flex items-center justify-between mb-6">
+      <div className="p-4 sm:p-6 w-full">
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
           <div>
             <h1 className="text-xl font-bold text-zinc-100">Dependências entre Tarefas</h1>
             <p className="text-sm text-zinc-500">{visibleDeps.length} dependências encontradas</p>
@@ -41,7 +41,7 @@ export default function DependenciesPage() {
           </Select>
         </div>
 
-        <div className="grid grid-cols-3 gap-4 mb-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-6">
           {[
             { label: "Total de Dependências", value: visibleDeps.length, color: "text-zinc-200", icon: Network },
             { label: "Tarefas Bloqueadas", value: visibleTasks.filter((t) => t.status === "BLOQUEADA").length, color: "text-red-400", icon: AlertTriangle },

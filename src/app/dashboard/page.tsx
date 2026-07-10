@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { StatCard } from "@/components/shared/stat-card";
+import { PageLoading } from "@/components/shared/page-loading";
 import { StatusBadge } from "@/components/shared/task-badge";
 import { useMetrics } from "@/hooks/use-metrics";
 import { useProjectStore, useTaskStore, useUserStore, useAuthStore } from "@/stores";
@@ -30,6 +31,7 @@ export default function DashboardPage() {
   const { user, isAdmin } = useAuth();
   const { summary, burndownData, velocityData, complexityDistribution, tasksByStatus } = useMetrics();
   const { projects } = useProjectStore();
+  const hasLoaded = useProjectStore((s) => s.hasLoaded);
   const { tasks, timeLogs } = useTaskStore();
   const { users } = useUserStore();
 
@@ -140,8 +142,8 @@ export default function DashboardPage() {
   const maxHours = devRanking[0]?.hours || 1;
 
   return (
-      <div className="p-6 w-full space-y-6">
-        <div className="flex items-center justify-between">
+      <div className="p-4 sm:p-6 w-full space-y-6">
+        <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <h1 className="text-xl font-bold text-zinc-100">
               Olá, {user?.name?.split(" ")[0]} 👋
@@ -164,6 +166,10 @@ export default function DashboardPage() {
           </div>
         </div>
 
+        {!hasLoaded ? (
+          <PageLoading label="Carregando painel..." />
+        ) : (
+        <>
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
           <StatCard
             title="Projetos Ativos" value={summary.activeProjects} subtitle={`de ${summary.totalProjects} total`}
@@ -490,6 +496,8 @@ export default function DashboardPage() {
           <StatCard title="Tempo de Ciclo" value={`${summary.averageCycleTime}d`} subtitle="do dev à conclusão" icon={Zap} color="amber" delay={0.55} />
           <StatCard title="Entregas / Semana" value={`${summary.throughput}`} subtitle="tarefas concluídas" icon={Users} color="violet" delay={0.6} />
         </div>
+        </>
+        )}
       </div>
   );
 }

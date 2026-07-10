@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { PageHeader } from "@/components/shared/page-header";
+import { PageLoading } from "@/components/shared/page-loading";
 import { useTaskStore, useUserStore } from "@/stores";
 import { useAuth } from "@/hooks/use-auth";
 import { formatDate, formatHours } from "@/lib/utils";
@@ -16,6 +17,7 @@ import Link from "@/lib/router";
 
 export default function TimeLogsPage() {
   const { timeLogs, tasks } = useTaskStore();
+  const hasLoaded = useTaskStore((s) => s.hasLoaded);
   const { users } = useUserStore();
   const { user, isAdmin } = useAuth();
   const [userFilter, setUserFilter] = useState("all");
@@ -40,7 +42,7 @@ export default function TimeLogsPage() {
     <>
       <PageHeader title="Logs de Tempo" description="Registro de horas trabalhadas por tarefa" />
 
-      <div className="p-6 w-full space-y-6">
+      <div className="p-4 sm:p-6 w-full space-y-6">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <StatCard title="Total de Horas" value={`${totalHours}h`} icon={Clock} color="violet" delay={0.05} />
           <StatCard title="Registros" value={visibleLogs.length} icon={Timer} color="blue" delay={0.1} />
@@ -49,7 +51,7 @@ export default function TimeLogsPage() {
         </div>
 
         {isAdmin && (
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
             <Select value={userFilter} onValueChange={(value) => setUserFilter(value ?? "all")}>
               <SelectTrigger className="w-48 bg-zinc-800/50 border-zinc-700/50 text-zinc-300 h-9">
                 <SelectValue />
@@ -62,6 +64,9 @@ export default function TimeLogsPage() {
           </div>
         )}
 
+        {!hasLoaded ? (
+          <PageLoading label="Carregando registros..." />
+        ) : (
         <div className="space-y-4">
           {sortedDates.map((date, dateIdx) => {
             const dayLogs = groupedByDate[date];
@@ -113,6 +118,7 @@ export default function TimeLogsPage() {
             );
           })}
         </div>
+        )}
       </div>
     </>
   );

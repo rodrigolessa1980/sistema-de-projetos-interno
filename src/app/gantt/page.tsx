@@ -173,7 +173,7 @@ export default function GanttPage() {
 
   return (
       <div className="flex flex-col h-full">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-800/50">
+        <div className="flex flex-wrap items-center justify-between gap-3 px-4 sm:px-6 py-4 border-b border-zinc-800/50">
           <div>
             <h1 className="text-lg font-bold text-zinc-100">Timeline / Gantt</h1>
             <p className="text-xs text-zinc-500">{visibleTasks.length} tarefa{visibleTasks.length !== 1 ? "s" : ""} com datas definidas</p>

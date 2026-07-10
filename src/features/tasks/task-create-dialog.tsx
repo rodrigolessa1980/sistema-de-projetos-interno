@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -20,6 +20,15 @@ import { Link2, X, AlertTriangle, Flame, ShieldAlert } from "lucide-react";
 import { CharCounter } from "@/components/shared/char-counter";
 import { FIELD_LIMITS } from "@/lib/field-limits";
 
+/** Explica o que cada marcador de complexidade significa (escala de esforço). */
+const COMPLEXITY_DESCRIPTIONS: Record<number, string> = {
+  1: "Muito simples",
+  2: "Simples",
+  3: "Média",
+  5: "Complexa",
+  8: "Muito complexa",
+};
+
 const schema = z.object({
   title: z.string().max(FIELD_LIMITS.task.title, `O título deve ter no máximo ${FIELD_LIMITS.task.title} caracteres`).optional(),
   description: z.string().max(FIELD_LIMITS.task.description, `A descrição deve ter no máximo ${FIELD_LIMITS.task.description} caracteres`).optional(),
@@ -38,11 +47,14 @@ type FormData = z.infer<typeof schema>;
 interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  /** Pré-seleciona projeto/módulo (ex.: ao criar tarefa a partir de um módulo). */
+  defaultProjectId?: string;
+  defaultModuleId?: string;
 }
 
-export function TaskCreateDialog({ open, onOpenChange }: Props) {
+export function TaskCreateDialog({ open, onOpenChange, defaultProjectId, defaultModuleId }: Props) {
   const { createTask, addDependency, tasks, getUrgentTaskForDev } = useTaskStore();
-  const { projects, modules, epics } = useProjectStore();
+  const { projects, modules, epics, createEpic } = useProjectStore();
   const { users } = useUserStore();
   const { user } = useAuth();
 
@@ -53,14 +65,20 @@ export function TaskCreateDialog({ open, onOpenChange }: Props) {
   const form = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: {
-      title: "", description: "", projectId: "", moduleId: "", epicId: "",
+      title: "", description: "", projectId: defaultProjectId ?? "", moduleId: defaultModuleId ?? "", epicId: "",
       assigneeId: "", status: "BACKLOG", complexity: 3, estimatedHours: 8,
       dueDate: "",
     },
   });
 
+  // Ao abrir a partir de um módulo, semeia projeto/módulo já selecionados.
+  useEffect(() => {
+    if (!open) return;
+    if (defaultProjectId) form.setValue("projectId", defaultProjectId);
+    if (defaultModuleId) form.setValue("moduleId", defaultModuleId);
+  }, [open, defaultProjectId, defaultModuleId, form]);
+
   const projectId = useWatch({ control: form.control, name: "projectId" }) ?? "";
-  const moduleId = useWatch({ control: form.control, name: "moduleId" }) ?? "";
   const assigneeId = useWatch({ control: form.control, name: "assigneeId" }) ?? "";
 
   // Tarefa urgente ativa para o dev selecionado
@@ -70,7 +88,6 @@ export function TaskCreateDialog({ open, onOpenChange }: Props) {
     ? tasks.filter((t) => t.assigneeId === assigneeId && !["CONCLUIDA", "CANCELADA"].includes(t.status)).length
     : 0;
   const filteredModules = modules.filter((m) => m.projectId === projectId);
-  const filteredEpics = epics.filter((e) => e.moduleId === moduleId);
 
   // Tarefas disponíveis para serem dependências (mesmo projeto, exceto a própria)
   const availableDeps = tasks.filter(
@@ -96,13 +113,28 @@ export function TaskCreateDialog({ open, onOpenChange }: Props) {
     const finalProjectId = data.projectId || fallbackProject?.id || "";
     const fallbackModule = modules.find((module) => module.projectId === finalProjectId) ?? modules[0];
     const finalModuleId = data.moduleId || fallbackModule?.id || "";
-    const fallbackEpic = epics.find((epic) => epic.moduleId === finalModuleId) ?? epics.find((epic) => epic.projectId === finalProjectId) ?? epics[0];
-    const finalEpicId = data.epicId || fallbackEpic?.id || "";
     const finalAssigneeId = data.assigneeId || users[0]?.id || user?.id || "";
 
-    if (!finalProjectId || !finalModuleId || !finalEpicId || !finalAssigneeId) {
-      toast.error("Cadastre ao menos um projeto com modulo, epic e usuario para criar tarefas.");
+    if (!finalProjectId || !finalModuleId || !finalAssigneeId) {
+      toast.error("Selecione um projeto, um módulo e um responsável para criar a tarefa.");
       return;
+    }
+
+    // Epic virou interno: toda tarefa é anexada a um epic "guarda-chuva" do
+    // módulo. Se o módulo ainda não tem nenhum, cria um automaticamente.
+    let finalEpicId = epics.find((epic) => epic.moduleId === finalModuleId)?.id ?? "";
+    if (!finalEpicId) {
+      const mod = modules.find((m) => m.id === finalModuleId);
+      const createdEpic = await createEpic({
+        projectId: finalProjectId,
+        moduleId: finalModuleId,
+        name: mod?.name ?? "Geral",
+        description: "",
+        startDate: new Date().toISOString().split("T")[0],
+        endDate: undefined,
+        developerIds: [],
+      });
+      finalEpicId = createdEpic.id;
     }
 
     // Se há dependências pendentes, força status BLOQUEADA
@@ -185,13 +217,13 @@ export function TaskCreateDialog({ open, onOpenChange }: Props) {
                 <FormMessage />
               </FormItem>
             )} />
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <FormField control={form.control} name="projectId" render={({ field }) => (
                 <FormItem>
                   <Label className="text-zinc-300 text-sm">Projeto</Label>
                   <Select value={field.value ?? ""} onValueChange={(v) => { field.onChange(v); form.setValue("moduleId", ""); form.setValue("epicId", ""); }}>
                     <FormControl>
-                      <SelectTrigger className="bg-zinc-800 border-zinc-700 text-zinc-300">
+                      <SelectTrigger className="w-full bg-zinc-800 border-zinc-700 text-zinc-300">
                         <SelectValue placeholder="Selecionar..." />
                       </SelectTrigger>
                     </FormControl>
@@ -207,7 +239,7 @@ export function TaskCreateDialog({ open, onOpenChange }: Props) {
                   <Label className="text-zinc-300 text-sm">Módulo</Label>
                   <Select value={field.value ?? ""} onValueChange={(v) => { field.onChange(v); form.setValue("epicId", ""); }} disabled={!projectId}>
                     <FormControl>
-                      <SelectTrigger className="bg-zinc-800 border-zinc-700 text-zinc-300">
+                      <SelectTrigger className="w-full bg-zinc-800 border-zinc-700 text-zinc-300">
                         <SelectValue placeholder="Selecionar..." />
                       </SelectTrigger>
                     </FormControl>
@@ -219,47 +251,29 @@ export function TaskCreateDialog({ open, onOpenChange }: Props) {
                 </FormItem>
               )} />
             </div>
-            <div className="grid grid-cols-2 gap-3">
-              <FormField control={form.control} name="epicId" render={({ field }) => (
-                <FormItem>
-                  <Label className="text-zinc-300 text-sm">Epic</Label>
-                  <Select value={field.value ?? ""} onValueChange={field.onChange} disabled={!moduleId}>
-                    <FormControl>
-                      <SelectTrigger className="bg-zinc-800 border-zinc-700 text-zinc-300">
-                        <SelectValue placeholder="Selecionar..." />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent className="bg-zinc-900 border-zinc-700/50">
-                      {filteredEpics.map((e) => <SelectItem key={e.id} value={e.id} label={e.name}>{e.name}</SelectItem>)}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )} />
-              <FormField control={form.control} name="assigneeId" render={({ field }) => (
-                <FormItem>
-                  <Label className="text-zinc-300 text-sm">Responsável</Label>
-                  <Select value={field.value ?? ""} onValueChange={field.onChange}>
-                    <FormControl>
-                      <SelectTrigger className="bg-zinc-800 border-zinc-700 text-zinc-300">
-                        <SelectValue placeholder="Selecionar..." />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent className="bg-zinc-900 border-zinc-700/50">
-                      {users.map((u) => <SelectItem key={u.id} value={u.id} label={u.name}>{u.name}</SelectItem>)}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )} />
-            </div>
-            <div className="grid grid-cols-3 gap-3">
+            <FormField control={form.control} name="assigneeId" render={({ field }) => (
+              <FormItem>
+                <Label className="text-zinc-300 text-sm">Responsável</Label>
+                <Select value={field.value ?? ""} onValueChange={field.onChange}>
+                  <FormControl>
+                    <SelectTrigger className="w-full bg-zinc-800 border-zinc-700 text-zinc-300">
+                      <SelectValue placeholder="Selecionar..." />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent className="bg-zinc-900 border-zinc-700/50">
+                    {users.map((u) => <SelectItem key={u.id} value={u.id} label={u.name}>{u.name}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )} />
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <FormField control={form.control} name="status" render={({ field }) => (
                 <FormItem>
                   <Label className="text-zinc-300 text-sm">Status</Label>
                   <Select value={field.value ?? "BACKLOG"} onValueChange={field.onChange}>
                     <FormControl>
-                      <SelectTrigger className="bg-zinc-800 border-zinc-700 text-zinc-300">
+                      <SelectTrigger className="w-full bg-zinc-800 border-zinc-700 text-zinc-300">
                         <SelectValue />
                       </SelectTrigger>
                     </FormControl>
@@ -275,14 +289,21 @@ export function TaskCreateDialog({ open, onOpenChange }: Props) {
                   <Label className="text-zinc-300 text-sm">Complexidade</Label>
                   <Select value={String(field.value ?? 3)} onValueChange={(v) => field.onChange(Number(v))}>
                     <FormControl>
-                      <SelectTrigger className="bg-zinc-800 border-zinc-700 text-zinc-300">
+                      <SelectTrigger className="w-full bg-zinc-800 border-zinc-700 text-zinc-300">
                         <SelectValue />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent className="bg-zinc-900 border-zinc-700/50">
-                      {COMPLEXITY_OPTIONS.map((c) => <SelectItem key={c} value={String(c)}>{c} - {getComplexityLabel(c)}</SelectItem>)}
+                      {COMPLEXITY_OPTIONS.map((c) => (
+                        <SelectItem key={c} value={String(c)} label={`${c} · ${COMPLEXITY_DESCRIPTIONS[c]}`}>
+                          <span className="font-semibold tabular-nums">{c}</span>
+                          <span className="text-zinc-400">· {COMPLEXITY_DESCRIPTIONS[c]}</span>
+                          <span className="text-[10px] text-zinc-600">({getComplexityLabel(c)})</span>
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
+                  <p className="text-[10px] text-zinc-600 mt-1">Esforço estimado: 1 muito simples → 8 muito complexa.</p>
                   <FormMessage />
                 </FormItem>
               )} />

@@ -68,7 +68,7 @@ export default function HoursReportPage() {
   const overBudget = taskRows.filter((r) => r.deviation > 10).length;
 
   return (
-      <div className="p-6 w-full space-y-6" data-print-content
+      <div className="p-4 sm:p-6 w-full space-y-6" data-print-content
         data-print-footer
         data-date={new Date().toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" })}>
         <div className="flex items-start justify-between gap-4" data-print-header>
@@ -120,7 +120,7 @@ export default function HoursReportPage() {
         </div>
 
         {/* Resumo */}
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {[
             { label: "Total Registrado", value: `${totalHours.toFixed(1)}h`, sub: `de ${totalEstimated}h estimadas`, color: "text-violet-400", bg: "bg-violet-500/10" },
             { label: "Utilização", value: `${totalEstimated > 0 ? Math.round((totalHours / totalEstimated) * 100) : 0}%`, sub: "do estimado consumido", color: "text-blue-400", bg: "bg-blue-500/10" },

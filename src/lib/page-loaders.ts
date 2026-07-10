@@ -14,6 +14,7 @@ export const pageLoaders = {
   kanban: () => import("@/app/kanban/page"),
   metrics: () => import("@/app/metrics/page"),
   modules: () => import("@/app/modules/page"),
+  moduleDetail: () => import("@/app/modules/[id]/page"),
   myQueue: () => import("@/app/my-queue/page"),
   profile: () => import("@/app/profile/page"),
   projects: () => import("@/app/projects/page"),

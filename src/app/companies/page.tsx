@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { PageHeader } from "@/components/shared/page-header";
 import { EmptyState } from "@/components/shared/empty-state";
+import { PageLoading } from "@/components/shared/page-loading";
 import { useProjectStore } from "@/stores";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
@@ -176,6 +177,7 @@ function CompanyFormDialog({
 
 export default function CompaniesPage() {
   const { companies, projects, createCompany, updateCompany, deleteCompany } = useProjectStore();
+  const hasLoaded = useProjectStore((s) => s.hasLoaded);
   const { isAdmin } = useAuth();
 
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -239,7 +241,9 @@ export default function CompaniesPage() {
       />
 
       <div className="p-6 w-full">
-        {companies.length === 0 ? (
+        {!hasLoaded ? (
+          <PageLoading label="Carregando empresas..." />
+        ) : companies.length === 0 ? (
           <EmptyState
             icon={Building2}
             title="Nenhuma empresa cadastrada"
@@ -256,7 +260,7 @@ export default function CompaniesPage() {
                   initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.05 }}
-                  className="group bg-zinc-900/60 border border-zinc-800/50 rounded-xl p-5 hover:border-zinc-700/50 transition-all hover:shadow-lg hover:shadow-black/20"
+                  className="group bg-zinc-900/60 border border-zinc-800/50 rounded-xl p-5 hover:border-zinc-700/50 transition-all hover:shadow-blue-glow-lg"
                 >
                   <div className="flex items-start justify-between mb-4">
                     {/* Avatar + nome */}

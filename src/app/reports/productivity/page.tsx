@@ -55,7 +55,7 @@ export default function ProductivityReportPage() {
   }));
 
   return (
-      <div className="p-6 w-full space-y-6" data-print-content
+      <div className="p-4 sm:p-6 w-full space-y-6" data-print-content
         data-print-footer
         data-date={new Date().toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" })}>
         <div className="flex items-start justify-between gap-4" data-print-header>
@@ -128,7 +128,7 @@ export default function ProductivityReportPage() {
               </div>
 
               {/* Stats em grade */}
-              <div className="grid grid-cols-4 gap-2 text-center">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">
                 {[
                   { label: "Total", value: dev.total, icon: BarChart2, color: "text-zinc-400" },
                   { label: "Feitas", value: dev.completed, icon: CheckCircle2, color: "text-emerald-400" },

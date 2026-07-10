@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { PageHeader } from "@/components/shared/page-header";
 import { EmptyState } from "@/components/shared/empty-state";
+import { PageLoading } from "@/components/shared/page-loading";
 import { useProjectStore, useUserStore } from "@/stores";
 import { useAuth } from "@/hooks/use-auth";
 import { ProjectAvatar } from "@/components/shared/project-avatar";
@@ -85,6 +86,43 @@ function PositionBadge({ position }: { position: number }) {
   );
 }
 
+/** Chip de prazo sempre visível: mostra os dias restantes e colore por urgência. */
+function DeadlineChip({ endDate }: { endDate?: string | null }) {
+  if (!endDate) {
+    return (
+      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium border border-zinc-700/40 bg-zinc-800/60 text-zinc-500 shrink-0">
+        <Calendar className="w-3 h-3" /> Sem prazo
+      </span>
+    );
+  }
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const due = new Date(endDate.includes("T") ? endDate : `${endDate}T12:00:00`);
+  due.setHours(0, 0, 0, 0);
+  const days = Math.round((due.getTime() - today.getTime()) / 86_400_000);
+
+  let cls = "border-zinc-700/40 bg-zinc-800/60 text-zinc-400";
+  let text = formatDate(endDate);
+  if (days < 0) {
+    cls = "border-red-500/30 bg-red-500/15 text-red-400";
+    text = `Atrasado ${Math.abs(days)}d`;
+  } else if (days === 0) {
+    cls = "border-red-500/30 bg-red-500/15 text-red-400";
+    text = "Vence hoje";
+  } else if (days <= 7) {
+    cls = "border-amber-500/30 bg-amber-500/15 text-amber-400";
+    text = `Faltam ${days}d`;
+  }
+  return (
+    <span
+      className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium border shrink-0 ${cls}`}
+      title={`Entrega: ${formatDate(endDate)}`}
+    >
+      <Calendar className="w-3 h-3" /> {text}
+    </span>
+  );
+}
+
 function QueueCard({
   project,
   position,
@@ -115,7 +153,7 @@ function QueueCard({
     <div
       ref={setNodeRef}
       style={style}
-      className="group relative flex items-center gap-3 bg-zinc-900/60 border border-zinc-800/50 rounded-xl px-4 py-3 hover:border-zinc-700/50 transition-all hover:shadow-lg hover:shadow-black/20"
+      className="group relative flex items-center gap-3 bg-zinc-900/60 border border-zinc-800/50 rounded-xl px-4 py-3 hover:border-zinc-700/50 transition-all hover:shadow-blue-glow-lg"
     >
       <Link
         href={`/projects/${project.id}`}
@@ -152,13 +190,8 @@ function QueueCard({
         {statusLabels[project.status]}
       </span>
 
-      {/* End date */}
-      {project.endDate && (
-        <div className="hidden md:flex items-center gap-1 text-xs text-zinc-500 shrink-0">
-          <Calendar className="w-3 h-3 text-zinc-600" />
-          {formatDate(project.endDate)}
-        </div>
-      )}
+      {/* Prazo de entrega — sempre visível, colorido por urgência */}
+      <DeadlineChip endDate={project.endDate} />
 
       {/* Progress */}
       <div className="hidden lg:flex flex-col gap-1 w-20 shrink-0">
@@ -217,6 +250,7 @@ function QueueCard({
 
 export default function QueuePage() {
   const { getQueuedProjects, reorderQueue } = useProjectStore();
+  const hasLoaded = useProjectStore((s) => s.hasLoaded);
   const { isAdmin } = useAuth();
   const queuedProjects = getQueuedProjects();
 
@@ -258,16 +292,18 @@ export default function QueuePage() {
   return (
     <>
       <PageHeader
-        title="Fila de Desenvolvimento"
+        title="Fila de Produção"
         description={
           orderedProjects.length === 0
             ? "Nenhum projeto na fila"
-            : `${orderedProjects.length} projeto${orderedProjects.length !== 1 ? "s" : ""} ordenado${orderedProjects.length !== 1 ? "s" : ""} por prioridade de entrega`
+            : `${orderedProjects.length} projeto${orderedProjects.length !== 1 ? "s" : ""} · ordem = prioridade, cor = urgência do prazo`
         }
       />
 
       <div className="p-6 w-full">
-        {orderedProjects.length === 0 ? (
+        {!hasLoaded ? (
+          <PageLoading label="Carregando fila..." />
+        ) : orderedProjects.length === 0 ? (
           <EmptyState
             icon={ListOrdered}
             title="Nenhum projeto ativo"
@@ -279,7 +315,7 @@ export default function QueuePage() {
             <div className="flex items-center gap-3 flex-wrap">
               <div className="flex items-center gap-1.5 text-xs text-zinc-500">
                 <Calendar className="w-3.5 h-3.5 text-zinc-600" />
-                Ordenado por data de entrega (mais urgente primeiro)
+                Ordenado por prazo de entrega — o mais urgente fica no topo (nº 1)
               </div>
               {isAdmin && (
                 <>
@@ -321,11 +357,7 @@ export default function QueuePage() {
                       >
                         {statusLabels[firstProject.status]}
                       </span>
-                      {firstProject.endDate && (
-                        <span className="flex items-center gap-1 text-xs text-zinc-500">
-                          <Calendar className="w-3 h-3" /> Entrega: {formatDate(firstProject.endDate)}
-                        </span>
-                      )}
+                      <DeadlineChip endDate={firstProject.endDate} />
                     </div>
                   </div>
                   <span className="hidden sm:flex items-center gap-1.5 text-xs text-amber-400 group-hover:text-amber-300 shrink-0 transition-colors">

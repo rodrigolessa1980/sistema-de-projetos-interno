@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useTaskStore, useProjectStore } from "@/stores";
 import { useAuth } from "@/hooks/use-auth";
 import { useWorkSessionStore } from "@/stores/work-session-store";
+import { PageLoading } from "@/components/shared/page-loading";
 import { StatusBadge } from "@/components/shared/task-badge";
 import { motion, AnimatePresence } from "@/lib/motion";
 import Link from "@/lib/router";
@@ -162,6 +163,7 @@ function Section({
 export default function MyQueuePage() {
   const { user, isLoading } = useAuth();
   const { tasks, timeLogs } = useTaskStore();
+  const hasLoaded = useTaskStore((s) => s.hasLoaded);
   const { projects } = useProjectStore();
   const { activeSession, getElapsedSeconds } = useWorkSessionStore();
 
@@ -231,9 +233,9 @@ export default function MyQueuePage() {
   const activeProject = activeTask ? projects.find((p) => p.id === activeTask.projectId) : null;
 
   return (
-      <div className="p-6 w-full space-y-6">
+      <div className="p-4 sm:p-6 w-full space-y-6">
         {/* Header */}
-        <div className="flex items-start justify-between gap-4">
+        <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <h1 className="text-xl font-bold text-zinc-100 flex items-center gap-2">
               <Inbox className="w-5 h-5 text-violet-400" />
@@ -269,6 +271,10 @@ export default function MyQueuePage() {
           </div>
         </div>
 
+        {!hasLoaded ? (
+          <PageLoading label="Carregando sua fila..." />
+        ) : (
+        <>
         {/* Sessão ativa */}
         {activeSession && activeTask && (
           <motion.div
@@ -402,6 +408,8 @@ export default function MyQueuePage() {
             <p className="text-sm font-medium text-zinc-500">Nenhuma tarefa atribuída a você</p>
             <p className="text-xs text-zinc-600 mt-1">Quando tarefas forem atribuídas, elas aparecerão aqui</p>
           </div>
+        )}
+        </>
         )}
       </div>
   );

@@ -17,6 +17,7 @@ import { toast } from "sonner";
 import type { Module, Task, TimeLog, ModuleAttachment, User } from "@/types";
 import type { ModuleStatus } from "@/types";
 import { ModuleAttachmentsPanel } from "./module-attachments-panel";
+import { ExpandableText } from "@/components/shared/expandable-text";
 
 const moduleStatusLabels: Record<ModuleStatus, string> = {
   INICIADO: "Iniciado",
@@ -195,11 +196,10 @@ export function ModuleDetailDialog({
               <MessageSquare className="w-3.5 h-3.5" /> Observação
             </h4>
             <div className="bg-zinc-800/40 border border-zinc-700/40 rounded-lg p-3">
-              <p className="text-sm text-zinc-300 leading-relaxed whitespace-pre-wrap">
-                {module.description?.trim()
-                  || primaryLog?.description
-                  || "Nenhuma observação registrada."}
-              </p>
+              <ExpandableText
+                text={module.description?.trim() || primaryLog?.description}
+                collapsedLines={8}
+              />
             </div>
           </div>
 

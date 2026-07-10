@@ -34,6 +34,7 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { cn } from "@/lib/utils";
 import { TaskCreateDialog } from "@/features/tasks/task-create-dialog";
+import { PageLoading } from "@/components/shared/page-loading";
 import { useWorkSessionStore } from "@/stores/work-session-store";
 import { formatElapsed } from "@/hooks/use-work-session";
 
@@ -263,6 +264,7 @@ function getInsertIndex(event: DragOverEvent | DragEndEvent, overId: string, ord
 
 export default function KanbanPage() {
   const { tasks, getBlockersForTask } = useTaskStore();
+  const hasLoaded = useTaskStore((s) => s.hasLoaded);
   const { projects, modules } = useProjectStore();
   const { isAdmin } = useAuth();
   const updateKanbanOrder = useUpdateKanbanOrder();
@@ -411,7 +413,7 @@ export default function KanbanPage() {
   return (
     <>
       <div className="flex flex-col h-full w-full">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-800/50">
+        <div className="flex flex-wrap items-center justify-between gap-3 px-4 sm:px-6 py-4 border-b border-zinc-800/50">
           <div>
             <h1 className="text-lg font-bold text-zinc-100">Quadro Kanban</h1>
             <p className="text-xs text-zinc-500">{visibleTasks.length} {visibleTasks.length === 1 ? "tarefa" : "tarefas"}</p>
@@ -438,30 +440,34 @@ export default function KanbanPage() {
         </div>
 
         <div className="flex-1 overflow-x-auto p-4">
-          <DndContext
-            sensors={sensors}
-            collisionDetection={closestCorners}
-            onDragStart={handleDragStart}
-            onDragOver={handleDragOver}
-            onDragEnd={handleDragEnd}
-            onDragCancel={handleDragCancel}
-          >
-            <div className="flex gap-3 h-full min-h-[calc(100vh-200px)]" style={{ minWidth: `${KANBAN_STATUSES.length * 240}px` }}>
-              {KANBAN_STATUSES.map((status) => (
-                <div key={status} className="flex-1 min-w-[220px] max-w-[280px]">
-                  <KanbanColumn
-                    status={status}
-                    taskIds={itemsByStatus[status] ?? []}
-                    tasksById={tasksById}
-                  />
-                </div>
-              ))}
-            </div>
+          {!hasLoaded ? (
+            <PageLoading label="Carregando quadro..." />
+          ) : (
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCorners}
+              onDragStart={handleDragStart}
+              onDragOver={handleDragOver}
+              onDragEnd={handleDragEnd}
+              onDragCancel={handleDragCancel}
+            >
+              <div className="flex gap-3 h-full min-h-[calc(100vh-200px)]" style={{ minWidth: `${KANBAN_STATUSES.length * 240}px` }}>
+                {KANBAN_STATUSES.map((status) => (
+                  <div key={status} className="flex-1 min-w-[220px] max-w-[280px]">
+                    <KanbanColumn
+                      status={status}
+                      taskIds={itemsByStatus[status] ?? []}
+                      tasksById={tasksById}
+                    />
+                  </div>
+                ))}
+              </div>
 
-            <DragOverlay dropAnimation={null}>
-              {activeTask ? <KanbanCard task={activeTask} isDragging /> : null}
-            </DragOverlay>
-          </DndContext>
+              <DragOverlay dropAnimation={null}>
+                {activeTask ? <KanbanCard task={activeTask} isDragging /> : null}
+              </DragOverlay>
+            </DndContext>
+          )}
         </div>
       </div>
 

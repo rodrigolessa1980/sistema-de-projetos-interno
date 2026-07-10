@@ -18,6 +18,8 @@ const DEFAULT_SIDEBAR_GROUPS = ["Principal", "Projetos", "Trabalho", "Tempo & Ho
 interface UIStore {
   sidebarCollapsed: boolean;
   sidebarExpandedGroups: string[];
+  /** Drawer da sidebar no mobile (não persiste; começa fechado a cada sessão). */
+  sidebarMobileOpen: boolean;
   notifications: Notification[];
   unreadCount: number;
   searchQuery: string;
@@ -25,6 +27,7 @@ interface UIStore {
 
   toggleSidebar: () => void;
   setSidebarCollapsed: (collapsed: boolean) => void;
+  setSidebarMobileOpen: (open: boolean) => void;
   toggleSidebarGroup: (group: string) => void;
   markNotificationRead: (id: string) => void;
   markAllRead: (userId?: string) => void;
@@ -39,6 +42,7 @@ export const useUIStore = create<UIStore>()(
     (set) => ({
       sidebarCollapsed: false,
       sidebarExpandedGroups: DEFAULT_SIDEBAR_GROUPS,
+      sidebarMobileOpen: false,
       notifications: [],
       unreadCount: 0,
       searchQuery: "",
@@ -46,6 +50,7 @@ export const useUIStore = create<UIStore>()(
 
       toggleSidebar: () => set((state) => ({ sidebarCollapsed: !state.sidebarCollapsed })),
       setSidebarCollapsed: (collapsed) => set({ sidebarCollapsed: collapsed }),
+      setSidebarMobileOpen: (open) => set({ sidebarMobileOpen: open }),
       toggleSidebarGroup: (group) =>
         set((state) => ({
           sidebarExpandedGroups: state.sidebarExpandedGroups.includes(group)
@@ -131,6 +136,8 @@ interface CreateUserRemoteInput {
 
 interface UserStore {
   users: User[];
+  /** True após a 1ª carga de usuários (gate anti "falso vazio"). */
+  hasLoaded: boolean;
   getUserById: (id: string) => User | undefined;
   fetchUsers: () => Promise<void>;
   createUser: (data: Omit<User, "id" | "createdAt" | "updatedAt">) => User;
@@ -149,12 +156,14 @@ export const useUserStore = create<UserStore>()(
   persist(
     (set, get) => ({
       users: [],
+      hasLoaded: false,
       getUserById: (id) => get().users.find((user) => user.id === id),
 
       fetchUsers: async () => {
-        const response = await api.get<(User & { permissions: UserPermission[]; permissionCount: number })[]>("users");
-        set((state) => ({
-          users: asArray(response).map((u) => ({
+        try {
+          const response = await api.get<(User & { permissions: UserPermission[]; permissionCount: number })[]>("users");
+          set((state) => ({
+            users: asArray(response).map((u) => ({
             ...state.users.find((existing) => existing.id === u.id),
             id: u.id,
             tenantId: u.tenantId,
@@ -170,7 +179,11 @@ export const useUserStore = create<UserStore>()(
             createdAt: u.createdAt,
             updatedAt: u.updatedAt,
           })),
-        }));
+          }));
+        } finally {
+          // Mesmo em erro, encerra o loading (evita tela presa em "carregando").
+          set({ hasLoaded: true });
+        }
       },
 
       createUser: (data) => {

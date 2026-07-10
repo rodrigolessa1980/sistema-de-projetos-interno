@@ -41,6 +41,9 @@ interface ProjectStore {
   projectDemandAttachments: ProjectDemandAttachment[];
   selectedProjectId: string | null;
   isLoading: boolean;
+  /** Vira true após a 1ª tentativa de bootstrap (sucesso ou erro). Evita o
+   *  "falso vazio": telas não mostram EmptyState enquanto isto for false. */
+  hasLoaded: boolean;
 
   getCompanyById: (id: string) => Company | undefined;
   createCompany: (data: Omit<Company, "id" | "createdAt" | "updatedAt">) => Promise<Company>;
@@ -99,6 +102,7 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
   projectDemandAttachments: [],
   selectedProjectId: null,
   isLoading: false,
+  hasLoaded: false,
 
   getCompanyById: (id) => get().companies.find((c) => c.id === id),
 
@@ -156,6 +160,7 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
         projectShowcaseAttachments: [],
         projectDemandAttachments: [],
         isLoading: false,
+        hasLoaded: true,
       });
 
       // Tasks vão para a task-store, preservando edições otimistas em voo (dirty).
@@ -163,9 +168,12 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
       useTaskStore.setState((state) => ({
         tasks: replacePreservingDirty(state.tasks, incomingTasks, taskDirty.ids),
         moduleAttachments: [],
+        // O bootstrap traz as tasks junto: marca a task-store como carregada também.
+        hasLoaded: true,
       }));
     } catch (error) {
-      set({ isLoading: false });
+      // Mesmo em erro, encerra o loading: a tela mostra vazio/erro, não fica presa.
+      set({ isLoading: false, hasLoaded: true });
       throw error;
     }
   },

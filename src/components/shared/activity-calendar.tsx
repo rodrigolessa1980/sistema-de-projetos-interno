@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import {
-  eachMonthOfInterval, startOfMonth, endOfMonth,
+  startOfMonth, endOfMonth,
   eachDayOfInterval, getDay, format, parseISO,
 } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -15,9 +15,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { CalendarRange, Clock, Users, Pencil, Plus, Check, X, CalendarDays } from "lucide-react";
+import { Clock, Users, Pencil, Plus, Check, X, CalendarDays, ChevronLeft, ChevronRight } from "lucide-react";
 import { toISODate, DatePicker } from "@/components/ui/date-picker";
-import { isInRange, type DateRange } from "@/components/shared/period-filter";
+import { type DateRange } from "@/components/shared/period-filter";
 import { cn } from "@/lib/utils";
 import Link from "@/lib/router";
 import type { ModuleStatus } from "@/types";
@@ -45,7 +45,6 @@ interface Props {
 }
 
 const EMPTY_SET: Set<string> = new Set();
-const MAX_MONTHS = 24;
 
 /** Calendário de atividades (meses do período) com mapa de calor e editor de trabalho por dia. */
 export function ActivityCalendar({ range, hiddenProjects = EMPTY_SET, hiddenDevs = EMPTY_SET }: Props) {
@@ -55,6 +54,13 @@ export function ActivityCalendar({ range, hiddenProjects = EMPTY_SET, hiddenDevs
   const { isAdmin, user } = useAuth();
 
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
+  const currentYear = new Date().getFullYear();
+  // Ano exibido no calendário (controlador próprio). Começa no ano do período
+  // filtrado, ou no ano atual. Mostra o ano inteiro — inclusive meses futuros.
+  const [year, setYear] = useState<number>(() => {
+    const iso = range.end || range.start;
+    return iso ? Number(iso.slice(0, 4)) : currentYear;
+  });
 
   const taskById = useMemo(() => new Map(tasks.map((t) => [t.id, t])), [tasks]);
   const projectById = useMemo(() => new Map(projects.map((p) => [p.id, p])), [projects]);
@@ -65,7 +71,8 @@ export function ActivityCalendar({ range, hiddenProjects = EMPTY_SET, hiddenDevs
     for (const tl of timeLogs) {
       if (!isAdmin && tl.userId !== user?.id) continue;
       if (hiddenDevs.has(tl.userId)) continue;
-      if (!isInRange(tl.date, range)) continue;
+      // Filtra pelo ANO exibido (o calendário mostra o ano inteiro).
+      if (!tl.date.startsWith(`${year}-`)) continue;
       const task = taskById.get(tl.taskId);
       if (task && hiddenProjects.has(task.projectId)) continue;
       const day = tl.date.split("T")[0];
@@ -74,7 +81,7 @@ export function ActivityCalendar({ range, hiddenProjects = EMPTY_SET, hiddenDevs
       map.set(day, list);
     }
     return map;
-  }, [timeLogs, isAdmin, user?.id, range, hiddenProjects, hiddenDevs, taskById]);
+  }, [timeLogs, isAdmin, user?.id, year, hiddenProjects, hiddenDevs, taskById]);
 
   const hoursByDay = useMemo(() => {
     const map = new Map<string, number>();
@@ -88,19 +95,12 @@ export function ActivityCalendar({ range, hiddenProjects = EMPTY_SET, hiddenDevs
   const periodTotal = [...hoursByDay.values()].reduce((a, b) => a + b, 0);
   const activeDays = hoursByDay.size;
 
-  // Meses a exibir: do intervalo escolhido; em "Tudo", deriva do min/max dos registros.
-  const months = useMemo(() => {
-    let startIso = range.start;
-    let endIso = range.end;
-    if (!startIso || !endIso) {
-      const keys = [...logsByDay.keys()].sort();
-      if (keys.length === 0) return [startOfMonth(new Date())];
-      startIso = startIso ?? keys[0];
-      endIso = endIso ?? keys[keys.length - 1];
-    }
-    const list = eachMonthOfInterval({ start: startOfMonth(parseISO(startIso)), end: startOfMonth(parseISO(endIso)) });
-    return list.length > MAX_MONTHS ? list.slice(list.length - MAX_MONTHS) : list;
-  }, [range.start, range.end, logsByDay]);
+  // Mostra o ANO inteiro (Jan→Dez), inclusive meses futuros — assim dá pra
+  // clicar num dia à frente e já lançar/planejar o trabalho.
+  const months = useMemo(
+    () => Array.from({ length: 12 }, (_, m) => new Date(year, m, 1)),
+    [year],
+  );
 
   const dayLogs = selectedDay ? (logsByDay.get(selectedDay) ?? []) : [];
   const dayTotal = dayLogs.reduce((s, l) => s + l.hours, 0);
@@ -111,9 +111,40 @@ export function ActivityCalendar({ range, hiddenProjects = EMPTY_SET, hiddenDevs
     <div className="grid gap-4 lg:grid-cols-[1fr_380px] items-start">
       {/* Coluna do calendário */}
       <div className="space-y-4 min-w-0">
-        <p className="text-xs text-zinc-500">
-          <span className="text-zinc-300 font-medium">{range.label}</span> · {periodTotal.toFixed(1)}h em {activeDays} dia(s)
-        </p>
+        {/* Controlador de ano — navega para meses futuros/passados */}
+        <div className="flex items-center justify-between gap-3 flex-wrap">
+          <div className="flex items-center gap-1">
+            <Button
+              type="button" variant="ghost" size="icon-sm"
+              onClick={() => setYear((y) => y - 1)}
+              aria-label="Ano anterior"
+              className="text-zinc-400 hover:text-zinc-100"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </Button>
+            <span className="text-base font-semibold text-zinc-100 tabular-nums w-16 text-center">{year}</span>
+            <Button
+              type="button" variant="ghost" size="icon-sm"
+              onClick={() => setYear((y) => y + 1)}
+              aria-label="Próximo ano"
+              className="text-zinc-400 hover:text-zinc-100"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </Button>
+            {year !== currentYear && (
+              <Button
+                type="button" variant="ghost" size="sm"
+                onClick={() => setYear(currentYear)}
+                className="ml-1 h-7 text-xs text-violet-400 hover:text-violet-300"
+              >
+                Ano atual
+              </Button>
+            )}
+          </div>
+          <p className="text-xs text-zinc-500">
+            <span className="text-zinc-300 font-medium">{periodTotal.toFixed(1)}h</span> em {activeDays} dia(s) · {year}
+          </p>
+        </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 2xl:grid-cols-3 gap-4">
           {months.map((monthDate) => {

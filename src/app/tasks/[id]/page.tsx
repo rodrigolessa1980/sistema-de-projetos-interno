@@ -27,6 +27,7 @@ import type { TaskStatus } from "@/types";
 import { useTask, useUpdateTaskStatus, useLogTime } from "@/hooks/use-tasks";
 import { FIELD_LIMITS } from "@/lib/field-limits";
 import { WorkTimer } from "@/components/shared/work-timer";
+import { ExpandableText } from "@/components/shared/expandable-text";
 import { NotesPanel } from "@/features/tasks/notes-panel";
 import { AttachmentsPanel } from "@/features/tasks/attachments-panel";
 
@@ -259,7 +260,7 @@ export default function TaskDetailPage() {
               )}
               {/* Fim banners de status */}
 
-              <p className="text-sm text-zinc-300 leading-relaxed mb-4">{task.description}</p>
+              <ExpandableText text={task.description} collapsedLines={6} className="mb-4" emptyFallback="Sem descrição." />
 
               {subtasks.length > 0 && (
                 <div className="mt-4">
