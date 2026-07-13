@@ -17,6 +17,7 @@ import { ApiTokensController } from './controllers/api-tokens.controller';
 import { BootstrapController } from './controllers/bootstrap.controller';
 import { SyncController } from './controllers/sync.controller';
 import { SyncStreamController } from './controllers/sync-stream.controller';
+import { TrashController } from './controllers/trash.controller';
 import { PermissionsGuard } from './guards/permissions.guard';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { SseAuthGuard } from './guards/sse-auth.guard';
@@ -48,6 +49,7 @@ import { SyncEmitInterceptor } from './interceptors/sync-emit.interceptor';
     BootstrapController,
     SyncController,
     SyncStreamController,
+    TrashController,
   ],
 })
 export class HttpModule {}

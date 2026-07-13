@@ -31,6 +31,7 @@ export type CompanyMinAggregateOutputType = {
   shortName: string | null
   color: string | null
   cnpj: string | null
+  deletedAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -42,6 +43,7 @@ export type CompanyMaxAggregateOutputType = {
   shortName: string | null
   color: string | null
   cnpj: string | null
+  deletedAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -53,6 +55,7 @@ export type CompanyCountAggregateOutputType = {
   shortName: number
   color: number
   cnpj: number
+  deletedAt: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -66,6 +69,7 @@ export type CompanyMinAggregateInputType = {
   shortName?: true
   color?: true
   cnpj?: true
+  deletedAt?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -77,6 +81,7 @@ export type CompanyMaxAggregateInputType = {
   shortName?: true
   color?: true
   cnpj?: true
+  deletedAt?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -88,6 +93,7 @@ export type CompanyCountAggregateInputType = {
   shortName?: true
   color?: true
   cnpj?: true
+  deletedAt?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -172,6 +178,7 @@ export type CompanyGroupByOutputType = {
   shortName: string
   color: string
   cnpj: string | null
+  deletedAt: Date | null
   createdAt: Date
   updatedAt: Date
   _count: CompanyCountAggregateOutputType | null
@@ -204,6 +211,7 @@ export type CompanyWhereInput = {
   shortName?: Prisma.StringFilter<"Company"> | string
   color?: Prisma.StringFilter<"Company"> | string
   cnpj?: Prisma.StringNullableFilter<"Company"> | string | null
+  deletedAt?: Prisma.DateTimeNullableFilter<"Company"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Company"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Company"> | Date | string
   tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
@@ -217,6 +225,7 @@ export type CompanyOrderByWithRelationInput = {
   shortName?: Prisma.SortOrder
   color?: Prisma.SortOrder
   cnpj?: Prisma.SortOrderInput | Prisma.SortOrder
+  deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   tenant?: Prisma.TenantOrderByWithRelationInput
@@ -235,6 +244,7 @@ export type CompanyWhereUniqueInput = Prisma.AtLeast<{
   shortName?: Prisma.StringFilter<"Company"> | string
   color?: Prisma.StringFilter<"Company"> | string
   cnpj?: Prisma.StringNullableFilter<"Company"> | string | null
+  deletedAt?: Prisma.DateTimeNullableFilter<"Company"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Company"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Company"> | Date | string
   tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
@@ -248,6 +258,7 @@ export type CompanyOrderByWithAggregationInput = {
   shortName?: Prisma.SortOrder
   color?: Prisma.SortOrder
   cnpj?: Prisma.SortOrderInput | Prisma.SortOrder
+  deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.CompanyCountOrderByAggregateInput
@@ -265,6 +276,7 @@ export type CompanyScalarWhereWithAggregatesInput = {
   shortName?: Prisma.StringWithAggregatesFilter<"Company"> | string
   color?: Prisma.StringWithAggregatesFilter<"Company"> | string
   cnpj?: Prisma.StringNullableWithAggregatesFilter<"Company"> | string | null
+  deletedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Company"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Company"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Company"> | Date | string
 }
@@ -275,6 +287,7 @@ export type CompanyCreateInput = {
   shortName: string
   color: string
   cnpj?: string | null
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   tenant?: Prisma.TenantCreateNestedOneWithoutCompaniesInput
@@ -288,6 +301,7 @@ export type CompanyUncheckedCreateInput = {
   shortName: string
   color: string
   cnpj?: string | null
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutCompanyInput
@@ -299,6 +313,7 @@ export type CompanyUpdateInput = {
   shortName?: Prisma.StringFieldUpdateOperationsInput | string
   color?: Prisma.StringFieldUpdateOperationsInput | string
   cnpj?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tenant?: Prisma.TenantUpdateOneRequiredWithoutCompaniesNestedInput
@@ -312,6 +327,7 @@ export type CompanyUncheckedUpdateInput = {
   shortName?: Prisma.StringFieldUpdateOperationsInput | string
   color?: Prisma.StringFieldUpdateOperationsInput | string
   cnpj?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   projects?: Prisma.ProjectUncheckedUpdateManyWithoutCompanyNestedInput
@@ -324,6 +340,7 @@ export type CompanyCreateManyInput = {
   shortName: string
   color: string
   cnpj?: string | null
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -334,6 +351,7 @@ export type CompanyUpdateManyMutationInput = {
   shortName?: Prisma.StringFieldUpdateOperationsInput | string
   color?: Prisma.StringFieldUpdateOperationsInput | string
   cnpj?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -345,6 +363,7 @@ export type CompanyUncheckedUpdateManyInput = {
   shortName?: Prisma.StringFieldUpdateOperationsInput | string
   color?: Prisma.StringFieldUpdateOperationsInput | string
   cnpj?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -377,6 +396,7 @@ export type CompanyCountOrderByAggregateInput = {
   shortName?: Prisma.SortOrder
   color?: Prisma.SortOrder
   cnpj?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -388,6 +408,7 @@ export type CompanyMaxOrderByAggregateInput = {
   shortName?: Prisma.SortOrder
   color?: Prisma.SortOrder
   cnpj?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -399,6 +420,7 @@ export type CompanyMinOrderByAggregateInput = {
   shortName?: Prisma.SortOrder
   color?: Prisma.SortOrder
   cnpj?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -454,6 +476,10 @@ export type NullableStringFieldUpdateOperationsInput = {
   set?: string | null
 }
 
+export type NullableDateTimeFieldUpdateOperationsInput = {
+  set?: Date | string | null
+}
+
 export type CompanyCreateNestedOneWithoutProjectsInput = {
   create?: Prisma.XOR<Prisma.CompanyCreateWithoutProjectsInput, Prisma.CompanyUncheckedCreateWithoutProjectsInput>
   connectOrCreate?: Prisma.CompanyCreateOrConnectWithoutProjectsInput
@@ -476,6 +502,7 @@ export type CompanyCreateWithoutTenantInput = {
   shortName: string
   color: string
   cnpj?: string | null
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   projects?: Prisma.ProjectCreateNestedManyWithoutCompanyInput
@@ -487,6 +514,7 @@ export type CompanyUncheckedCreateWithoutTenantInput = {
   shortName: string
   color: string
   cnpj?: string | null
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutCompanyInput
@@ -528,6 +556,7 @@ export type CompanyScalarWhereInput = {
   shortName?: Prisma.StringFilter<"Company"> | string
   color?: Prisma.StringFilter<"Company"> | string
   cnpj?: Prisma.StringNullableFilter<"Company"> | string | null
+  deletedAt?: Prisma.DateTimeNullableFilter<"Company"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Company"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Company"> | Date | string
 }
@@ -538,6 +567,7 @@ export type CompanyCreateWithoutProjectsInput = {
   shortName: string
   color: string
   cnpj?: string | null
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   tenant?: Prisma.TenantCreateNestedOneWithoutCompaniesInput
@@ -550,6 +580,7 @@ export type CompanyUncheckedCreateWithoutProjectsInput = {
   shortName: string
   color: string
   cnpj?: string | null
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -576,6 +607,7 @@ export type CompanyUpdateWithoutProjectsInput = {
   shortName?: Prisma.StringFieldUpdateOperationsInput | string
   color?: Prisma.StringFieldUpdateOperationsInput | string
   cnpj?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tenant?: Prisma.TenantUpdateOneRequiredWithoutCompaniesNestedInput
@@ -588,6 +620,7 @@ export type CompanyUncheckedUpdateWithoutProjectsInput = {
   shortName?: Prisma.StringFieldUpdateOperationsInput | string
   color?: Prisma.StringFieldUpdateOperationsInput | string
   cnpj?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -598,6 +631,7 @@ export type CompanyCreateManyTenantInput = {
   shortName: string
   color: string
   cnpj?: string | null
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -608,6 +642,7 @@ export type CompanyUpdateWithoutTenantInput = {
   shortName?: Prisma.StringFieldUpdateOperationsInput | string
   color?: Prisma.StringFieldUpdateOperationsInput | string
   cnpj?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   projects?: Prisma.ProjectUpdateManyWithoutCompanyNestedInput
@@ -619,6 +654,7 @@ export type CompanyUncheckedUpdateWithoutTenantInput = {
   shortName?: Prisma.StringFieldUpdateOperationsInput | string
   color?: Prisma.StringFieldUpdateOperationsInput | string
   cnpj?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   projects?: Prisma.ProjectUncheckedUpdateManyWithoutCompanyNestedInput
@@ -630,6 +666,7 @@ export type CompanyUncheckedUpdateManyWithoutTenantInput = {
   shortName?: Prisma.StringFieldUpdateOperationsInput | string
   color?: Prisma.StringFieldUpdateOperationsInput | string
   cnpj?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -672,6 +709,7 @@ export type CompanySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   shortName?: boolean
   color?: boolean
   cnpj?: boolean
+  deletedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
@@ -688,11 +726,12 @@ export type CompanySelectScalar = {
   shortName?: boolean
   color?: boolean
   cnpj?: boolean
+  deletedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type CompanyOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "name" | "shortName" | "color" | "cnpj" | "createdAt" | "updatedAt", ExtArgs["result"]["company"]>
+export type CompanyOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "name" | "shortName" | "color" | "cnpj" | "deletedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["company"]>
 export type CompanyInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   projects?: boolean | Prisma.Company$projectsArgs<ExtArgs>
@@ -712,6 +751,7 @@ export type $CompanyPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     shortName: string
     color: string
     cnpj: string | null
+    deletedAt: Date | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["company"]>
@@ -1091,6 +1131,7 @@ export interface CompanyFieldRefs {
   readonly shortName: Prisma.FieldRef<"Company", 'String'>
   readonly color: Prisma.FieldRef<"Company", 'String'>
   readonly cnpj: Prisma.FieldRef<"Company", 'String'>
+  readonly deletedAt: Prisma.FieldRef<"Company", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"Company", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Company", 'DateTime'>
 }

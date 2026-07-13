@@ -50,6 +50,7 @@ export function mapModule(m: any) {
     workDate: dateOnly(m.workDate),
     loggedHours: m.loggedHours != null ? Number(m.loggedHours) : null,
     loggedByUserId: m.loggedByUserId ?? null,
+    createdById: m.createdById ?? null,
     createdAt: toISO(m.createdAt),
     updatedAt: toISO(m.updatedAt),
   };

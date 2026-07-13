@@ -60,6 +60,7 @@ export type ProjectMinAggregateOutputType = {
   avatar: string | null
   testUrl: string | null
   queueOrder: number | null
+  deletedAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -84,6 +85,7 @@ export type ProjectMaxAggregateOutputType = {
   avatar: string | null
   testUrl: string | null
   queueOrder: number | null
+  deletedAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -108,6 +110,7 @@ export type ProjectCountAggregateOutputType = {
   avatar: number
   testUrl: number
   queueOrder: number
+  deletedAt: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -148,6 +151,7 @@ export type ProjectMinAggregateInputType = {
   avatar?: true
   testUrl?: true
   queueOrder?: true
+  deletedAt?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -172,6 +176,7 @@ export type ProjectMaxAggregateInputType = {
   avatar?: true
   testUrl?: true
   queueOrder?: true
+  deletedAt?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -196,6 +201,7 @@ export type ProjectCountAggregateInputType = {
   avatar?: true
   testUrl?: true
   queueOrder?: true
+  deletedAt?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -307,6 +313,7 @@ export type ProjectGroupByOutputType = {
   avatar: string | null
   testUrl: string | null
   queueOrder: number | null
+  deletedAt: Date | null
   createdAt: Date
   updatedAt: Date
   _count: ProjectCountAggregateOutputType | null
@@ -354,6 +361,7 @@ export type ProjectWhereInput = {
   avatar?: Prisma.StringNullableFilter<"Project"> | string | null
   testUrl?: Prisma.StringNullableFilter<"Project"> | string | null
   queueOrder?: Prisma.IntNullableFilter<"Project"> | number | null
+  deletedAt?: Prisma.DateTimeNullableFilter<"Project"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Project"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Project"> | Date | string
   tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
@@ -389,6 +397,7 @@ export type ProjectOrderByWithRelationInput = {
   avatar?: Prisma.SortOrderInput | Prisma.SortOrder
   testUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   queueOrder?: Prisma.SortOrderInput | Prisma.SortOrder
+  deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   tenant?: Prisma.TenantOrderByWithRelationInput
@@ -428,6 +437,7 @@ export type ProjectWhereUniqueInput = Prisma.AtLeast<{
   avatar?: Prisma.StringNullableFilter<"Project"> | string | null
   testUrl?: Prisma.StringNullableFilter<"Project"> | string | null
   queueOrder?: Prisma.IntNullableFilter<"Project"> | number | null
+  deletedAt?: Prisma.DateTimeNullableFilter<"Project"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Project"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Project"> | Date | string
   tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
@@ -463,6 +473,7 @@ export type ProjectOrderByWithAggregationInput = {
   avatar?: Prisma.SortOrderInput | Prisma.SortOrder
   testUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   queueOrder?: Prisma.SortOrderInput | Prisma.SortOrder
+  deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.ProjectCountOrderByAggregateInput
@@ -495,6 +506,7 @@ export type ProjectScalarWhereWithAggregatesInput = {
   avatar?: Prisma.StringNullableWithAggregatesFilter<"Project"> | string | null
   testUrl?: Prisma.StringNullableWithAggregatesFilter<"Project"> | string | null
   queueOrder?: Prisma.IntNullableWithAggregatesFilter<"Project"> | number | null
+  deletedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Project"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Project"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Project"> | Date | string
 }
@@ -516,6 +528,7 @@ export type ProjectCreateInput = {
   avatar?: string | null
   testUrl?: string | null
   queueOrder?: number | null
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   tenant?: Prisma.TenantCreateNestedOneWithoutProjectsInput
@@ -551,6 +564,7 @@ export type ProjectUncheckedCreateInput = {
   avatar?: string | null
   testUrl?: string | null
   queueOrder?: number | null
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   developers?: Prisma.ProjectDeveloperUncheckedCreateNestedManyWithoutProjectInput
@@ -580,6 +594,7 @@ export type ProjectUpdateInput = {
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   testUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   queueOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tenant?: Prisma.TenantUpdateOneRequiredWithoutProjectsNestedInput
@@ -615,6 +630,7 @@ export type ProjectUncheckedUpdateInput = {
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   testUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   queueOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   developers?: Prisma.ProjectDeveloperUncheckedUpdateManyWithoutProjectNestedInput
@@ -647,6 +663,7 @@ export type ProjectCreateManyInput = {
   avatar?: string | null
   testUrl?: string | null
   queueOrder?: number | null
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -668,6 +685,7 @@ export type ProjectUpdateManyMutationInput = {
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   testUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   queueOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -692,6 +710,7 @@ export type ProjectUncheckedUpdateManyInput = {
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   testUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   queueOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -732,6 +751,7 @@ export type ProjectCountOrderByAggregateInput = {
   avatar?: Prisma.SortOrder
   testUrl?: Prisma.SortOrder
   queueOrder?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -763,6 +783,7 @@ export type ProjectMaxOrderByAggregateInput = {
   avatar?: Prisma.SortOrder
   testUrl?: Prisma.SortOrder
   queueOrder?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -787,6 +808,7 @@ export type ProjectMinOrderByAggregateInput = {
   avatar?: Prisma.SortOrder
   testUrl?: Prisma.SortOrder
   queueOrder?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -1093,6 +1115,7 @@ export type ProjectCreateWithoutTenantInput = {
   avatar?: string | null
   testUrl?: string | null
   queueOrder?: number | null
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   company?: Prisma.CompanyCreateNestedOneWithoutProjectsInput
@@ -1126,6 +1149,7 @@ export type ProjectUncheckedCreateWithoutTenantInput = {
   avatar?: string | null
   testUrl?: string | null
   queueOrder?: number | null
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   developers?: Prisma.ProjectDeveloperUncheckedCreateNestedManyWithoutProjectInput
@@ -1187,6 +1211,7 @@ export type ProjectScalarWhereInput = {
   avatar?: Prisma.StringNullableFilter<"Project"> | string | null
   testUrl?: Prisma.StringNullableFilter<"Project"> | string | null
   queueOrder?: Prisma.IntNullableFilter<"Project"> | number | null
+  deletedAt?: Prisma.DateTimeNullableFilter<"Project"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Project"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Project"> | Date | string
 }
@@ -1208,6 +1233,7 @@ export type ProjectCreateWithoutCompanyInput = {
   avatar?: string | null
   testUrl?: string | null
   queueOrder?: number | null
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   tenant?: Prisma.TenantCreateNestedOneWithoutProjectsInput
@@ -1241,6 +1267,7 @@ export type ProjectUncheckedCreateWithoutCompanyInput = {
   avatar?: string | null
   testUrl?: string | null
   queueOrder?: number | null
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   developers?: Prisma.ProjectDeveloperUncheckedCreateNestedManyWithoutProjectInput
@@ -1296,6 +1323,7 @@ export type ProjectCreateWithoutOwnerInput = {
   avatar?: string | null
   testUrl?: string | null
   queueOrder?: number | null
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   tenant?: Prisma.TenantCreateNestedOneWithoutProjectsInput
@@ -1329,6 +1357,7 @@ export type ProjectUncheckedCreateWithoutOwnerInput = {
   avatar?: string | null
   testUrl?: string | null
   queueOrder?: number | null
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   developers?: Prisma.ProjectDeveloperUncheckedCreateNestedManyWithoutProjectInput
@@ -1384,6 +1413,7 @@ export type ProjectCreateWithoutDevelopersInput = {
   avatar?: string | null
   testUrl?: string | null
   queueOrder?: number | null
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   tenant?: Prisma.TenantCreateNestedOneWithoutProjectsInput
@@ -1418,6 +1448,7 @@ export type ProjectUncheckedCreateWithoutDevelopersInput = {
   avatar?: string | null
   testUrl?: string | null
   queueOrder?: number | null
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   modules?: Prisma.ModuleUncheckedCreateNestedManyWithoutProjectInput
@@ -1462,6 +1493,7 @@ export type ProjectUpdateWithoutDevelopersInput = {
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   testUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   queueOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tenant?: Prisma.TenantUpdateOneRequiredWithoutProjectsNestedInput
@@ -1496,6 +1528,7 @@ export type ProjectUncheckedUpdateWithoutDevelopersInput = {
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   testUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   queueOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   modules?: Prisma.ModuleUncheckedUpdateManyWithoutProjectNestedInput
@@ -1524,6 +1557,7 @@ export type ProjectCreateWithoutModulesInput = {
   avatar?: string | null
   testUrl?: string | null
   queueOrder?: number | null
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   tenant?: Prisma.TenantCreateNestedOneWithoutProjectsInput
@@ -1558,6 +1592,7 @@ export type ProjectUncheckedCreateWithoutModulesInput = {
   avatar?: string | null
   testUrl?: string | null
   queueOrder?: number | null
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   developers?: Prisma.ProjectDeveloperUncheckedCreateNestedManyWithoutProjectInput
@@ -1602,6 +1637,7 @@ export type ProjectUpdateWithoutModulesInput = {
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   testUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   queueOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tenant?: Prisma.TenantUpdateOneRequiredWithoutProjectsNestedInput
@@ -1636,6 +1672,7 @@ export type ProjectUncheckedUpdateWithoutModulesInput = {
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   testUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   queueOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   developers?: Prisma.ProjectDeveloperUncheckedUpdateManyWithoutProjectNestedInput
@@ -1664,6 +1701,7 @@ export type ProjectCreateWithoutEpicsInput = {
   avatar?: string | null
   testUrl?: string | null
   queueOrder?: number | null
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   tenant?: Prisma.TenantCreateNestedOneWithoutProjectsInput
@@ -1698,6 +1736,7 @@ export type ProjectUncheckedCreateWithoutEpicsInput = {
   avatar?: string | null
   testUrl?: string | null
   queueOrder?: number | null
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   developers?: Prisma.ProjectDeveloperUncheckedCreateNestedManyWithoutProjectInput
@@ -1742,6 +1781,7 @@ export type ProjectUpdateWithoutEpicsInput = {
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   testUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   queueOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tenant?: Prisma.TenantUpdateOneRequiredWithoutProjectsNestedInput
@@ -1776,6 +1816,7 @@ export type ProjectUncheckedUpdateWithoutEpicsInput = {
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   testUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   queueOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   developers?: Prisma.ProjectDeveloperUncheckedUpdateManyWithoutProjectNestedInput
@@ -1804,6 +1845,7 @@ export type ProjectCreateWithoutTasksInput = {
   avatar?: string | null
   testUrl?: string | null
   queueOrder?: number | null
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   tenant?: Prisma.TenantCreateNestedOneWithoutProjectsInput
@@ -1838,6 +1880,7 @@ export type ProjectUncheckedCreateWithoutTasksInput = {
   avatar?: string | null
   testUrl?: string | null
   queueOrder?: number | null
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   developers?: Prisma.ProjectDeveloperUncheckedCreateNestedManyWithoutProjectInput
@@ -1882,6 +1925,7 @@ export type ProjectUpdateWithoutTasksInput = {
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   testUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   queueOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tenant?: Prisma.TenantUpdateOneRequiredWithoutProjectsNestedInput
@@ -1916,6 +1960,7 @@ export type ProjectUncheckedUpdateWithoutTasksInput = {
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   testUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   queueOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   developers?: Prisma.ProjectDeveloperUncheckedUpdateManyWithoutProjectNestedInput
@@ -1944,6 +1989,7 @@ export type ProjectCreateWithoutTimeLogsInput = {
   avatar?: string | null
   testUrl?: string | null
   queueOrder?: number | null
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   tenant?: Prisma.TenantCreateNestedOneWithoutProjectsInput
@@ -1978,6 +2024,7 @@ export type ProjectUncheckedCreateWithoutTimeLogsInput = {
   avatar?: string | null
   testUrl?: string | null
   queueOrder?: number | null
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   developers?: Prisma.ProjectDeveloperUncheckedCreateNestedManyWithoutProjectInput
@@ -2022,6 +2069,7 @@ export type ProjectUpdateWithoutTimeLogsInput = {
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   testUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   queueOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tenant?: Prisma.TenantUpdateOneRequiredWithoutProjectsNestedInput
@@ -2056,6 +2104,7 @@ export type ProjectUncheckedUpdateWithoutTimeLogsInput = {
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   testUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   queueOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   developers?: Prisma.ProjectDeveloperUncheckedUpdateManyWithoutProjectNestedInput
@@ -2084,6 +2133,7 @@ export type ProjectCreateWithoutNotificationsInput = {
   avatar?: string | null
   testUrl?: string | null
   queueOrder?: number | null
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   tenant?: Prisma.TenantCreateNestedOneWithoutProjectsInput
@@ -2118,6 +2168,7 @@ export type ProjectUncheckedCreateWithoutNotificationsInput = {
   avatar?: string | null
   testUrl?: string | null
   queueOrder?: number | null
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   developers?: Prisma.ProjectDeveloperUncheckedCreateNestedManyWithoutProjectInput
@@ -2162,6 +2213,7 @@ export type ProjectUpdateWithoutNotificationsInput = {
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   testUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   queueOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tenant?: Prisma.TenantUpdateOneRequiredWithoutProjectsNestedInput
@@ -2196,6 +2248,7 @@ export type ProjectUncheckedUpdateWithoutNotificationsInput = {
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   testUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   queueOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   developers?: Prisma.ProjectDeveloperUncheckedUpdateManyWithoutProjectNestedInput
@@ -2224,6 +2277,7 @@ export type ProjectCreateWithoutShowcaseAttachmentsInput = {
   avatar?: string | null
   testUrl?: string | null
   queueOrder?: number | null
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   tenant?: Prisma.TenantCreateNestedOneWithoutProjectsInput
@@ -2258,6 +2312,7 @@ export type ProjectUncheckedCreateWithoutShowcaseAttachmentsInput = {
   avatar?: string | null
   testUrl?: string | null
   queueOrder?: number | null
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   developers?: Prisma.ProjectDeveloperUncheckedCreateNestedManyWithoutProjectInput
@@ -2302,6 +2357,7 @@ export type ProjectUpdateWithoutShowcaseAttachmentsInput = {
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   testUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   queueOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tenant?: Prisma.TenantUpdateOneRequiredWithoutProjectsNestedInput
@@ -2336,6 +2392,7 @@ export type ProjectUncheckedUpdateWithoutShowcaseAttachmentsInput = {
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   testUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   queueOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   developers?: Prisma.ProjectDeveloperUncheckedUpdateManyWithoutProjectNestedInput
@@ -2364,6 +2421,7 @@ export type ProjectCreateWithoutDemandAttachmentsInput = {
   avatar?: string | null
   testUrl?: string | null
   queueOrder?: number | null
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   tenant?: Prisma.TenantCreateNestedOneWithoutProjectsInput
@@ -2398,6 +2456,7 @@ export type ProjectUncheckedCreateWithoutDemandAttachmentsInput = {
   avatar?: string | null
   testUrl?: string | null
   queueOrder?: number | null
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   developers?: Prisma.ProjectDeveloperUncheckedCreateNestedManyWithoutProjectInput
@@ -2442,6 +2501,7 @@ export type ProjectUpdateWithoutDemandAttachmentsInput = {
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   testUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   queueOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tenant?: Prisma.TenantUpdateOneRequiredWithoutProjectsNestedInput
@@ -2476,6 +2536,7 @@ export type ProjectUncheckedUpdateWithoutDemandAttachmentsInput = {
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   testUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   queueOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   developers?: Prisma.ProjectDeveloperUncheckedUpdateManyWithoutProjectNestedInput
@@ -2506,6 +2567,7 @@ export type ProjectCreateManyTenantInput = {
   avatar?: string | null
   testUrl?: string | null
   queueOrder?: number | null
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -2527,6 +2589,7 @@ export type ProjectUpdateWithoutTenantInput = {
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   testUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   queueOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   company?: Prisma.CompanyUpdateOneWithoutProjectsNestedInput
@@ -2560,6 +2623,7 @@ export type ProjectUncheckedUpdateWithoutTenantInput = {
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   testUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   queueOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   developers?: Prisma.ProjectDeveloperUncheckedUpdateManyWithoutProjectNestedInput
@@ -2591,6 +2655,7 @@ export type ProjectUncheckedUpdateManyWithoutTenantInput = {
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   testUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   queueOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -2614,6 +2679,7 @@ export type ProjectCreateManyCompanyInput = {
   avatar?: string | null
   testUrl?: string | null
   queueOrder?: number | null
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -2635,6 +2701,7 @@ export type ProjectUpdateWithoutCompanyInput = {
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   testUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   queueOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tenant?: Prisma.TenantUpdateOneRequiredWithoutProjectsNestedInput
@@ -2668,6 +2735,7 @@ export type ProjectUncheckedUpdateWithoutCompanyInput = {
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   testUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   queueOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   developers?: Prisma.ProjectDeveloperUncheckedUpdateManyWithoutProjectNestedInput
@@ -2699,6 +2767,7 @@ export type ProjectUncheckedUpdateManyWithoutCompanyInput = {
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   testUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   queueOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -2722,6 +2791,7 @@ export type ProjectCreateManyOwnerInput = {
   avatar?: string | null
   testUrl?: string | null
   queueOrder?: number | null
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -2743,6 +2813,7 @@ export type ProjectUpdateWithoutOwnerInput = {
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   testUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   queueOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tenant?: Prisma.TenantUpdateOneRequiredWithoutProjectsNestedInput
@@ -2776,6 +2847,7 @@ export type ProjectUncheckedUpdateWithoutOwnerInput = {
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   testUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   queueOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   developers?: Prisma.ProjectDeveloperUncheckedUpdateManyWithoutProjectNestedInput
@@ -2807,6 +2879,7 @@ export type ProjectUncheckedUpdateManyWithoutOwnerInput = {
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   testUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   queueOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -2925,6 +2998,7 @@ export type ProjectSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   avatar?: boolean
   testUrl?: boolean
   queueOrder?: boolean
+  deletedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
@@ -2963,11 +3037,12 @@ export type ProjectSelectScalar = {
   avatar?: boolean
   testUrl?: boolean
   queueOrder?: boolean
+  deletedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type ProjectOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "companyId" | "name" | "description" | "technicalDescription" | "demandDescription" | "requestedBy" | "status" | "ownerId" | "startDate" | "endDate" | "estimatedHours" | "actualHours" | "progress" | "color" | "avatar" | "testUrl" | "queueOrder" | "createdAt" | "updatedAt", ExtArgs["result"]["project"]>
+export type ProjectOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "companyId" | "name" | "description" | "technicalDescription" | "demandDescription" | "requestedBy" | "status" | "ownerId" | "startDate" | "endDate" | "estimatedHours" | "actualHours" | "progress" | "color" | "avatar" | "testUrl" | "queueOrder" | "deletedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["project"]>
 export type ProjectInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   company?: boolean | Prisma.Project$companyArgs<ExtArgs>
@@ -3018,6 +3093,7 @@ export type $ProjectPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     avatar: string | null
     testUrl: string | null
     queueOrder: number | null
+    deletedAt: Date | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["project"]>
@@ -3419,6 +3495,7 @@ export interface ProjectFieldRefs {
   readonly avatar: Prisma.FieldRef<"Project", 'String'>
   readonly testUrl: Prisma.FieldRef<"Project", 'String'>
   readonly queueOrder: Prisma.FieldRef<"Project", 'Int'>
+  readonly deletedAt: Prisma.FieldRef<"Project", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"Project", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Project", 'DateTime'>
 }

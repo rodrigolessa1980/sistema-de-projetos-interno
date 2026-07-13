@@ -43,6 +43,7 @@ export type ModuleAttachmentMinAggregateOutputType = {
   type: string | null
   size: number | null
   dataUrl: string | null
+  deletedAt: Date | null
   createdAt: Date | null
 }
 
@@ -55,6 +56,7 @@ export type ModuleAttachmentMaxAggregateOutputType = {
   type: string | null
   size: number | null
   dataUrl: string | null
+  deletedAt: Date | null
   createdAt: Date | null
 }
 
@@ -67,6 +69,7 @@ export type ModuleAttachmentCountAggregateOutputType = {
   type: number
   size: number
   dataUrl: number
+  deletedAt: number
   createdAt: number
   _all: number
 }
@@ -89,6 +92,7 @@ export type ModuleAttachmentMinAggregateInputType = {
   type?: true
   size?: true
   dataUrl?: true
+  deletedAt?: true
   createdAt?: true
 }
 
@@ -101,6 +105,7 @@ export type ModuleAttachmentMaxAggregateInputType = {
   type?: true
   size?: true
   dataUrl?: true
+  deletedAt?: true
   createdAt?: true
 }
 
@@ -113,6 +118,7 @@ export type ModuleAttachmentCountAggregateInputType = {
   type?: true
   size?: true
   dataUrl?: true
+  deletedAt?: true
   createdAt?: true
   _all?: true
 }
@@ -212,6 +218,7 @@ export type ModuleAttachmentGroupByOutputType = {
   type: string
   size: number
   dataUrl: string
+  deletedAt: Date | null
   createdAt: Date
   _count: ModuleAttachmentCountAggregateOutputType | null
   _avg: ModuleAttachmentAvgAggregateOutputType | null
@@ -247,6 +254,7 @@ export type ModuleAttachmentWhereInput = {
   type?: Prisma.StringFilter<"ModuleAttachment"> | string
   size?: Prisma.IntFilter<"ModuleAttachment"> | number
   dataUrl?: Prisma.StringFilter<"ModuleAttachment"> | string
+  deletedAt?: Prisma.DateTimeNullableFilter<"ModuleAttachment"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"ModuleAttachment"> | Date | string
   tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
   module?: Prisma.XOR<Prisma.ModuleScalarRelationFilter, Prisma.ModuleWhereInput>
@@ -262,6 +270,7 @@ export type ModuleAttachmentOrderByWithRelationInput = {
   type?: Prisma.SortOrder
   size?: Prisma.SortOrder
   dataUrl?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   tenant?: Prisma.TenantOrderByWithRelationInput
   module?: Prisma.ModuleOrderByWithRelationInput
@@ -281,6 +290,7 @@ export type ModuleAttachmentWhereUniqueInput = Prisma.AtLeast<{
   type?: Prisma.StringFilter<"ModuleAttachment"> | string
   size?: Prisma.IntFilter<"ModuleAttachment"> | number
   dataUrl?: Prisma.StringFilter<"ModuleAttachment"> | string
+  deletedAt?: Prisma.DateTimeNullableFilter<"ModuleAttachment"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"ModuleAttachment"> | Date | string
   tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
   module?: Prisma.XOR<Prisma.ModuleScalarRelationFilter, Prisma.ModuleWhereInput>
@@ -296,6 +306,7 @@ export type ModuleAttachmentOrderByWithAggregationInput = {
   type?: Prisma.SortOrder
   size?: Prisma.SortOrder
   dataUrl?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.ModuleAttachmentCountOrderByAggregateInput
   _avg?: Prisma.ModuleAttachmentAvgOrderByAggregateInput
@@ -316,6 +327,7 @@ export type ModuleAttachmentScalarWhereWithAggregatesInput = {
   type?: Prisma.StringWithAggregatesFilter<"ModuleAttachment"> | string
   size?: Prisma.IntWithAggregatesFilter<"ModuleAttachment"> | number
   dataUrl?: Prisma.StringWithAggregatesFilter<"ModuleAttachment"> | string
+  deletedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"ModuleAttachment"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"ModuleAttachment"> | Date | string
 }
 
@@ -325,6 +337,7 @@ export type ModuleAttachmentCreateInput = {
   type: string
   size: number
   dataUrl: string
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   tenant?: Prisma.TenantCreateNestedOneWithoutModuleAttachmentsInput
   module: Prisma.ModuleCreateNestedOneWithoutAttachmentsInput
@@ -340,6 +353,7 @@ export type ModuleAttachmentUncheckedCreateInput = {
   type: string
   size: number
   dataUrl: string
+  deletedAt?: Date | string | null
   createdAt?: Date | string
 }
 
@@ -349,6 +363,7 @@ export type ModuleAttachmentUpdateInput = {
   type?: Prisma.StringFieldUpdateOperationsInput | string
   size?: Prisma.IntFieldUpdateOperationsInput | number
   dataUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tenant?: Prisma.TenantUpdateOneRequiredWithoutModuleAttachmentsNestedInput
   module?: Prisma.ModuleUpdateOneRequiredWithoutAttachmentsNestedInput
@@ -364,6 +379,7 @@ export type ModuleAttachmentUncheckedUpdateInput = {
   type?: Prisma.StringFieldUpdateOperationsInput | string
   size?: Prisma.IntFieldUpdateOperationsInput | number
   dataUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -376,6 +392,7 @@ export type ModuleAttachmentCreateManyInput = {
   type: string
   size: number
   dataUrl: string
+  deletedAt?: Date | string | null
   createdAt?: Date | string
 }
 
@@ -385,6 +402,7 @@ export type ModuleAttachmentUpdateManyMutationInput = {
   type?: Prisma.StringFieldUpdateOperationsInput | string
   size?: Prisma.IntFieldUpdateOperationsInput | number
   dataUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -397,6 +415,7 @@ export type ModuleAttachmentUncheckedUpdateManyInput = {
   type?: Prisma.StringFieldUpdateOperationsInput | string
   size?: Prisma.IntFieldUpdateOperationsInput | number
   dataUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -425,6 +444,7 @@ export type ModuleAttachmentCountOrderByAggregateInput = {
   type?: Prisma.SortOrder
   size?: Prisma.SortOrder
   dataUrl?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -441,6 +461,7 @@ export type ModuleAttachmentMaxOrderByAggregateInput = {
   type?: Prisma.SortOrder
   size?: Prisma.SortOrder
   dataUrl?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -453,6 +474,7 @@ export type ModuleAttachmentMinOrderByAggregateInput = {
   type?: Prisma.SortOrder
   size?: Prisma.SortOrder
   dataUrl?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -592,6 +614,7 @@ export type ModuleAttachmentCreateWithoutTenantInput = {
   type: string
   size: number
   dataUrl: string
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   module: Prisma.ModuleCreateNestedOneWithoutAttachmentsInput
   user: Prisma.UserCreateNestedOneWithoutModuleAttachmentsInput
@@ -605,6 +628,7 @@ export type ModuleAttachmentUncheckedCreateWithoutTenantInput = {
   type: string
   size: number
   dataUrl: string
+  deletedAt?: Date | string | null
   createdAt?: Date | string
 }
 
@@ -646,6 +670,7 @@ export type ModuleAttachmentScalarWhereInput = {
   type?: Prisma.StringFilter<"ModuleAttachment"> | string
   size?: Prisma.IntFilter<"ModuleAttachment"> | number
   dataUrl?: Prisma.StringFilter<"ModuleAttachment"> | string
+  deletedAt?: Prisma.DateTimeNullableFilter<"ModuleAttachment"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"ModuleAttachment"> | Date | string
 }
 
@@ -655,6 +680,7 @@ export type ModuleAttachmentCreateWithoutUserInput = {
   type: string
   size: number
   dataUrl: string
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   tenant?: Prisma.TenantCreateNestedOneWithoutModuleAttachmentsInput
   module: Prisma.ModuleCreateNestedOneWithoutAttachmentsInput
@@ -668,6 +694,7 @@ export type ModuleAttachmentUncheckedCreateWithoutUserInput = {
   type: string
   size: number
   dataUrl: string
+  deletedAt?: Date | string | null
   createdAt?: Date | string
 }
 
@@ -703,6 +730,7 @@ export type ModuleAttachmentCreateWithoutModuleInput = {
   type: string
   size: number
   dataUrl: string
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   tenant?: Prisma.TenantCreateNestedOneWithoutModuleAttachmentsInput
   user: Prisma.UserCreateNestedOneWithoutModuleAttachmentsInput
@@ -716,6 +744,7 @@ export type ModuleAttachmentUncheckedCreateWithoutModuleInput = {
   type: string
   size: number
   dataUrl: string
+  deletedAt?: Date | string | null
   createdAt?: Date | string
 }
 
@@ -753,6 +782,7 @@ export type ModuleAttachmentCreateManyTenantInput = {
   type: string
   size: number
   dataUrl: string
+  deletedAt?: Date | string | null
   createdAt?: Date | string
 }
 
@@ -762,6 +792,7 @@ export type ModuleAttachmentUpdateWithoutTenantInput = {
   type?: Prisma.StringFieldUpdateOperationsInput | string
   size?: Prisma.IntFieldUpdateOperationsInput | number
   dataUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   module?: Prisma.ModuleUpdateOneRequiredWithoutAttachmentsNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutModuleAttachmentsNestedInput
@@ -775,6 +806,7 @@ export type ModuleAttachmentUncheckedUpdateWithoutTenantInput = {
   type?: Prisma.StringFieldUpdateOperationsInput | string
   size?: Prisma.IntFieldUpdateOperationsInput | number
   dataUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -786,6 +818,7 @@ export type ModuleAttachmentUncheckedUpdateManyWithoutTenantInput = {
   type?: Prisma.StringFieldUpdateOperationsInput | string
   size?: Prisma.IntFieldUpdateOperationsInput | number
   dataUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -797,6 +830,7 @@ export type ModuleAttachmentCreateManyUserInput = {
   type: string
   size: number
   dataUrl: string
+  deletedAt?: Date | string | null
   createdAt?: Date | string
 }
 
@@ -806,6 +840,7 @@ export type ModuleAttachmentUpdateWithoutUserInput = {
   type?: Prisma.StringFieldUpdateOperationsInput | string
   size?: Prisma.IntFieldUpdateOperationsInput | number
   dataUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tenant?: Prisma.TenantUpdateOneRequiredWithoutModuleAttachmentsNestedInput
   module?: Prisma.ModuleUpdateOneRequiredWithoutAttachmentsNestedInput
@@ -819,6 +854,7 @@ export type ModuleAttachmentUncheckedUpdateWithoutUserInput = {
   type?: Prisma.StringFieldUpdateOperationsInput | string
   size?: Prisma.IntFieldUpdateOperationsInput | number
   dataUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -830,6 +866,7 @@ export type ModuleAttachmentUncheckedUpdateManyWithoutUserInput = {
   type?: Prisma.StringFieldUpdateOperationsInput | string
   size?: Prisma.IntFieldUpdateOperationsInput | number
   dataUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -841,6 +878,7 @@ export type ModuleAttachmentCreateManyModuleInput = {
   type: string
   size: number
   dataUrl: string
+  deletedAt?: Date | string | null
   createdAt?: Date | string
 }
 
@@ -850,6 +888,7 @@ export type ModuleAttachmentUpdateWithoutModuleInput = {
   type?: Prisma.StringFieldUpdateOperationsInput | string
   size?: Prisma.IntFieldUpdateOperationsInput | number
   dataUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tenant?: Prisma.TenantUpdateOneRequiredWithoutModuleAttachmentsNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutModuleAttachmentsNestedInput
@@ -863,6 +902,7 @@ export type ModuleAttachmentUncheckedUpdateWithoutModuleInput = {
   type?: Prisma.StringFieldUpdateOperationsInput | string
   size?: Prisma.IntFieldUpdateOperationsInput | number
   dataUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -874,6 +914,7 @@ export type ModuleAttachmentUncheckedUpdateManyWithoutModuleInput = {
   type?: Prisma.StringFieldUpdateOperationsInput | string
   size?: Prisma.IntFieldUpdateOperationsInput | number
   dataUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -888,6 +929,7 @@ export type ModuleAttachmentSelect<ExtArgs extends runtime.Types.Extensions.Inte
   type?: boolean
   size?: boolean
   dataUrl?: boolean
+  deletedAt?: boolean
   createdAt?: boolean
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   module?: boolean | Prisma.ModuleDefaultArgs<ExtArgs>
@@ -905,10 +947,11 @@ export type ModuleAttachmentSelectScalar = {
   type?: boolean
   size?: boolean
   dataUrl?: boolean
+  deletedAt?: boolean
   createdAt?: boolean
 }
 
-export type ModuleAttachmentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "moduleId" | "userId" | "name" | "type" | "size" | "dataUrl" | "createdAt", ExtArgs["result"]["moduleAttachment"]>
+export type ModuleAttachmentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "moduleId" | "userId" | "name" | "type" | "size" | "dataUrl" | "deletedAt" | "createdAt", ExtArgs["result"]["moduleAttachment"]>
 export type ModuleAttachmentInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   module?: boolean | Prisma.ModuleDefaultArgs<ExtArgs>
@@ -931,6 +974,7 @@ export type $ModuleAttachmentPayload<ExtArgs extends runtime.Types.Extensions.In
     type: string
     size: number
     dataUrl: string
+    deletedAt: Date | null
     createdAt: Date
   }, ExtArgs["result"]["moduleAttachment"]>
   composites: {}
@@ -1312,6 +1356,7 @@ export interface ModuleAttachmentFieldRefs {
   readonly type: Prisma.FieldRef<"ModuleAttachment", 'String'>
   readonly size: Prisma.FieldRef<"ModuleAttachment", 'Int'>
   readonly dataUrl: Prisma.FieldRef<"ModuleAttachment", 'String'>
+  readonly deletedAt: Prisma.FieldRef<"ModuleAttachment", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"ModuleAttachment", 'DateTime'>
 }
     

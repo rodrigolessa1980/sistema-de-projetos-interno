@@ -8,7 +8,7 @@ import {
   BarChart3, Clock, Network, Users, ChevronLeft, ChevronRight,
   Zap, Settings, LogOut, ChevronDown, Box,
   FileBarChart2, ClipboardList, Timer, TrendingUp, ListOrdered, Building2, Inbox,
-  CalendarDays,
+  CalendarDays, Trash2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useUIStore } from "@/stores";
@@ -55,6 +55,7 @@ const navItems = [
   // Administração (só admin).
   { group: "Administração", items: [
     { href: "/users", label: "Usuários", icon: Users, adminOnly: true },
+    { href: "/trash", label: "Lixeira", icon: Trash2, adminOnly: true },
   ]},
 ];
 

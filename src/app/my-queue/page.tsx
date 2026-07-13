@@ -14,6 +14,7 @@ import {
   CalendarX, TrendingUp,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { TaskActions } from "@/features/tasks/task-actions";
 import type { Task, Project } from "@/types";
 
 function hoursDisplay(h: number) {
@@ -100,6 +101,7 @@ function TaskRow({
             </span>
           )}
         </div>
+        <TaskActions task={task} />
       </div>
     </Link>
   );

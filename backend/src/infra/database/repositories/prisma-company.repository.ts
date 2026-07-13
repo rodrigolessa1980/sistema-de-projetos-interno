@@ -51,7 +51,7 @@ export class PrismaCompanyRepository implements ICompanyRepository {
   }
 
   async delete(id: string): Promise<void> {
-    await this.prisma.company.delete({ where: { id } });
+    await this.prisma.company.update({ where: { id }, data: { deletedAt: new Date() } });
   }
 
   async listAll(): Promise<Company[]> {

@@ -43,6 +43,7 @@ import { ProjectAvatar } from "@/components/shared/project-avatar";
 import Link from "@/lib/router";
 import { notFound, useParams } from "@/lib/router";
 import { ReassignPopover } from "@/components/shared/reassign-popover";
+import { TaskActions } from "@/features/tasks/task-actions";
 import { toast } from "sonner";
 import { ModuleDetailDialog } from "@/features/modules/module-detail-dialog";
 import { ModuleAttachmentUploadField, type PendingModuleFile } from "@/features/modules/module-attachment-upload-field";
@@ -183,6 +184,10 @@ export default function ProjectDetailPage() {
     project.ownerId === user.id || project.developerIds.includes(user.id)
   );
   const canAddModule = isAdmin || isProjectMember;
+  // Editar/excluir módulo: admin ou o dono (quem criou). Módulos antigos sem
+  // dono (createdById null) só o admin.
+  const canModifyModule = (m: { createdById?: string | null }) =>
+    isAdmin || (!!m.createdById && m.createdById === user?.id);
 
   // Recalcula só os agregados computados no servidor (summary/calendar) + timelogs do
   // projeto. NÃO re-baixa blobs de anexo (não mudam ao mexer em módulo). INC-13.
@@ -1279,18 +1284,16 @@ export default function ProjectDetailPage() {
                       </div>
                       <div className="flex items-center gap-2 shrink-0" onClick={(e) => e.stopPropagation()}>
                         <span className="text-sm text-zinc-400">{module.progress}%</span>
-                        {canAddModule && (
+                        {canModifyModule(module) && (
                           <div className="flex items-center gap-1">
-                            {isAdmin && (
-                              <button
-                                type="button"
-                                onClick={() => startEdit(module)}
-                                className="p-1.5 rounded-md text-zinc-500 hover:text-zinc-300 hover:bg-zinc-700/50 transition-colors"
-                                title="Editar módulo"
-                              >
-                                <Pencil className="w-3.5 h-3.5" />
-                              </button>
-                            )}
+                            <button
+                              type="button"
+                              onClick={() => startEdit(module)}
+                              className="p-1.5 rounded-md text-zinc-500 hover:text-zinc-300 hover:bg-zinc-700/50 transition-colors"
+                              title="Editar módulo"
+                            >
+                              <Pencil className="w-3.5 h-3.5" />
+                            </button>
                             <Button
                               type="button"
                               size="sm"
@@ -1393,6 +1396,7 @@ export default function ProjectDetailPage() {
                         />
                       )}
                     </div>
+                    <TaskActions task={task} className="shrink-0" />
                   </div>
                 );
               })}

@@ -33,6 +33,7 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { cn } from "@/lib/utils";
 import { TaskCreateDialog } from "@/features/tasks/task-create-dialog";
+import { TaskActions } from "@/features/tasks/task-actions";
 import { PageLoading } from "@/components/shared/page-loading";
 import { useWorkSessionStore } from "@/stores/work-session-store";
 import { formatElapsed } from "@/hooks/use-work-session";
@@ -151,7 +152,10 @@ function KanbanCard({ task, isDragging }: { task: Task; isDragging?: boolean }) 
           )}
           <ComplexityBadge complexity={task.complexity} />
         </div>
-        <GripVertical className="w-3.5 h-3.5 text-zinc-700 opacity-0 group-hover:opacity-100 transition-opacity" />
+        <div className="flex items-center gap-0.5 shrink-0">
+          <TaskActions task={task} className="opacity-0 group-hover:opacity-100 transition-opacity" />
+          <GripVertical className="w-3.5 h-3.5 text-zinc-700 opacity-0 group-hover:opacity-100 transition-opacity" />
+        </div>
       </div>
 
       <Link href={`/tasks/${task.id}`} onClick={(e) => e.stopPropagation()}>

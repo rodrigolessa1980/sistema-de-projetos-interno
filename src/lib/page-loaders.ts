@@ -30,6 +30,7 @@ export const pageLoaders = {
   taskDetail: () => import("@/app/tasks/[id]/page"),
   timeLogs: () => import("@/app/time-logs/page"),
   users: () => import("@/app/users/page"),
+  trash: () => import("@/app/trash/page"),
 } as const;
 
 /** Rotas principais da sidebar — pré-carregadas após login. */
@@ -77,6 +78,7 @@ const loaderByHref: Record<string, () => Promise<PageModule>> = {
   "/reports/overview": pageLoaders.overviewReport,
   "/users": pageLoaders.users,
   "/profile": pageLoaders.profile,
+  "/trash": pageLoaders.trash,
 };
 
 let preloadPromise: Promise<void> | null = null;

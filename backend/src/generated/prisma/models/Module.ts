@@ -50,6 +50,7 @@ export type ModuleMinAggregateOutputType = {
   workDate: Date | null
   loggedHours: number | null
   loggedByUserId: string | null
+  createdById: string | null
   deletedAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -67,6 +68,7 @@ export type ModuleMaxAggregateOutputType = {
   workDate: Date | null
   loggedHours: number | null
   loggedByUserId: string | null
+  createdById: string | null
   deletedAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -84,6 +86,7 @@ export type ModuleCountAggregateOutputType = {
   workDate: number
   loggedHours: number
   loggedByUserId: number
+  createdById: number
   deletedAt: number
   createdAt: number
   updatedAt: number
@@ -115,6 +118,7 @@ export type ModuleMinAggregateInputType = {
   workDate?: true
   loggedHours?: true
   loggedByUserId?: true
+  createdById?: true
   deletedAt?: true
   createdAt?: true
   updatedAt?: true
@@ -132,6 +136,7 @@ export type ModuleMaxAggregateInputType = {
   workDate?: true
   loggedHours?: true
   loggedByUserId?: true
+  createdById?: true
   deletedAt?: true
   createdAt?: true
   updatedAt?: true
@@ -149,6 +154,7 @@ export type ModuleCountAggregateInputType = {
   workDate?: true
   loggedHours?: true
   loggedByUserId?: true
+  createdById?: true
   deletedAt?: true
   createdAt?: true
   updatedAt?: true
@@ -253,6 +259,7 @@ export type ModuleGroupByOutputType = {
   workDate: Date | null
   loggedHours: number | null
   loggedByUserId: string | null
+  createdById: string | null
   deletedAt: Date | null
   createdAt: Date
   updatedAt: Date
@@ -293,12 +300,14 @@ export type ModuleWhereInput = {
   workDate?: Prisma.DateTimeNullableFilter<"Module"> | Date | string | null
   loggedHours?: Prisma.FloatNullableFilter<"Module"> | number | null
   loggedByUserId?: Prisma.StringNullableFilter<"Module"> | string | null
+  createdById?: Prisma.StringNullableFilter<"Module"> | string | null
   deletedAt?: Prisma.DateTimeNullableFilter<"Module"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Module"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Module"> | Date | string
   tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
   project?: Prisma.XOR<Prisma.ProjectScalarRelationFilter, Prisma.ProjectWhereInput>
   loggedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  createdBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   epics?: Prisma.EpicListRelationFilter
   tasks?: Prisma.TaskListRelationFilter
   attachments?: Prisma.ModuleAttachmentListRelationFilter
@@ -316,12 +325,14 @@ export type ModuleOrderByWithRelationInput = {
   workDate?: Prisma.SortOrderInput | Prisma.SortOrder
   loggedHours?: Prisma.SortOrderInput | Prisma.SortOrder
   loggedByUserId?: Prisma.SortOrderInput | Prisma.SortOrder
+  createdById?: Prisma.SortOrderInput | Prisma.SortOrder
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   tenant?: Prisma.TenantOrderByWithRelationInput
   project?: Prisma.ProjectOrderByWithRelationInput
   loggedBy?: Prisma.UserOrderByWithRelationInput
+  createdBy?: Prisma.UserOrderByWithRelationInput
   epics?: Prisma.EpicOrderByRelationAggregateInput
   tasks?: Prisma.TaskOrderByRelationAggregateInput
   attachments?: Prisma.ModuleAttachmentOrderByRelationAggregateInput
@@ -343,12 +354,14 @@ export type ModuleWhereUniqueInput = Prisma.AtLeast<{
   workDate?: Prisma.DateTimeNullableFilter<"Module"> | Date | string | null
   loggedHours?: Prisma.FloatNullableFilter<"Module"> | number | null
   loggedByUserId?: Prisma.StringNullableFilter<"Module"> | string | null
+  createdById?: Prisma.StringNullableFilter<"Module"> | string | null
   deletedAt?: Prisma.DateTimeNullableFilter<"Module"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Module"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Module"> | Date | string
   tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
   project?: Prisma.XOR<Prisma.ProjectScalarRelationFilter, Prisma.ProjectWhereInput>
   loggedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  createdBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   epics?: Prisma.EpicListRelationFilter
   tasks?: Prisma.TaskListRelationFilter
   attachments?: Prisma.ModuleAttachmentListRelationFilter
@@ -366,6 +379,7 @@ export type ModuleOrderByWithAggregationInput = {
   workDate?: Prisma.SortOrderInput | Prisma.SortOrder
   loggedHours?: Prisma.SortOrderInput | Prisma.SortOrder
   loggedByUserId?: Prisma.SortOrderInput | Prisma.SortOrder
+  createdById?: Prisma.SortOrderInput | Prisma.SortOrder
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -391,6 +405,7 @@ export type ModuleScalarWhereWithAggregatesInput = {
   workDate?: Prisma.DateTimeNullableWithAggregatesFilter<"Module"> | Date | string | null
   loggedHours?: Prisma.FloatNullableWithAggregatesFilter<"Module"> | number | null
   loggedByUserId?: Prisma.StringNullableWithAggregatesFilter<"Module"> | string | null
+  createdById?: Prisma.StringNullableWithAggregatesFilter<"Module"> | string | null
   deletedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Module"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Module"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Module"> | Date | string
@@ -411,6 +426,7 @@ export type ModuleCreateInput = {
   tenant?: Prisma.TenantCreateNestedOneWithoutModulesInput
   project: Prisma.ProjectCreateNestedOneWithoutModulesInput
   loggedBy?: Prisma.UserCreateNestedOneWithoutLoggedModulesInput
+  createdBy?: Prisma.UserCreateNestedOneWithoutCreatedModulesInput
   epics?: Prisma.EpicCreateNestedManyWithoutModuleInput
   tasks?: Prisma.TaskCreateNestedManyWithoutModuleInput
   attachments?: Prisma.ModuleAttachmentCreateNestedManyWithoutModuleInput
@@ -428,6 +444,7 @@ export type ModuleUncheckedCreateInput = {
   workDate?: Date | string | null
   loggedHours?: number | null
   loggedByUserId?: string | null
+  createdById?: string | null
   deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -451,6 +468,7 @@ export type ModuleUpdateInput = {
   tenant?: Prisma.TenantUpdateOneRequiredWithoutModulesNestedInput
   project?: Prisma.ProjectUpdateOneRequiredWithoutModulesNestedInput
   loggedBy?: Prisma.UserUpdateOneWithoutLoggedModulesNestedInput
+  createdBy?: Prisma.UserUpdateOneWithoutCreatedModulesNestedInput
   epics?: Prisma.EpicUpdateManyWithoutModuleNestedInput
   tasks?: Prisma.TaskUpdateManyWithoutModuleNestedInput
   attachments?: Prisma.ModuleAttachmentUpdateManyWithoutModuleNestedInput
@@ -468,6 +486,7 @@ export type ModuleUncheckedUpdateInput = {
   workDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   loggedHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   loggedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -488,6 +507,7 @@ export type ModuleCreateManyInput = {
   workDate?: Date | string | null
   loggedHours?: number | null
   loggedByUserId?: string | null
+  createdById?: string | null
   deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -519,6 +539,7 @@ export type ModuleUncheckedUpdateManyInput = {
   workDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   loggedHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   loggedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -552,6 +573,7 @@ export type ModuleCountOrderByAggregateInput = {
   workDate?: Prisma.SortOrder
   loggedHours?: Prisma.SortOrder
   loggedByUserId?: Prisma.SortOrder
+  createdById?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -575,6 +597,7 @@ export type ModuleMaxOrderByAggregateInput = {
   workDate?: Prisma.SortOrder
   loggedHours?: Prisma.SortOrder
   loggedByUserId?: Prisma.SortOrder
+  createdById?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -592,6 +615,7 @@ export type ModuleMinOrderByAggregateInput = {
   workDate?: Prisma.SortOrder
   loggedHours?: Prisma.SortOrder
   loggedByUserId?: Prisma.SortOrder
+  createdById?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -657,10 +681,24 @@ export type ModuleCreateNestedManyWithoutLoggedByInput = {
   connect?: Prisma.ModuleWhereUniqueInput | Prisma.ModuleWhereUniqueInput[]
 }
 
+export type ModuleCreateNestedManyWithoutCreatedByInput = {
+  create?: Prisma.XOR<Prisma.ModuleCreateWithoutCreatedByInput, Prisma.ModuleUncheckedCreateWithoutCreatedByInput> | Prisma.ModuleCreateWithoutCreatedByInput[] | Prisma.ModuleUncheckedCreateWithoutCreatedByInput[]
+  connectOrCreate?: Prisma.ModuleCreateOrConnectWithoutCreatedByInput | Prisma.ModuleCreateOrConnectWithoutCreatedByInput[]
+  createMany?: Prisma.ModuleCreateManyCreatedByInputEnvelope
+  connect?: Prisma.ModuleWhereUniqueInput | Prisma.ModuleWhereUniqueInput[]
+}
+
 export type ModuleUncheckedCreateNestedManyWithoutLoggedByInput = {
   create?: Prisma.XOR<Prisma.ModuleCreateWithoutLoggedByInput, Prisma.ModuleUncheckedCreateWithoutLoggedByInput> | Prisma.ModuleCreateWithoutLoggedByInput[] | Prisma.ModuleUncheckedCreateWithoutLoggedByInput[]
   connectOrCreate?: Prisma.ModuleCreateOrConnectWithoutLoggedByInput | Prisma.ModuleCreateOrConnectWithoutLoggedByInput[]
   createMany?: Prisma.ModuleCreateManyLoggedByInputEnvelope
+  connect?: Prisma.ModuleWhereUniqueInput | Prisma.ModuleWhereUniqueInput[]
+}
+
+export type ModuleUncheckedCreateNestedManyWithoutCreatedByInput = {
+  create?: Prisma.XOR<Prisma.ModuleCreateWithoutCreatedByInput, Prisma.ModuleUncheckedCreateWithoutCreatedByInput> | Prisma.ModuleCreateWithoutCreatedByInput[] | Prisma.ModuleUncheckedCreateWithoutCreatedByInput[]
+  connectOrCreate?: Prisma.ModuleCreateOrConnectWithoutCreatedByInput | Prisma.ModuleCreateOrConnectWithoutCreatedByInput[]
+  createMany?: Prisma.ModuleCreateManyCreatedByInputEnvelope
   connect?: Prisma.ModuleWhereUniqueInput | Prisma.ModuleWhereUniqueInput[]
 }
 
@@ -678,6 +716,20 @@ export type ModuleUpdateManyWithoutLoggedByNestedInput = {
   deleteMany?: Prisma.ModuleScalarWhereInput | Prisma.ModuleScalarWhereInput[]
 }
 
+export type ModuleUpdateManyWithoutCreatedByNestedInput = {
+  create?: Prisma.XOR<Prisma.ModuleCreateWithoutCreatedByInput, Prisma.ModuleUncheckedCreateWithoutCreatedByInput> | Prisma.ModuleCreateWithoutCreatedByInput[] | Prisma.ModuleUncheckedCreateWithoutCreatedByInput[]
+  connectOrCreate?: Prisma.ModuleCreateOrConnectWithoutCreatedByInput | Prisma.ModuleCreateOrConnectWithoutCreatedByInput[]
+  upsert?: Prisma.ModuleUpsertWithWhereUniqueWithoutCreatedByInput | Prisma.ModuleUpsertWithWhereUniqueWithoutCreatedByInput[]
+  createMany?: Prisma.ModuleCreateManyCreatedByInputEnvelope
+  set?: Prisma.ModuleWhereUniqueInput | Prisma.ModuleWhereUniqueInput[]
+  disconnect?: Prisma.ModuleWhereUniqueInput | Prisma.ModuleWhereUniqueInput[]
+  delete?: Prisma.ModuleWhereUniqueInput | Prisma.ModuleWhereUniqueInput[]
+  connect?: Prisma.ModuleWhereUniqueInput | Prisma.ModuleWhereUniqueInput[]
+  update?: Prisma.ModuleUpdateWithWhereUniqueWithoutCreatedByInput | Prisma.ModuleUpdateWithWhereUniqueWithoutCreatedByInput[]
+  updateMany?: Prisma.ModuleUpdateManyWithWhereWithoutCreatedByInput | Prisma.ModuleUpdateManyWithWhereWithoutCreatedByInput[]
+  deleteMany?: Prisma.ModuleScalarWhereInput | Prisma.ModuleScalarWhereInput[]
+}
+
 export type ModuleUncheckedUpdateManyWithoutLoggedByNestedInput = {
   create?: Prisma.XOR<Prisma.ModuleCreateWithoutLoggedByInput, Prisma.ModuleUncheckedCreateWithoutLoggedByInput> | Prisma.ModuleCreateWithoutLoggedByInput[] | Prisma.ModuleUncheckedCreateWithoutLoggedByInput[]
   connectOrCreate?: Prisma.ModuleCreateOrConnectWithoutLoggedByInput | Prisma.ModuleCreateOrConnectWithoutLoggedByInput[]
@@ -689,6 +741,20 @@ export type ModuleUncheckedUpdateManyWithoutLoggedByNestedInput = {
   connect?: Prisma.ModuleWhereUniqueInput | Prisma.ModuleWhereUniqueInput[]
   update?: Prisma.ModuleUpdateWithWhereUniqueWithoutLoggedByInput | Prisma.ModuleUpdateWithWhereUniqueWithoutLoggedByInput[]
   updateMany?: Prisma.ModuleUpdateManyWithWhereWithoutLoggedByInput | Prisma.ModuleUpdateManyWithWhereWithoutLoggedByInput[]
+  deleteMany?: Prisma.ModuleScalarWhereInput | Prisma.ModuleScalarWhereInput[]
+}
+
+export type ModuleUncheckedUpdateManyWithoutCreatedByNestedInput = {
+  create?: Prisma.XOR<Prisma.ModuleCreateWithoutCreatedByInput, Prisma.ModuleUncheckedCreateWithoutCreatedByInput> | Prisma.ModuleCreateWithoutCreatedByInput[] | Prisma.ModuleUncheckedCreateWithoutCreatedByInput[]
+  connectOrCreate?: Prisma.ModuleCreateOrConnectWithoutCreatedByInput | Prisma.ModuleCreateOrConnectWithoutCreatedByInput[]
+  upsert?: Prisma.ModuleUpsertWithWhereUniqueWithoutCreatedByInput | Prisma.ModuleUpsertWithWhereUniqueWithoutCreatedByInput[]
+  createMany?: Prisma.ModuleCreateManyCreatedByInputEnvelope
+  set?: Prisma.ModuleWhereUniqueInput | Prisma.ModuleWhereUniqueInput[]
+  disconnect?: Prisma.ModuleWhereUniqueInput | Prisma.ModuleWhereUniqueInput[]
+  delete?: Prisma.ModuleWhereUniqueInput | Prisma.ModuleWhereUniqueInput[]
+  connect?: Prisma.ModuleWhereUniqueInput | Prisma.ModuleWhereUniqueInput[]
+  update?: Prisma.ModuleUpdateWithWhereUniqueWithoutCreatedByInput | Prisma.ModuleUpdateWithWhereUniqueWithoutCreatedByInput[]
+  updateMany?: Prisma.ModuleUpdateManyWithWhereWithoutCreatedByInput | Prisma.ModuleUpdateManyWithWhereWithoutCreatedByInput[]
   deleteMany?: Prisma.ModuleScalarWhereInput | Prisma.ModuleScalarWhereInput[]
 }
 
@@ -802,6 +868,7 @@ export type ModuleCreateWithoutTenantInput = {
   updatedAt?: Date | string
   project: Prisma.ProjectCreateNestedOneWithoutModulesInput
   loggedBy?: Prisma.UserCreateNestedOneWithoutLoggedModulesInput
+  createdBy?: Prisma.UserCreateNestedOneWithoutCreatedModulesInput
   epics?: Prisma.EpicCreateNestedManyWithoutModuleInput
   tasks?: Prisma.TaskCreateNestedManyWithoutModuleInput
   attachments?: Prisma.ModuleAttachmentCreateNestedManyWithoutModuleInput
@@ -818,6 +885,7 @@ export type ModuleUncheckedCreateWithoutTenantInput = {
   workDate?: Date | string | null
   loggedHours?: number | null
   loggedByUserId?: string | null
+  createdById?: string | null
   deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -867,6 +935,7 @@ export type ModuleScalarWhereInput = {
   workDate?: Prisma.DateTimeNullableFilter<"Module"> | Date | string | null
   loggedHours?: Prisma.FloatNullableFilter<"Module"> | number | null
   loggedByUserId?: Prisma.StringNullableFilter<"Module"> | string | null
+  createdById?: Prisma.StringNullableFilter<"Module"> | string | null
   deletedAt?: Prisma.DateTimeNullableFilter<"Module"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Module"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Module"> | Date | string
@@ -886,6 +955,7 @@ export type ModuleCreateWithoutLoggedByInput = {
   updatedAt?: Date | string
   tenant?: Prisma.TenantCreateNestedOneWithoutModulesInput
   project: Prisma.ProjectCreateNestedOneWithoutModulesInput
+  createdBy?: Prisma.UserCreateNestedOneWithoutCreatedModulesInput
   epics?: Prisma.EpicCreateNestedManyWithoutModuleInput
   tasks?: Prisma.TaskCreateNestedManyWithoutModuleInput
   attachments?: Prisma.ModuleAttachmentCreateNestedManyWithoutModuleInput
@@ -902,6 +972,7 @@ export type ModuleUncheckedCreateWithoutLoggedByInput = {
   progress?: number
   workDate?: Date | string | null
   loggedHours?: number | null
+  createdById?: string | null
   deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -917,6 +988,56 @@ export type ModuleCreateOrConnectWithoutLoggedByInput = {
 
 export type ModuleCreateManyLoggedByInputEnvelope = {
   data: Prisma.ModuleCreateManyLoggedByInput | Prisma.ModuleCreateManyLoggedByInput[]
+  skipDuplicates?: boolean
+}
+
+export type ModuleCreateWithoutCreatedByInput = {
+  id?: string
+  name: string
+  description: string
+  status?: $Enums.ModuleStatus
+  order?: number
+  progress?: number
+  workDate?: Date | string | null
+  loggedHours?: number | null
+  deletedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  tenant?: Prisma.TenantCreateNestedOneWithoutModulesInput
+  project: Prisma.ProjectCreateNestedOneWithoutModulesInput
+  loggedBy?: Prisma.UserCreateNestedOneWithoutLoggedModulesInput
+  epics?: Prisma.EpicCreateNestedManyWithoutModuleInput
+  tasks?: Prisma.TaskCreateNestedManyWithoutModuleInput
+  attachments?: Prisma.ModuleAttachmentCreateNestedManyWithoutModuleInput
+}
+
+export type ModuleUncheckedCreateWithoutCreatedByInput = {
+  id?: string
+  tenantId?: string
+  projectId: string
+  name: string
+  description: string
+  status?: $Enums.ModuleStatus
+  order?: number
+  progress?: number
+  workDate?: Date | string | null
+  loggedHours?: number | null
+  loggedByUserId?: string | null
+  deletedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  epics?: Prisma.EpicUncheckedCreateNestedManyWithoutModuleInput
+  tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutModuleInput
+  attachments?: Prisma.ModuleAttachmentUncheckedCreateNestedManyWithoutModuleInput
+}
+
+export type ModuleCreateOrConnectWithoutCreatedByInput = {
+  where: Prisma.ModuleWhereUniqueInput
+  create: Prisma.XOR<Prisma.ModuleCreateWithoutCreatedByInput, Prisma.ModuleUncheckedCreateWithoutCreatedByInput>
+}
+
+export type ModuleCreateManyCreatedByInputEnvelope = {
+  data: Prisma.ModuleCreateManyCreatedByInput | Prisma.ModuleCreateManyCreatedByInput[]
   skipDuplicates?: boolean
 }
 
@@ -936,6 +1057,22 @@ export type ModuleUpdateManyWithWhereWithoutLoggedByInput = {
   data: Prisma.XOR<Prisma.ModuleUpdateManyMutationInput, Prisma.ModuleUncheckedUpdateManyWithoutLoggedByInput>
 }
 
+export type ModuleUpsertWithWhereUniqueWithoutCreatedByInput = {
+  where: Prisma.ModuleWhereUniqueInput
+  update: Prisma.XOR<Prisma.ModuleUpdateWithoutCreatedByInput, Prisma.ModuleUncheckedUpdateWithoutCreatedByInput>
+  create: Prisma.XOR<Prisma.ModuleCreateWithoutCreatedByInput, Prisma.ModuleUncheckedCreateWithoutCreatedByInput>
+}
+
+export type ModuleUpdateWithWhereUniqueWithoutCreatedByInput = {
+  where: Prisma.ModuleWhereUniqueInput
+  data: Prisma.XOR<Prisma.ModuleUpdateWithoutCreatedByInput, Prisma.ModuleUncheckedUpdateWithoutCreatedByInput>
+}
+
+export type ModuleUpdateManyWithWhereWithoutCreatedByInput = {
+  where: Prisma.ModuleScalarWhereInput
+  data: Prisma.XOR<Prisma.ModuleUpdateManyMutationInput, Prisma.ModuleUncheckedUpdateManyWithoutCreatedByInput>
+}
+
 export type ModuleCreateWithoutProjectInput = {
   id?: string
   name: string
@@ -950,6 +1087,7 @@ export type ModuleCreateWithoutProjectInput = {
   updatedAt?: Date | string
   tenant?: Prisma.TenantCreateNestedOneWithoutModulesInput
   loggedBy?: Prisma.UserCreateNestedOneWithoutLoggedModulesInput
+  createdBy?: Prisma.UserCreateNestedOneWithoutCreatedModulesInput
   epics?: Prisma.EpicCreateNestedManyWithoutModuleInput
   tasks?: Prisma.TaskCreateNestedManyWithoutModuleInput
   attachments?: Prisma.ModuleAttachmentCreateNestedManyWithoutModuleInput
@@ -966,6 +1104,7 @@ export type ModuleUncheckedCreateWithoutProjectInput = {
   workDate?: Date | string | null
   loggedHours?: number | null
   loggedByUserId?: string | null
+  createdById?: string | null
   deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1015,6 +1154,7 @@ export type ModuleCreateWithoutEpicsInput = {
   tenant?: Prisma.TenantCreateNestedOneWithoutModulesInput
   project: Prisma.ProjectCreateNestedOneWithoutModulesInput
   loggedBy?: Prisma.UserCreateNestedOneWithoutLoggedModulesInput
+  createdBy?: Prisma.UserCreateNestedOneWithoutCreatedModulesInput
   tasks?: Prisma.TaskCreateNestedManyWithoutModuleInput
   attachments?: Prisma.ModuleAttachmentCreateNestedManyWithoutModuleInput
 }
@@ -1031,6 +1171,7 @@ export type ModuleUncheckedCreateWithoutEpicsInput = {
   workDate?: Date | string | null
   loggedHours?: number | null
   loggedByUserId?: string | null
+  createdById?: string | null
   deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1069,6 +1210,7 @@ export type ModuleUpdateWithoutEpicsInput = {
   tenant?: Prisma.TenantUpdateOneRequiredWithoutModulesNestedInput
   project?: Prisma.ProjectUpdateOneRequiredWithoutModulesNestedInput
   loggedBy?: Prisma.UserUpdateOneWithoutLoggedModulesNestedInput
+  createdBy?: Prisma.UserUpdateOneWithoutCreatedModulesNestedInput
   tasks?: Prisma.TaskUpdateManyWithoutModuleNestedInput
   attachments?: Prisma.ModuleAttachmentUpdateManyWithoutModuleNestedInput
 }
@@ -1085,6 +1227,7 @@ export type ModuleUncheckedUpdateWithoutEpicsInput = {
   workDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   loggedHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   loggedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1107,6 +1250,7 @@ export type ModuleCreateWithoutTasksInput = {
   tenant?: Prisma.TenantCreateNestedOneWithoutModulesInput
   project: Prisma.ProjectCreateNestedOneWithoutModulesInput
   loggedBy?: Prisma.UserCreateNestedOneWithoutLoggedModulesInput
+  createdBy?: Prisma.UserCreateNestedOneWithoutCreatedModulesInput
   epics?: Prisma.EpicCreateNestedManyWithoutModuleInput
   attachments?: Prisma.ModuleAttachmentCreateNestedManyWithoutModuleInput
 }
@@ -1123,6 +1267,7 @@ export type ModuleUncheckedCreateWithoutTasksInput = {
   workDate?: Date | string | null
   loggedHours?: number | null
   loggedByUserId?: string | null
+  createdById?: string | null
   deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1161,6 +1306,7 @@ export type ModuleUpdateWithoutTasksInput = {
   tenant?: Prisma.TenantUpdateOneRequiredWithoutModulesNestedInput
   project?: Prisma.ProjectUpdateOneRequiredWithoutModulesNestedInput
   loggedBy?: Prisma.UserUpdateOneWithoutLoggedModulesNestedInput
+  createdBy?: Prisma.UserUpdateOneWithoutCreatedModulesNestedInput
   epics?: Prisma.EpicUpdateManyWithoutModuleNestedInput
   attachments?: Prisma.ModuleAttachmentUpdateManyWithoutModuleNestedInput
 }
@@ -1177,6 +1323,7 @@ export type ModuleUncheckedUpdateWithoutTasksInput = {
   workDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   loggedHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   loggedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1199,6 +1346,7 @@ export type ModuleCreateWithoutAttachmentsInput = {
   tenant?: Prisma.TenantCreateNestedOneWithoutModulesInput
   project: Prisma.ProjectCreateNestedOneWithoutModulesInput
   loggedBy?: Prisma.UserCreateNestedOneWithoutLoggedModulesInput
+  createdBy?: Prisma.UserCreateNestedOneWithoutCreatedModulesInput
   epics?: Prisma.EpicCreateNestedManyWithoutModuleInput
   tasks?: Prisma.TaskCreateNestedManyWithoutModuleInput
 }
@@ -1215,6 +1363,7 @@ export type ModuleUncheckedCreateWithoutAttachmentsInput = {
   workDate?: Date | string | null
   loggedHours?: number | null
   loggedByUserId?: string | null
+  createdById?: string | null
   deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1253,6 +1402,7 @@ export type ModuleUpdateWithoutAttachmentsInput = {
   tenant?: Prisma.TenantUpdateOneRequiredWithoutModulesNestedInput
   project?: Prisma.ProjectUpdateOneRequiredWithoutModulesNestedInput
   loggedBy?: Prisma.UserUpdateOneWithoutLoggedModulesNestedInput
+  createdBy?: Prisma.UserUpdateOneWithoutCreatedModulesNestedInput
   epics?: Prisma.EpicUpdateManyWithoutModuleNestedInput
   tasks?: Prisma.TaskUpdateManyWithoutModuleNestedInput
 }
@@ -1269,6 +1419,7 @@ export type ModuleUncheckedUpdateWithoutAttachmentsInput = {
   workDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   loggedHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   loggedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1287,6 +1438,7 @@ export type ModuleCreateManyTenantInput = {
   workDate?: Date | string | null
   loggedHours?: number | null
   loggedByUserId?: string | null
+  createdById?: string | null
   deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1306,6 +1458,7 @@ export type ModuleUpdateWithoutTenantInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   project?: Prisma.ProjectUpdateOneRequiredWithoutModulesNestedInput
   loggedBy?: Prisma.UserUpdateOneWithoutLoggedModulesNestedInput
+  createdBy?: Prisma.UserUpdateOneWithoutCreatedModulesNestedInput
   epics?: Prisma.EpicUpdateManyWithoutModuleNestedInput
   tasks?: Prisma.TaskUpdateManyWithoutModuleNestedInput
   attachments?: Prisma.ModuleAttachmentUpdateManyWithoutModuleNestedInput
@@ -1322,6 +1475,7 @@ export type ModuleUncheckedUpdateWithoutTenantInput = {
   workDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   loggedHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   loggedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1341,6 +1495,7 @@ export type ModuleUncheckedUpdateManyWithoutTenantInput = {
   workDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   loggedHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   loggedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1357,6 +1512,24 @@ export type ModuleCreateManyLoggedByInput = {
   progress?: number
   workDate?: Date | string | null
   loggedHours?: number | null
+  createdById?: string | null
+  deletedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type ModuleCreateManyCreatedByInput = {
+  id?: string
+  tenantId?: string
+  projectId: string
+  name: string
+  description: string
+  status?: $Enums.ModuleStatus
+  order?: number
+  progress?: number
+  workDate?: Date | string | null
+  loggedHours?: number | null
+  loggedByUserId?: string | null
   deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1376,6 +1549,7 @@ export type ModuleUpdateWithoutLoggedByInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tenant?: Prisma.TenantUpdateOneRequiredWithoutModulesNestedInput
   project?: Prisma.ProjectUpdateOneRequiredWithoutModulesNestedInput
+  createdBy?: Prisma.UserUpdateOneWithoutCreatedModulesNestedInput
   epics?: Prisma.EpicUpdateManyWithoutModuleNestedInput
   tasks?: Prisma.TaskUpdateManyWithoutModuleNestedInput
   attachments?: Prisma.ModuleAttachmentUpdateManyWithoutModuleNestedInput
@@ -1392,6 +1566,7 @@ export type ModuleUncheckedUpdateWithoutLoggedByInput = {
   progress?: Prisma.IntFieldUpdateOperationsInput | number
   workDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   loggedHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1411,6 +1586,64 @@ export type ModuleUncheckedUpdateManyWithoutLoggedByInput = {
   progress?: Prisma.IntFieldUpdateOperationsInput | number
   workDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   loggedHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type ModuleUpdateWithoutCreatedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumModuleStatusFieldUpdateOperationsInput | $Enums.ModuleStatus
+  order?: Prisma.IntFieldUpdateOperationsInput | number
+  progress?: Prisma.IntFieldUpdateOperationsInput | number
+  workDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  loggedHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutModulesNestedInput
+  project?: Prisma.ProjectUpdateOneRequiredWithoutModulesNestedInput
+  loggedBy?: Prisma.UserUpdateOneWithoutLoggedModulesNestedInput
+  epics?: Prisma.EpicUpdateManyWithoutModuleNestedInput
+  tasks?: Prisma.TaskUpdateManyWithoutModuleNestedInput
+  attachments?: Prisma.ModuleAttachmentUpdateManyWithoutModuleNestedInput
+}
+
+export type ModuleUncheckedUpdateWithoutCreatedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
+  projectId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumModuleStatusFieldUpdateOperationsInput | $Enums.ModuleStatus
+  order?: Prisma.IntFieldUpdateOperationsInput | number
+  progress?: Prisma.IntFieldUpdateOperationsInput | number
+  workDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  loggedHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  loggedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  epics?: Prisma.EpicUncheckedUpdateManyWithoutModuleNestedInput
+  tasks?: Prisma.TaskUncheckedUpdateManyWithoutModuleNestedInput
+  attachments?: Prisma.ModuleAttachmentUncheckedUpdateManyWithoutModuleNestedInput
+}
+
+export type ModuleUncheckedUpdateManyWithoutCreatedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
+  projectId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumModuleStatusFieldUpdateOperationsInput | $Enums.ModuleStatus
+  order?: Prisma.IntFieldUpdateOperationsInput | number
+  progress?: Prisma.IntFieldUpdateOperationsInput | number
+  workDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  loggedHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  loggedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1427,6 +1660,7 @@ export type ModuleCreateManyProjectInput = {
   workDate?: Date | string | null
   loggedHours?: number | null
   loggedByUserId?: string | null
+  createdById?: string | null
   deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1446,6 +1680,7 @@ export type ModuleUpdateWithoutProjectInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tenant?: Prisma.TenantUpdateOneRequiredWithoutModulesNestedInput
   loggedBy?: Prisma.UserUpdateOneWithoutLoggedModulesNestedInput
+  createdBy?: Prisma.UserUpdateOneWithoutCreatedModulesNestedInput
   epics?: Prisma.EpicUpdateManyWithoutModuleNestedInput
   tasks?: Prisma.TaskUpdateManyWithoutModuleNestedInput
   attachments?: Prisma.ModuleAttachmentUpdateManyWithoutModuleNestedInput
@@ -1462,6 +1697,7 @@ export type ModuleUncheckedUpdateWithoutProjectInput = {
   workDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   loggedHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   loggedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1481,6 +1717,7 @@ export type ModuleUncheckedUpdateManyWithoutProjectInput = {
   workDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   loggedHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   loggedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1547,12 +1784,14 @@ export type ModuleSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   workDate?: boolean
   loggedHours?: boolean
   loggedByUserId?: boolean
+  createdById?: boolean
   deletedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
   loggedBy?: boolean | Prisma.Module$loggedByArgs<ExtArgs>
+  createdBy?: boolean | Prisma.Module$createdByArgs<ExtArgs>
   epics?: boolean | Prisma.Module$epicsArgs<ExtArgs>
   tasks?: boolean | Prisma.Module$tasksArgs<ExtArgs>
   attachments?: boolean | Prisma.Module$attachmentsArgs<ExtArgs>
@@ -1573,16 +1812,18 @@ export type ModuleSelectScalar = {
   workDate?: boolean
   loggedHours?: boolean
   loggedByUserId?: boolean
+  createdById?: boolean
   deletedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type ModuleOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "projectId" | "name" | "description" | "status" | "order" | "progress" | "workDate" | "loggedHours" | "loggedByUserId" | "deletedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["module"]>
+export type ModuleOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "projectId" | "name" | "description" | "status" | "order" | "progress" | "workDate" | "loggedHours" | "loggedByUserId" | "createdById" | "deletedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["module"]>
 export type ModuleInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
   loggedBy?: boolean | Prisma.Module$loggedByArgs<ExtArgs>
+  createdBy?: boolean | Prisma.Module$createdByArgs<ExtArgs>
   epics?: boolean | Prisma.Module$epicsArgs<ExtArgs>
   tasks?: boolean | Prisma.Module$tasksArgs<ExtArgs>
   attachments?: boolean | Prisma.Module$attachmentsArgs<ExtArgs>
@@ -1595,6 +1836,7 @@ export type $ModulePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
     tenant: Prisma.$TenantPayload<ExtArgs>
     project: Prisma.$ProjectPayload<ExtArgs>
     loggedBy: Prisma.$UserPayload<ExtArgs> | null
+    createdBy: Prisma.$UserPayload<ExtArgs> | null
     epics: Prisma.$EpicPayload<ExtArgs>[]
     tasks: Prisma.$TaskPayload<ExtArgs>[]
     attachments: Prisma.$ModuleAttachmentPayload<ExtArgs>[]
@@ -1611,6 +1853,7 @@ export type $ModulePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
     workDate: Date | null
     loggedHours: number | null
     loggedByUserId: string | null
+    createdById: string | null
     deletedAt: Date | null
     createdAt: Date
     updatedAt: Date
@@ -1957,6 +2200,7 @@ export interface Prisma__ModuleClient<T, Null = never, ExtArgs extends runtime.T
   tenant<T extends Prisma.TenantDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TenantDefaultArgs<ExtArgs>>): Prisma.Prisma__TenantClient<runtime.Types.Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   project<T extends Prisma.ProjectDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProjectDefaultArgs<ExtArgs>>): Prisma.Prisma__ProjectClient<runtime.Types.Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   loggedBy<T extends Prisma.Module$loggedByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Module$loggedByArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  createdBy<T extends Prisma.Module$createdByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Module$createdByArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   epics<T extends Prisma.Module$epicsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Module$epicsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EpicPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   tasks<T extends Prisma.Module$tasksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Module$tasksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   attachments<T extends Prisma.Module$attachmentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Module$attachmentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ModuleAttachmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -2000,6 +2244,7 @@ export interface ModuleFieldRefs {
   readonly workDate: Prisma.FieldRef<"Module", 'DateTime'>
   readonly loggedHours: Prisma.FieldRef<"Module", 'Float'>
   readonly loggedByUserId: Prisma.FieldRef<"Module", 'String'>
+  readonly createdById: Prisma.FieldRef<"Module", 'String'>
   readonly deletedAt: Prisma.FieldRef<"Module", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"Module", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Module", 'DateTime'>
@@ -2354,6 +2599,25 @@ export type ModuleDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Intern
  * Module.loggedBy
  */
 export type Module$loggedByArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the User
+   */
+  select?: Prisma.UserSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the User
+   */
+  omit?: Prisma.UserOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
+  where?: Prisma.UserWhereInput
+}
+
+/**
+ * Module.createdBy
+ */
+export type Module$createdByArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
    * Select specific fields to fetch from the User
    */

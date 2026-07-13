@@ -16,8 +16,24 @@ const UNSCOPED_MODELS = new Set<string>(['Tenant']);
  * (o snapshot de ids não os inclui, e o cliente os poda). A exclusão em si é um
  * update que grava `data.deletedAt`; como o alvo ainda tem `deletedAt = null`,
  * o filtro no `where` não impede a operação.
+ *
+ * ESCAPE HATCH: se o `where` da chamada já traz `deletedAt` explícito, a extensão
+ * NÃO sobrescreve. É assim que a Lixeira (admin) enxerga/restaura/purga excluídos:
+ * passando `where: { deletedAt: { not: null } }` a leitura/restore alcança os
+ * registros ocultos (continuando isolada por tenant).
  */
-const SOFT_DELETE_MODELS = new Set<string>(['Task', 'Module', 'Epic']);
+const SOFT_DELETE_MODELS = new Set<string>([
+  'Project',
+  'Company',
+  'Module',
+  'Epic',
+  'Task',
+  'TimeLog',
+  'TaskAttachment',
+  'ModuleAttachment',
+  'ProjectShowcaseAttachment',
+  'ProjectDemandAttachment',
+]);
 
 /**
  * Extensão de isolamento multi-tenant.
@@ -66,8 +82,12 @@ export const tenantExtension = Prisma.defineExtension({
           default:
             // find*, count, aggregate, groupBy, update, updateMany, delete, deleteMany
             a.where = { ...(a.where as object), tenantId };
-            // Esconde registros soft-deleted de toda leitura/escrita por id.
-            if (SOFT_DELETE_MODELS.has(model)) {
+            // Esconde registros soft-deleted de toda leitura/escrita por id,
+            // A MENOS que a chamada já filtre `deletedAt` de propósito (Lixeira).
+            if (
+              SOFT_DELETE_MODELS.has(model) &&
+              !('deletedAt' in (a.where as Record<string, unknown>))
+            ) {
               a.where = { ...(a.where as object), deletedAt: null };
             }
         }

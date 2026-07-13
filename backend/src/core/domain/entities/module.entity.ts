@@ -11,15 +11,17 @@ export interface ModuleProps {
   workDate?: Date | null;
   loggedHours?: number | null;
   loggedByUserId?: string | null;
+  createdById?: string | null;
   createdAt?: Date;
   updatedAt?: Date;
 }
 
 export class Module {
-  private props: Required<Omit<ModuleProps, 'workDate' | 'loggedHours' | 'loggedByUserId'>> & {
+  private props: Required<Omit<ModuleProps, 'workDate' | 'loggedHours' | 'loggedByUserId' | 'createdById'>> & {
     workDate: Date | null;
     loggedHours: number | null;
     loggedByUserId: string | null;
+    createdById: string | null;
   };
 
   constructor(props: ModuleProps) {
@@ -34,6 +36,7 @@ export class Module {
       workDate: props.workDate ?? null,
       loggedHours: props.loggedHours ?? null,
       loggedByUserId: props.loggedByUserId ?? null,
+      createdById: props.createdById ?? null,
       createdAt: props.createdAt || new Date(),
       updatedAt: props.updatedAt || new Date(),
     };
@@ -49,6 +52,7 @@ export class Module {
   public get workDate(): Date | null { return this.props.workDate; }
   public get loggedHours(): number | null { return this.props.loggedHours; }
   public get loggedByUserId(): string | null { return this.props.loggedByUserId; }
+  public get createdById(): string | null { return this.props.createdById; }
   public get createdAt(): Date { return this.props.createdAt; }
   public get updatedAt(): Date { return this.props.updatedAt; }
 }

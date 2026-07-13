@@ -1,13 +1,15 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useParams } from "@/lib/router";
+import { useParams, useRouter } from "@/lib/router";
 import Link from "@/lib/router";
 import { useProjectStore, useTaskStore, useUserStore } from "@/stores";
 import { PageLoading } from "@/components/shared/page-loading";
 import { ExpandableText } from "@/components/shared/expandable-text";
 import { StatusBadge } from "@/components/shared/task-badge";
 import { TaskCreateDialog } from "@/features/tasks/task-create-dialog";
+import { TaskActions } from "@/features/tasks/task-actions";
+import { ModuleActions } from "@/features/modules/module-actions";
 import { EmptyState } from "@/components/shared/empty-state";
 import { ProjectAvatar } from "@/components/shared/project-avatar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -82,6 +84,7 @@ export default function ModuleDetailPage() {
   const hasLoaded = useProjectStore((s) => s.hasLoaded);
   const { tasks, timeLogs, getAttachmentsByModule, fetchModuleAttachmentsForProject } = useTaskStore();
   const { users } = useUserStore();
+  const router = useRouter();
   const [taskDialogOpen, setTaskDialogOpen] = useState(false);
 
   const projectModule = modules.find((m) => m.id === id) ?? null;
@@ -159,6 +162,11 @@ export default function ModuleDetailPage() {
             )}
           </div>
         </div>
+        <ModuleActions
+          module={projectModule}
+          afterDelete={() => router.push("/modules")}
+          className="shrink-0"
+        />
       </div>
 
       {/* O que é um módulo */}
@@ -237,6 +245,7 @@ export default function ModuleDetailPage() {
                       <AvatarFallback className="text-[9px] bg-zinc-700">{assignee.name.slice(0, 2).toUpperCase()}</AvatarFallback>
                     </Avatar>
                   )}
+                  <TaskActions task={task} className="opacity-0 group-hover:opacity-100 transition-opacity" />
                   <ChevronRight className="w-4 h-4 text-zinc-600 group-hover:text-violet-400 group-hover:translate-x-0.5 transition-all shrink-0" />
                 </Link>
               );

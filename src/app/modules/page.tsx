@@ -11,6 +11,7 @@ import { PageLoading } from "@/components/shared/page-loading";
 import { Badge } from "@/components/ui/badge";
 import { cn, moduleColorFromId, shortId } from "@/lib/utils";
 import Link from "@/lib/router";
+import { ModuleActions } from "@/features/modules/module-actions";
 import type { ModuleStatus } from "@/types";
 
 const moduleStatusLabels: Record<ModuleStatus, string> = {
@@ -89,6 +90,7 @@ export default function ModulesPage() {
                               <span className="text-[9px] font-mono text-zinc-600 shrink-0">{shortId(mod.id)}</span>
                             </div>
                             <div className="flex items-center gap-1 shrink-0">
+                              <ModuleActions module={mod} className="relative z-[2] opacity-0 group-hover:opacity-100 transition-opacity" />
                               <span className="text-xs font-bold text-zinc-300">{mod.progress}%</span>
                               <ChevronRight className="w-4 h-4 text-zinc-600 group-hover:text-violet-400 group-hover:translate-x-0.5 transition-all" />
                             </div>

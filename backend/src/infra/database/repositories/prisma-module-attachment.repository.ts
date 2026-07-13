@@ -54,6 +54,6 @@ export class PrismaModuleAttachmentRepository implements IModuleAttachmentReposi
   }
 
   async delete(id: string): Promise<void> {
-    await this.prisma.moduleAttachment.delete({ where: { id } });
+    await this.prisma.moduleAttachment.update({ where: { id }, data: { deletedAt: new Date() } });
   }
 }

@@ -219,7 +219,8 @@ export class ProjectsController {
   @HttpCode(204)
   @RequirePermission('projects:update')
   async deleteShowcaseAttachment(@Param('id') id: string): Promise<void> {
-    await this.prisma.projectShowcaseAttachment.delete({ where: { id } });
+    // Soft delete (recuperável na Lixeira).
+    await this.prisma.projectShowcaseAttachment.update({ where: { id }, data: { deletedAt: new Date() } });
   }
 
   @Get(':id/demand-attachments')
@@ -256,7 +257,8 @@ export class ProjectsController {
   @HttpCode(204)
   @RequirePermission('projects:update')
   async deleteDemandAttachment(@Param('id') id: string): Promise<void> {
-    await this.prisma.projectDemandAttachment.delete({ where: { id } });
+    // Soft delete (recuperável na Lixeira).
+    await this.prisma.projectDemandAttachment.update({ where: { id }, data: { deletedAt: new Date() } });
   }
 
   @Delete(':id')

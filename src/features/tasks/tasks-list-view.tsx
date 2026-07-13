@@ -42,6 +42,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import Link from "@/lib/router";
+import { TaskActions } from "./task-actions";
 import type { Task, TaskComplexity, TaskStatus, Project, User } from "@/types";
 
 const ACTIVE_STATUSES: TaskStatus[] = ["EM_DESENVOLVIMENTO", "EM_REVISAO", "HOMOLOGACAO"];
@@ -346,6 +347,9 @@ function TaskRow({
           </span>
         </div>
       </td>
+      <td className="px-2 py-3 text-right">
+        <TaskActions task={task} className="justify-end" />
+      </td>
     </motion.tr>
   );
 }
@@ -396,6 +400,7 @@ function TasksTable({
             <th className="text-left text-xs font-semibold text-zinc-500 px-4 py-3 hidden xl:table-cell">
               Horas
             </th>
+            <th className="text-right text-xs font-semibold text-zinc-500 px-4 py-3 w-20">Ações</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-zinc-800/30">

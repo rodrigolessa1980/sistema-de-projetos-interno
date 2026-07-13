@@ -52,7 +52,9 @@ export class PrismaTimeLogRepository implements ITimeLogRepository {
   }
 
   async delete(id: string): Promise<void> {
-    await this.prisma.timeLog.delete({ where: { id } });
+    // Soft delete: o log some das somas/relatórios (a extensão filtra deletedAt),
+    // e o recálculo de horas no use-case passa a excluí-lo automaticamente.
+    await this.prisma.timeLog.update({ where: { id }, data: { deletedAt: new Date() } });
   }
 
   async findAll(): Promise<TimeLog[]> {

@@ -111,6 +111,7 @@ export const CompanyScalarFieldEnum = {
   shortName: 'shortName',
   color: 'color',
   cnpj: 'cnpj',
+  deletedAt: 'deletedAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -189,6 +190,7 @@ export const ProjectScalarFieldEnum = {
   avatar: 'avatar',
   testUrl: 'testUrl',
   queueOrder: 'queueOrder',
+  deletedAt: 'deletedAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -217,6 +219,7 @@ export const ModuleScalarFieldEnum = {
   workDate: 'workDate',
   loggedHours: 'loggedHours',
   loggedByUserId: 'loggedByUserId',
+  createdById: 'createdById',
   deletedAt: 'deletedAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -324,6 +327,7 @@ export const TimeLogScalarFieldEnum = {
   endedAt: 'endedAt',
   source: 'source',
   status: 'status',
+  deletedAt: 'deletedAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -414,6 +418,7 @@ export const TaskAttachmentScalarFieldEnum = {
   type: 'type',
   size: 'size',
   dataUrl: 'dataUrl',
+  deletedAt: 'deletedAt',
   createdAt: 'createdAt'
 } as const
 
@@ -429,6 +434,7 @@ export const ModuleAttachmentScalarFieldEnum = {
   type: 'type',
   size: 'size',
   dataUrl: 'dataUrl',
+  deletedAt: 'deletedAt',
   createdAt: 'createdAt'
 } as const
 
@@ -444,6 +450,7 @@ export const ProjectShowcaseAttachmentScalarFieldEnum = {
   type: 'type',
   size: 'size',
   dataUrl: 'dataUrl',
+  deletedAt: 'deletedAt',
   createdAt: 'createdAt'
 } as const
 
@@ -459,6 +466,7 @@ export const ProjectDemandAttachmentScalarFieldEnum = {
   type: 'type',
   size: 'size',
   dataUrl: 'dataUrl',
+  deletedAt: 'deletedAt',
   createdAt: 'createdAt'
 } as const
 
@@ -604,7 +612,8 @@ export const ModuleOrderByRelevanceFieldEnum = {
   projectId: 'projectId',
   name: 'name',
   description: 'description',
-  loggedByUserId: 'loggedByUserId'
+  loggedByUserId: 'loggedByUserId',
+  createdById: 'createdById'
 } as const
 
 export type ModuleOrderByRelevanceFieldEnum = (typeof ModuleOrderByRelevanceFieldEnum)[keyof typeof ModuleOrderByRelevanceFieldEnum]

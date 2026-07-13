@@ -112,6 +112,8 @@ export interface Module {
   workDate?: string | null;
   loggedHours?: number | null;
   loggedByUserId?: string | null;
+  /** Autor/dono do módulo (quem criou). Base da regra admin-ou-dono. */
+  createdById?: string | null;
   createdAt: string;
   updatedAt: string;
 }

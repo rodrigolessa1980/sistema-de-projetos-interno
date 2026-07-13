@@ -97,7 +97,32 @@ export class PrismaProjectRepository implements IProjectRepository {
   }
 
   async delete(id: string): Promise<void> {
-    await this.prisma.project.delete({ where: { id } });
+    // Soft delete em cascata: em vez de apagar o projeto (o que APAGAVA em cascata
+    // no banco módulos, epics, tarefas, time logs, comentários e anexos), marca
+    // `deletedAt` no projeto e em todo o conteúdo dele com o MESMO timestamp
+    // (permite restaurar o conjunto exato depois). A extensão injeta `deletedAt: null`
+    // no where, então só afeta o que ainda estava ativo.
+    const now = new Date();
+    const modules = await this.prisma.module.findMany({
+      where: { projectId: id },
+      select: { id: true },
+    });
+    const moduleIds = modules.map((m) => m.id);
+    await this.prisma.$transaction(
+      [
+        this.prisma.timeLog.updateMany({ where: { projectId: id }, data: { deletedAt: now } }),
+        ...(moduleIds.length
+          ? [this.prisma.moduleAttachment.updateMany({ where: { moduleId: { in: moduleIds } }, data: { deletedAt: now } })]
+          : []),
+        this.prisma.projectShowcaseAttachment.updateMany({ where: { projectId: id }, data: { deletedAt: now } }),
+        this.prisma.projectDemandAttachment.updateMany({ where: { projectId: id }, data: { deletedAt: now } }),
+        this.prisma.task.updateMany({ where: { projectId: id }, data: { deletedAt: now } }),
+        this.prisma.epic.updateMany({ where: { projectId: id }, data: { deletedAt: now } }),
+        this.prisma.module.updateMany({ where: { projectId: id }, data: { deletedAt: now } }),
+        this.prisma.project.update({ where: { id }, data: { deletedAt: now } }),
+      ],
+      { timeout: 60_000 },
+    );
   }
 
   async listAll(): Promise<Project[]> {

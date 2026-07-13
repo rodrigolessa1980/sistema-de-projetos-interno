@@ -50,6 +50,7 @@ export type TimeLogMinAggregateOutputType = {
   endedAt: Date | null
   source: $Enums.TimeLogSource | null
   status: $Enums.TaskStatus | null
+  deletedAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -68,6 +69,7 @@ export type TimeLogMaxAggregateOutputType = {
   endedAt: Date | null
   source: $Enums.TimeLogSource | null
   status: $Enums.TaskStatus | null
+  deletedAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -86,6 +88,7 @@ export type TimeLogCountAggregateOutputType = {
   endedAt: number
   source: number
   status: number
+  deletedAt: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -116,6 +119,7 @@ export type TimeLogMinAggregateInputType = {
   endedAt?: true
   source?: true
   status?: true
+  deletedAt?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -134,6 +138,7 @@ export type TimeLogMaxAggregateInputType = {
   endedAt?: true
   source?: true
   status?: true
+  deletedAt?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -152,6 +157,7 @@ export type TimeLogCountAggregateInputType = {
   endedAt?: true
   source?: true
   status?: true
+  deletedAt?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -257,6 +263,7 @@ export type TimeLogGroupByOutputType = {
   endedAt: Date | null
   source: $Enums.TimeLogSource
   status: $Enums.TaskStatus
+  deletedAt: Date | null
   createdAt: Date
   updatedAt: Date
   _count: TimeLogCountAggregateOutputType | null
@@ -298,6 +305,7 @@ export type TimeLogWhereInput = {
   endedAt?: Prisma.DateTimeNullableFilter<"TimeLog"> | Date | string | null
   source?: Prisma.EnumTimeLogSourceFilter<"TimeLog"> | $Enums.TimeLogSource
   status?: Prisma.EnumTaskStatusFilter<"TimeLog"> | $Enums.TaskStatus
+  deletedAt?: Prisma.DateTimeNullableFilter<"TimeLog"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"TimeLog"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"TimeLog"> | Date | string
   tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
@@ -320,6 +328,7 @@ export type TimeLogOrderByWithRelationInput = {
   endedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   source?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   tenant?: Prisma.TenantOrderByWithRelationInput
@@ -346,6 +355,7 @@ export type TimeLogWhereUniqueInput = Prisma.AtLeast<{
   endedAt?: Prisma.DateTimeNullableFilter<"TimeLog"> | Date | string | null
   source?: Prisma.EnumTimeLogSourceFilter<"TimeLog"> | $Enums.TimeLogSource
   status?: Prisma.EnumTaskStatusFilter<"TimeLog"> | $Enums.TaskStatus
+  deletedAt?: Prisma.DateTimeNullableFilter<"TimeLog"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"TimeLog"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"TimeLog"> | Date | string
   tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
@@ -368,6 +378,7 @@ export type TimeLogOrderByWithAggregationInput = {
   endedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   source?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.TimeLogCountOrderByAggregateInput
@@ -394,6 +405,7 @@ export type TimeLogScalarWhereWithAggregatesInput = {
   endedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"TimeLog"> | Date | string | null
   source?: Prisma.EnumTimeLogSourceWithAggregatesFilter<"TimeLog"> | $Enums.TimeLogSource
   status?: Prisma.EnumTaskStatusWithAggregatesFilter<"TimeLog"> | $Enums.TaskStatus
+  deletedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"TimeLog"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"TimeLog"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"TimeLog"> | Date | string
 }
@@ -408,6 +420,7 @@ export type TimeLogCreateInput = {
   endedAt?: Date | string | null
   source?: $Enums.TimeLogSource
   status: $Enums.TaskStatus
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   tenant?: Prisma.TenantCreateNestedOneWithoutTimeLogsInput
@@ -430,6 +443,7 @@ export type TimeLogUncheckedCreateInput = {
   endedAt?: Date | string | null
   source?: $Enums.TimeLogSource
   status: $Enums.TaskStatus
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -444,6 +458,7 @@ export type TimeLogUpdateInput = {
   endedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   source?: Prisma.EnumTimeLogSourceFieldUpdateOperationsInput | $Enums.TimeLogSource
   status?: Prisma.EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tenant?: Prisma.TenantUpdateOneRequiredWithoutTimeLogsNestedInput
@@ -466,6 +481,7 @@ export type TimeLogUncheckedUpdateInput = {
   endedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   source?: Prisma.EnumTimeLogSourceFieldUpdateOperationsInput | $Enums.TimeLogSource
   status?: Prisma.EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -484,6 +500,7 @@ export type TimeLogCreateManyInput = {
   endedAt?: Date | string | null
   source?: $Enums.TimeLogSource
   status: $Enums.TaskStatus
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -498,6 +515,7 @@ export type TimeLogUpdateManyMutationInput = {
   endedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   source?: Prisma.EnumTimeLogSourceFieldUpdateOperationsInput | $Enums.TimeLogSource
   status?: Prisma.EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -516,6 +534,7 @@ export type TimeLogUncheckedUpdateManyInput = {
   endedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   source?: Prisma.EnumTimeLogSourceFieldUpdateOperationsInput | $Enums.TimeLogSource
   status?: Prisma.EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -550,6 +569,7 @@ export type TimeLogCountOrderByAggregateInput = {
   endedAt?: Prisma.SortOrder
   source?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -573,6 +593,7 @@ export type TimeLogMaxOrderByAggregateInput = {
   endedAt?: Prisma.SortOrder
   source?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -591,6 +612,7 @@ export type TimeLogMinOrderByAggregateInput = {
   endedAt?: Prisma.SortOrder
   source?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -782,6 +804,7 @@ export type TimeLogCreateWithoutTenantInput = {
   endedAt?: Date | string | null
   source?: $Enums.TimeLogSource
   status: $Enums.TaskStatus
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   project: Prisma.ProjectCreateNestedOneWithoutTimeLogsInput
@@ -802,6 +825,7 @@ export type TimeLogUncheckedCreateWithoutTenantInput = {
   endedAt?: Date | string | null
   source?: $Enums.TimeLogSource
   status: $Enums.TaskStatus
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -849,6 +873,7 @@ export type TimeLogScalarWhereInput = {
   endedAt?: Prisma.DateTimeNullableFilter<"TimeLog"> | Date | string | null
   source?: Prisma.EnumTimeLogSourceFilter<"TimeLog"> | $Enums.TimeLogSource
   status?: Prisma.EnumTaskStatusFilter<"TimeLog"> | $Enums.TaskStatus
+  deletedAt?: Prisma.DateTimeNullableFilter<"TimeLog"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"TimeLog"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"TimeLog"> | Date | string
 }
@@ -863,6 +888,7 @@ export type TimeLogCreateWithoutUserInput = {
   endedAt?: Date | string | null
   source?: $Enums.TimeLogSource
   status: $Enums.TaskStatus
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   tenant?: Prisma.TenantCreateNestedOneWithoutTimeLogsInput
@@ -883,6 +909,7 @@ export type TimeLogUncheckedCreateWithoutUserInput = {
   endedAt?: Date | string | null
   source?: $Enums.TimeLogSource
   status: $Enums.TaskStatus
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -923,6 +950,7 @@ export type TimeLogCreateWithoutProjectInput = {
   endedAt?: Date | string | null
   source?: $Enums.TimeLogSource
   status: $Enums.TaskStatus
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   tenant?: Prisma.TenantCreateNestedOneWithoutTimeLogsInput
@@ -943,6 +971,7 @@ export type TimeLogUncheckedCreateWithoutProjectInput = {
   endedAt?: Date | string | null
   source?: $Enums.TimeLogSource
   status: $Enums.TaskStatus
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -983,6 +1012,7 @@ export type TimeLogCreateWithoutTaskInput = {
   endedAt?: Date | string | null
   source?: $Enums.TimeLogSource
   status: $Enums.TaskStatus
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   tenant?: Prisma.TenantCreateNestedOneWithoutTimeLogsInput
@@ -1003,6 +1033,7 @@ export type TimeLogUncheckedCreateWithoutTaskInput = {
   endedAt?: Date | string | null
   source?: $Enums.TimeLogSource
   status: $Enums.TaskStatus
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1046,6 +1077,7 @@ export type TimeLogCreateManyTenantInput = {
   endedAt?: Date | string | null
   source?: $Enums.TimeLogSource
   status: $Enums.TaskStatus
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1060,6 +1092,7 @@ export type TimeLogUpdateWithoutTenantInput = {
   endedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   source?: Prisma.EnumTimeLogSourceFieldUpdateOperationsInput | $Enums.TimeLogSource
   status?: Prisma.EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   project?: Prisma.ProjectUpdateOneRequiredWithoutTimeLogsNestedInput
@@ -1080,6 +1113,7 @@ export type TimeLogUncheckedUpdateWithoutTenantInput = {
   endedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   source?: Prisma.EnumTimeLogSourceFieldUpdateOperationsInput | $Enums.TimeLogSource
   status?: Prisma.EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1097,6 +1131,7 @@ export type TimeLogUncheckedUpdateManyWithoutTenantInput = {
   endedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   source?: Prisma.EnumTimeLogSourceFieldUpdateOperationsInput | $Enums.TimeLogSource
   status?: Prisma.EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1114,6 +1149,7 @@ export type TimeLogCreateManyUserInput = {
   endedAt?: Date | string | null
   source?: $Enums.TimeLogSource
   status: $Enums.TaskStatus
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1128,6 +1164,7 @@ export type TimeLogUpdateWithoutUserInput = {
   endedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   source?: Prisma.EnumTimeLogSourceFieldUpdateOperationsInput | $Enums.TimeLogSource
   status?: Prisma.EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tenant?: Prisma.TenantUpdateOneRequiredWithoutTimeLogsNestedInput
@@ -1148,6 +1185,7 @@ export type TimeLogUncheckedUpdateWithoutUserInput = {
   endedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   source?: Prisma.EnumTimeLogSourceFieldUpdateOperationsInput | $Enums.TimeLogSource
   status?: Prisma.EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1165,6 +1203,7 @@ export type TimeLogUncheckedUpdateManyWithoutUserInput = {
   endedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   source?: Prisma.EnumTimeLogSourceFieldUpdateOperationsInput | $Enums.TimeLogSource
   status?: Prisma.EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1182,6 +1221,7 @@ export type TimeLogCreateManyProjectInput = {
   endedAt?: Date | string | null
   source?: $Enums.TimeLogSource
   status: $Enums.TaskStatus
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1196,6 +1236,7 @@ export type TimeLogUpdateWithoutProjectInput = {
   endedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   source?: Prisma.EnumTimeLogSourceFieldUpdateOperationsInput | $Enums.TimeLogSource
   status?: Prisma.EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tenant?: Prisma.TenantUpdateOneRequiredWithoutTimeLogsNestedInput
@@ -1216,6 +1257,7 @@ export type TimeLogUncheckedUpdateWithoutProjectInput = {
   endedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   source?: Prisma.EnumTimeLogSourceFieldUpdateOperationsInput | $Enums.TimeLogSource
   status?: Prisma.EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1233,6 +1275,7 @@ export type TimeLogUncheckedUpdateManyWithoutProjectInput = {
   endedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   source?: Prisma.EnumTimeLogSourceFieldUpdateOperationsInput | $Enums.TimeLogSource
   status?: Prisma.EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1250,6 +1293,7 @@ export type TimeLogCreateManyTaskInput = {
   endedAt?: Date | string | null
   source?: $Enums.TimeLogSource
   status: $Enums.TaskStatus
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1264,6 +1308,7 @@ export type TimeLogUpdateWithoutTaskInput = {
   endedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   source?: Prisma.EnumTimeLogSourceFieldUpdateOperationsInput | $Enums.TimeLogSource
   status?: Prisma.EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tenant?: Prisma.TenantUpdateOneRequiredWithoutTimeLogsNestedInput
@@ -1284,6 +1329,7 @@ export type TimeLogUncheckedUpdateWithoutTaskInput = {
   endedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   source?: Prisma.EnumTimeLogSourceFieldUpdateOperationsInput | $Enums.TimeLogSource
   status?: Prisma.EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1301,6 +1347,7 @@ export type TimeLogUncheckedUpdateManyWithoutTaskInput = {
   endedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   source?: Prisma.EnumTimeLogSourceFieldUpdateOperationsInput | $Enums.TimeLogSource
   status?: Prisma.EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1321,6 +1368,7 @@ export type TimeLogSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   endedAt?: boolean
   source?: boolean
   status?: boolean
+  deletedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
@@ -1345,11 +1393,12 @@ export type TimeLogSelectScalar = {
   endedAt?: boolean
   source?: boolean
   status?: boolean
+  deletedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type TimeLogOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "projectId" | "taskId" | "userId" | "hours" | "durationSeconds" | "description" | "date" | "startedAt" | "endedAt" | "source" | "status" | "createdAt" | "updatedAt", ExtArgs["result"]["timeLog"]>
+export type TimeLogOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "projectId" | "taskId" | "userId" | "hours" | "durationSeconds" | "description" | "date" | "startedAt" | "endedAt" | "source" | "status" | "deletedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["timeLog"]>
 export type TimeLogInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
@@ -1379,6 +1428,7 @@ export type $TimeLogPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     endedAt: Date | null
     source: $Enums.TimeLogSource
     status: $Enums.TaskStatus
+    deletedAt: Date | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["timeLog"]>
@@ -1767,6 +1817,7 @@ export interface TimeLogFieldRefs {
   readonly endedAt: Prisma.FieldRef<"TimeLog", 'DateTime'>
   readonly source: Prisma.FieldRef<"TimeLog", 'TimeLogSource'>
   readonly status: Prisma.FieldRef<"TimeLog", 'TaskStatus'>
+  readonly deletedAt: Prisma.FieldRef<"TimeLog", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"TimeLog", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"TimeLog", 'DateTime'>
 }

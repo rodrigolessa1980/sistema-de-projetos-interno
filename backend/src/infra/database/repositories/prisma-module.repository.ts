@@ -37,6 +37,7 @@ export class PrismaModuleRepository implements IModuleRepository {
       workDate: raw.workDate ?? null,
       loggedHours: raw.loggedHours != null ? Number(raw.loggedHours) : null,
       loggedByUserId: raw.loggedByUserId ?? null,
+      createdById: raw.createdById ?? null,
       createdAt: raw.createdAt,
       updatedAt: raw.updatedAt,
     });
@@ -131,6 +132,7 @@ export class PrismaModuleRepository implements IModuleRepository {
         workDate: module.workDate,
         loggedHours: module.loggedHours,
         loggedByUserId: module.loggedByUserId,
+        createdById: module.createdById,
       },
     });
     return this.mapToDomain(raw);
@@ -164,6 +166,7 @@ export class PrismaModuleRepository implements IModuleRepository {
           workDate: shouldLogTime ? input.workDate : null,
           loggedHours: shouldLogTime ? input.hours : null,
           loggedByUserId: shouldLogTime ? timeLogUserId : null,
+          createdById: input.userId,
         },
       });
 
@@ -383,13 +386,22 @@ export class PrismaModuleRepository implements IModuleRepository {
   }
 
   async delete(id: string): Promise<void> {
-    // Soft delete em cascata: oculta o módulo e, junto, seus epics e tarefas
-    // (senão ficariam órfãos apontando para um módulo invisível). A extensão de
-    // tenant injeta `deletedAt: null` no where de cada operação, então só afeta
-    // os registros ainda ativos. Time logs/anexos permanecem no banco (histórico).
+    // Soft delete em cascata: oculta o módulo e, com o MESMO timestamp, seus epics,
+    // tarefas, time logs dessas tarefas e anexos do módulo (senão ficariam órfãos
+    // apontando para um módulo invisível, ou as horas continuariam nos relatórios).
+    // A extensão injeta `deletedAt: null` no where, então só afeta o que está ativo.
     const now = new Date();
+    const tasks = await this.prisma.task.findMany({
+      where: { moduleId: id },
+      select: { id: true },
+    });
+    const taskIds = tasks.map((t) => t.id);
     await this.prisma.$transaction(
       [
+        ...(taskIds.length
+          ? [this.prisma.timeLog.updateMany({ where: { taskId: { in: taskIds } }, data: { deletedAt: now } })]
+          : []),
+        this.prisma.moduleAttachment.updateMany({ where: { moduleId: id }, data: { deletedAt: now } }),
         this.prisma.task.updateMany({ where: { moduleId: id }, data: { deletedAt: now } }),
         this.prisma.epic.updateMany({ where: { moduleId: id }, data: { deletedAt: now } }),
         this.prisma.module.update({ where: { id }, data: { deletedAt: now } }),

@@ -70,6 +70,7 @@ function moduleToHTTP(m: any) {
     workDate: formatDateOnly(m.workDate),
     loggedHours: m.loggedHours != null ? Number(m.loggedHours) : null,
     loggedByUserId: m.loggedByUserId ?? null,
+    createdById: m.createdById ?? null,
     createdAt: m.createdAt instanceof Date ? m.createdAt.toISOString() : m.createdAt,
     updatedAt: m.updatedAt instanceof Date ? m.updatedAt.toISOString() : m.updatedAt,
   };
@@ -174,6 +175,7 @@ export class ModulesController {
       description: body.description ?? '',
       status: body.status,
       order: body.order,
+      userId: req.userId,
     });
     return { module: moduleToHTTP(module), attachments: [] };
   }
@@ -203,30 +205,36 @@ export class ModulesController {
     await this.deleteModuleAttachmentUseCase.execute(id);
   }
 
+  // Sem @RequirePermission: autorização (admin OU dono/createdById) é feita no
+  // use-case, p/ o dono conseguir editar mesmo sem a permissão `modules:update`.
   @Patch('modules/:id')
-  @RequirePermission('modules:update')
   async updateModule(
     @Req() req: AuthenticatedRequest,
     @Param('id') id: string,
     @Body() body: UpdateModuleDto,
   ) {
-    const module = await this.updateModuleUseCase.execute(id, {
-      name: body.name,
-      description: body.description,
-      status: body.status,
-      workDate: body.workDate ? new Date(`${body.workDate}T12:00:00.000Z`) : undefined,
-      hours: body.hours,
-      // Só admin pode trocar o usuário dono do registro.
-      assignedUserId: req.userRole === UserRole.ADMIN ? body.assignedUserId : undefined,
-    });
+    const module = await this.updateModuleUseCase.execute(
+      id,
+      {
+        name: body.name,
+        description: body.description,
+        status: body.status,
+        workDate: body.workDate ? new Date(`${body.workDate}T12:00:00.000Z`) : undefined,
+        hours: body.hours,
+        // Só admin pode trocar o usuário dono do registro.
+        assignedUserId: req.userRole === UserRole.ADMIN ? body.assignedUserId : undefined,
+      },
+      req.userId,
+      req.userRole,
+    );
     return { module: moduleToHTTP(module) };
   }
 
+  // Sem @RequirePermission: autorização (admin OU dono) feita no use-case.
   @Delete('modules/:id')
   @HttpCode(204)
-  @RequirePermission('modules:delete')
-  async deleteModule(@Param('id') id: string) {
-    await this.deleteModuleUseCase.execute(id);
+  async deleteModule(@Req() req: AuthenticatedRequest, @Param('id') id: string) {
+    await this.deleteModuleUseCase.execute(id, req.userId, req.userRole);
   }
 
   @Get('projects/:projectId/epics')

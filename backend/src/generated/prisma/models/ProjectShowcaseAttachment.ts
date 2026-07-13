@@ -43,6 +43,7 @@ export type ProjectShowcaseAttachmentMinAggregateOutputType = {
   type: string | null
   size: number | null
   dataUrl: string | null
+  deletedAt: Date | null
   createdAt: Date | null
 }
 
@@ -55,6 +56,7 @@ export type ProjectShowcaseAttachmentMaxAggregateOutputType = {
   type: string | null
   size: number | null
   dataUrl: string | null
+  deletedAt: Date | null
   createdAt: Date | null
 }
 
@@ -67,6 +69,7 @@ export type ProjectShowcaseAttachmentCountAggregateOutputType = {
   type: number
   size: number
   dataUrl: number
+  deletedAt: number
   createdAt: number
   _all: number
 }
@@ -89,6 +92,7 @@ export type ProjectShowcaseAttachmentMinAggregateInputType = {
   type?: true
   size?: true
   dataUrl?: true
+  deletedAt?: true
   createdAt?: true
 }
 
@@ -101,6 +105,7 @@ export type ProjectShowcaseAttachmentMaxAggregateInputType = {
   type?: true
   size?: true
   dataUrl?: true
+  deletedAt?: true
   createdAt?: true
 }
 
@@ -113,6 +118,7 @@ export type ProjectShowcaseAttachmentCountAggregateInputType = {
   type?: true
   size?: true
   dataUrl?: true
+  deletedAt?: true
   createdAt?: true
   _all?: true
 }
@@ -212,6 +218,7 @@ export type ProjectShowcaseAttachmentGroupByOutputType = {
   type: string
   size: number
   dataUrl: string
+  deletedAt: Date | null
   createdAt: Date
   _count: ProjectShowcaseAttachmentCountAggregateOutputType | null
   _avg: ProjectShowcaseAttachmentAvgAggregateOutputType | null
@@ -247,6 +254,7 @@ export type ProjectShowcaseAttachmentWhereInput = {
   type?: Prisma.StringFilter<"ProjectShowcaseAttachment"> | string
   size?: Prisma.IntFilter<"ProjectShowcaseAttachment"> | number
   dataUrl?: Prisma.StringFilter<"ProjectShowcaseAttachment"> | string
+  deletedAt?: Prisma.DateTimeNullableFilter<"ProjectShowcaseAttachment"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"ProjectShowcaseAttachment"> | Date | string
   tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
   project?: Prisma.XOR<Prisma.ProjectScalarRelationFilter, Prisma.ProjectWhereInput>
@@ -262,6 +270,7 @@ export type ProjectShowcaseAttachmentOrderByWithRelationInput = {
   type?: Prisma.SortOrder
   size?: Prisma.SortOrder
   dataUrl?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   tenant?: Prisma.TenantOrderByWithRelationInput
   project?: Prisma.ProjectOrderByWithRelationInput
@@ -281,6 +290,7 @@ export type ProjectShowcaseAttachmentWhereUniqueInput = Prisma.AtLeast<{
   type?: Prisma.StringFilter<"ProjectShowcaseAttachment"> | string
   size?: Prisma.IntFilter<"ProjectShowcaseAttachment"> | number
   dataUrl?: Prisma.StringFilter<"ProjectShowcaseAttachment"> | string
+  deletedAt?: Prisma.DateTimeNullableFilter<"ProjectShowcaseAttachment"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"ProjectShowcaseAttachment"> | Date | string
   tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
   project?: Prisma.XOR<Prisma.ProjectScalarRelationFilter, Prisma.ProjectWhereInput>
@@ -296,6 +306,7 @@ export type ProjectShowcaseAttachmentOrderByWithAggregationInput = {
   type?: Prisma.SortOrder
   size?: Prisma.SortOrder
   dataUrl?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.ProjectShowcaseAttachmentCountOrderByAggregateInput
   _avg?: Prisma.ProjectShowcaseAttachmentAvgOrderByAggregateInput
@@ -316,6 +327,7 @@ export type ProjectShowcaseAttachmentScalarWhereWithAggregatesInput = {
   type?: Prisma.StringWithAggregatesFilter<"ProjectShowcaseAttachment"> | string
   size?: Prisma.IntWithAggregatesFilter<"ProjectShowcaseAttachment"> | number
   dataUrl?: Prisma.StringWithAggregatesFilter<"ProjectShowcaseAttachment"> | string
+  deletedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"ProjectShowcaseAttachment"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"ProjectShowcaseAttachment"> | Date | string
 }
 
@@ -325,6 +337,7 @@ export type ProjectShowcaseAttachmentCreateInput = {
   type: string
   size: number
   dataUrl: string
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   tenant?: Prisma.TenantCreateNestedOneWithoutProjectShowcaseAttachmentsInput
   project: Prisma.ProjectCreateNestedOneWithoutShowcaseAttachmentsInput
@@ -340,6 +353,7 @@ export type ProjectShowcaseAttachmentUncheckedCreateInput = {
   type: string
   size: number
   dataUrl: string
+  deletedAt?: Date | string | null
   createdAt?: Date | string
 }
 
@@ -349,6 +363,7 @@ export type ProjectShowcaseAttachmentUpdateInput = {
   type?: Prisma.StringFieldUpdateOperationsInput | string
   size?: Prisma.IntFieldUpdateOperationsInput | number
   dataUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tenant?: Prisma.TenantUpdateOneRequiredWithoutProjectShowcaseAttachmentsNestedInput
   project?: Prisma.ProjectUpdateOneRequiredWithoutShowcaseAttachmentsNestedInput
@@ -364,6 +379,7 @@ export type ProjectShowcaseAttachmentUncheckedUpdateInput = {
   type?: Prisma.StringFieldUpdateOperationsInput | string
   size?: Prisma.IntFieldUpdateOperationsInput | number
   dataUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -376,6 +392,7 @@ export type ProjectShowcaseAttachmentCreateManyInput = {
   type: string
   size: number
   dataUrl: string
+  deletedAt?: Date | string | null
   createdAt?: Date | string
 }
 
@@ -385,6 +402,7 @@ export type ProjectShowcaseAttachmentUpdateManyMutationInput = {
   type?: Prisma.StringFieldUpdateOperationsInput | string
   size?: Prisma.IntFieldUpdateOperationsInput | number
   dataUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -397,6 +415,7 @@ export type ProjectShowcaseAttachmentUncheckedUpdateManyInput = {
   type?: Prisma.StringFieldUpdateOperationsInput | string
   size?: Prisma.IntFieldUpdateOperationsInput | number
   dataUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -425,6 +444,7 @@ export type ProjectShowcaseAttachmentCountOrderByAggregateInput = {
   type?: Prisma.SortOrder
   size?: Prisma.SortOrder
   dataUrl?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -441,6 +461,7 @@ export type ProjectShowcaseAttachmentMaxOrderByAggregateInput = {
   type?: Prisma.SortOrder
   size?: Prisma.SortOrder
   dataUrl?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -453,6 +474,7 @@ export type ProjectShowcaseAttachmentMinOrderByAggregateInput = {
   type?: Prisma.SortOrder
   size?: Prisma.SortOrder
   dataUrl?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -592,6 +614,7 @@ export type ProjectShowcaseAttachmentCreateWithoutTenantInput = {
   type: string
   size: number
   dataUrl: string
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   project: Prisma.ProjectCreateNestedOneWithoutShowcaseAttachmentsInput
   user: Prisma.UserCreateNestedOneWithoutProjectShowcaseAttachmentsInput
@@ -605,6 +628,7 @@ export type ProjectShowcaseAttachmentUncheckedCreateWithoutTenantInput = {
   type: string
   size: number
   dataUrl: string
+  deletedAt?: Date | string | null
   createdAt?: Date | string
 }
 
@@ -646,6 +670,7 @@ export type ProjectShowcaseAttachmentScalarWhereInput = {
   type?: Prisma.StringFilter<"ProjectShowcaseAttachment"> | string
   size?: Prisma.IntFilter<"ProjectShowcaseAttachment"> | number
   dataUrl?: Prisma.StringFilter<"ProjectShowcaseAttachment"> | string
+  deletedAt?: Prisma.DateTimeNullableFilter<"ProjectShowcaseAttachment"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"ProjectShowcaseAttachment"> | Date | string
 }
 
@@ -655,6 +680,7 @@ export type ProjectShowcaseAttachmentCreateWithoutUserInput = {
   type: string
   size: number
   dataUrl: string
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   tenant?: Prisma.TenantCreateNestedOneWithoutProjectShowcaseAttachmentsInput
   project: Prisma.ProjectCreateNestedOneWithoutShowcaseAttachmentsInput
@@ -668,6 +694,7 @@ export type ProjectShowcaseAttachmentUncheckedCreateWithoutUserInput = {
   type: string
   size: number
   dataUrl: string
+  deletedAt?: Date | string | null
   createdAt?: Date | string
 }
 
@@ -703,6 +730,7 @@ export type ProjectShowcaseAttachmentCreateWithoutProjectInput = {
   type: string
   size: number
   dataUrl: string
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   tenant?: Prisma.TenantCreateNestedOneWithoutProjectShowcaseAttachmentsInput
   user: Prisma.UserCreateNestedOneWithoutProjectShowcaseAttachmentsInput
@@ -716,6 +744,7 @@ export type ProjectShowcaseAttachmentUncheckedCreateWithoutProjectInput = {
   type: string
   size: number
   dataUrl: string
+  deletedAt?: Date | string | null
   createdAt?: Date | string
 }
 
@@ -753,6 +782,7 @@ export type ProjectShowcaseAttachmentCreateManyTenantInput = {
   type: string
   size: number
   dataUrl: string
+  deletedAt?: Date | string | null
   createdAt?: Date | string
 }
 
@@ -762,6 +792,7 @@ export type ProjectShowcaseAttachmentUpdateWithoutTenantInput = {
   type?: Prisma.StringFieldUpdateOperationsInput | string
   size?: Prisma.IntFieldUpdateOperationsInput | number
   dataUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   project?: Prisma.ProjectUpdateOneRequiredWithoutShowcaseAttachmentsNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutProjectShowcaseAttachmentsNestedInput
@@ -775,6 +806,7 @@ export type ProjectShowcaseAttachmentUncheckedUpdateWithoutTenantInput = {
   type?: Prisma.StringFieldUpdateOperationsInput | string
   size?: Prisma.IntFieldUpdateOperationsInput | number
   dataUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -786,6 +818,7 @@ export type ProjectShowcaseAttachmentUncheckedUpdateManyWithoutTenantInput = {
   type?: Prisma.StringFieldUpdateOperationsInput | string
   size?: Prisma.IntFieldUpdateOperationsInput | number
   dataUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -797,6 +830,7 @@ export type ProjectShowcaseAttachmentCreateManyUserInput = {
   type: string
   size: number
   dataUrl: string
+  deletedAt?: Date | string | null
   createdAt?: Date | string
 }
 
@@ -806,6 +840,7 @@ export type ProjectShowcaseAttachmentUpdateWithoutUserInput = {
   type?: Prisma.StringFieldUpdateOperationsInput | string
   size?: Prisma.IntFieldUpdateOperationsInput | number
   dataUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tenant?: Prisma.TenantUpdateOneRequiredWithoutProjectShowcaseAttachmentsNestedInput
   project?: Prisma.ProjectUpdateOneRequiredWithoutShowcaseAttachmentsNestedInput
@@ -819,6 +854,7 @@ export type ProjectShowcaseAttachmentUncheckedUpdateWithoutUserInput = {
   type?: Prisma.StringFieldUpdateOperationsInput | string
   size?: Prisma.IntFieldUpdateOperationsInput | number
   dataUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -830,6 +866,7 @@ export type ProjectShowcaseAttachmentUncheckedUpdateManyWithoutUserInput = {
   type?: Prisma.StringFieldUpdateOperationsInput | string
   size?: Prisma.IntFieldUpdateOperationsInput | number
   dataUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -841,6 +878,7 @@ export type ProjectShowcaseAttachmentCreateManyProjectInput = {
   type: string
   size: number
   dataUrl: string
+  deletedAt?: Date | string | null
   createdAt?: Date | string
 }
 
@@ -850,6 +888,7 @@ export type ProjectShowcaseAttachmentUpdateWithoutProjectInput = {
   type?: Prisma.StringFieldUpdateOperationsInput | string
   size?: Prisma.IntFieldUpdateOperationsInput | number
   dataUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tenant?: Prisma.TenantUpdateOneRequiredWithoutProjectShowcaseAttachmentsNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutProjectShowcaseAttachmentsNestedInput
@@ -863,6 +902,7 @@ export type ProjectShowcaseAttachmentUncheckedUpdateWithoutProjectInput = {
   type?: Prisma.StringFieldUpdateOperationsInput | string
   size?: Prisma.IntFieldUpdateOperationsInput | number
   dataUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -874,6 +914,7 @@ export type ProjectShowcaseAttachmentUncheckedUpdateManyWithoutProjectInput = {
   type?: Prisma.StringFieldUpdateOperationsInput | string
   size?: Prisma.IntFieldUpdateOperationsInput | number
   dataUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -888,6 +929,7 @@ export type ProjectShowcaseAttachmentSelect<ExtArgs extends runtime.Types.Extens
   type?: boolean
   size?: boolean
   dataUrl?: boolean
+  deletedAt?: boolean
   createdAt?: boolean
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
@@ -905,10 +947,11 @@ export type ProjectShowcaseAttachmentSelectScalar = {
   type?: boolean
   size?: boolean
   dataUrl?: boolean
+  deletedAt?: boolean
   createdAt?: boolean
 }
 
-export type ProjectShowcaseAttachmentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "projectId" | "userId" | "name" | "type" | "size" | "dataUrl" | "createdAt", ExtArgs["result"]["projectShowcaseAttachment"]>
+export type ProjectShowcaseAttachmentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "projectId" | "userId" | "name" | "type" | "size" | "dataUrl" | "deletedAt" | "createdAt", ExtArgs["result"]["projectShowcaseAttachment"]>
 export type ProjectShowcaseAttachmentInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
@@ -931,6 +974,7 @@ export type $ProjectShowcaseAttachmentPayload<ExtArgs extends runtime.Types.Exte
     type: string
     size: number
     dataUrl: string
+    deletedAt: Date | null
     createdAt: Date
   }, ExtArgs["result"]["projectShowcaseAttachment"]>
   composites: {}
@@ -1312,6 +1356,7 @@ export interface ProjectShowcaseAttachmentFieldRefs {
   readonly type: Prisma.FieldRef<"ProjectShowcaseAttachment", 'String'>
   readonly size: Prisma.FieldRef<"ProjectShowcaseAttachment", 'Int'>
   readonly dataUrl: Prisma.FieldRef<"ProjectShowcaseAttachment", 'String'>
+  readonly deletedAt: Prisma.FieldRef<"ProjectShowcaseAttachment", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"ProjectShowcaseAttachment", 'DateTime'>
 }
     

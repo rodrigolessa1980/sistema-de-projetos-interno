@@ -272,6 +272,7 @@ export type UserWhereInput = {
   projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentListRelationFilter
   projectDemandAttachments?: Prisma.ProjectDemandAttachmentListRelationFilter
   loggedModules?: Prisma.ModuleListRelationFilter
+  createdModules?: Prisma.ModuleListRelationFilter
   permissions?: Prisma.UserPermissionListRelationFilter
   apiTokens?: Prisma.ApiTokenListRelationFilter
 }
@@ -309,6 +310,7 @@ export type UserOrderByWithRelationInput = {
   projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentOrderByRelationAggregateInput
   projectDemandAttachments?: Prisma.ProjectDemandAttachmentOrderByRelationAggregateInput
   loggedModules?: Prisma.ModuleOrderByRelationAggregateInput
+  createdModules?: Prisma.ModuleOrderByRelationAggregateInput
   permissions?: Prisma.UserPermissionOrderByRelationAggregateInput
   apiTokens?: Prisma.ApiTokenOrderByRelationAggregateInput
   _relevance?: Prisma.UserOrderByRelevanceInput
@@ -351,6 +353,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentListRelationFilter
   projectDemandAttachments?: Prisma.ProjectDemandAttachmentListRelationFilter
   loggedModules?: Prisma.ModuleListRelationFilter
+  createdModules?: Prisma.ModuleListRelationFilter
   permissions?: Prisma.UserPermissionListRelationFilter
   apiTokens?: Prisma.ApiTokenListRelationFilter
 }, "id" | "tenantId_email">
@@ -427,6 +430,7 @@ export type UserCreateInput = {
   projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentCreateNestedManyWithoutUserInput
   projectDemandAttachments?: Prisma.ProjectDemandAttachmentCreateNestedManyWithoutUserInput
   loggedModules?: Prisma.ModuleCreateNestedManyWithoutLoggedByInput
+  createdModules?: Prisma.ModuleCreateNestedManyWithoutCreatedByInput
   permissions?: Prisma.UserPermissionCreateNestedManyWithoutUserInput
   apiTokens?: Prisma.ApiTokenCreateNestedManyWithoutUserInput
 }
@@ -463,6 +467,7 @@ export type UserUncheckedCreateInput = {
   projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentUncheckedCreateNestedManyWithoutUserInput
   projectDemandAttachments?: Prisma.ProjectDemandAttachmentUncheckedCreateNestedManyWithoutUserInput
   loggedModules?: Prisma.ModuleUncheckedCreateNestedManyWithoutLoggedByInput
+  createdModules?: Prisma.ModuleUncheckedCreateNestedManyWithoutCreatedByInput
   permissions?: Prisma.UserPermissionUncheckedCreateNestedManyWithoutUserInput
   apiTokens?: Prisma.ApiTokenUncheckedCreateNestedManyWithoutUserInput
 }
@@ -499,6 +504,7 @@ export type UserUpdateInput = {
   projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentUpdateManyWithoutUserNestedInput
   projectDemandAttachments?: Prisma.ProjectDemandAttachmentUpdateManyWithoutUserNestedInput
   loggedModules?: Prisma.ModuleUpdateManyWithoutLoggedByNestedInput
+  createdModules?: Prisma.ModuleUpdateManyWithoutCreatedByNestedInput
   permissions?: Prisma.UserPermissionUpdateManyWithoutUserNestedInput
   apiTokens?: Prisma.ApiTokenUpdateManyWithoutUserNestedInput
 }
@@ -535,6 +541,7 @@ export type UserUncheckedUpdateInput = {
   projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentUncheckedUpdateManyWithoutUserNestedInput
   projectDemandAttachments?: Prisma.ProjectDemandAttachmentUncheckedUpdateManyWithoutUserNestedInput
   loggedModules?: Prisma.ModuleUncheckedUpdateManyWithoutLoggedByNestedInput
+  createdModules?: Prisma.ModuleUncheckedUpdateManyWithoutCreatedByNestedInput
   permissions?: Prisma.UserPermissionUncheckedUpdateManyWithoutUserNestedInput
   apiTokens?: Prisma.ApiTokenUncheckedUpdateManyWithoutUserNestedInput
 }
@@ -717,10 +724,6 @@ export type EnumUserRoleFieldUpdateOperationsInput = {
   set?: $Enums.UserRole
 }
 
-export type NullableDateTimeFieldUpdateOperationsInput = {
-  set?: Date | string | null
-}
-
 export type UserCreateNestedOneWithoutApiTokensInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutApiTokensInput, Prisma.UserUncheckedCreateWithoutApiTokensInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutApiTokensInput
@@ -783,6 +786,12 @@ export type UserCreateNestedOneWithoutLoggedModulesInput = {
   connect?: Prisma.UserWhereUniqueInput
 }
 
+export type UserCreateNestedOneWithoutCreatedModulesInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCreatedModulesInput, Prisma.UserUncheckedCreateWithoutCreatedModulesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCreatedModulesInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
 export type UserUpdateOneWithoutLoggedModulesNestedInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutLoggedModulesInput, Prisma.UserUncheckedCreateWithoutLoggedModulesInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutLoggedModulesInput
@@ -791,6 +800,16 @@ export type UserUpdateOneWithoutLoggedModulesNestedInput = {
   delete?: Prisma.UserWhereInput | boolean
   connect?: Prisma.UserWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutLoggedModulesInput, Prisma.UserUpdateWithoutLoggedModulesInput>, Prisma.UserUncheckedUpdateWithoutLoggedModulesInput>
+}
+
+export type UserUpdateOneWithoutCreatedModulesNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCreatedModulesInput, Prisma.UserUncheckedCreateWithoutCreatedModulesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCreatedModulesInput
+  upsert?: Prisma.UserUpsertWithoutCreatedModulesInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutCreatedModulesInput, Prisma.UserUpdateWithoutCreatedModulesInput>, Prisma.UserUncheckedUpdateWithoutCreatedModulesInput>
 }
 
 export type UserCreateNestedOneWithoutEpicAssignmentsInput = {
@@ -1022,6 +1041,7 @@ export type UserCreateWithoutTenantInput = {
   projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentCreateNestedManyWithoutUserInput
   projectDemandAttachments?: Prisma.ProjectDemandAttachmentCreateNestedManyWithoutUserInput
   loggedModules?: Prisma.ModuleCreateNestedManyWithoutLoggedByInput
+  createdModules?: Prisma.ModuleCreateNestedManyWithoutCreatedByInput
   permissions?: Prisma.UserPermissionCreateNestedManyWithoutUserInput
   apiTokens?: Prisma.ApiTokenCreateNestedManyWithoutUserInput
 }
@@ -1057,6 +1077,7 @@ export type UserUncheckedCreateWithoutTenantInput = {
   projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentUncheckedCreateNestedManyWithoutUserInput
   projectDemandAttachments?: Prisma.ProjectDemandAttachmentUncheckedCreateNestedManyWithoutUserInput
   loggedModules?: Prisma.ModuleUncheckedCreateNestedManyWithoutLoggedByInput
+  createdModules?: Prisma.ModuleUncheckedCreateNestedManyWithoutCreatedByInput
   permissions?: Prisma.UserPermissionUncheckedCreateNestedManyWithoutUserInput
   apiTokens?: Prisma.ApiTokenUncheckedCreateNestedManyWithoutUserInput
 }
@@ -1139,6 +1160,7 @@ export type UserCreateWithoutApiTokensInput = {
   projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentCreateNestedManyWithoutUserInput
   projectDemandAttachments?: Prisma.ProjectDemandAttachmentCreateNestedManyWithoutUserInput
   loggedModules?: Prisma.ModuleCreateNestedManyWithoutLoggedByInput
+  createdModules?: Prisma.ModuleCreateNestedManyWithoutCreatedByInput
   permissions?: Prisma.UserPermissionCreateNestedManyWithoutUserInput
 }
 
@@ -1174,6 +1196,7 @@ export type UserUncheckedCreateWithoutApiTokensInput = {
   projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentUncheckedCreateNestedManyWithoutUserInput
   projectDemandAttachments?: Prisma.ProjectDemandAttachmentUncheckedCreateNestedManyWithoutUserInput
   loggedModules?: Prisma.ModuleUncheckedCreateNestedManyWithoutLoggedByInput
+  createdModules?: Prisma.ModuleUncheckedCreateNestedManyWithoutCreatedByInput
   permissions?: Prisma.UserPermissionUncheckedCreateNestedManyWithoutUserInput
 }
 
@@ -1225,6 +1248,7 @@ export type UserUpdateWithoutApiTokensInput = {
   projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentUpdateManyWithoutUserNestedInput
   projectDemandAttachments?: Prisma.ProjectDemandAttachmentUpdateManyWithoutUserNestedInput
   loggedModules?: Prisma.ModuleUpdateManyWithoutLoggedByNestedInput
+  createdModules?: Prisma.ModuleUpdateManyWithoutCreatedByNestedInput
   permissions?: Prisma.UserPermissionUpdateManyWithoutUserNestedInput
 }
 
@@ -1260,6 +1284,7 @@ export type UserUncheckedUpdateWithoutApiTokensInput = {
   projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentUncheckedUpdateManyWithoutUserNestedInput
   projectDemandAttachments?: Prisma.ProjectDemandAttachmentUncheckedUpdateManyWithoutUserNestedInput
   loggedModules?: Prisma.ModuleUncheckedUpdateManyWithoutLoggedByNestedInput
+  createdModules?: Prisma.ModuleUncheckedUpdateManyWithoutCreatedByNestedInput
   permissions?: Prisma.UserPermissionUncheckedUpdateManyWithoutUserNestedInput
 }
 
@@ -1295,6 +1320,7 @@ export type UserCreateWithoutPermissionsInput = {
   projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentCreateNestedManyWithoutUserInput
   projectDemandAttachments?: Prisma.ProjectDemandAttachmentCreateNestedManyWithoutUserInput
   loggedModules?: Prisma.ModuleCreateNestedManyWithoutLoggedByInput
+  createdModules?: Prisma.ModuleCreateNestedManyWithoutCreatedByInput
   apiTokens?: Prisma.ApiTokenCreateNestedManyWithoutUserInput
 }
 
@@ -1330,6 +1356,7 @@ export type UserUncheckedCreateWithoutPermissionsInput = {
   projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentUncheckedCreateNestedManyWithoutUserInput
   projectDemandAttachments?: Prisma.ProjectDemandAttachmentUncheckedCreateNestedManyWithoutUserInput
   loggedModules?: Prisma.ModuleUncheckedCreateNestedManyWithoutLoggedByInput
+  createdModules?: Prisma.ModuleUncheckedCreateNestedManyWithoutCreatedByInput
   apiTokens?: Prisma.ApiTokenUncheckedCreateNestedManyWithoutUserInput
 }
 
@@ -1381,6 +1408,7 @@ export type UserUpdateWithoutPermissionsInput = {
   projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentUpdateManyWithoutUserNestedInput
   projectDemandAttachments?: Prisma.ProjectDemandAttachmentUpdateManyWithoutUserNestedInput
   loggedModules?: Prisma.ModuleUpdateManyWithoutLoggedByNestedInput
+  createdModules?: Prisma.ModuleUpdateManyWithoutCreatedByNestedInput
   apiTokens?: Prisma.ApiTokenUpdateManyWithoutUserNestedInput
 }
 
@@ -1416,6 +1444,7 @@ export type UserUncheckedUpdateWithoutPermissionsInput = {
   projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentUncheckedUpdateManyWithoutUserNestedInput
   projectDemandAttachments?: Prisma.ProjectDemandAttachmentUncheckedUpdateManyWithoutUserNestedInput
   loggedModules?: Prisma.ModuleUncheckedUpdateManyWithoutLoggedByNestedInput
+  createdModules?: Prisma.ModuleUncheckedUpdateManyWithoutCreatedByNestedInput
   apiTokens?: Prisma.ApiTokenUncheckedUpdateManyWithoutUserNestedInput
 }
 
@@ -1450,6 +1479,7 @@ export type UserCreateWithoutManagedProjectsInput = {
   projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentCreateNestedManyWithoutUserInput
   projectDemandAttachments?: Prisma.ProjectDemandAttachmentCreateNestedManyWithoutUserInput
   loggedModules?: Prisma.ModuleCreateNestedManyWithoutLoggedByInput
+  createdModules?: Prisma.ModuleCreateNestedManyWithoutCreatedByInput
   permissions?: Prisma.UserPermissionCreateNestedManyWithoutUserInput
   apiTokens?: Prisma.ApiTokenCreateNestedManyWithoutUserInput
 }
@@ -1485,6 +1515,7 @@ export type UserUncheckedCreateWithoutManagedProjectsInput = {
   projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentUncheckedCreateNestedManyWithoutUserInput
   projectDemandAttachments?: Prisma.ProjectDemandAttachmentUncheckedCreateNestedManyWithoutUserInput
   loggedModules?: Prisma.ModuleUncheckedCreateNestedManyWithoutLoggedByInput
+  createdModules?: Prisma.ModuleUncheckedCreateNestedManyWithoutCreatedByInput
   permissions?: Prisma.UserPermissionUncheckedCreateNestedManyWithoutUserInput
   apiTokens?: Prisma.ApiTokenUncheckedCreateNestedManyWithoutUserInput
 }
@@ -1536,6 +1567,7 @@ export type UserUpdateWithoutManagedProjectsInput = {
   projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentUpdateManyWithoutUserNestedInput
   projectDemandAttachments?: Prisma.ProjectDemandAttachmentUpdateManyWithoutUserNestedInput
   loggedModules?: Prisma.ModuleUpdateManyWithoutLoggedByNestedInput
+  createdModules?: Prisma.ModuleUpdateManyWithoutCreatedByNestedInput
   permissions?: Prisma.UserPermissionUpdateManyWithoutUserNestedInput
   apiTokens?: Prisma.ApiTokenUpdateManyWithoutUserNestedInput
 }
@@ -1571,6 +1603,7 @@ export type UserUncheckedUpdateWithoutManagedProjectsInput = {
   projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentUncheckedUpdateManyWithoutUserNestedInput
   projectDemandAttachments?: Prisma.ProjectDemandAttachmentUncheckedUpdateManyWithoutUserNestedInput
   loggedModules?: Prisma.ModuleUncheckedUpdateManyWithoutLoggedByNestedInput
+  createdModules?: Prisma.ModuleUncheckedUpdateManyWithoutCreatedByNestedInput
   permissions?: Prisma.UserPermissionUncheckedUpdateManyWithoutUserNestedInput
   apiTokens?: Prisma.ApiTokenUncheckedUpdateManyWithoutUserNestedInput
 }
@@ -1606,6 +1639,7 @@ export type UserCreateWithoutProjectsInput = {
   projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentCreateNestedManyWithoutUserInput
   projectDemandAttachments?: Prisma.ProjectDemandAttachmentCreateNestedManyWithoutUserInput
   loggedModules?: Prisma.ModuleCreateNestedManyWithoutLoggedByInput
+  createdModules?: Prisma.ModuleCreateNestedManyWithoutCreatedByInput
   permissions?: Prisma.UserPermissionCreateNestedManyWithoutUserInput
   apiTokens?: Prisma.ApiTokenCreateNestedManyWithoutUserInput
 }
@@ -1641,6 +1675,7 @@ export type UserUncheckedCreateWithoutProjectsInput = {
   projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentUncheckedCreateNestedManyWithoutUserInput
   projectDemandAttachments?: Prisma.ProjectDemandAttachmentUncheckedCreateNestedManyWithoutUserInput
   loggedModules?: Prisma.ModuleUncheckedCreateNestedManyWithoutLoggedByInput
+  createdModules?: Prisma.ModuleUncheckedCreateNestedManyWithoutCreatedByInput
   permissions?: Prisma.UserPermissionUncheckedCreateNestedManyWithoutUserInput
   apiTokens?: Prisma.ApiTokenUncheckedCreateNestedManyWithoutUserInput
 }
@@ -1692,6 +1727,7 @@ export type UserUpdateWithoutProjectsInput = {
   projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentUpdateManyWithoutUserNestedInput
   projectDemandAttachments?: Prisma.ProjectDemandAttachmentUpdateManyWithoutUserNestedInput
   loggedModules?: Prisma.ModuleUpdateManyWithoutLoggedByNestedInput
+  createdModules?: Prisma.ModuleUpdateManyWithoutCreatedByNestedInput
   permissions?: Prisma.UserPermissionUpdateManyWithoutUserNestedInput
   apiTokens?: Prisma.ApiTokenUpdateManyWithoutUserNestedInput
 }
@@ -1727,6 +1763,7 @@ export type UserUncheckedUpdateWithoutProjectsInput = {
   projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentUncheckedUpdateManyWithoutUserNestedInput
   projectDemandAttachments?: Prisma.ProjectDemandAttachmentUncheckedUpdateManyWithoutUserNestedInput
   loggedModules?: Prisma.ModuleUncheckedUpdateManyWithoutLoggedByNestedInput
+  createdModules?: Prisma.ModuleUncheckedUpdateManyWithoutCreatedByNestedInput
   permissions?: Prisma.UserPermissionUncheckedUpdateManyWithoutUserNestedInput
   apiTokens?: Prisma.ApiTokenUncheckedUpdateManyWithoutUserNestedInput
 }
@@ -1762,6 +1799,7 @@ export type UserCreateWithoutLoggedModulesInput = {
   moduleAttachments?: Prisma.ModuleAttachmentCreateNestedManyWithoutUserInput
   projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentCreateNestedManyWithoutUserInput
   projectDemandAttachments?: Prisma.ProjectDemandAttachmentCreateNestedManyWithoutUserInput
+  createdModules?: Prisma.ModuleCreateNestedManyWithoutCreatedByInput
   permissions?: Prisma.UserPermissionCreateNestedManyWithoutUserInput
   apiTokens?: Prisma.ApiTokenCreateNestedManyWithoutUserInput
 }
@@ -1797,6 +1835,7 @@ export type UserUncheckedCreateWithoutLoggedModulesInput = {
   moduleAttachments?: Prisma.ModuleAttachmentUncheckedCreateNestedManyWithoutUserInput
   projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentUncheckedCreateNestedManyWithoutUserInput
   projectDemandAttachments?: Prisma.ProjectDemandAttachmentUncheckedCreateNestedManyWithoutUserInput
+  createdModules?: Prisma.ModuleUncheckedCreateNestedManyWithoutCreatedByInput
   permissions?: Prisma.UserPermissionUncheckedCreateNestedManyWithoutUserInput
   apiTokens?: Prisma.ApiTokenUncheckedCreateNestedManyWithoutUserInput
 }
@@ -1804,6 +1843,83 @@ export type UserUncheckedCreateWithoutLoggedModulesInput = {
 export type UserCreateOrConnectWithoutLoggedModulesInput = {
   where: Prisma.UserWhereUniqueInput
   create: Prisma.XOR<Prisma.UserCreateWithoutLoggedModulesInput, Prisma.UserUncheckedCreateWithoutLoggedModulesInput>
+}
+
+export type UserCreateWithoutCreatedModulesInput = {
+  id?: string
+  name: string
+  email: string
+  passwordHash: string
+  role?: $Enums.UserRole
+  avatar?: string | null
+  position: string
+  department: string
+  isActive?: boolean
+  isApproved?: boolean
+  lastLoginAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  tenant?: Prisma.TenantCreateNestedOneWithoutUsersInput
+  managedProjects?: Prisma.ProjectCreateNestedManyWithoutOwnerInput
+  projects?: Prisma.ProjectDeveloperCreateNestedManyWithoutUserInput
+  epicAssignments?: Prisma.EpicDeveloperCreateNestedManyWithoutUserInput
+  assignedTasks?: Prisma.TaskCreateNestedManyWithoutAssigneeInput
+  reportedTasks?: Prisma.TaskCreateNestedManyWithoutReporterInput
+  subtasks?: Prisma.SubtaskCreateNestedManyWithoutAssigneeInput
+  timeLogs?: Prisma.TimeLogCreateNestedManyWithoutUserInput
+  comments?: Prisma.CommentCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput
+  statusHistories?: Prisma.StatusHistoryCreateNestedManyWithoutUserInput
+  taskNotes?: Prisma.TaskNoteCreateNestedManyWithoutUserInput
+  attachments?: Prisma.TaskAttachmentCreateNestedManyWithoutUserInput
+  moduleAttachments?: Prisma.ModuleAttachmentCreateNestedManyWithoutUserInput
+  projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentCreateNestedManyWithoutUserInput
+  projectDemandAttachments?: Prisma.ProjectDemandAttachmentCreateNestedManyWithoutUserInput
+  loggedModules?: Prisma.ModuleCreateNestedManyWithoutLoggedByInput
+  permissions?: Prisma.UserPermissionCreateNestedManyWithoutUserInput
+  apiTokens?: Prisma.ApiTokenCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutCreatedModulesInput = {
+  id?: string
+  tenantId?: string
+  name: string
+  email: string
+  passwordHash: string
+  role?: $Enums.UserRole
+  avatar?: string | null
+  position: string
+  department: string
+  isActive?: boolean
+  isApproved?: boolean
+  lastLoginAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  managedProjects?: Prisma.ProjectUncheckedCreateNestedManyWithoutOwnerInput
+  projects?: Prisma.ProjectDeveloperUncheckedCreateNestedManyWithoutUserInput
+  epicAssignments?: Prisma.EpicDeveloperUncheckedCreateNestedManyWithoutUserInput
+  assignedTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutAssigneeInput
+  reportedTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutReporterInput
+  subtasks?: Prisma.SubtaskUncheckedCreateNestedManyWithoutAssigneeInput
+  timeLogs?: Prisma.TimeLogUncheckedCreateNestedManyWithoutUserInput
+  comments?: Prisma.CommentUncheckedCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput
+  statusHistories?: Prisma.StatusHistoryUncheckedCreateNestedManyWithoutUserInput
+  taskNotes?: Prisma.TaskNoteUncheckedCreateNestedManyWithoutUserInput
+  attachments?: Prisma.TaskAttachmentUncheckedCreateNestedManyWithoutUserInput
+  moduleAttachments?: Prisma.ModuleAttachmentUncheckedCreateNestedManyWithoutUserInput
+  projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentUncheckedCreateNestedManyWithoutUserInput
+  projectDemandAttachments?: Prisma.ProjectDemandAttachmentUncheckedCreateNestedManyWithoutUserInput
+  loggedModules?: Prisma.ModuleUncheckedCreateNestedManyWithoutLoggedByInput
+  permissions?: Prisma.UserPermissionUncheckedCreateNestedManyWithoutUserInput
+  apiTokens?: Prisma.ApiTokenUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutCreatedModulesInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutCreatedModulesInput, Prisma.UserUncheckedCreateWithoutCreatedModulesInput>
 }
 
 export type UserUpsertWithoutLoggedModulesInput = {
@@ -1848,6 +1964,7 @@ export type UserUpdateWithoutLoggedModulesInput = {
   moduleAttachments?: Prisma.ModuleAttachmentUpdateManyWithoutUserNestedInput
   projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentUpdateManyWithoutUserNestedInput
   projectDemandAttachments?: Prisma.ProjectDemandAttachmentUpdateManyWithoutUserNestedInput
+  createdModules?: Prisma.ModuleUpdateManyWithoutCreatedByNestedInput
   permissions?: Prisma.UserPermissionUpdateManyWithoutUserNestedInput
   apiTokens?: Prisma.ApiTokenUpdateManyWithoutUserNestedInput
 }
@@ -1883,6 +2000,90 @@ export type UserUncheckedUpdateWithoutLoggedModulesInput = {
   moduleAttachments?: Prisma.ModuleAttachmentUncheckedUpdateManyWithoutUserNestedInput
   projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentUncheckedUpdateManyWithoutUserNestedInput
   projectDemandAttachments?: Prisma.ProjectDemandAttachmentUncheckedUpdateManyWithoutUserNestedInput
+  createdModules?: Prisma.ModuleUncheckedUpdateManyWithoutCreatedByNestedInput
+  permissions?: Prisma.UserPermissionUncheckedUpdateManyWithoutUserNestedInput
+  apiTokens?: Prisma.ApiTokenUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserUpsertWithoutCreatedModulesInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutCreatedModulesInput, Prisma.UserUncheckedUpdateWithoutCreatedModulesInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutCreatedModulesInput, Prisma.UserUncheckedCreateWithoutCreatedModulesInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutCreatedModulesInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutCreatedModulesInput, Prisma.UserUncheckedUpdateWithoutCreatedModulesInput>
+}
+
+export type UserUpdateWithoutCreatedModulesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  position?: Prisma.StringFieldUpdateOperationsInput | string
+  department?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isApproved?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutUsersNestedInput
+  managedProjects?: Prisma.ProjectUpdateManyWithoutOwnerNestedInput
+  projects?: Prisma.ProjectDeveloperUpdateManyWithoutUserNestedInput
+  epicAssignments?: Prisma.EpicDeveloperUpdateManyWithoutUserNestedInput
+  assignedTasks?: Prisma.TaskUpdateManyWithoutAssigneeNestedInput
+  reportedTasks?: Prisma.TaskUpdateManyWithoutReporterNestedInput
+  subtasks?: Prisma.SubtaskUpdateManyWithoutAssigneeNestedInput
+  timeLogs?: Prisma.TimeLogUpdateManyWithoutUserNestedInput
+  comments?: Prisma.CommentUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput
+  statusHistories?: Prisma.StatusHistoryUpdateManyWithoutUserNestedInput
+  taskNotes?: Prisma.TaskNoteUpdateManyWithoutUserNestedInput
+  attachments?: Prisma.TaskAttachmentUpdateManyWithoutUserNestedInput
+  moduleAttachments?: Prisma.ModuleAttachmentUpdateManyWithoutUserNestedInput
+  projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentUpdateManyWithoutUserNestedInput
+  projectDemandAttachments?: Prisma.ProjectDemandAttachmentUpdateManyWithoutUserNestedInput
+  loggedModules?: Prisma.ModuleUpdateManyWithoutLoggedByNestedInput
+  permissions?: Prisma.UserPermissionUpdateManyWithoutUserNestedInput
+  apiTokens?: Prisma.ApiTokenUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutCreatedModulesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  position?: Prisma.StringFieldUpdateOperationsInput | string
+  department?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isApproved?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  managedProjects?: Prisma.ProjectUncheckedUpdateManyWithoutOwnerNestedInput
+  projects?: Prisma.ProjectDeveloperUncheckedUpdateManyWithoutUserNestedInput
+  epicAssignments?: Prisma.EpicDeveloperUncheckedUpdateManyWithoutUserNestedInput
+  assignedTasks?: Prisma.TaskUncheckedUpdateManyWithoutAssigneeNestedInput
+  reportedTasks?: Prisma.TaskUncheckedUpdateManyWithoutReporterNestedInput
+  subtasks?: Prisma.SubtaskUncheckedUpdateManyWithoutAssigneeNestedInput
+  timeLogs?: Prisma.TimeLogUncheckedUpdateManyWithoutUserNestedInput
+  comments?: Prisma.CommentUncheckedUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput
+  statusHistories?: Prisma.StatusHistoryUncheckedUpdateManyWithoutUserNestedInput
+  taskNotes?: Prisma.TaskNoteUncheckedUpdateManyWithoutUserNestedInput
+  attachments?: Prisma.TaskAttachmentUncheckedUpdateManyWithoutUserNestedInput
+  moduleAttachments?: Prisma.ModuleAttachmentUncheckedUpdateManyWithoutUserNestedInput
+  projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentUncheckedUpdateManyWithoutUserNestedInput
+  projectDemandAttachments?: Prisma.ProjectDemandAttachmentUncheckedUpdateManyWithoutUserNestedInput
+  loggedModules?: Prisma.ModuleUncheckedUpdateManyWithoutLoggedByNestedInput
   permissions?: Prisma.UserPermissionUncheckedUpdateManyWithoutUserNestedInput
   apiTokens?: Prisma.ApiTokenUncheckedUpdateManyWithoutUserNestedInput
 }
@@ -1918,6 +2119,7 @@ export type UserCreateWithoutEpicAssignmentsInput = {
   projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentCreateNestedManyWithoutUserInput
   projectDemandAttachments?: Prisma.ProjectDemandAttachmentCreateNestedManyWithoutUserInput
   loggedModules?: Prisma.ModuleCreateNestedManyWithoutLoggedByInput
+  createdModules?: Prisma.ModuleCreateNestedManyWithoutCreatedByInput
   permissions?: Prisma.UserPermissionCreateNestedManyWithoutUserInput
   apiTokens?: Prisma.ApiTokenCreateNestedManyWithoutUserInput
 }
@@ -1953,6 +2155,7 @@ export type UserUncheckedCreateWithoutEpicAssignmentsInput = {
   projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentUncheckedCreateNestedManyWithoutUserInput
   projectDemandAttachments?: Prisma.ProjectDemandAttachmentUncheckedCreateNestedManyWithoutUserInput
   loggedModules?: Prisma.ModuleUncheckedCreateNestedManyWithoutLoggedByInput
+  createdModules?: Prisma.ModuleUncheckedCreateNestedManyWithoutCreatedByInput
   permissions?: Prisma.UserPermissionUncheckedCreateNestedManyWithoutUserInput
   apiTokens?: Prisma.ApiTokenUncheckedCreateNestedManyWithoutUserInput
 }
@@ -2004,6 +2207,7 @@ export type UserUpdateWithoutEpicAssignmentsInput = {
   projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentUpdateManyWithoutUserNestedInput
   projectDemandAttachments?: Prisma.ProjectDemandAttachmentUpdateManyWithoutUserNestedInput
   loggedModules?: Prisma.ModuleUpdateManyWithoutLoggedByNestedInput
+  createdModules?: Prisma.ModuleUpdateManyWithoutCreatedByNestedInput
   permissions?: Prisma.UserPermissionUpdateManyWithoutUserNestedInput
   apiTokens?: Prisma.ApiTokenUpdateManyWithoutUserNestedInput
 }
@@ -2039,6 +2243,7 @@ export type UserUncheckedUpdateWithoutEpicAssignmentsInput = {
   projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentUncheckedUpdateManyWithoutUserNestedInput
   projectDemandAttachments?: Prisma.ProjectDemandAttachmentUncheckedUpdateManyWithoutUserNestedInput
   loggedModules?: Prisma.ModuleUncheckedUpdateManyWithoutLoggedByNestedInput
+  createdModules?: Prisma.ModuleUncheckedUpdateManyWithoutCreatedByNestedInput
   permissions?: Prisma.UserPermissionUncheckedUpdateManyWithoutUserNestedInput
   apiTokens?: Prisma.ApiTokenUncheckedUpdateManyWithoutUserNestedInput
 }
@@ -2074,6 +2279,7 @@ export type UserCreateWithoutAssignedTasksInput = {
   projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentCreateNestedManyWithoutUserInput
   projectDemandAttachments?: Prisma.ProjectDemandAttachmentCreateNestedManyWithoutUserInput
   loggedModules?: Prisma.ModuleCreateNestedManyWithoutLoggedByInput
+  createdModules?: Prisma.ModuleCreateNestedManyWithoutCreatedByInput
   permissions?: Prisma.UserPermissionCreateNestedManyWithoutUserInput
   apiTokens?: Prisma.ApiTokenCreateNestedManyWithoutUserInput
 }
@@ -2109,6 +2315,7 @@ export type UserUncheckedCreateWithoutAssignedTasksInput = {
   projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentUncheckedCreateNestedManyWithoutUserInput
   projectDemandAttachments?: Prisma.ProjectDemandAttachmentUncheckedCreateNestedManyWithoutUserInput
   loggedModules?: Prisma.ModuleUncheckedCreateNestedManyWithoutLoggedByInput
+  createdModules?: Prisma.ModuleUncheckedCreateNestedManyWithoutCreatedByInput
   permissions?: Prisma.UserPermissionUncheckedCreateNestedManyWithoutUserInput
   apiTokens?: Prisma.ApiTokenUncheckedCreateNestedManyWithoutUserInput
 }
@@ -2149,6 +2356,7 @@ export type UserCreateWithoutReportedTasksInput = {
   projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentCreateNestedManyWithoutUserInput
   projectDemandAttachments?: Prisma.ProjectDemandAttachmentCreateNestedManyWithoutUserInput
   loggedModules?: Prisma.ModuleCreateNestedManyWithoutLoggedByInput
+  createdModules?: Prisma.ModuleCreateNestedManyWithoutCreatedByInput
   permissions?: Prisma.UserPermissionCreateNestedManyWithoutUserInput
   apiTokens?: Prisma.ApiTokenCreateNestedManyWithoutUserInput
 }
@@ -2184,6 +2392,7 @@ export type UserUncheckedCreateWithoutReportedTasksInput = {
   projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentUncheckedCreateNestedManyWithoutUserInput
   projectDemandAttachments?: Prisma.ProjectDemandAttachmentUncheckedCreateNestedManyWithoutUserInput
   loggedModules?: Prisma.ModuleUncheckedCreateNestedManyWithoutLoggedByInput
+  createdModules?: Prisma.ModuleUncheckedCreateNestedManyWithoutCreatedByInput
   permissions?: Prisma.UserPermissionUncheckedCreateNestedManyWithoutUserInput
   apiTokens?: Prisma.ApiTokenUncheckedCreateNestedManyWithoutUserInput
 }
@@ -2235,6 +2444,7 @@ export type UserUpdateWithoutAssignedTasksInput = {
   projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentUpdateManyWithoutUserNestedInput
   projectDemandAttachments?: Prisma.ProjectDemandAttachmentUpdateManyWithoutUserNestedInput
   loggedModules?: Prisma.ModuleUpdateManyWithoutLoggedByNestedInput
+  createdModules?: Prisma.ModuleUpdateManyWithoutCreatedByNestedInput
   permissions?: Prisma.UserPermissionUpdateManyWithoutUserNestedInput
   apiTokens?: Prisma.ApiTokenUpdateManyWithoutUserNestedInput
 }
@@ -2270,6 +2480,7 @@ export type UserUncheckedUpdateWithoutAssignedTasksInput = {
   projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentUncheckedUpdateManyWithoutUserNestedInput
   projectDemandAttachments?: Prisma.ProjectDemandAttachmentUncheckedUpdateManyWithoutUserNestedInput
   loggedModules?: Prisma.ModuleUncheckedUpdateManyWithoutLoggedByNestedInput
+  createdModules?: Prisma.ModuleUncheckedUpdateManyWithoutCreatedByNestedInput
   permissions?: Prisma.UserPermissionUncheckedUpdateManyWithoutUserNestedInput
   apiTokens?: Prisma.ApiTokenUncheckedUpdateManyWithoutUserNestedInput
 }
@@ -2316,6 +2527,7 @@ export type UserUpdateWithoutReportedTasksInput = {
   projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentUpdateManyWithoutUserNestedInput
   projectDemandAttachments?: Prisma.ProjectDemandAttachmentUpdateManyWithoutUserNestedInput
   loggedModules?: Prisma.ModuleUpdateManyWithoutLoggedByNestedInput
+  createdModules?: Prisma.ModuleUpdateManyWithoutCreatedByNestedInput
   permissions?: Prisma.UserPermissionUpdateManyWithoutUserNestedInput
   apiTokens?: Prisma.ApiTokenUpdateManyWithoutUserNestedInput
 }
@@ -2351,6 +2563,7 @@ export type UserUncheckedUpdateWithoutReportedTasksInput = {
   projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentUncheckedUpdateManyWithoutUserNestedInput
   projectDemandAttachments?: Prisma.ProjectDemandAttachmentUncheckedUpdateManyWithoutUserNestedInput
   loggedModules?: Prisma.ModuleUncheckedUpdateManyWithoutLoggedByNestedInput
+  createdModules?: Prisma.ModuleUncheckedUpdateManyWithoutCreatedByNestedInput
   permissions?: Prisma.UserPermissionUncheckedUpdateManyWithoutUserNestedInput
   apiTokens?: Prisma.ApiTokenUncheckedUpdateManyWithoutUserNestedInput
 }
@@ -2386,6 +2599,7 @@ export type UserCreateWithoutSubtasksInput = {
   projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentCreateNestedManyWithoutUserInput
   projectDemandAttachments?: Prisma.ProjectDemandAttachmentCreateNestedManyWithoutUserInput
   loggedModules?: Prisma.ModuleCreateNestedManyWithoutLoggedByInput
+  createdModules?: Prisma.ModuleCreateNestedManyWithoutCreatedByInput
   permissions?: Prisma.UserPermissionCreateNestedManyWithoutUserInput
   apiTokens?: Prisma.ApiTokenCreateNestedManyWithoutUserInput
 }
@@ -2421,6 +2635,7 @@ export type UserUncheckedCreateWithoutSubtasksInput = {
   projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentUncheckedCreateNestedManyWithoutUserInput
   projectDemandAttachments?: Prisma.ProjectDemandAttachmentUncheckedCreateNestedManyWithoutUserInput
   loggedModules?: Prisma.ModuleUncheckedCreateNestedManyWithoutLoggedByInput
+  createdModules?: Prisma.ModuleUncheckedCreateNestedManyWithoutCreatedByInput
   permissions?: Prisma.UserPermissionUncheckedCreateNestedManyWithoutUserInput
   apiTokens?: Prisma.ApiTokenUncheckedCreateNestedManyWithoutUserInput
 }
@@ -2472,6 +2687,7 @@ export type UserUpdateWithoutSubtasksInput = {
   projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentUpdateManyWithoutUserNestedInput
   projectDemandAttachments?: Prisma.ProjectDemandAttachmentUpdateManyWithoutUserNestedInput
   loggedModules?: Prisma.ModuleUpdateManyWithoutLoggedByNestedInput
+  createdModules?: Prisma.ModuleUpdateManyWithoutCreatedByNestedInput
   permissions?: Prisma.UserPermissionUpdateManyWithoutUserNestedInput
   apiTokens?: Prisma.ApiTokenUpdateManyWithoutUserNestedInput
 }
@@ -2507,6 +2723,7 @@ export type UserUncheckedUpdateWithoutSubtasksInput = {
   projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentUncheckedUpdateManyWithoutUserNestedInput
   projectDemandAttachments?: Prisma.ProjectDemandAttachmentUncheckedUpdateManyWithoutUserNestedInput
   loggedModules?: Prisma.ModuleUncheckedUpdateManyWithoutLoggedByNestedInput
+  createdModules?: Prisma.ModuleUncheckedUpdateManyWithoutCreatedByNestedInput
   permissions?: Prisma.UserPermissionUncheckedUpdateManyWithoutUserNestedInput
   apiTokens?: Prisma.ApiTokenUncheckedUpdateManyWithoutUserNestedInput
 }
@@ -2542,6 +2759,7 @@ export type UserCreateWithoutTimeLogsInput = {
   projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentCreateNestedManyWithoutUserInput
   projectDemandAttachments?: Prisma.ProjectDemandAttachmentCreateNestedManyWithoutUserInput
   loggedModules?: Prisma.ModuleCreateNestedManyWithoutLoggedByInput
+  createdModules?: Prisma.ModuleCreateNestedManyWithoutCreatedByInput
   permissions?: Prisma.UserPermissionCreateNestedManyWithoutUserInput
   apiTokens?: Prisma.ApiTokenCreateNestedManyWithoutUserInput
 }
@@ -2577,6 +2795,7 @@ export type UserUncheckedCreateWithoutTimeLogsInput = {
   projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentUncheckedCreateNestedManyWithoutUserInput
   projectDemandAttachments?: Prisma.ProjectDemandAttachmentUncheckedCreateNestedManyWithoutUserInput
   loggedModules?: Prisma.ModuleUncheckedCreateNestedManyWithoutLoggedByInput
+  createdModules?: Prisma.ModuleUncheckedCreateNestedManyWithoutCreatedByInput
   permissions?: Prisma.UserPermissionUncheckedCreateNestedManyWithoutUserInput
   apiTokens?: Prisma.ApiTokenUncheckedCreateNestedManyWithoutUserInput
 }
@@ -2628,6 +2847,7 @@ export type UserUpdateWithoutTimeLogsInput = {
   projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentUpdateManyWithoutUserNestedInput
   projectDemandAttachments?: Prisma.ProjectDemandAttachmentUpdateManyWithoutUserNestedInput
   loggedModules?: Prisma.ModuleUpdateManyWithoutLoggedByNestedInput
+  createdModules?: Prisma.ModuleUpdateManyWithoutCreatedByNestedInput
   permissions?: Prisma.UserPermissionUpdateManyWithoutUserNestedInput
   apiTokens?: Prisma.ApiTokenUpdateManyWithoutUserNestedInput
 }
@@ -2663,6 +2883,7 @@ export type UserUncheckedUpdateWithoutTimeLogsInput = {
   projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentUncheckedUpdateManyWithoutUserNestedInput
   projectDemandAttachments?: Prisma.ProjectDemandAttachmentUncheckedUpdateManyWithoutUserNestedInput
   loggedModules?: Prisma.ModuleUncheckedUpdateManyWithoutLoggedByNestedInput
+  createdModules?: Prisma.ModuleUncheckedUpdateManyWithoutCreatedByNestedInput
   permissions?: Prisma.UserPermissionUncheckedUpdateManyWithoutUserNestedInput
   apiTokens?: Prisma.ApiTokenUncheckedUpdateManyWithoutUserNestedInput
 }
@@ -2698,6 +2919,7 @@ export type UserCreateWithoutCommentsInput = {
   projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentCreateNestedManyWithoutUserInput
   projectDemandAttachments?: Prisma.ProjectDemandAttachmentCreateNestedManyWithoutUserInput
   loggedModules?: Prisma.ModuleCreateNestedManyWithoutLoggedByInput
+  createdModules?: Prisma.ModuleCreateNestedManyWithoutCreatedByInput
   permissions?: Prisma.UserPermissionCreateNestedManyWithoutUserInput
   apiTokens?: Prisma.ApiTokenCreateNestedManyWithoutUserInput
 }
@@ -2733,6 +2955,7 @@ export type UserUncheckedCreateWithoutCommentsInput = {
   projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentUncheckedCreateNestedManyWithoutUserInput
   projectDemandAttachments?: Prisma.ProjectDemandAttachmentUncheckedCreateNestedManyWithoutUserInput
   loggedModules?: Prisma.ModuleUncheckedCreateNestedManyWithoutLoggedByInput
+  createdModules?: Prisma.ModuleUncheckedCreateNestedManyWithoutCreatedByInput
   permissions?: Prisma.UserPermissionUncheckedCreateNestedManyWithoutUserInput
   apiTokens?: Prisma.ApiTokenUncheckedCreateNestedManyWithoutUserInput
 }
@@ -2784,6 +3007,7 @@ export type UserUpdateWithoutCommentsInput = {
   projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentUpdateManyWithoutUserNestedInput
   projectDemandAttachments?: Prisma.ProjectDemandAttachmentUpdateManyWithoutUserNestedInput
   loggedModules?: Prisma.ModuleUpdateManyWithoutLoggedByNestedInput
+  createdModules?: Prisma.ModuleUpdateManyWithoutCreatedByNestedInput
   permissions?: Prisma.UserPermissionUpdateManyWithoutUserNestedInput
   apiTokens?: Prisma.ApiTokenUpdateManyWithoutUserNestedInput
 }
@@ -2819,6 +3043,7 @@ export type UserUncheckedUpdateWithoutCommentsInput = {
   projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentUncheckedUpdateManyWithoutUserNestedInput
   projectDemandAttachments?: Prisma.ProjectDemandAttachmentUncheckedUpdateManyWithoutUserNestedInput
   loggedModules?: Prisma.ModuleUncheckedUpdateManyWithoutLoggedByNestedInput
+  createdModules?: Prisma.ModuleUncheckedUpdateManyWithoutCreatedByNestedInput
   permissions?: Prisma.UserPermissionUncheckedUpdateManyWithoutUserNestedInput
   apiTokens?: Prisma.ApiTokenUncheckedUpdateManyWithoutUserNestedInput
 }
@@ -2854,6 +3079,7 @@ export type UserCreateWithoutNotificationsInput = {
   projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentCreateNestedManyWithoutUserInput
   projectDemandAttachments?: Prisma.ProjectDemandAttachmentCreateNestedManyWithoutUserInput
   loggedModules?: Prisma.ModuleCreateNestedManyWithoutLoggedByInput
+  createdModules?: Prisma.ModuleCreateNestedManyWithoutCreatedByInput
   permissions?: Prisma.UserPermissionCreateNestedManyWithoutUserInput
   apiTokens?: Prisma.ApiTokenCreateNestedManyWithoutUserInput
 }
@@ -2889,6 +3115,7 @@ export type UserUncheckedCreateWithoutNotificationsInput = {
   projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentUncheckedCreateNestedManyWithoutUserInput
   projectDemandAttachments?: Prisma.ProjectDemandAttachmentUncheckedCreateNestedManyWithoutUserInput
   loggedModules?: Prisma.ModuleUncheckedCreateNestedManyWithoutLoggedByInput
+  createdModules?: Prisma.ModuleUncheckedCreateNestedManyWithoutCreatedByInput
   permissions?: Prisma.UserPermissionUncheckedCreateNestedManyWithoutUserInput
   apiTokens?: Prisma.ApiTokenUncheckedCreateNestedManyWithoutUserInput
 }
@@ -2940,6 +3167,7 @@ export type UserUpdateWithoutNotificationsInput = {
   projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentUpdateManyWithoutUserNestedInput
   projectDemandAttachments?: Prisma.ProjectDemandAttachmentUpdateManyWithoutUserNestedInput
   loggedModules?: Prisma.ModuleUpdateManyWithoutLoggedByNestedInput
+  createdModules?: Prisma.ModuleUpdateManyWithoutCreatedByNestedInput
   permissions?: Prisma.UserPermissionUpdateManyWithoutUserNestedInput
   apiTokens?: Prisma.ApiTokenUpdateManyWithoutUserNestedInput
 }
@@ -2975,6 +3203,7 @@ export type UserUncheckedUpdateWithoutNotificationsInput = {
   projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentUncheckedUpdateManyWithoutUserNestedInput
   projectDemandAttachments?: Prisma.ProjectDemandAttachmentUncheckedUpdateManyWithoutUserNestedInput
   loggedModules?: Prisma.ModuleUncheckedUpdateManyWithoutLoggedByNestedInput
+  createdModules?: Prisma.ModuleUncheckedUpdateManyWithoutCreatedByNestedInput
   permissions?: Prisma.UserPermissionUncheckedUpdateManyWithoutUserNestedInput
   apiTokens?: Prisma.ApiTokenUncheckedUpdateManyWithoutUserNestedInput
 }
@@ -3010,6 +3239,7 @@ export type UserCreateWithoutAuditLogsInput = {
   projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentCreateNestedManyWithoutUserInput
   projectDemandAttachments?: Prisma.ProjectDemandAttachmentCreateNestedManyWithoutUserInput
   loggedModules?: Prisma.ModuleCreateNestedManyWithoutLoggedByInput
+  createdModules?: Prisma.ModuleCreateNestedManyWithoutCreatedByInput
   permissions?: Prisma.UserPermissionCreateNestedManyWithoutUserInput
   apiTokens?: Prisma.ApiTokenCreateNestedManyWithoutUserInput
 }
@@ -3045,6 +3275,7 @@ export type UserUncheckedCreateWithoutAuditLogsInput = {
   projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentUncheckedCreateNestedManyWithoutUserInput
   projectDemandAttachments?: Prisma.ProjectDemandAttachmentUncheckedCreateNestedManyWithoutUserInput
   loggedModules?: Prisma.ModuleUncheckedCreateNestedManyWithoutLoggedByInput
+  createdModules?: Prisma.ModuleUncheckedCreateNestedManyWithoutCreatedByInput
   permissions?: Prisma.UserPermissionUncheckedCreateNestedManyWithoutUserInput
   apiTokens?: Prisma.ApiTokenUncheckedCreateNestedManyWithoutUserInput
 }
@@ -3096,6 +3327,7 @@ export type UserUpdateWithoutAuditLogsInput = {
   projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentUpdateManyWithoutUserNestedInput
   projectDemandAttachments?: Prisma.ProjectDemandAttachmentUpdateManyWithoutUserNestedInput
   loggedModules?: Prisma.ModuleUpdateManyWithoutLoggedByNestedInput
+  createdModules?: Prisma.ModuleUpdateManyWithoutCreatedByNestedInput
   permissions?: Prisma.UserPermissionUpdateManyWithoutUserNestedInput
   apiTokens?: Prisma.ApiTokenUpdateManyWithoutUserNestedInput
 }
@@ -3131,6 +3363,7 @@ export type UserUncheckedUpdateWithoutAuditLogsInput = {
   projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentUncheckedUpdateManyWithoutUserNestedInput
   projectDemandAttachments?: Prisma.ProjectDemandAttachmentUncheckedUpdateManyWithoutUserNestedInput
   loggedModules?: Prisma.ModuleUncheckedUpdateManyWithoutLoggedByNestedInput
+  createdModules?: Prisma.ModuleUncheckedUpdateManyWithoutCreatedByNestedInput
   permissions?: Prisma.UserPermissionUncheckedUpdateManyWithoutUserNestedInput
   apiTokens?: Prisma.ApiTokenUncheckedUpdateManyWithoutUserNestedInput
 }
@@ -3166,6 +3399,7 @@ export type UserCreateWithoutStatusHistoriesInput = {
   projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentCreateNestedManyWithoutUserInput
   projectDemandAttachments?: Prisma.ProjectDemandAttachmentCreateNestedManyWithoutUserInput
   loggedModules?: Prisma.ModuleCreateNestedManyWithoutLoggedByInput
+  createdModules?: Prisma.ModuleCreateNestedManyWithoutCreatedByInput
   permissions?: Prisma.UserPermissionCreateNestedManyWithoutUserInput
   apiTokens?: Prisma.ApiTokenCreateNestedManyWithoutUserInput
 }
@@ -3201,6 +3435,7 @@ export type UserUncheckedCreateWithoutStatusHistoriesInput = {
   projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentUncheckedCreateNestedManyWithoutUserInput
   projectDemandAttachments?: Prisma.ProjectDemandAttachmentUncheckedCreateNestedManyWithoutUserInput
   loggedModules?: Prisma.ModuleUncheckedCreateNestedManyWithoutLoggedByInput
+  createdModules?: Prisma.ModuleUncheckedCreateNestedManyWithoutCreatedByInput
   permissions?: Prisma.UserPermissionUncheckedCreateNestedManyWithoutUserInput
   apiTokens?: Prisma.ApiTokenUncheckedCreateNestedManyWithoutUserInput
 }
@@ -3252,6 +3487,7 @@ export type UserUpdateWithoutStatusHistoriesInput = {
   projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentUpdateManyWithoutUserNestedInput
   projectDemandAttachments?: Prisma.ProjectDemandAttachmentUpdateManyWithoutUserNestedInput
   loggedModules?: Prisma.ModuleUpdateManyWithoutLoggedByNestedInput
+  createdModules?: Prisma.ModuleUpdateManyWithoutCreatedByNestedInput
   permissions?: Prisma.UserPermissionUpdateManyWithoutUserNestedInput
   apiTokens?: Prisma.ApiTokenUpdateManyWithoutUserNestedInput
 }
@@ -3287,6 +3523,7 @@ export type UserUncheckedUpdateWithoutStatusHistoriesInput = {
   projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentUncheckedUpdateManyWithoutUserNestedInput
   projectDemandAttachments?: Prisma.ProjectDemandAttachmentUncheckedUpdateManyWithoutUserNestedInput
   loggedModules?: Prisma.ModuleUncheckedUpdateManyWithoutLoggedByNestedInput
+  createdModules?: Prisma.ModuleUncheckedUpdateManyWithoutCreatedByNestedInput
   permissions?: Prisma.UserPermissionUncheckedUpdateManyWithoutUserNestedInput
   apiTokens?: Prisma.ApiTokenUncheckedUpdateManyWithoutUserNestedInput
 }
@@ -3322,6 +3559,7 @@ export type UserCreateWithoutTaskNotesInput = {
   projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentCreateNestedManyWithoutUserInput
   projectDemandAttachments?: Prisma.ProjectDemandAttachmentCreateNestedManyWithoutUserInput
   loggedModules?: Prisma.ModuleCreateNestedManyWithoutLoggedByInput
+  createdModules?: Prisma.ModuleCreateNestedManyWithoutCreatedByInput
   permissions?: Prisma.UserPermissionCreateNestedManyWithoutUserInput
   apiTokens?: Prisma.ApiTokenCreateNestedManyWithoutUserInput
 }
@@ -3357,6 +3595,7 @@ export type UserUncheckedCreateWithoutTaskNotesInput = {
   projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentUncheckedCreateNestedManyWithoutUserInput
   projectDemandAttachments?: Prisma.ProjectDemandAttachmentUncheckedCreateNestedManyWithoutUserInput
   loggedModules?: Prisma.ModuleUncheckedCreateNestedManyWithoutLoggedByInput
+  createdModules?: Prisma.ModuleUncheckedCreateNestedManyWithoutCreatedByInput
   permissions?: Prisma.UserPermissionUncheckedCreateNestedManyWithoutUserInput
   apiTokens?: Prisma.ApiTokenUncheckedCreateNestedManyWithoutUserInput
 }
@@ -3408,6 +3647,7 @@ export type UserUpdateWithoutTaskNotesInput = {
   projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentUpdateManyWithoutUserNestedInput
   projectDemandAttachments?: Prisma.ProjectDemandAttachmentUpdateManyWithoutUserNestedInput
   loggedModules?: Prisma.ModuleUpdateManyWithoutLoggedByNestedInput
+  createdModules?: Prisma.ModuleUpdateManyWithoutCreatedByNestedInput
   permissions?: Prisma.UserPermissionUpdateManyWithoutUserNestedInput
   apiTokens?: Prisma.ApiTokenUpdateManyWithoutUserNestedInput
 }
@@ -3443,6 +3683,7 @@ export type UserUncheckedUpdateWithoutTaskNotesInput = {
   projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentUncheckedUpdateManyWithoutUserNestedInput
   projectDemandAttachments?: Prisma.ProjectDemandAttachmentUncheckedUpdateManyWithoutUserNestedInput
   loggedModules?: Prisma.ModuleUncheckedUpdateManyWithoutLoggedByNestedInput
+  createdModules?: Prisma.ModuleUncheckedUpdateManyWithoutCreatedByNestedInput
   permissions?: Prisma.UserPermissionUncheckedUpdateManyWithoutUserNestedInput
   apiTokens?: Prisma.ApiTokenUncheckedUpdateManyWithoutUserNestedInput
 }
@@ -3478,6 +3719,7 @@ export type UserCreateWithoutAttachmentsInput = {
   projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentCreateNestedManyWithoutUserInput
   projectDemandAttachments?: Prisma.ProjectDemandAttachmentCreateNestedManyWithoutUserInput
   loggedModules?: Prisma.ModuleCreateNestedManyWithoutLoggedByInput
+  createdModules?: Prisma.ModuleCreateNestedManyWithoutCreatedByInput
   permissions?: Prisma.UserPermissionCreateNestedManyWithoutUserInput
   apiTokens?: Prisma.ApiTokenCreateNestedManyWithoutUserInput
 }
@@ -3513,6 +3755,7 @@ export type UserUncheckedCreateWithoutAttachmentsInput = {
   projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentUncheckedCreateNestedManyWithoutUserInput
   projectDemandAttachments?: Prisma.ProjectDemandAttachmentUncheckedCreateNestedManyWithoutUserInput
   loggedModules?: Prisma.ModuleUncheckedCreateNestedManyWithoutLoggedByInput
+  createdModules?: Prisma.ModuleUncheckedCreateNestedManyWithoutCreatedByInput
   permissions?: Prisma.UserPermissionUncheckedCreateNestedManyWithoutUserInput
   apiTokens?: Prisma.ApiTokenUncheckedCreateNestedManyWithoutUserInput
 }
@@ -3564,6 +3807,7 @@ export type UserUpdateWithoutAttachmentsInput = {
   projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentUpdateManyWithoutUserNestedInput
   projectDemandAttachments?: Prisma.ProjectDemandAttachmentUpdateManyWithoutUserNestedInput
   loggedModules?: Prisma.ModuleUpdateManyWithoutLoggedByNestedInput
+  createdModules?: Prisma.ModuleUpdateManyWithoutCreatedByNestedInput
   permissions?: Prisma.UserPermissionUpdateManyWithoutUserNestedInput
   apiTokens?: Prisma.ApiTokenUpdateManyWithoutUserNestedInput
 }
@@ -3599,6 +3843,7 @@ export type UserUncheckedUpdateWithoutAttachmentsInput = {
   projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentUncheckedUpdateManyWithoutUserNestedInput
   projectDemandAttachments?: Prisma.ProjectDemandAttachmentUncheckedUpdateManyWithoutUserNestedInput
   loggedModules?: Prisma.ModuleUncheckedUpdateManyWithoutLoggedByNestedInput
+  createdModules?: Prisma.ModuleUncheckedUpdateManyWithoutCreatedByNestedInput
   permissions?: Prisma.UserPermissionUncheckedUpdateManyWithoutUserNestedInput
   apiTokens?: Prisma.ApiTokenUncheckedUpdateManyWithoutUserNestedInput
 }
@@ -3634,6 +3879,7 @@ export type UserCreateWithoutModuleAttachmentsInput = {
   projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentCreateNestedManyWithoutUserInput
   projectDemandAttachments?: Prisma.ProjectDemandAttachmentCreateNestedManyWithoutUserInput
   loggedModules?: Prisma.ModuleCreateNestedManyWithoutLoggedByInput
+  createdModules?: Prisma.ModuleCreateNestedManyWithoutCreatedByInput
   permissions?: Prisma.UserPermissionCreateNestedManyWithoutUserInput
   apiTokens?: Prisma.ApiTokenCreateNestedManyWithoutUserInput
 }
@@ -3669,6 +3915,7 @@ export type UserUncheckedCreateWithoutModuleAttachmentsInput = {
   projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentUncheckedCreateNestedManyWithoutUserInput
   projectDemandAttachments?: Prisma.ProjectDemandAttachmentUncheckedCreateNestedManyWithoutUserInput
   loggedModules?: Prisma.ModuleUncheckedCreateNestedManyWithoutLoggedByInput
+  createdModules?: Prisma.ModuleUncheckedCreateNestedManyWithoutCreatedByInput
   permissions?: Prisma.UserPermissionUncheckedCreateNestedManyWithoutUserInput
   apiTokens?: Prisma.ApiTokenUncheckedCreateNestedManyWithoutUserInput
 }
@@ -3720,6 +3967,7 @@ export type UserUpdateWithoutModuleAttachmentsInput = {
   projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentUpdateManyWithoutUserNestedInput
   projectDemandAttachments?: Prisma.ProjectDemandAttachmentUpdateManyWithoutUserNestedInput
   loggedModules?: Prisma.ModuleUpdateManyWithoutLoggedByNestedInput
+  createdModules?: Prisma.ModuleUpdateManyWithoutCreatedByNestedInput
   permissions?: Prisma.UserPermissionUpdateManyWithoutUserNestedInput
   apiTokens?: Prisma.ApiTokenUpdateManyWithoutUserNestedInput
 }
@@ -3755,6 +4003,7 @@ export type UserUncheckedUpdateWithoutModuleAttachmentsInput = {
   projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentUncheckedUpdateManyWithoutUserNestedInput
   projectDemandAttachments?: Prisma.ProjectDemandAttachmentUncheckedUpdateManyWithoutUserNestedInput
   loggedModules?: Prisma.ModuleUncheckedUpdateManyWithoutLoggedByNestedInput
+  createdModules?: Prisma.ModuleUncheckedUpdateManyWithoutCreatedByNestedInput
   permissions?: Prisma.UserPermissionUncheckedUpdateManyWithoutUserNestedInput
   apiTokens?: Prisma.ApiTokenUncheckedUpdateManyWithoutUserNestedInput
 }
@@ -3790,6 +4039,7 @@ export type UserCreateWithoutProjectShowcaseAttachmentsInput = {
   moduleAttachments?: Prisma.ModuleAttachmentCreateNestedManyWithoutUserInput
   projectDemandAttachments?: Prisma.ProjectDemandAttachmentCreateNestedManyWithoutUserInput
   loggedModules?: Prisma.ModuleCreateNestedManyWithoutLoggedByInput
+  createdModules?: Prisma.ModuleCreateNestedManyWithoutCreatedByInput
   permissions?: Prisma.UserPermissionCreateNestedManyWithoutUserInput
   apiTokens?: Prisma.ApiTokenCreateNestedManyWithoutUserInput
 }
@@ -3825,6 +4075,7 @@ export type UserUncheckedCreateWithoutProjectShowcaseAttachmentsInput = {
   moduleAttachments?: Prisma.ModuleAttachmentUncheckedCreateNestedManyWithoutUserInput
   projectDemandAttachments?: Prisma.ProjectDemandAttachmentUncheckedCreateNestedManyWithoutUserInput
   loggedModules?: Prisma.ModuleUncheckedCreateNestedManyWithoutLoggedByInput
+  createdModules?: Prisma.ModuleUncheckedCreateNestedManyWithoutCreatedByInput
   permissions?: Prisma.UserPermissionUncheckedCreateNestedManyWithoutUserInput
   apiTokens?: Prisma.ApiTokenUncheckedCreateNestedManyWithoutUserInput
 }
@@ -3876,6 +4127,7 @@ export type UserUpdateWithoutProjectShowcaseAttachmentsInput = {
   moduleAttachments?: Prisma.ModuleAttachmentUpdateManyWithoutUserNestedInput
   projectDemandAttachments?: Prisma.ProjectDemandAttachmentUpdateManyWithoutUserNestedInput
   loggedModules?: Prisma.ModuleUpdateManyWithoutLoggedByNestedInput
+  createdModules?: Prisma.ModuleUpdateManyWithoutCreatedByNestedInput
   permissions?: Prisma.UserPermissionUpdateManyWithoutUserNestedInput
   apiTokens?: Prisma.ApiTokenUpdateManyWithoutUserNestedInput
 }
@@ -3911,6 +4163,7 @@ export type UserUncheckedUpdateWithoutProjectShowcaseAttachmentsInput = {
   moduleAttachments?: Prisma.ModuleAttachmentUncheckedUpdateManyWithoutUserNestedInput
   projectDemandAttachments?: Prisma.ProjectDemandAttachmentUncheckedUpdateManyWithoutUserNestedInput
   loggedModules?: Prisma.ModuleUncheckedUpdateManyWithoutLoggedByNestedInput
+  createdModules?: Prisma.ModuleUncheckedUpdateManyWithoutCreatedByNestedInput
   permissions?: Prisma.UserPermissionUncheckedUpdateManyWithoutUserNestedInput
   apiTokens?: Prisma.ApiTokenUncheckedUpdateManyWithoutUserNestedInput
 }
@@ -3946,6 +4199,7 @@ export type UserCreateWithoutProjectDemandAttachmentsInput = {
   moduleAttachments?: Prisma.ModuleAttachmentCreateNestedManyWithoutUserInput
   projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentCreateNestedManyWithoutUserInput
   loggedModules?: Prisma.ModuleCreateNestedManyWithoutLoggedByInput
+  createdModules?: Prisma.ModuleCreateNestedManyWithoutCreatedByInput
   permissions?: Prisma.UserPermissionCreateNestedManyWithoutUserInput
   apiTokens?: Prisma.ApiTokenCreateNestedManyWithoutUserInput
 }
@@ -3981,6 +4235,7 @@ export type UserUncheckedCreateWithoutProjectDemandAttachmentsInput = {
   moduleAttachments?: Prisma.ModuleAttachmentUncheckedCreateNestedManyWithoutUserInput
   projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentUncheckedCreateNestedManyWithoutUserInput
   loggedModules?: Prisma.ModuleUncheckedCreateNestedManyWithoutLoggedByInput
+  createdModules?: Prisma.ModuleUncheckedCreateNestedManyWithoutCreatedByInput
   permissions?: Prisma.UserPermissionUncheckedCreateNestedManyWithoutUserInput
   apiTokens?: Prisma.ApiTokenUncheckedCreateNestedManyWithoutUserInput
 }
@@ -4032,6 +4287,7 @@ export type UserUpdateWithoutProjectDemandAttachmentsInput = {
   moduleAttachments?: Prisma.ModuleAttachmentUpdateManyWithoutUserNestedInput
   projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentUpdateManyWithoutUserNestedInput
   loggedModules?: Prisma.ModuleUpdateManyWithoutLoggedByNestedInput
+  createdModules?: Prisma.ModuleUpdateManyWithoutCreatedByNestedInput
   permissions?: Prisma.UserPermissionUpdateManyWithoutUserNestedInput
   apiTokens?: Prisma.ApiTokenUpdateManyWithoutUserNestedInput
 }
@@ -4067,6 +4323,7 @@ export type UserUncheckedUpdateWithoutProjectDemandAttachmentsInput = {
   moduleAttachments?: Prisma.ModuleAttachmentUncheckedUpdateManyWithoutUserNestedInput
   projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentUncheckedUpdateManyWithoutUserNestedInput
   loggedModules?: Prisma.ModuleUncheckedUpdateManyWithoutLoggedByNestedInput
+  createdModules?: Prisma.ModuleUncheckedUpdateManyWithoutCreatedByNestedInput
   permissions?: Prisma.UserPermissionUncheckedUpdateManyWithoutUserNestedInput
   apiTokens?: Prisma.ApiTokenUncheckedUpdateManyWithoutUserNestedInput
 }
@@ -4118,6 +4375,7 @@ export type UserUpdateWithoutTenantInput = {
   projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentUpdateManyWithoutUserNestedInput
   projectDemandAttachments?: Prisma.ProjectDemandAttachmentUpdateManyWithoutUserNestedInput
   loggedModules?: Prisma.ModuleUpdateManyWithoutLoggedByNestedInput
+  createdModules?: Prisma.ModuleUpdateManyWithoutCreatedByNestedInput
   permissions?: Prisma.UserPermissionUpdateManyWithoutUserNestedInput
   apiTokens?: Prisma.ApiTokenUpdateManyWithoutUserNestedInput
 }
@@ -4153,6 +4411,7 @@ export type UserUncheckedUpdateWithoutTenantInput = {
   projectShowcaseAttachments?: Prisma.ProjectShowcaseAttachmentUncheckedUpdateManyWithoutUserNestedInput
   projectDemandAttachments?: Prisma.ProjectDemandAttachmentUncheckedUpdateManyWithoutUserNestedInput
   loggedModules?: Prisma.ModuleUncheckedUpdateManyWithoutLoggedByNestedInput
+  createdModules?: Prisma.ModuleUncheckedUpdateManyWithoutCreatedByNestedInput
   permissions?: Prisma.UserPermissionUncheckedUpdateManyWithoutUserNestedInput
   apiTokens?: Prisma.ApiTokenUncheckedUpdateManyWithoutUserNestedInput
 }
@@ -4196,6 +4455,7 @@ export type UserCountOutputType = {
   projectShowcaseAttachments: number
   projectDemandAttachments: number
   loggedModules: number
+  createdModules: number
   permissions: number
   apiTokens: number
 }
@@ -4218,6 +4478,7 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   projectShowcaseAttachments?: boolean | UserCountOutputTypeCountProjectShowcaseAttachmentsArgs
   projectDemandAttachments?: boolean | UserCountOutputTypeCountProjectDemandAttachmentsArgs
   loggedModules?: boolean | UserCountOutputTypeCountLoggedModulesArgs
+  createdModules?: boolean | UserCountOutputTypeCountCreatedModulesArgs
   permissions?: boolean | UserCountOutputTypeCountPermissionsArgs
   apiTokens?: boolean | UserCountOutputTypeCountApiTokensArgs
 }
@@ -4354,6 +4615,13 @@ export type UserCountOutputTypeCountLoggedModulesArgs<ExtArgs extends runtime.Ty
 /**
  * UserCountOutputType without action
  */
+export type UserCountOutputTypeCountCreatedModulesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ModuleWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
 export type UserCountOutputTypeCountPermissionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.UserPermissionWhereInput
 }
@@ -4399,6 +4667,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   projectShowcaseAttachments?: boolean | Prisma.User$projectShowcaseAttachmentsArgs<ExtArgs>
   projectDemandAttachments?: boolean | Prisma.User$projectDemandAttachmentsArgs<ExtArgs>
   loggedModules?: boolean | Prisma.User$loggedModulesArgs<ExtArgs>
+  createdModules?: boolean | Prisma.User$createdModulesArgs<ExtArgs>
   permissions?: boolean | Prisma.User$permissionsArgs<ExtArgs>
   apiTokens?: boolean | Prisma.User$apiTokensArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
@@ -4443,6 +4712,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   projectShowcaseAttachments?: boolean | Prisma.User$projectShowcaseAttachmentsArgs<ExtArgs>
   projectDemandAttachments?: boolean | Prisma.User$projectDemandAttachmentsArgs<ExtArgs>
   loggedModules?: boolean | Prisma.User$loggedModulesArgs<ExtArgs>
+  createdModules?: boolean | Prisma.User$createdModulesArgs<ExtArgs>
   permissions?: boolean | Prisma.User$permissionsArgs<ExtArgs>
   apiTokens?: boolean | Prisma.User$apiTokensArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
@@ -4469,6 +4739,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     projectShowcaseAttachments: Prisma.$ProjectShowcaseAttachmentPayload<ExtArgs>[]
     projectDemandAttachments: Prisma.$ProjectDemandAttachmentPayload<ExtArgs>[]
     loggedModules: Prisma.$ModulePayload<ExtArgs>[]
+    createdModules: Prisma.$ModulePayload<ExtArgs>[]
     permissions: Prisma.$UserPermissionPayload<ExtArgs>[]
     apiTokens: Prisma.$ApiTokenPayload<ExtArgs>[]
   }
@@ -4845,6 +5116,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   projectShowcaseAttachments<T extends Prisma.User$projectShowcaseAttachmentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$projectShowcaseAttachmentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProjectShowcaseAttachmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   projectDemandAttachments<T extends Prisma.User$projectDemandAttachmentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$projectDemandAttachmentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProjectDemandAttachmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   loggedModules<T extends Prisma.User$loggedModulesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$loggedModulesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ModulePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  createdModules<T extends Prisma.User$createdModulesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$createdModulesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ModulePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   permissions<T extends Prisma.User$permissionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$permissionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserPermissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   apiTokens<T extends Prisma.User$apiTokensArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$apiTokensArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ApiTokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
@@ -5625,6 +5897,30 @@ export type User$projectDemandAttachmentsArgs<ExtArgs extends runtime.Types.Exte
  * User.loggedModules
  */
 export type User$loggedModulesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Module
+   */
+  select?: Prisma.ModuleSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Module
+   */
+  omit?: Prisma.ModuleOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ModuleInclude<ExtArgs> | null
+  where?: Prisma.ModuleWhereInput
+  orderBy?: Prisma.ModuleOrderByWithRelationInput | Prisma.ModuleOrderByWithRelationInput[]
+  cursor?: Prisma.ModuleWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ModuleScalarFieldEnum | Prisma.ModuleScalarFieldEnum[]
+}
+
+/**
+ * User.createdModules
+ */
+export type User$createdModulesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
    * Select specific fields to fetch from the Module
    */

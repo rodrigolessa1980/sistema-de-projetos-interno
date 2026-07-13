@@ -10,6 +10,8 @@ export interface CreateModuleInput {
   description: string;
   status?: ModuleStatus;
   order?: number;
+  /** Quem está criando o módulo — vira o dono (createdById). */
+  userId?: string;
 }
 
 function progressForStatus(status: ModuleStatus): number {
@@ -38,6 +40,7 @@ export class CreateModuleUseCase {
       status,
       progress: progressForStatus(status),
       order: input.order ?? existing.length,
+      createdById: input.userId ?? null,
     });
     return this.moduleRepository.create(module);
   }

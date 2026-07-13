@@ -9,7 +9,7 @@ import { motion, AnimatePresence } from "@/lib/motion";
 import {
   ChevronLeft, Clock, AlertTriangle, MessageSquare, CheckSquare,
   Square, Plus, Send, Calendar, User2, Layers, Timer, Activity,
-  Link2, Lock, CheckCircle2, ArrowRight, X, Flame, ShieldAlert, Trash2,
+  Link2, Lock, CheckCircle2, ArrowRight, X, Flame, ShieldAlert, Trash2, Pencil,
 } from "lucide-react";
 import { ReassignPopover } from "@/components/shared/reassign-popover";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -30,6 +30,7 @@ import { WorkTimer } from "@/components/shared/work-timer";
 import { ExpandableText } from "@/components/shared/expandable-text";
 import { NotesPanel } from "@/features/tasks/notes-panel";
 import { AttachmentsPanel } from "@/features/tasks/attachments-panel";
+import { TaskEditDialog } from "@/features/tasks/task-edit-dialog";
 
 export default function TaskDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -49,6 +50,7 @@ export default function TaskDetailPage() {
 
   const [depSearch, setDepSearch] = useState("");
   const [justDeleted, setJustDeleted] = useState(false);
+  const [editingTask, setEditingTask] = useState(false);
 
   const task = getTaskById(id);
   if (!task) {
@@ -213,17 +215,30 @@ export default function TaskDetailPage() {
           <span className="text-zinc-700">/</span>
           <span className="text-sm text-zinc-400 truncate">{task.title}</span>
           {canDelete && (
-            <Button
-              type="button"
-              size="sm"
-              variant="ghost"
-              onClick={handleDeleteTask}
-              className="ml-auto h-7 px-2 text-xs text-red-400 hover:text-red-300 hover:bg-red-500/10 gap-1 shrink-0"
-            >
-              <Trash2 className="w-3.5 h-3.5" /> Excluir tarefa
-            </Button>
+            <div className="ml-auto flex items-center gap-1 shrink-0">
+              <Button
+                type="button"
+                size="sm"
+                variant="ghost"
+                onClick={() => setEditingTask(true)}
+                className="h-7 px-2 text-xs text-zinc-400 hover:text-violet-300 hover:bg-violet-500/10 gap-1"
+              >
+                <Pencil className="w-3.5 h-3.5" /> Editar
+              </Button>
+              <Button
+                type="button"
+                size="sm"
+                variant="ghost"
+                onClick={handleDeleteTask}
+                className="h-7 px-2 text-xs text-red-400 hover:text-red-300 hover:bg-red-500/10 gap-1"
+              >
+                <Trash2 className="w-3.5 h-3.5" /> Excluir tarefa
+              </Button>
+            </div>
           )}
         </div>
+
+        {editingTask && <TaskEditDialog task={task} open={editingTask} onOpenChange={setEditingTask} />}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-5">

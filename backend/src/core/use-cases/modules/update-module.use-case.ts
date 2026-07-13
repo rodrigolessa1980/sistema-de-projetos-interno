@@ -1,8 +1,9 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { Module } from '../../domain/entities/module.entity';
-import { ModuleStatus } from '../../domain/entities/enums';
+import { ModuleStatus, UserRole } from '../../domain/entities/enums';
 import type { IModuleRepository } from '../../domain/repositories/module-repository.interface';
 import { IModuleRepositoryToken } from '../../domain/repositories/module-repository.interface';
+import { assertCanModifyModule } from './module-access';
 
 export interface UpdateModuleInput {
   name?: string;
@@ -20,9 +21,15 @@ export class UpdateModuleUseCase {
     private readonly moduleRepository: IModuleRepository,
   ) {}
 
-  async execute(id: string, input: UpdateModuleInput): Promise<Module> {
+  async execute(
+    id: string,
+    input: UpdateModuleInput,
+    requesterId: string,
+    requesterRole: UserRole,
+  ): Promise<Module> {
     const existing = await this.moduleRepository.findById(id);
     if (!existing) throw new NotFoundException('Módulo não encontrado');
+    assertCanModifyModule(existing, requesterId, requesterRole);
     return this.moduleRepository.update(id, input);
   }
 }

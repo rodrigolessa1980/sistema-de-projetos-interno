@@ -36,6 +36,7 @@ const TasksPage = lazyPage(pageLoaders.tasks);
 const TaskDetailPage = lazyPage(pageLoaders.taskDetail);
 const TimeLogsPage = lazyPage(pageLoaders.timeLogs);
 const UsersPage = lazyPage(pageLoaders.users);
+const TrashPage = lazyPage(pageLoaders.trash);
 
 const routes = [
   { pattern: /^\/$/, component: RootPage },
@@ -65,6 +66,7 @@ const routes = [
   { pattern: /^\/tasks\/([^/]+)\/?$/, component: TaskDetailPage },
   { pattern: /^\/time-logs\/?$/, component: TimeLogsPage },
   { pattern: /^\/users\/?$/, component: UsersPage },
+  { pattern: /^\/trash\/?$/, component: TrashPage },
 ];
 
 const PUBLIC_ROUTE_PATTERN = /^\/(login|register)\/?$/;

@@ -43,6 +43,7 @@ export type TaskAttachmentMinAggregateOutputType = {
   type: string | null
   size: number | null
   dataUrl: string | null
+  deletedAt: Date | null
   createdAt: Date | null
 }
 
@@ -55,6 +56,7 @@ export type TaskAttachmentMaxAggregateOutputType = {
   type: string | null
   size: number | null
   dataUrl: string | null
+  deletedAt: Date | null
   createdAt: Date | null
 }
 
@@ -67,6 +69,7 @@ export type TaskAttachmentCountAggregateOutputType = {
   type: number
   size: number
   dataUrl: number
+  deletedAt: number
   createdAt: number
   _all: number
 }
@@ -89,6 +92,7 @@ export type TaskAttachmentMinAggregateInputType = {
   type?: true
   size?: true
   dataUrl?: true
+  deletedAt?: true
   createdAt?: true
 }
 
@@ -101,6 +105,7 @@ export type TaskAttachmentMaxAggregateInputType = {
   type?: true
   size?: true
   dataUrl?: true
+  deletedAt?: true
   createdAt?: true
 }
 
@@ -113,6 +118,7 @@ export type TaskAttachmentCountAggregateInputType = {
   type?: true
   size?: true
   dataUrl?: true
+  deletedAt?: true
   createdAt?: true
   _all?: true
 }
@@ -212,6 +218,7 @@ export type TaskAttachmentGroupByOutputType = {
   type: string
   size: number
   dataUrl: string
+  deletedAt: Date | null
   createdAt: Date
   _count: TaskAttachmentCountAggregateOutputType | null
   _avg: TaskAttachmentAvgAggregateOutputType | null
@@ -247,6 +254,7 @@ export type TaskAttachmentWhereInput = {
   type?: Prisma.StringFilter<"TaskAttachment"> | string
   size?: Prisma.IntFilter<"TaskAttachment"> | number
   dataUrl?: Prisma.StringFilter<"TaskAttachment"> | string
+  deletedAt?: Prisma.DateTimeNullableFilter<"TaskAttachment"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"TaskAttachment"> | Date | string
   tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
   task?: Prisma.XOR<Prisma.TaskScalarRelationFilter, Prisma.TaskWhereInput>
@@ -262,6 +270,7 @@ export type TaskAttachmentOrderByWithRelationInput = {
   type?: Prisma.SortOrder
   size?: Prisma.SortOrder
   dataUrl?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   tenant?: Prisma.TenantOrderByWithRelationInput
   task?: Prisma.TaskOrderByWithRelationInput
@@ -281,6 +290,7 @@ export type TaskAttachmentWhereUniqueInput = Prisma.AtLeast<{
   type?: Prisma.StringFilter<"TaskAttachment"> | string
   size?: Prisma.IntFilter<"TaskAttachment"> | number
   dataUrl?: Prisma.StringFilter<"TaskAttachment"> | string
+  deletedAt?: Prisma.DateTimeNullableFilter<"TaskAttachment"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"TaskAttachment"> | Date | string
   tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
   task?: Prisma.XOR<Prisma.TaskScalarRelationFilter, Prisma.TaskWhereInput>
@@ -296,6 +306,7 @@ export type TaskAttachmentOrderByWithAggregationInput = {
   type?: Prisma.SortOrder
   size?: Prisma.SortOrder
   dataUrl?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.TaskAttachmentCountOrderByAggregateInput
   _avg?: Prisma.TaskAttachmentAvgOrderByAggregateInput
@@ -316,6 +327,7 @@ export type TaskAttachmentScalarWhereWithAggregatesInput = {
   type?: Prisma.StringWithAggregatesFilter<"TaskAttachment"> | string
   size?: Prisma.IntWithAggregatesFilter<"TaskAttachment"> | number
   dataUrl?: Prisma.StringWithAggregatesFilter<"TaskAttachment"> | string
+  deletedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"TaskAttachment"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"TaskAttachment"> | Date | string
 }
 
@@ -325,6 +337,7 @@ export type TaskAttachmentCreateInput = {
   type: string
   size: number
   dataUrl: string
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   tenant?: Prisma.TenantCreateNestedOneWithoutTaskAttachmentsInput
   task: Prisma.TaskCreateNestedOneWithoutAttachmentsInput
@@ -340,6 +353,7 @@ export type TaskAttachmentUncheckedCreateInput = {
   type: string
   size: number
   dataUrl: string
+  deletedAt?: Date | string | null
   createdAt?: Date | string
 }
 
@@ -349,6 +363,7 @@ export type TaskAttachmentUpdateInput = {
   type?: Prisma.StringFieldUpdateOperationsInput | string
   size?: Prisma.IntFieldUpdateOperationsInput | number
   dataUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tenant?: Prisma.TenantUpdateOneRequiredWithoutTaskAttachmentsNestedInput
   task?: Prisma.TaskUpdateOneRequiredWithoutAttachmentsNestedInput
@@ -364,6 +379,7 @@ export type TaskAttachmentUncheckedUpdateInput = {
   type?: Prisma.StringFieldUpdateOperationsInput | string
   size?: Prisma.IntFieldUpdateOperationsInput | number
   dataUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -376,6 +392,7 @@ export type TaskAttachmentCreateManyInput = {
   type: string
   size: number
   dataUrl: string
+  deletedAt?: Date | string | null
   createdAt?: Date | string
 }
 
@@ -385,6 +402,7 @@ export type TaskAttachmentUpdateManyMutationInput = {
   type?: Prisma.StringFieldUpdateOperationsInput | string
   size?: Prisma.IntFieldUpdateOperationsInput | number
   dataUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -397,6 +415,7 @@ export type TaskAttachmentUncheckedUpdateManyInput = {
   type?: Prisma.StringFieldUpdateOperationsInput | string
   size?: Prisma.IntFieldUpdateOperationsInput | number
   dataUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -425,6 +444,7 @@ export type TaskAttachmentCountOrderByAggregateInput = {
   type?: Prisma.SortOrder
   size?: Prisma.SortOrder
   dataUrl?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -441,6 +461,7 @@ export type TaskAttachmentMaxOrderByAggregateInput = {
   type?: Prisma.SortOrder
   size?: Prisma.SortOrder
   dataUrl?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -453,6 +474,7 @@ export type TaskAttachmentMinOrderByAggregateInput = {
   type?: Prisma.SortOrder
   size?: Prisma.SortOrder
   dataUrl?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -592,6 +614,7 @@ export type TaskAttachmentCreateWithoutTenantInput = {
   type: string
   size: number
   dataUrl: string
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   task: Prisma.TaskCreateNestedOneWithoutAttachmentsInput
   user: Prisma.UserCreateNestedOneWithoutAttachmentsInput
@@ -605,6 +628,7 @@ export type TaskAttachmentUncheckedCreateWithoutTenantInput = {
   type: string
   size: number
   dataUrl: string
+  deletedAt?: Date | string | null
   createdAt?: Date | string
 }
 
@@ -646,6 +670,7 @@ export type TaskAttachmentScalarWhereInput = {
   type?: Prisma.StringFilter<"TaskAttachment"> | string
   size?: Prisma.IntFilter<"TaskAttachment"> | number
   dataUrl?: Prisma.StringFilter<"TaskAttachment"> | string
+  deletedAt?: Prisma.DateTimeNullableFilter<"TaskAttachment"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"TaskAttachment"> | Date | string
 }
 
@@ -655,6 +680,7 @@ export type TaskAttachmentCreateWithoutUserInput = {
   type: string
   size: number
   dataUrl: string
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   tenant?: Prisma.TenantCreateNestedOneWithoutTaskAttachmentsInput
   task: Prisma.TaskCreateNestedOneWithoutAttachmentsInput
@@ -668,6 +694,7 @@ export type TaskAttachmentUncheckedCreateWithoutUserInput = {
   type: string
   size: number
   dataUrl: string
+  deletedAt?: Date | string | null
   createdAt?: Date | string
 }
 
@@ -703,6 +730,7 @@ export type TaskAttachmentCreateWithoutTaskInput = {
   type: string
   size: number
   dataUrl: string
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   tenant?: Prisma.TenantCreateNestedOneWithoutTaskAttachmentsInput
   user: Prisma.UserCreateNestedOneWithoutAttachmentsInput
@@ -716,6 +744,7 @@ export type TaskAttachmentUncheckedCreateWithoutTaskInput = {
   type: string
   size: number
   dataUrl: string
+  deletedAt?: Date | string | null
   createdAt?: Date | string
 }
 
@@ -753,6 +782,7 @@ export type TaskAttachmentCreateManyTenantInput = {
   type: string
   size: number
   dataUrl: string
+  deletedAt?: Date | string | null
   createdAt?: Date | string
 }
 
@@ -762,6 +792,7 @@ export type TaskAttachmentUpdateWithoutTenantInput = {
   type?: Prisma.StringFieldUpdateOperationsInput | string
   size?: Prisma.IntFieldUpdateOperationsInput | number
   dataUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   task?: Prisma.TaskUpdateOneRequiredWithoutAttachmentsNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutAttachmentsNestedInput
@@ -775,6 +806,7 @@ export type TaskAttachmentUncheckedUpdateWithoutTenantInput = {
   type?: Prisma.StringFieldUpdateOperationsInput | string
   size?: Prisma.IntFieldUpdateOperationsInput | number
   dataUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -786,6 +818,7 @@ export type TaskAttachmentUncheckedUpdateManyWithoutTenantInput = {
   type?: Prisma.StringFieldUpdateOperationsInput | string
   size?: Prisma.IntFieldUpdateOperationsInput | number
   dataUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -797,6 +830,7 @@ export type TaskAttachmentCreateManyUserInput = {
   type: string
   size: number
   dataUrl: string
+  deletedAt?: Date | string | null
   createdAt?: Date | string
 }
 
@@ -806,6 +840,7 @@ export type TaskAttachmentUpdateWithoutUserInput = {
   type?: Prisma.StringFieldUpdateOperationsInput | string
   size?: Prisma.IntFieldUpdateOperationsInput | number
   dataUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tenant?: Prisma.TenantUpdateOneRequiredWithoutTaskAttachmentsNestedInput
   task?: Prisma.TaskUpdateOneRequiredWithoutAttachmentsNestedInput
@@ -819,6 +854,7 @@ export type TaskAttachmentUncheckedUpdateWithoutUserInput = {
   type?: Prisma.StringFieldUpdateOperationsInput | string
   size?: Prisma.IntFieldUpdateOperationsInput | number
   dataUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -830,6 +866,7 @@ export type TaskAttachmentUncheckedUpdateManyWithoutUserInput = {
   type?: Prisma.StringFieldUpdateOperationsInput | string
   size?: Prisma.IntFieldUpdateOperationsInput | number
   dataUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -841,6 +878,7 @@ export type TaskAttachmentCreateManyTaskInput = {
   type: string
   size: number
   dataUrl: string
+  deletedAt?: Date | string | null
   createdAt?: Date | string
 }
 
@@ -850,6 +888,7 @@ export type TaskAttachmentUpdateWithoutTaskInput = {
   type?: Prisma.StringFieldUpdateOperationsInput | string
   size?: Prisma.IntFieldUpdateOperationsInput | number
   dataUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tenant?: Prisma.TenantUpdateOneRequiredWithoutTaskAttachmentsNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutAttachmentsNestedInput
@@ -863,6 +902,7 @@ export type TaskAttachmentUncheckedUpdateWithoutTaskInput = {
   type?: Prisma.StringFieldUpdateOperationsInput | string
   size?: Prisma.IntFieldUpdateOperationsInput | number
   dataUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -874,6 +914,7 @@ export type TaskAttachmentUncheckedUpdateManyWithoutTaskInput = {
   type?: Prisma.StringFieldUpdateOperationsInput | string
   size?: Prisma.IntFieldUpdateOperationsInput | number
   dataUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -888,6 +929,7 @@ export type TaskAttachmentSelect<ExtArgs extends runtime.Types.Extensions.Intern
   type?: boolean
   size?: boolean
   dataUrl?: boolean
+  deletedAt?: boolean
   createdAt?: boolean
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   task?: boolean | Prisma.TaskDefaultArgs<ExtArgs>
@@ -905,10 +947,11 @@ export type TaskAttachmentSelectScalar = {
   type?: boolean
   size?: boolean
   dataUrl?: boolean
+  deletedAt?: boolean
   createdAt?: boolean
 }
 
-export type TaskAttachmentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "taskId" | "userId" | "name" | "type" | "size" | "dataUrl" | "createdAt", ExtArgs["result"]["taskAttachment"]>
+export type TaskAttachmentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "taskId" | "userId" | "name" | "type" | "size" | "dataUrl" | "deletedAt" | "createdAt", ExtArgs["result"]["taskAttachment"]>
 export type TaskAttachmentInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   task?: boolean | Prisma.TaskDefaultArgs<ExtArgs>
@@ -931,6 +974,7 @@ export type $TaskAttachmentPayload<ExtArgs extends runtime.Types.Extensions.Inte
     type: string
     size: number
     dataUrl: string
+    deletedAt: Date | null
     createdAt: Date
   }, ExtArgs["result"]["taskAttachment"]>
   composites: {}
@@ -1312,6 +1356,7 @@ export interface TaskAttachmentFieldRefs {
   readonly type: Prisma.FieldRef<"TaskAttachment", 'String'>
   readonly size: Prisma.FieldRef<"TaskAttachment", 'Int'>
   readonly dataUrl: Prisma.FieldRef<"TaskAttachment", 'String'>
+  readonly deletedAt: Prisma.FieldRef<"TaskAttachment", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"TaskAttachment", 'DateTime'>
 }
     
