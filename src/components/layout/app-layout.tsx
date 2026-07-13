@@ -36,6 +36,16 @@ export function AppLayout({ children, title }: AppLayoutProps) {
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated && pathname !== "/login") {
+      // Guarda o destino pretendido (ex.: link de tarefa de um e-mail) para
+      // retornar a ele após o login, em vez de cair sempre no dashboard.
+      try {
+        const dest = window.location.pathname + window.location.search;
+        if (dest && dest !== "/" && !dest.startsWith("/login")) {
+          sessionStorage.setItem("returnUrl", dest);
+        }
+      } catch {
+        /* sessionStorage indisponível — segue sem returnUrl */
+      }
       router.push("/login");
     }
   }, [isAuthenticated, isLoading, pathname, router]);

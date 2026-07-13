@@ -45,6 +45,7 @@ export type EpicMinAggregateOutputType = {
   startDate: Date | null
   endDate: Date | null
   progress: number | null
+  deletedAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -60,6 +61,7 @@ export type EpicMaxAggregateOutputType = {
   startDate: Date | null
   endDate: Date | null
   progress: number | null
+  deletedAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -75,6 +77,7 @@ export type EpicCountAggregateOutputType = {
   startDate: number
   endDate: number
   progress: number
+  deletedAt: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -100,6 +103,7 @@ export type EpicMinAggregateInputType = {
   startDate?: true
   endDate?: true
   progress?: true
+  deletedAt?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -115,6 +119,7 @@ export type EpicMaxAggregateInputType = {
   startDate?: true
   endDate?: true
   progress?: true
+  deletedAt?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -130,6 +135,7 @@ export type EpicCountAggregateInputType = {
   startDate?: true
   endDate?: true
   progress?: true
+  deletedAt?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -232,6 +238,7 @@ export type EpicGroupByOutputType = {
   startDate: Date
   endDate: Date | null
   progress: number
+  deletedAt: Date | null
   createdAt: Date
   updatedAt: Date
   _count: EpicCountAggregateOutputType | null
@@ -270,6 +277,7 @@ export type EpicWhereInput = {
   startDate?: Prisma.DateTimeFilter<"Epic"> | Date | string
   endDate?: Prisma.DateTimeNullableFilter<"Epic"> | Date | string | null
   progress?: Prisma.IntFilter<"Epic"> | number
+  deletedAt?: Prisma.DateTimeNullableFilter<"Epic"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Epic"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Epic"> | Date | string
   tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
@@ -290,6 +298,7 @@ export type EpicOrderByWithRelationInput = {
   startDate?: Prisma.SortOrder
   endDate?: Prisma.SortOrderInput | Prisma.SortOrder
   progress?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   tenant?: Prisma.TenantOrderByWithRelationInput
@@ -314,6 +323,7 @@ export type EpicWhereUniqueInput = Prisma.AtLeast<{
   startDate?: Prisma.DateTimeFilter<"Epic"> | Date | string
   endDate?: Prisma.DateTimeNullableFilter<"Epic"> | Date | string | null
   progress?: Prisma.IntFilter<"Epic"> | number
+  deletedAt?: Prisma.DateTimeNullableFilter<"Epic"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Epic"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Epic"> | Date | string
   tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
@@ -334,6 +344,7 @@ export type EpicOrderByWithAggregationInput = {
   startDate?: Prisma.SortOrder
   endDate?: Prisma.SortOrderInput | Prisma.SortOrder
   progress?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.EpicCountOrderByAggregateInput
@@ -357,6 +368,7 @@ export type EpicScalarWhereWithAggregatesInput = {
   startDate?: Prisma.DateTimeWithAggregatesFilter<"Epic"> | Date | string
   endDate?: Prisma.DateTimeNullableWithAggregatesFilter<"Epic"> | Date | string | null
   progress?: Prisma.IntWithAggregatesFilter<"Epic"> | number
+  deletedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Epic"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Epic"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Epic"> | Date | string
 }
@@ -369,6 +381,7 @@ export type EpicCreateInput = {
   startDate: Date | string
   endDate?: Date | string | null
   progress?: number
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   tenant?: Prisma.TenantCreateNestedOneWithoutEpicsInput
@@ -389,6 +402,7 @@ export type EpicUncheckedCreateInput = {
   startDate: Date | string
   endDate?: Date | string | null
   progress?: number
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutEpicInput
@@ -403,6 +417,7 @@ export type EpicUpdateInput = {
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   progress?: Prisma.IntFieldUpdateOperationsInput | number
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tenant?: Prisma.TenantUpdateOneRequiredWithoutEpicsNestedInput
@@ -423,6 +438,7 @@ export type EpicUncheckedUpdateInput = {
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   progress?: Prisma.IntFieldUpdateOperationsInput | number
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tasks?: Prisma.TaskUncheckedUpdateManyWithoutEpicNestedInput
@@ -440,6 +456,7 @@ export type EpicCreateManyInput = {
   startDate: Date | string
   endDate?: Date | string | null
   progress?: number
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -452,6 +469,7 @@ export type EpicUpdateManyMutationInput = {
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   progress?: Prisma.IntFieldUpdateOperationsInput | number
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -467,6 +485,7 @@ export type EpicUncheckedUpdateManyInput = {
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   progress?: Prisma.IntFieldUpdateOperationsInput | number
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -498,6 +517,7 @@ export type EpicCountOrderByAggregateInput = {
   startDate?: Prisma.SortOrder
   endDate?: Prisma.SortOrder
   progress?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -517,6 +537,7 @@ export type EpicMaxOrderByAggregateInput = {
   startDate?: Prisma.SortOrder
   endDate?: Prisma.SortOrder
   progress?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -532,6 +553,7 @@ export type EpicMinOrderByAggregateInput = {
   startDate?: Prisma.SortOrder
   endDate?: Prisma.SortOrder
   progress?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -707,6 +729,7 @@ export type EpicCreateWithoutTenantInput = {
   startDate: Date | string
   endDate?: Date | string | null
   progress?: number
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   project: Prisma.ProjectCreateNestedOneWithoutEpicsInput
@@ -725,6 +748,7 @@ export type EpicUncheckedCreateWithoutTenantInput = {
   startDate: Date | string
   endDate?: Date | string | null
   progress?: number
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutEpicInput
@@ -771,6 +795,7 @@ export type EpicScalarWhereInput = {
   startDate?: Prisma.DateTimeFilter<"Epic"> | Date | string
   endDate?: Prisma.DateTimeNullableFilter<"Epic"> | Date | string | null
   progress?: Prisma.IntFilter<"Epic"> | number
+  deletedAt?: Prisma.DateTimeNullableFilter<"Epic"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Epic"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Epic"> | Date | string
 }
@@ -783,6 +808,7 @@ export type EpicCreateWithoutProjectInput = {
   startDate: Date | string
   endDate?: Date | string | null
   progress?: number
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   tenant?: Prisma.TenantCreateNestedOneWithoutEpicsInput
@@ -801,6 +827,7 @@ export type EpicUncheckedCreateWithoutProjectInput = {
   startDate: Date | string
   endDate?: Date | string | null
   progress?: number
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutEpicInput
@@ -841,6 +868,7 @@ export type EpicCreateWithoutModuleInput = {
   startDate: Date | string
   endDate?: Date | string | null
   progress?: number
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   tenant?: Prisma.TenantCreateNestedOneWithoutEpicsInput
@@ -859,6 +887,7 @@ export type EpicUncheckedCreateWithoutModuleInput = {
   startDate: Date | string
   endDate?: Date | string | null
   progress?: number
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutEpicInput
@@ -899,6 +928,7 @@ export type EpicCreateWithoutDevelopersInput = {
   startDate: Date | string
   endDate?: Date | string | null
   progress?: number
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   tenant?: Prisma.TenantCreateNestedOneWithoutEpicsInput
@@ -918,6 +948,7 @@ export type EpicUncheckedCreateWithoutDevelopersInput = {
   startDate: Date | string
   endDate?: Date | string | null
   progress?: number
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutEpicInput
@@ -947,6 +978,7 @@ export type EpicUpdateWithoutDevelopersInput = {
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   progress?: Prisma.IntFieldUpdateOperationsInput | number
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tenant?: Prisma.TenantUpdateOneRequiredWithoutEpicsNestedInput
@@ -966,6 +998,7 @@ export type EpicUncheckedUpdateWithoutDevelopersInput = {
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   progress?: Prisma.IntFieldUpdateOperationsInput | number
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tasks?: Prisma.TaskUncheckedUpdateManyWithoutEpicNestedInput
@@ -979,6 +1012,7 @@ export type EpicCreateWithoutTasksInput = {
   startDate: Date | string
   endDate?: Date | string | null
   progress?: number
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   tenant?: Prisma.TenantCreateNestedOneWithoutEpicsInput
@@ -998,6 +1032,7 @@ export type EpicUncheckedCreateWithoutTasksInput = {
   startDate: Date | string
   endDate?: Date | string | null
   progress?: number
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   developers?: Prisma.EpicDeveloperUncheckedCreateNestedManyWithoutEpicInput
@@ -1027,6 +1062,7 @@ export type EpicUpdateWithoutTasksInput = {
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   progress?: Prisma.IntFieldUpdateOperationsInput | number
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tenant?: Prisma.TenantUpdateOneRequiredWithoutEpicsNestedInput
@@ -1046,6 +1082,7 @@ export type EpicUncheckedUpdateWithoutTasksInput = {
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   progress?: Prisma.IntFieldUpdateOperationsInput | number
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   developers?: Prisma.EpicDeveloperUncheckedUpdateManyWithoutEpicNestedInput
@@ -1061,6 +1098,7 @@ export type EpicCreateManyTenantInput = {
   startDate: Date | string
   endDate?: Date | string | null
   progress?: number
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1073,6 +1111,7 @@ export type EpicUpdateWithoutTenantInput = {
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   progress?: Prisma.IntFieldUpdateOperationsInput | number
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   project?: Prisma.ProjectUpdateOneRequiredWithoutEpicsNestedInput
@@ -1091,6 +1130,7 @@ export type EpicUncheckedUpdateWithoutTenantInput = {
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   progress?: Prisma.IntFieldUpdateOperationsInput | number
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tasks?: Prisma.TaskUncheckedUpdateManyWithoutEpicNestedInput
@@ -1107,6 +1147,7 @@ export type EpicUncheckedUpdateManyWithoutTenantInput = {
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   progress?: Prisma.IntFieldUpdateOperationsInput | number
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1121,6 +1162,7 @@ export type EpicCreateManyProjectInput = {
   startDate: Date | string
   endDate?: Date | string | null
   progress?: number
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1133,6 +1175,7 @@ export type EpicUpdateWithoutProjectInput = {
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   progress?: Prisma.IntFieldUpdateOperationsInput | number
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tenant?: Prisma.TenantUpdateOneRequiredWithoutEpicsNestedInput
@@ -1151,6 +1194,7 @@ export type EpicUncheckedUpdateWithoutProjectInput = {
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   progress?: Prisma.IntFieldUpdateOperationsInput | number
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tasks?: Prisma.TaskUncheckedUpdateManyWithoutEpicNestedInput
@@ -1167,6 +1211,7 @@ export type EpicUncheckedUpdateManyWithoutProjectInput = {
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   progress?: Prisma.IntFieldUpdateOperationsInput | number
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1181,6 +1226,7 @@ export type EpicCreateManyModuleInput = {
   startDate: Date | string
   endDate?: Date | string | null
   progress?: number
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1193,6 +1239,7 @@ export type EpicUpdateWithoutModuleInput = {
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   progress?: Prisma.IntFieldUpdateOperationsInput | number
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tenant?: Prisma.TenantUpdateOneRequiredWithoutEpicsNestedInput
@@ -1211,6 +1258,7 @@ export type EpicUncheckedUpdateWithoutModuleInput = {
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   progress?: Prisma.IntFieldUpdateOperationsInput | number
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tasks?: Prisma.TaskUncheckedUpdateManyWithoutEpicNestedInput
@@ -1227,6 +1275,7 @@ export type EpicUncheckedUpdateManyWithoutModuleInput = {
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   progress?: Prisma.IntFieldUpdateOperationsInput | number
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1282,6 +1331,7 @@ export type EpicSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   startDate?: boolean
   endDate?: boolean
   progress?: boolean
+  deletedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
@@ -1305,11 +1355,12 @@ export type EpicSelectScalar = {
   startDate?: boolean
   endDate?: boolean
   progress?: boolean
+  deletedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type EpicOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "projectId" | "moduleId" | "name" | "description" | "status" | "startDate" | "endDate" | "progress" | "createdAt" | "updatedAt", ExtArgs["result"]["epic"]>
+export type EpicOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "projectId" | "moduleId" | "name" | "description" | "status" | "startDate" | "endDate" | "progress" | "deletedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["epic"]>
 export type EpicInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
@@ -1339,6 +1390,7 @@ export type $EpicPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     startDate: Date
     endDate: Date | null
     progress: number
+    deletedAt: Date | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["epic"]>
@@ -1725,6 +1777,7 @@ export interface EpicFieldRefs {
   readonly startDate: Prisma.FieldRef<"Epic", 'DateTime'>
   readonly endDate: Prisma.FieldRef<"Epic", 'DateTime'>
   readonly progress: Prisma.FieldRef<"Epic", 'Int'>
+  readonly deletedAt: Prisma.FieldRef<"Epic", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"Epic", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Epic", 'DateTime'>
 }

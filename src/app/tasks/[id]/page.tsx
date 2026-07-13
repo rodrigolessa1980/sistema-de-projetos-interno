@@ -9,7 +9,7 @@ import { motion, AnimatePresence } from "@/lib/motion";
 import {
   ChevronLeft, Clock, AlertTriangle, MessageSquare, CheckSquare,
   Square, Plus, Send, Calendar, User2, Layers, Timer, Activity,
-  Link2, Lock, CheckCircle2, ArrowRight, X, Flame, ShieldAlert,
+  Link2, Lock, CheckCircle2, ArrowRight, X, Flame, ShieldAlert, Trash2,
 } from "lucide-react";
 import { ReassignPopover } from "@/components/shared/reassign-popover";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -20,7 +20,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { notFound, useParams } from "@/lib/router";
+import { notFound, useParams, useRouter } from "@/lib/router";
 import Link from "@/lib/router";
 import { toast } from "sonner";
 import type { TaskStatus } from "@/types";
@@ -33,13 +33,14 @@ import { AttachmentsPanel } from "@/features/tasks/attachments-panel";
 
 export default function TaskDetailPage() {
   const { id } = useParams<{ id: string }>();
-  const { getTaskById, getSubtasksByTask, getCommentsByTask, getTimeLogsByTask, addComment, toggleSubtask, addSubtask, getDependenciesByTask, updateTask, getBlockersForTask, tasks, addDependency, removeDependency, dependencies, setTaskUrgent } = useTaskStore();
+  const { getTaskById, getSubtasksByTask, getCommentsByTask, getTimeLogsByTask, addComment, toggleSubtask, addSubtask, getDependenciesByTask, updateTask, getBlockersForTask, tasks, addDependency, removeDependency, dependencies, setTaskUrgent, deleteTask } = useTaskStore();
   const { getProjectById } = useProjectStore();
   const { users } = useUserStore();
   const { user, isAdmin } = useAuth();
+  const router = useRouter();
   const updateStatus = useUpdateTaskStatus();
   const logTimeMutation = useLogTime();
-  useTask(id);
+  const taskQuery = useTask(id);
 
   const [commentText, setCommentText] = useState("");
   const [newSubtask, setNewSubtask] = useState("");
@@ -47,9 +48,31 @@ export default function TaskDetailPage() {
   const [logDesc, setLogDesc] = useState("");
 
   const [depSearch, setDepSearch] = useState("");
+  const [justDeleted, setJustDeleted] = useState(false);
 
   const task = getTaskById(id);
-  if (!task) notFound();
+  if (!task) {
+    // Acabou de excluir: a tarefa saiu da store e estamos navegando embora.
+    // Mostra o spinner em vez de cair no notFound (→ /dashboard).
+    if (justDeleted) {
+      return (
+        <div className="flex flex-1 items-center justify-center min-h-[60vh]">
+          <div className="w-6 h-6 border-2 border-violet-500 border-t-transparent rounded-full animate-spin" />
+        </div>
+      );
+    }
+    // Link aberto direto (ex.: e-mail): a tarefa ainda não está na store no
+    // primeiro render. Só redireciona (notFound → /dashboard) DEPOIS que o
+    // fetch termina sem achar — senão o link cai no dashboard antes de carregar.
+    if (taskQuery.isLoading || taskQuery.isPending) {
+      return (
+        <div className="flex flex-1 items-center justify-center min-h-[60vh]">
+          <div className="w-6 h-6 border-2 border-violet-500 border-t-transparent rounded-full animate-spin" />
+        </div>
+      );
+    }
+    notFound();
+  }
 
   const project = getProjectById(task.projectId);
   const assignee = users.find((u) => u.id === task.assigneeId);
@@ -161,6 +184,26 @@ export default function TaskDetailPage() {
 
   const progressPercent = task.estimatedHours > 0 ? Math.min(100, (task.actualHours / task.estimatedHours) * 100) : 0;
 
+  // Só admin ou o autor (criador/reporter) da tarefa pode excluí-la.
+  const canDelete = isAdmin || user?.id === task.reporterId;
+
+  const handleDeleteTask = async () => {
+    const confirmed = window.confirm(
+      `Excluir a tarefa "${task.title}"?\n\nEla será removida das listas, do kanban e dos relatórios.`,
+    );
+    if (!confirmed) return;
+    const projectId = task.projectId;
+    setJustDeleted(true);
+    try {
+      await deleteTask(id);
+      toast.success("Tarefa excluída");
+      router.push(`/projects/${projectId}`);
+    } catch (err) {
+      setJustDeleted(false);
+      toast.error(err instanceof Error ? err.message : "Erro ao excluir tarefa");
+    }
+  };
+
   return (
       <div className="p-6 w-full">
         <div className="flex items-center gap-2 mb-6">
@@ -169,6 +212,17 @@ export default function TaskDetailPage() {
           </Link>
           <span className="text-zinc-700">/</span>
           <span className="text-sm text-zinc-400 truncate">{task.title}</span>
+          {canDelete && (
+            <Button
+              type="button"
+              size="sm"
+              variant="ghost"
+              onClick={handleDeleteTask}
+              className="ml-auto h-7 px-2 text-xs text-red-400 hover:text-red-300 hover:bg-red-500/10 gap-1 shrink-0"
+            >
+              <Trash2 className="w-3.5 h-3.5" /> Excluir tarefa
+            </Button>
+          )}
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

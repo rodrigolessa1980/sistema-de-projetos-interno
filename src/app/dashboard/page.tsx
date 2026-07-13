@@ -110,6 +110,25 @@ export default function DashboardPage() {
     [isAdmin, tasks, user?.id],
   );
 
+  const projectById = useMemo(() => new Map(projects.map((p) => [p.id, p])), [projects]);
+
+  // Tarefas ABERTAS atribuídas ao usuário logado — destaque principal do painel.
+  // Ordem: urgentes primeiro, depois por prazo mais próximo (sem prazo por último).
+  const myAssignedTasks = useMemo(
+    () =>
+      tasks
+        .filter((t) => t.assigneeId === user?.id && !["CONCLUIDA", "CANCELADA"].includes(t.status))
+        .sort((a, b) => {
+          if (!!a.isUrgent !== !!b.isUrgent) return a.isUrgent ? -1 : 1;
+          return (a.dueDate ?? "9999-99-99").localeCompare(b.dueDate ?? "9999-99-99");
+        }),
+    [tasks, user?.id],
+  );
+  const myOverdueCount = useMemo(
+    () => myAssignedTasks.filter((t) => t.dueDate && t.dueDate < today).length,
+    [myAssignedTasks, today],
+  );
+
   // Ranking de devs: passada única (era O(users × (tasks+projects)) a cada segundo).
   const devRanking = useMemo(() => {
     const hoursByUser = new Map<string, number>();
@@ -170,6 +189,111 @@ export default function DashboardPage() {
           <PageLoading label="Carregando painel..." />
         ) : (
         <>
+        {/* ── DESTAQUE: Tarefas atribuídas ao usuário logado ── */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="relative overflow-hidden rounded-xl border border-violet-500/30 bg-gradient-to-br from-violet-600/15 via-zinc-900/60 to-zinc-900/60 p-4 sm:p-5"
+        >
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="w-10 h-10 rounded-lg bg-violet-500/20 border border-violet-500/30 flex items-center justify-center shrink-0">
+                <ListTodo className="w-5 h-5 text-violet-300" />
+              </div>
+              <div className="min-w-0">
+                <h2 className="text-lg sm:text-2xl font-black uppercase tracking-tight text-white leading-none">
+                  Minhas Tarefas
+                </h2>
+                <p className="text-xs text-zinc-400 mt-1.5">
+                  Atribuídas a você ·{" "}
+                  <span className="font-semibold text-violet-300">
+                    {myAssignedTasks.length} em aberto
+                  </span>
+                  {myOverdueCount > 0 && (
+                    <>
+                      {" · "}
+                      <span className="font-semibold text-orange-400">
+                        {myOverdueCount} atrasada{myOverdueCount !== 1 ? "s" : ""}
+                      </span>
+                    </>
+                  )}
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-4 shrink-0">
+              <div className="text-right leading-none">
+                <span className="text-3xl sm:text-4xl font-black tabular-nums text-white">
+                  {myAssignedTasks.length}
+                </span>
+                <span className="text-[10px] uppercase tracking-wider text-zinc-500 ml-1.5">em aberto</span>
+              </div>
+              <Link
+                href="/my-queue"
+                className="hidden sm:flex items-center gap-1 text-xs font-medium text-violet-300 hover:text-violet-200"
+              >
+                Ver todas <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            </div>
+          </div>
+
+          {myAssignedTasks.length === 0 ? (
+            <div className="flex items-center gap-3 rounded-xl bg-zinc-900/50 border border-zinc-800/50 px-4 py-6 justify-center">
+              <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+              <p className="text-sm text-zinc-400">Nenhuma tarefa atribuída a você no momento 🎉</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-2.5">
+              {myAssignedTasks.slice(0, 6).map((task) => {
+                const project = projectById.get(task.projectId);
+                const isActive = activeSession?.taskId === task.id;
+                const isOverdue = task.dueDate && task.dueDate < today;
+                return (
+                  <Link
+                    key={task.id}
+                    href={`/tasks/${task.id}`}
+                    className={`group rounded-xl border p-3.5 transition-colors ${
+                      isActive
+                        ? "bg-violet-500/10 border-violet-500/30 hover:bg-violet-500/15"
+                        : "bg-zinc-900/60 border-zinc-800/60 hover:border-zinc-700 hover:bg-zinc-800/40"
+                    }`}
+                  >
+                    <div className="flex items-start gap-2">
+                      {task.isUrgent && (
+                        <Zap className="w-3.5 h-3.5 text-amber-400 shrink-0 mt-0.5" />
+                      )}
+                      <p className="text-sm font-semibold text-zinc-100 group-hover:text-white line-clamp-2 leading-snug flex-1">
+                        {task.title}
+                      </p>
+                    </div>
+                    <div className="flex items-center flex-wrap gap-2 mt-2">
+                      <StatusBadge status={task.status} className="text-[9px] px-1.5 py-0" />
+                      {project && (
+                        <span className="inline-flex items-center gap-1 text-[11px] text-zinc-500">
+                          <span className="w-2 h-2 rounded-full" style={{ background: project.color }} />
+                          {project.name}
+                        </span>
+                      )}
+                      {task.dueDate && (
+                        <span className={`text-[11px] ml-auto ${isOverdue ? "text-orange-400 font-medium" : "text-zinc-500"}`}>
+                          {isOverdue ? "atrasada · " : ""}{formatDate(task.dueDate)}
+                        </span>
+                      )}
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          )}
+
+          {myAssignedTasks.length > 6 && (
+            <div className="mt-3 text-center">
+              <Link href="/my-queue" className="text-xs text-violet-300 hover:text-violet-200 font-medium">
+                + {myAssignedTasks.length - 6} outra{myAssignedTasks.length - 6 !== 1 ? "s" : ""} tarefa{myAssignedTasks.length - 6 !== 1 ? "s" : ""} atribuída{myAssignedTasks.length - 6 !== 1 ? "s" : ""} a você
+              </Link>
+            </div>
+          )}
+        </motion.div>
+
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
           <StatCard
             title="Projetos Ativos" value={summary.activeProjects} subtitle={`de ${summary.totalProjects} total`}

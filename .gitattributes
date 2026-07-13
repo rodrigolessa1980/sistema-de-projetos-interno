@@ -1,0 +1,4 @@
+# Scripts shell rodam em Linux (deploy/entrypoint). CRLF quebra o shebang
+# (`/usr/bin/env bash\r`), derrubando o deploy. Forcar LF sempre, independente
+# do core.autocrlf de cada maquina.
+*.sh text eol=lf

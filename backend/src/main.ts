@@ -19,10 +19,28 @@ async function bootstrap() {
     ...configuredOrigins,
   ]);
 
+  // Libera origens de REDE PRIVADA (localhost + faixas 10/172.16-31/192.168)
+  // em qualquer porta. Assim, acessar o app pela IP da LAN (celular/outra
+  // máquina na mesma rede) funciona sem precisar cadastrar cada IP — que muda.
+  // Origens públicas continuam bloqueadas (o navegador define a Origin real).
+  const isPrivateLanOrigin = (origin: string): boolean => {
+    try {
+      const { hostname, protocol } = new URL(origin);
+      if (protocol !== 'http:' && protocol !== 'https:') return false;
+      if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '0.0.0.0') return true;
+      if (/^10\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(hostname)) return true;
+      if (/^192\.168\.\d{1,3}\.\d{1,3}$/.test(hostname)) return true;
+      if (/^172\.(1[6-9]|2\d|3[0-1])\.\d{1,3}\.\d{1,3}$/.test(hostname)) return true;
+      return false;
+    } catch {
+      return false;
+    }
+  };
+
   app.enableCors({
     origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
       const normalizedOrigin = origin?.replace(/\/$/, '');
-      if (!normalizedOrigin || allowedOrigins.has(normalizedOrigin)) {
+      if (!normalizedOrigin || allowedOrigins.has(normalizedOrigin) || isPrivateLanOrigin(normalizedOrigin)) {
         callback(null, true);
         return;
       }

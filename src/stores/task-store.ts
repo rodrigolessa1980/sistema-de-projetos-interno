@@ -1,7 +1,8 @@
 "use client";
 
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { persist, createJSONStorage } from "zustand/middleware";
+import { safeLocalStorage } from "@/lib/safe-storage";
 import type { Task, Subtask, TimeLog, Comment, TaskDependency, StatusHistory, TaskStatus, TaskNote, TaskAttachment, ModuleAttachment } from "@/types";
 import { generateId, delay } from "@/lib/utils";
 import type { AuditLog } from "@/types";
@@ -577,16 +578,30 @@ export const useTaskStore = create<TaskStore>()(
   }),
   {
     name: "devflow-tasks",
+    storage: createJSONStorage(() => safeLocalStorage),
+    version: 2,
+    // v2: `attachments` saiu do persist. Guardava o arquivo inteiro em base64
+    // (dataUrl) no localStorage; poucos anexos estouravam a cota (~5MB no Safari)
+    // e QUALQUER `set()` posterior — inclusive criar um módulo — falhava com
+    // "The quota has been exceeded.". Limpa o resíduo antigo do blob persistido.
+    migrate: (persisted) => {
+      const state = (persisted ?? {}) as Record<string, unknown>;
+      delete state.attachments;
+      return state;
+    },
     // INC-07: só persistimos dados LOCAIS (mock/workflow não sincronizado). `tasks` NÃO
     // é mais persistido — é server-state (vem do /bootstrap e do delta sync); persistir
     // fazia o reload pintar tasks velhas antes do fetch ("render errado"). O 1º load
     // hidrata da API; a UI mostra loading via `isLoading` das stores.
     partialize: (state) => ({
-      statusHistory: state.statusHistory,
-      auditLogs: state.auditLogs,
+      // Logs locais são capados às últimas 200 entradas: crescem sem limite e
+      // encheriam o localStorage devagar. Mantemos só o recente ("o necessário").
+      statusHistory: state.statusHistory.slice(-200),
+      auditLogs: state.auditLogs.slice(-200),
       notes: state.notes,
-      attachments: state.attachments,
-      // tasks, moduleAttachments e timeLogs vêm do backend
+      // tasks, moduleAttachments e timeLogs vêm do backend.
+      // `attachments` NÃO é persistido: são arquivos em base64 (dataUrl) que
+      // enchiam o localStorage e derrubavam mutações com QuotaExceededError.
     }),
   }
 ));

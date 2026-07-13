@@ -1,4 +1,13 @@
-name: devflow
+# Deploy blue-green (sem proxy). Cada "cor" (blue/green) sobe como um projeto
+# Compose separado — o script define o nome do projeto com `-p devflow_${COLOR}`.
+#
+# Variaveis controladas pelo scripts/deploy-remote.sh:
+#   COLOR         -> blue | green (sufixo do container e do projeto)
+#   BACKEND_BIND  -> "127.0.0.1:4012" (validacao) ou "4011" (portas reais/cutover)
+#   FRONTEND_BIND -> "127.0.0.1:8023" (validacao) ou "8022" (portas reais/cutover)
+#
+# Os defaults (:-) apontam para as portas reais, entao um `up` manual sem essas
+# variaveis se comporta como producao normal.
 
 services:
   backend:
@@ -7,7 +16,7 @@ services:
       dockerfile: Dockerfile
       secrets:
         - backend_env
-    container_name: devflow_backend
+    container_name: devflow_backend_${COLOR:-blue}
     restart: unless-stopped
     mem_limit: 512m
     cpus: 0.75
@@ -16,7 +25,7 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
     ports:
-      - "4011:4011"
+      - "${BACKEND_BIND:-4011}:4011"
     networks:
       - devflow
 
@@ -26,14 +35,14 @@ services:
       dockerfile: Dockerfile
       args:
         NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
-    container_name: devflow_frontend
+    container_name: devflow_frontend_${COLOR:-blue}
     restart: unless-stopped
     mem_limit: 512m
     cpus: 0.75
     environment:
       PORT: 8022
     ports:
-      - "8022:8022"
+      - "${FRONTEND_BIND:-8022}:8022"
     depends_on:
       backend:
         condition: service_started

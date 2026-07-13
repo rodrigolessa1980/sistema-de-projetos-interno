@@ -383,6 +383,18 @@ export class PrismaModuleRepository implements IModuleRepository {
   }
 
   async delete(id: string): Promise<void> {
-    await this.prisma.module.delete({ where: { id } });
+    // Soft delete em cascata: oculta o módulo e, junto, seus epics e tarefas
+    // (senão ficariam órfãos apontando para um módulo invisível). A extensão de
+    // tenant injeta `deletedAt: null` no where de cada operação, então só afeta
+    // os registros ainda ativos. Time logs/anexos permanecem no banco (histórico).
+    const now = new Date();
+    await this.prisma.$transaction(
+      [
+        this.prisma.task.updateMany({ where: { moduleId: id }, data: { deletedAt: now } }),
+        this.prisma.epic.updateMany({ where: { moduleId: id }, data: { deletedAt: now } }),
+        this.prisma.module.update({ where: { id }, data: { deletedAt: now } }),
+      ],
+      { timeout: 60_000 },
+    );
   }
 }

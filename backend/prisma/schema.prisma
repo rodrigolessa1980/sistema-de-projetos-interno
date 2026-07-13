@@ -284,6 +284,7 @@ model Module {
   loggedHours    Float?
   loggedByUserId String?
   loggedBy       User?              @relation("ModuleLoggedBy", fields: [loggedByUserId], references: [id], onDelete: SetNull)
+  deletedAt      DateTime?          // Soft delete: NULL = ativo; preenchido = excluído (filtrado nas leituras).
   createdAt      DateTime           @default(now())
   updatedAt      DateTime           @updatedAt
   epics          Epic[]
@@ -312,6 +313,7 @@ model Epic {
   startDate   DateTime        @db.Date
   endDate     DateTime?       @db.Date
   progress    Int             @default(0)
+  deletedAt   DateTime?       // Soft delete: NULL = ativo; preenchido = excluído (cascata ao excluir o módulo).
   createdAt   DateTime        @default(now())
   updatedAt   DateTime        @updatedAt
   tasks       Task[]
@@ -369,6 +371,7 @@ model Task {
   urgentBlockedById    String?
   urgentPreviousStatus TaskStatus?
   order                Int         @default(0)
+  deletedAt            DateTime?   // Soft delete: NULL = ativa; preenchido = excluída (filtrada nas leituras).
   createdAt            DateTime    @default(now())
   updatedAt            DateTime    @updatedAt
 

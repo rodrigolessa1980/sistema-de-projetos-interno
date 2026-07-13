@@ -37,7 +37,9 @@ export class PrismaModuleAttachmentRepository implements IModuleAttachmentReposi
 
   async listByProject(projectId: string): Promise<ModuleAttachment[]> {
     const raws = await this.prisma.moduleAttachment.findMany({
-      where: { module: { projectId } },
+      // `deletedAt: null` no módulo relacionado: não lista anexos de módulos
+      // soft-deleted (a extensão só filtra o modelo de topo, não a relação).
+      where: { module: { projectId, deletedAt: null } },
       orderBy: { createdAt: 'desc' },
     });
     return raws.map((r) => this.mapToDomain(r));

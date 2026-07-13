@@ -139,7 +139,10 @@ export class PrismaTaskRepository implements ITaskRepository {
   }
 
   async delete(id: string): Promise<void> {
-    await this.prisma.task.delete({ where: { id } });
+    // Soft delete: marca deletedAt. A extensão de tenant filtra `deletedAt: null`
+    // em todas as leituras, então a tarefa some das listas/kanban/relatórios e,
+    // via snapshot de ids do /sync/changes, é podada nos demais clientes.
+    await this.prisma.task.update({ where: { id }, data: { deletedAt: new Date() } });
   }
 
   async findByAssignee(assigneeId: string): Promise<Task[]> {

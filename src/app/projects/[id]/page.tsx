@@ -134,12 +134,9 @@ export default function ProjectDetailPage() {
   const { users } = useUserStore();
   const { user, isAdmin } = useAuth();
 
-  const today = new Date().toISOString().split("T")[0];
   const [newModuleName, setNewModuleName] = useState("");
   const [newModuleDesc, setNewModuleDesc] = useState("");
   const [newModuleStatus, setNewModuleStatus] = useState<ModuleStatus>("INICIADO");
-  const [newModuleHours, setNewModuleHours] = useState("");
-  const [newModuleDate, setNewModuleDate] = useState(today);
   const [pendingAttachments, setPendingAttachments] = useState<PendingModuleFile[]>([]);
   const [technicalDraft, setTechnicalDraft] = useState("");
   const [demandDraft, setDemandDraft] = useState("");
@@ -166,8 +163,20 @@ export default function ProjectDetailPage() {
   const [calendar, setCalendar] = useState<CalendarDay[]>([]);
   const [loadingReport, setLoadingReport] = useState(false);
 
+  const projectsLoaded = useProjectStore((s) => s.hasLoaded);
   const projectResult = getProjectById(id);
-  if (!projectResult) notFound();
+  if (!projectResult) {
+    // Link aberto direto (ex.: e-mail): os projetos ainda não carregaram no
+    // primeiro render. Só redireciona (notFound → /dashboard) depois da carga.
+    if (!projectsLoaded) {
+      return (
+        <div className="flex flex-1 items-center justify-center min-h-[60vh]">
+          <div className="w-6 h-6 border-2 border-violet-500 border-t-transparent rounded-full animate-spin" />
+        </div>
+      );
+    }
+    notFound();
+  }
   const project = projectResult;
 
   const isProjectMember = !!user && (
@@ -270,8 +279,6 @@ export default function ProjectDetailPage() {
     setNewModuleName("");
     setNewModuleDesc("");
     setNewModuleStatus("INICIADO");
-    setNewModuleHours("");
-    setNewModuleDate(today);
     setPendingAttachments([]);
     setAddingModule(false);
   }
@@ -280,33 +287,20 @@ export default function ProjectDetailPage() {
     const name = newModuleName.trim();
     if (!name) return;
 
-    const hours = parseFloat(newModuleHours.replace(",", "."));
-    if (!newModuleHours.trim() || Number.isNaN(hours) || hours <= 0) {
-      toast.error("Informe as horas trabalhadas (valor maior que zero)");
-      return;
-    }
-    if (!newModuleDate) {
-      toast.error("Informe a data do trabalho");
-      return;
-    }
-    if (!user) {
-      toast.error("Faça login para registrar horas");
-      return;
-    }
-
     setSavingModule(true);
     try {
       const existingCount = modules.length;
       const description = newModuleDesc.trim();
 
+      // Módulo é estrutura de planejamento: cria SEM horas (o lançamento de
+      // horas acontece na aba Horas / timesheet). Assim o módulo aparece na
+      // lista — módulos com horas são "andaimes" e ficam ocultos.
       await createModule({
         projectId: id,
         name,
         description,
         status: newModuleStatus,
         order: existingCount,
-        hours,
-        workDate: newModuleDate,
         attachments: pendingAttachments.map((file) => ({
           name: file.name,
           type: file.type,
@@ -317,11 +311,10 @@ export default function ProjectDetailPage() {
 
       const attachmentCount = pendingAttachments.length;
       resetModuleForm();
-      await refreshReportAggregates();
       const attachMsg = attachmentCount > 0
-        ? ` e ${attachmentCount} evidência(s) anexada(s)`
+        ? ` com ${attachmentCount} evidência(s) anexada(s)`
         : "";
-      toast.success(`Módulo criado com ${hours}h registradas no banco de horas${attachMsg}`);
+      toast.success(`Módulo criado${attachMsg}`);
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Erro ao salvar módulo");
     } finally {
@@ -1103,7 +1096,7 @@ export default function ProjectDetailPage() {
                     Novo Módulo
                   </div>
                   <p className="text-[11px] text-zinc-500">
-                    Registre o trabalho realizado — as horas entram no banco de horas deste projeto para você.
+                    Módulos organizam as funcionalidades do projeto. Para registrar horas, use a aba Horas.
                   </p>
                   <div className="space-y-1">
                     <div className="flex items-center justify-between">
@@ -1153,33 +1146,6 @@ export default function ProjectDetailPage() {
                       </SelectContent>
                     </Select>
                   </div>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="space-y-1">
-                      <label className="text-[11px] text-zinc-500 flex items-center gap-1">
-                        <Calendar className="w-3 h-3" /> Data
-                      </label>
-                      <Input
-                        type="date"
-                        value={newModuleDate}
-                        onChange={(e) => setNewModuleDate(e.target.value)}
-                        className="h-8 text-sm bg-zinc-800 border-zinc-700 text-zinc-200"
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-[11px] text-zinc-500 flex items-center gap-1">
-                        <Clock className="w-3 h-3" /> Horas
-                      </label>
-                      <Input
-                        type="number"
-                        min="0.01"
-                        step="0.25"
-                        value={newModuleHours}
-                        onChange={(e) => setNewModuleHours(e.target.value)}
-                        placeholder="Ex: 2.5"
-                        className="h-8 text-sm bg-zinc-800 border-zinc-700 text-zinc-200"
-                      />
-                    </div>
-                  </div>
                   <ModuleAttachmentUploadField
                     files={pendingAttachments}
                     onChange={setPendingAttachments}
@@ -1192,7 +1158,7 @@ export default function ProjectDetailPage() {
                     <Button
                       size="sm"
                       onClick={handleAddModule}
-                      disabled={!newModuleName.trim() || !newModuleHours.trim() || savingModule}
+                      disabled={!newModuleName.trim() || savingModule}
                       className="h-7 text-xs bg-violet-600 hover:bg-violet-700 gap-1"
                     >
                       {savingModule ? <div className="w-3.5 h-3.5 border-2 border-white/40 border-t-white rounded-full animate-spin" /> : <Check className="w-3.5 h-3.5" />}
