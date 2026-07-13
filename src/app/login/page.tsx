@@ -33,7 +33,20 @@ export default function LoginPage() {
   const [tenants, setTenants] = useState<TenantOption[]>([]);
 
   useEffect(() => {
-    if (isAuthenticated) router.push("/dashboard");
+    if (!isAuthenticated) return;
+    // Volta para o destino pretendido (ex.: link de tarefa vindo de e-mail),
+    // salvo antes do redirecionamento para o login. Senão, cai no dashboard.
+    let dest = "/dashboard";
+    try {
+      const rt = sessionStorage.getItem("returnUrl");
+      if (rt && !rt.startsWith("/login")) {
+        dest = rt;
+        sessionStorage.removeItem("returnUrl");
+      }
+    } catch {
+      /* sessionStorage indisponível — usa o padrão */
+    }
+    router.push(dest);
   }, [isAuthenticated, router]);
 
   useEffect(() => {

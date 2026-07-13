@@ -6,10 +6,9 @@ import { useAuth } from "@/hooks/use-auth";
 import { useUpdateKanbanOrder } from "@/hooks/use-tasks";
 import { ComplexityBadge } from "@/components/shared/task-badge";
 import { formatDate, getStatusLabel, getStatusDotColor } from "@/lib/utils";
-import { quickLogModuleIds } from "@/lib/worklog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { AlertTriangle, Clock, GripVertical, Plus, Lock, Flame } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectSeparator, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { AlertTriangle, Clock, GripVertical, Plus, Lock, Flame, Users } from "lucide-react";
 import { toast } from "sonner";
 import Link from "@/lib/router";
 import type { TaskStatus, Task } from "@/types";
@@ -265,10 +264,13 @@ function getInsertIndex(event: DragOverEvent | DragEndEvent, overId: string, ord
 export default function KanbanPage() {
   const { tasks, getBlockersForTask } = useTaskStore();
   const hasLoaded = useTaskStore((s) => s.hasLoaded);
-  const { projects, modules } = useProjectStore();
-  const { isAdmin } = useAuth();
+  const { projects } = useProjectStore();
+  const { users } = useUserStore();
+  const { isAdmin, user } = useAuth();
   const updateKanbanOrder = useUpdateKanbanOrder();
   const [projectFilter, setProjectFilter] = useState("all");
+  // Filtro de responsável: "all" (todos), "me" (minhas) ou um userId específico.
+  const [assigneeFilter, setAssigneeFilter] = useState("all");
   const [activeTask, setActiveTask] = useState<Task | null>(null);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [localItems, setLocalItems] = useState<ItemsByStatus | null>(null);
@@ -277,12 +279,26 @@ export default function KanbanPage() {
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
   );
 
+  // Opções do filtro de responsável (também alimenta os rótulos do trigger).
+  const assigneeItems = useMemo(
+    () => [
+      { value: "all", label: "Todos" },
+      { value: "me", label: "Minhas tarefas" },
+      ...users.map((u) => ({ value: u.id, label: u.name })),
+    ],
+    [users]
+  );
+
   const visibleTasks = useMemo(() => {
-    // Esconde as tarefas-andaime do lançamento rápido de horas (timesheet).
-    const quickLog = quickLogModuleIds(modules);
-    const base = projectFilter !== "all" ? tasks.filter((t) => t.projectId === projectFilter) : tasks;
-    return base.filter((t) => !quickLog.has(t.moduleId));
-  }, [tasks, projectFilter, modules]);
+    // Toda tarefa aparece no Kanban (inclui lançamentos de hora do timesheet).
+    let base = projectFilter !== "all" ? tasks.filter((t) => t.projectId === projectFilter) : tasks;
+    if (assigneeFilter === "me") {
+      base = base.filter((t) => t.assigneeId === user?.id);
+    } else if (assigneeFilter !== "all") {
+      base = base.filter((t) => t.assigneeId === assigneeFilter);
+    }
+    return base;
+  }, [tasks, projectFilter, assigneeFilter, user?.id]);
 
   const tasksById = useMemo(
     () => new Map(visibleTasks.map((task) => [task.id, task])),
@@ -294,7 +310,7 @@ export default function KanbanPage() {
 
   useEffect(() => {
     setLocalItems(null);
-  }, [projectFilter]);
+  }, [projectFilter, assigneeFilter]);
 
   const handleDragStart = (event: DragStartEvent) => {
     const task = tasksById.get(String(event.active.id));
@@ -418,7 +434,35 @@ export default function KanbanPage() {
             <h1 className="text-lg font-bold text-zinc-100">Quadro Kanban</h1>
             <p className="text-xs text-zinc-500">{visibleTasks.length} {visibleTasks.length === 1 ? "tarefa" : "tarefas"}</p>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
+            <Select value={assigneeFilter} items={assigneeItems} onValueChange={(value) => setAssigneeFilter(value ?? "all")}>
+              <SelectTrigger className="w-48 bg-zinc-800/50 border-zinc-700/50 text-zinc-300 h-8 text-xs">
+                <SelectValue placeholder="Responsável" />
+              </SelectTrigger>
+              <SelectContent className="bg-zinc-900 border-zinc-700/50">
+                <SelectItem value="all" label="Todos">
+                  <Users className="w-3.5 h-3.5 text-zinc-400" />
+                  <span>Todos</span>
+                </SelectItem>
+                <SelectItem value="me" label="Minhas tarefas">
+                  <Avatar className="w-4 h-4">
+                    <AvatarImage src={user?.avatar} />
+                    <AvatarFallback className="text-[8px] bg-violet-600 text-white">{(user?.name ?? "EU").slice(0, 2).toUpperCase()}</AvatarFallback>
+                  </Avatar>
+                  <span>Minhas tarefas</span>
+                </SelectItem>
+                <SelectSeparator />
+                {users.map((u) => (
+                  <SelectItem key={u.id} value={u.id} label={u.name}>
+                    <Avatar className="w-4 h-4">
+                      <AvatarImage src={u.avatar} />
+                      <AvatarFallback className="text-[8px] bg-zinc-700">{u.name.slice(0, 2).toUpperCase()}</AvatarFallback>
+                    </Avatar>
+                    <span className="truncate">{u.name}</span>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             <Select value={projectFilter} onValueChange={(value) => setProjectFilter(value ?? "all")}>
               <SelectTrigger className="w-44 bg-zinc-800/50 border-zinc-700/50 text-zinc-300 h-8 text-xs">
                 <SelectValue placeholder="Todos os projetos" />

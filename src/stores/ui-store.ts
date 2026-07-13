@@ -1,7 +1,8 @@
 "use client";
 
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { persist, createJSONStorage } from "zustand/middleware";
+import { safeLocalStorage } from "@/lib/safe-storage";
 import type { Notification, User, UserPermission } from "@/types";
 import { api } from "@/lib/api";
 
@@ -105,6 +106,7 @@ export const useUIStore = create<UIStore>()(
     }),
     {
       name: "devflow-ui",
+      storage: createJSONStorage(() => safeLocalStorage),
       version: 1,
       // v1: os grupos da sidebar foram reorganizados/renomeados. Reexpande com os
       // novos nomes para não deixar seções novas colapsadas em quem já usava o app.
@@ -302,6 +304,7 @@ export const useUserStore = create<UserStore>()(
     }),
     {
       name: "devflow-users-v3",
+      storage: createJSONStorage(() => safeLocalStorage),
       partialize: (state) => ({ users: state.users }),
     }
   )

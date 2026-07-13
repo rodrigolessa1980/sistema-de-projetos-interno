@@ -50,6 +50,7 @@ export type ModuleMinAggregateOutputType = {
   workDate: Date | null
   loggedHours: number | null
   loggedByUserId: string | null
+  deletedAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -66,6 +67,7 @@ export type ModuleMaxAggregateOutputType = {
   workDate: Date | null
   loggedHours: number | null
   loggedByUserId: string | null
+  deletedAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -82,6 +84,7 @@ export type ModuleCountAggregateOutputType = {
   workDate: number
   loggedHours: number
   loggedByUserId: number
+  deletedAt: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -112,6 +115,7 @@ export type ModuleMinAggregateInputType = {
   workDate?: true
   loggedHours?: true
   loggedByUserId?: true
+  deletedAt?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -128,6 +132,7 @@ export type ModuleMaxAggregateInputType = {
   workDate?: true
   loggedHours?: true
   loggedByUserId?: true
+  deletedAt?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -144,6 +149,7 @@ export type ModuleCountAggregateInputType = {
   workDate?: true
   loggedHours?: true
   loggedByUserId?: true
+  deletedAt?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -247,6 +253,7 @@ export type ModuleGroupByOutputType = {
   workDate: Date | null
   loggedHours: number | null
   loggedByUserId: string | null
+  deletedAt: Date | null
   createdAt: Date
   updatedAt: Date
   _count: ModuleCountAggregateOutputType | null
@@ -286,6 +293,7 @@ export type ModuleWhereInput = {
   workDate?: Prisma.DateTimeNullableFilter<"Module"> | Date | string | null
   loggedHours?: Prisma.FloatNullableFilter<"Module"> | number | null
   loggedByUserId?: Prisma.StringNullableFilter<"Module"> | string | null
+  deletedAt?: Prisma.DateTimeNullableFilter<"Module"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Module"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Module"> | Date | string
   tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
@@ -308,6 +316,7 @@ export type ModuleOrderByWithRelationInput = {
   workDate?: Prisma.SortOrderInput | Prisma.SortOrder
   loggedHours?: Prisma.SortOrderInput | Prisma.SortOrder
   loggedByUserId?: Prisma.SortOrderInput | Prisma.SortOrder
+  deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   tenant?: Prisma.TenantOrderByWithRelationInput
@@ -334,6 +343,7 @@ export type ModuleWhereUniqueInput = Prisma.AtLeast<{
   workDate?: Prisma.DateTimeNullableFilter<"Module"> | Date | string | null
   loggedHours?: Prisma.FloatNullableFilter<"Module"> | number | null
   loggedByUserId?: Prisma.StringNullableFilter<"Module"> | string | null
+  deletedAt?: Prisma.DateTimeNullableFilter<"Module"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Module"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Module"> | Date | string
   tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
@@ -356,6 +366,7 @@ export type ModuleOrderByWithAggregationInput = {
   workDate?: Prisma.SortOrderInput | Prisma.SortOrder
   loggedHours?: Prisma.SortOrderInput | Prisma.SortOrder
   loggedByUserId?: Prisma.SortOrderInput | Prisma.SortOrder
+  deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.ModuleCountOrderByAggregateInput
@@ -380,6 +391,7 @@ export type ModuleScalarWhereWithAggregatesInput = {
   workDate?: Prisma.DateTimeNullableWithAggregatesFilter<"Module"> | Date | string | null
   loggedHours?: Prisma.FloatNullableWithAggregatesFilter<"Module"> | number | null
   loggedByUserId?: Prisma.StringNullableWithAggregatesFilter<"Module"> | string | null
+  deletedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Module"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Module"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Module"> | Date | string
 }
@@ -393,6 +405,7 @@ export type ModuleCreateInput = {
   progress?: number
   workDate?: Date | string | null
   loggedHours?: number | null
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   tenant?: Prisma.TenantCreateNestedOneWithoutModulesInput
@@ -415,6 +428,7 @@ export type ModuleUncheckedCreateInput = {
   workDate?: Date | string | null
   loggedHours?: number | null
   loggedByUserId?: string | null
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   epics?: Prisma.EpicUncheckedCreateNestedManyWithoutModuleInput
@@ -431,6 +445,7 @@ export type ModuleUpdateInput = {
   progress?: Prisma.IntFieldUpdateOperationsInput | number
   workDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   loggedHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tenant?: Prisma.TenantUpdateOneRequiredWithoutModulesNestedInput
@@ -453,6 +468,7 @@ export type ModuleUncheckedUpdateInput = {
   workDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   loggedHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   loggedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   epics?: Prisma.EpicUncheckedUpdateManyWithoutModuleNestedInput
@@ -472,6 +488,7 @@ export type ModuleCreateManyInput = {
   workDate?: Date | string | null
   loggedHours?: number | null
   loggedByUserId?: string | null
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -485,6 +502,7 @@ export type ModuleUpdateManyMutationInput = {
   progress?: Prisma.IntFieldUpdateOperationsInput | number
   workDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   loggedHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -501,6 +519,7 @@ export type ModuleUncheckedUpdateManyInput = {
   workDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   loggedHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   loggedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -533,6 +552,7 @@ export type ModuleCountOrderByAggregateInput = {
   workDate?: Prisma.SortOrder
   loggedHours?: Prisma.SortOrder
   loggedByUserId?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -555,6 +575,7 @@ export type ModuleMaxOrderByAggregateInput = {
   workDate?: Prisma.SortOrder
   loggedHours?: Prisma.SortOrder
   loggedByUserId?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -571,6 +592,7 @@ export type ModuleMinOrderByAggregateInput = {
   workDate?: Prisma.SortOrder
   loggedHours?: Prisma.SortOrder
   loggedByUserId?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -775,6 +797,7 @@ export type ModuleCreateWithoutTenantInput = {
   progress?: number
   workDate?: Date | string | null
   loggedHours?: number | null
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   project: Prisma.ProjectCreateNestedOneWithoutModulesInput
@@ -795,6 +818,7 @@ export type ModuleUncheckedCreateWithoutTenantInput = {
   workDate?: Date | string | null
   loggedHours?: number | null
   loggedByUserId?: string | null
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   epics?: Prisma.EpicUncheckedCreateNestedManyWithoutModuleInput
@@ -843,6 +867,7 @@ export type ModuleScalarWhereInput = {
   workDate?: Prisma.DateTimeNullableFilter<"Module"> | Date | string | null
   loggedHours?: Prisma.FloatNullableFilter<"Module"> | number | null
   loggedByUserId?: Prisma.StringNullableFilter<"Module"> | string | null
+  deletedAt?: Prisma.DateTimeNullableFilter<"Module"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Module"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Module"> | Date | string
 }
@@ -856,6 +881,7 @@ export type ModuleCreateWithoutLoggedByInput = {
   progress?: number
   workDate?: Date | string | null
   loggedHours?: number | null
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   tenant?: Prisma.TenantCreateNestedOneWithoutModulesInput
@@ -876,6 +902,7 @@ export type ModuleUncheckedCreateWithoutLoggedByInput = {
   progress?: number
   workDate?: Date | string | null
   loggedHours?: number | null
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   epics?: Prisma.EpicUncheckedCreateNestedManyWithoutModuleInput
@@ -918,6 +945,7 @@ export type ModuleCreateWithoutProjectInput = {
   progress?: number
   workDate?: Date | string | null
   loggedHours?: number | null
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   tenant?: Prisma.TenantCreateNestedOneWithoutModulesInput
@@ -938,6 +966,7 @@ export type ModuleUncheckedCreateWithoutProjectInput = {
   workDate?: Date | string | null
   loggedHours?: number | null
   loggedByUserId?: string | null
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   epics?: Prisma.EpicUncheckedCreateNestedManyWithoutModuleInput
@@ -980,6 +1009,7 @@ export type ModuleCreateWithoutEpicsInput = {
   progress?: number
   workDate?: Date | string | null
   loggedHours?: number | null
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   tenant?: Prisma.TenantCreateNestedOneWithoutModulesInput
@@ -1001,6 +1031,7 @@ export type ModuleUncheckedCreateWithoutEpicsInput = {
   workDate?: Date | string | null
   loggedHours?: number | null
   loggedByUserId?: string | null
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutModuleInput
@@ -1032,6 +1063,7 @@ export type ModuleUpdateWithoutEpicsInput = {
   progress?: Prisma.IntFieldUpdateOperationsInput | number
   workDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   loggedHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tenant?: Prisma.TenantUpdateOneRequiredWithoutModulesNestedInput
@@ -1053,6 +1085,7 @@ export type ModuleUncheckedUpdateWithoutEpicsInput = {
   workDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   loggedHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   loggedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tasks?: Prisma.TaskUncheckedUpdateManyWithoutModuleNestedInput
@@ -1068,6 +1101,7 @@ export type ModuleCreateWithoutTasksInput = {
   progress?: number
   workDate?: Date | string | null
   loggedHours?: number | null
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   tenant?: Prisma.TenantCreateNestedOneWithoutModulesInput
@@ -1089,6 +1123,7 @@ export type ModuleUncheckedCreateWithoutTasksInput = {
   workDate?: Date | string | null
   loggedHours?: number | null
   loggedByUserId?: string | null
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   epics?: Prisma.EpicUncheckedCreateNestedManyWithoutModuleInput
@@ -1120,6 +1155,7 @@ export type ModuleUpdateWithoutTasksInput = {
   progress?: Prisma.IntFieldUpdateOperationsInput | number
   workDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   loggedHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tenant?: Prisma.TenantUpdateOneRequiredWithoutModulesNestedInput
@@ -1141,6 +1177,7 @@ export type ModuleUncheckedUpdateWithoutTasksInput = {
   workDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   loggedHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   loggedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   epics?: Prisma.EpicUncheckedUpdateManyWithoutModuleNestedInput
@@ -1156,6 +1193,7 @@ export type ModuleCreateWithoutAttachmentsInput = {
   progress?: number
   workDate?: Date | string | null
   loggedHours?: number | null
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   tenant?: Prisma.TenantCreateNestedOneWithoutModulesInput
@@ -1177,6 +1215,7 @@ export type ModuleUncheckedCreateWithoutAttachmentsInput = {
   workDate?: Date | string | null
   loggedHours?: number | null
   loggedByUserId?: string | null
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   epics?: Prisma.EpicUncheckedCreateNestedManyWithoutModuleInput
@@ -1208,6 +1247,7 @@ export type ModuleUpdateWithoutAttachmentsInput = {
   progress?: Prisma.IntFieldUpdateOperationsInput | number
   workDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   loggedHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tenant?: Prisma.TenantUpdateOneRequiredWithoutModulesNestedInput
@@ -1229,6 +1269,7 @@ export type ModuleUncheckedUpdateWithoutAttachmentsInput = {
   workDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   loggedHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   loggedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   epics?: Prisma.EpicUncheckedUpdateManyWithoutModuleNestedInput
@@ -1246,6 +1287,7 @@ export type ModuleCreateManyTenantInput = {
   workDate?: Date | string | null
   loggedHours?: number | null
   loggedByUserId?: string | null
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1259,6 +1301,7 @@ export type ModuleUpdateWithoutTenantInput = {
   progress?: Prisma.IntFieldUpdateOperationsInput | number
   workDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   loggedHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   project?: Prisma.ProjectUpdateOneRequiredWithoutModulesNestedInput
@@ -1279,6 +1322,7 @@ export type ModuleUncheckedUpdateWithoutTenantInput = {
   workDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   loggedHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   loggedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   epics?: Prisma.EpicUncheckedUpdateManyWithoutModuleNestedInput
@@ -1297,6 +1341,7 @@ export type ModuleUncheckedUpdateManyWithoutTenantInput = {
   workDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   loggedHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   loggedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1312,6 +1357,7 @@ export type ModuleCreateManyLoggedByInput = {
   progress?: number
   workDate?: Date | string | null
   loggedHours?: number | null
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1325,6 +1371,7 @@ export type ModuleUpdateWithoutLoggedByInput = {
   progress?: Prisma.IntFieldUpdateOperationsInput | number
   workDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   loggedHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tenant?: Prisma.TenantUpdateOneRequiredWithoutModulesNestedInput
@@ -1345,6 +1392,7 @@ export type ModuleUncheckedUpdateWithoutLoggedByInput = {
   progress?: Prisma.IntFieldUpdateOperationsInput | number
   workDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   loggedHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   epics?: Prisma.EpicUncheckedUpdateManyWithoutModuleNestedInput
@@ -1363,6 +1411,7 @@ export type ModuleUncheckedUpdateManyWithoutLoggedByInput = {
   progress?: Prisma.IntFieldUpdateOperationsInput | number
   workDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   loggedHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1378,6 +1427,7 @@ export type ModuleCreateManyProjectInput = {
   workDate?: Date | string | null
   loggedHours?: number | null
   loggedByUserId?: string | null
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1391,6 +1441,7 @@ export type ModuleUpdateWithoutProjectInput = {
   progress?: Prisma.IntFieldUpdateOperationsInput | number
   workDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   loggedHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tenant?: Prisma.TenantUpdateOneRequiredWithoutModulesNestedInput
@@ -1411,6 +1462,7 @@ export type ModuleUncheckedUpdateWithoutProjectInput = {
   workDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   loggedHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   loggedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   epics?: Prisma.EpicUncheckedUpdateManyWithoutModuleNestedInput
@@ -1429,6 +1481,7 @@ export type ModuleUncheckedUpdateManyWithoutProjectInput = {
   workDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   loggedHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   loggedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1494,6 +1547,7 @@ export type ModuleSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   workDate?: boolean
   loggedHours?: boolean
   loggedByUserId?: boolean
+  deletedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
@@ -1519,11 +1573,12 @@ export type ModuleSelectScalar = {
   workDate?: boolean
   loggedHours?: boolean
   loggedByUserId?: boolean
+  deletedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type ModuleOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "projectId" | "name" | "description" | "status" | "order" | "progress" | "workDate" | "loggedHours" | "loggedByUserId" | "createdAt" | "updatedAt", ExtArgs["result"]["module"]>
+export type ModuleOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "projectId" | "name" | "description" | "status" | "order" | "progress" | "workDate" | "loggedHours" | "loggedByUserId" | "deletedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["module"]>
 export type ModuleInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
@@ -1556,6 +1611,7 @@ export type $ModulePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
     workDate: Date | null
     loggedHours: number | null
     loggedByUserId: string | null
+    deletedAt: Date | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["module"]>
@@ -1944,6 +2000,7 @@ export interface ModuleFieldRefs {
   readonly workDate: Prisma.FieldRef<"Module", 'DateTime'>
   readonly loggedHours: Prisma.FieldRef<"Module", 'Float'>
   readonly loggedByUserId: Prisma.FieldRef<"Module", 'String'>
+  readonly deletedAt: Prisma.FieldRef<"Module", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"Module", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Module", 'DateTime'>
 }

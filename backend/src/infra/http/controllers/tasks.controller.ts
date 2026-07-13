@@ -151,10 +151,14 @@ export class TasksController {
     return TaskPresenter.toHTTP(task);
   }
 
+  // Sem @RequirePermission: a autorização (admin OU autor da tarefa) é feita
+  // dentro do use-case, para que o autor possa excluir mesmo sem `tasks:delete`.
   @Delete(':id')
-  @RequirePermission('tasks:delete')
-  async delete(@Param('id') id: string): Promise<{ success: boolean }> {
-    await this.deleteTaskUseCase.execute(id);
+  async delete(
+    @Req() req: AuthenticatedRequest,
+    @Param('id') id: string,
+  ): Promise<{ success: boolean }> {
+    await this.deleteTaskUseCase.execute(id, req.userId, req.userRole);
     return { success: true };
   }
 }

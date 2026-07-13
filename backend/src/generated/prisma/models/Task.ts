@@ -63,6 +63,7 @@ export type TaskMinAggregateOutputType = {
   urgentBlockedById: string | null
   urgentPreviousStatus: $Enums.TaskStatus | null
   order: number | null
+  deletedAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -90,6 +91,7 @@ export type TaskMaxAggregateOutputType = {
   urgentBlockedById: string | null
   urgentPreviousStatus: $Enums.TaskStatus | null
   order: number | null
+  deletedAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -117,6 +119,7 @@ export type TaskCountAggregateOutputType = {
   urgentBlockedById: number
   urgentPreviousStatus: number
   order: number
+  deletedAt: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -160,6 +163,7 @@ export type TaskMinAggregateInputType = {
   urgentBlockedById?: true
   urgentPreviousStatus?: true
   order?: true
+  deletedAt?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -187,6 +191,7 @@ export type TaskMaxAggregateInputType = {
   urgentBlockedById?: true
   urgentPreviousStatus?: true
   order?: true
+  deletedAt?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -214,6 +219,7 @@ export type TaskCountAggregateInputType = {
   urgentBlockedById?: true
   urgentPreviousStatus?: true
   order?: true
+  deletedAt?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -328,6 +334,7 @@ export type TaskGroupByOutputType = {
   urgentBlockedById: string | null
   urgentPreviousStatus: $Enums.TaskStatus | null
   order: number
+  deletedAt: Date | null
   createdAt: Date
   updatedAt: Date
   _count: TaskCountAggregateOutputType | null
@@ -378,6 +385,7 @@ export type TaskWhereInput = {
   urgentBlockedById?: Prisma.StringNullableFilter<"Task"> | string | null
   urgentPreviousStatus?: Prisma.EnumTaskStatusNullableFilter<"Task"> | $Enums.TaskStatus | null
   order?: Prisma.IntFilter<"Task"> | number
+  deletedAt?: Prisma.DateTimeNullableFilter<"Task"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Task"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Task"> | Date | string
   tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
@@ -422,6 +430,7 @@ export type TaskOrderByWithRelationInput = {
   urgentBlockedById?: Prisma.SortOrderInput | Prisma.SortOrder
   urgentPreviousStatus?: Prisma.SortOrderInput | Prisma.SortOrder
   order?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   tenant?: Prisma.TenantOrderByWithRelationInput
@@ -470,6 +479,7 @@ export type TaskWhereUniqueInput = Prisma.AtLeast<{
   urgentBlockedById?: Prisma.StringNullableFilter<"Task"> | string | null
   urgentPreviousStatus?: Prisma.EnumTaskStatusNullableFilter<"Task"> | $Enums.TaskStatus | null
   order?: Prisma.IntFilter<"Task"> | number
+  deletedAt?: Prisma.DateTimeNullableFilter<"Task"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Task"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Task"> | Date | string
   tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
@@ -514,6 +524,7 @@ export type TaskOrderByWithAggregationInput = {
   urgentBlockedById?: Prisma.SortOrderInput | Prisma.SortOrder
   urgentPreviousStatus?: Prisma.SortOrderInput | Prisma.SortOrder
   order?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.TaskCountOrderByAggregateInput
@@ -549,6 +560,7 @@ export type TaskScalarWhereWithAggregatesInput = {
   urgentBlockedById?: Prisma.StringNullableWithAggregatesFilter<"Task"> | string | null
   urgentPreviousStatus?: Prisma.EnumTaskStatusNullableWithAggregatesFilter<"Task"> | $Enums.TaskStatus | null
   order?: Prisma.IntWithAggregatesFilter<"Task"> | number
+  deletedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Task"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Task"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Task"> | Date | string
 }
@@ -569,6 +581,7 @@ export type TaskCreateInput = {
   urgentBlockedById?: string | null
   urgentPreviousStatus?: $Enums.TaskStatus | null
   order?: number
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   tenant?: Prisma.TenantCreateNestedOneWithoutTasksInput
@@ -613,6 +626,7 @@ export type TaskUncheckedCreateInput = {
   urgentBlockedById?: string | null
   urgentPreviousStatus?: $Enums.TaskStatus | null
   order?: number
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   subtasks?: Prisma.SubtaskUncheckedCreateNestedManyWithoutTaskInput
@@ -643,6 +657,7 @@ export type TaskUpdateInput = {
   urgentBlockedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   urgentPreviousStatus?: Prisma.NullableEnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus | null
   order?: Prisma.IntFieldUpdateOperationsInput | number
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tenant?: Prisma.TenantUpdateOneRequiredWithoutTasksNestedInput
@@ -687,6 +702,7 @@ export type TaskUncheckedUpdateInput = {
   urgentBlockedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   urgentPreviousStatus?: Prisma.NullableEnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus | null
   order?: Prisma.IntFieldUpdateOperationsInput | number
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   subtasks?: Prisma.SubtaskUncheckedUpdateManyWithoutTaskNestedInput
@@ -724,6 +740,7 @@ export type TaskCreateManyInput = {
   urgentBlockedById?: string | null
   urgentPreviousStatus?: $Enums.TaskStatus | null
   order?: number
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -744,6 +761,7 @@ export type TaskUpdateManyMutationInput = {
   urgentBlockedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   urgentPreviousStatus?: Prisma.NullableEnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus | null
   order?: Prisma.IntFieldUpdateOperationsInput | number
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -771,6 +789,7 @@ export type TaskUncheckedUpdateManyInput = {
   urgentBlockedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   urgentPreviousStatus?: Prisma.NullableEnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus | null
   order?: Prisma.IntFieldUpdateOperationsInput | number
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -819,6 +838,7 @@ export type TaskCountOrderByAggregateInput = {
   urgentBlockedById?: Prisma.SortOrder
   urgentPreviousStatus?: Prisma.SortOrder
   order?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -853,6 +873,7 @@ export type TaskMaxOrderByAggregateInput = {
   urgentBlockedById?: Prisma.SortOrder
   urgentPreviousStatus?: Prisma.SortOrder
   order?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -880,6 +901,7 @@ export type TaskMinOrderByAggregateInput = {
   urgentBlockedById?: Prisma.SortOrder
   urgentPreviousStatus?: Prisma.SortOrder
   order?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -1358,6 +1380,7 @@ export type TaskCreateWithoutTenantInput = {
   urgentBlockedById?: string | null
   urgentPreviousStatus?: $Enums.TaskStatus | null
   order?: number
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   project: Prisma.ProjectCreateNestedOneWithoutTasksInput
@@ -1400,6 +1423,7 @@ export type TaskUncheckedCreateWithoutTenantInput = {
   urgentBlockedById?: string | null
   urgentPreviousStatus?: $Enums.TaskStatus | null
   order?: number
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   subtasks?: Prisma.SubtaskUncheckedCreateNestedManyWithoutTaskInput
@@ -1466,6 +1490,7 @@ export type TaskScalarWhereInput = {
   urgentBlockedById?: Prisma.StringNullableFilter<"Task"> | string | null
   urgentPreviousStatus?: Prisma.EnumTaskStatusNullableFilter<"Task"> | $Enums.TaskStatus | null
   order?: Prisma.IntFilter<"Task"> | number
+  deletedAt?: Prisma.DateTimeNullableFilter<"Task"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Task"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Task"> | Date | string
 }
@@ -1486,6 +1511,7 @@ export type TaskCreateWithoutAssigneeInput = {
   urgentBlockedById?: string | null
   urgentPreviousStatus?: $Enums.TaskStatus | null
   order?: number
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   tenant?: Prisma.TenantCreateNestedOneWithoutTasksInput
@@ -1528,6 +1554,7 @@ export type TaskUncheckedCreateWithoutAssigneeInput = {
   urgentBlockedById?: string | null
   urgentPreviousStatus?: $Enums.TaskStatus | null
   order?: number
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   subtasks?: Prisma.SubtaskUncheckedCreateNestedManyWithoutTaskInput
@@ -1568,6 +1595,7 @@ export type TaskCreateWithoutReporterInput = {
   urgentBlockedById?: string | null
   urgentPreviousStatus?: $Enums.TaskStatus | null
   order?: number
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   tenant?: Prisma.TenantCreateNestedOneWithoutTasksInput
@@ -1610,6 +1638,7 @@ export type TaskUncheckedCreateWithoutReporterInput = {
   urgentBlockedById?: string | null
   urgentPreviousStatus?: $Enums.TaskStatus | null
   order?: number
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   subtasks?: Prisma.SubtaskUncheckedCreateNestedManyWithoutTaskInput
@@ -1682,6 +1711,7 @@ export type TaskCreateWithoutProjectInput = {
   urgentBlockedById?: string | null
   urgentPreviousStatus?: $Enums.TaskStatus | null
   order?: number
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   tenant?: Prisma.TenantCreateNestedOneWithoutTasksInput
@@ -1724,6 +1754,7 @@ export type TaskUncheckedCreateWithoutProjectInput = {
   urgentBlockedById?: string | null
   urgentPreviousStatus?: $Enums.TaskStatus | null
   order?: number
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   subtasks?: Prisma.SubtaskUncheckedCreateNestedManyWithoutTaskInput
@@ -1780,6 +1811,7 @@ export type TaskCreateWithoutModuleInput = {
   urgentBlockedById?: string | null
   urgentPreviousStatus?: $Enums.TaskStatus | null
   order?: number
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   tenant?: Prisma.TenantCreateNestedOneWithoutTasksInput
@@ -1822,6 +1854,7 @@ export type TaskUncheckedCreateWithoutModuleInput = {
   urgentBlockedById?: string | null
   urgentPreviousStatus?: $Enums.TaskStatus | null
   order?: number
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   subtasks?: Prisma.SubtaskUncheckedCreateNestedManyWithoutTaskInput
@@ -1878,6 +1911,7 @@ export type TaskCreateWithoutEpicInput = {
   urgentBlockedById?: string | null
   urgentPreviousStatus?: $Enums.TaskStatus | null
   order?: number
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   tenant?: Prisma.TenantCreateNestedOneWithoutTasksInput
@@ -1920,6 +1954,7 @@ export type TaskUncheckedCreateWithoutEpicInput = {
   urgentBlockedById?: string | null
   urgentPreviousStatus?: $Enums.TaskStatus | null
   order?: number
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   subtasks?: Prisma.SubtaskUncheckedCreateNestedManyWithoutTaskInput
@@ -1976,6 +2011,7 @@ export type TaskCreateWithoutChildTasksInput = {
   urgentBlockedById?: string | null
   urgentPreviousStatus?: $Enums.TaskStatus | null
   order?: number
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   tenant?: Prisma.TenantCreateNestedOneWithoutTasksInput
@@ -2019,6 +2055,7 @@ export type TaskUncheckedCreateWithoutChildTasksInput = {
   urgentBlockedById?: string | null
   urgentPreviousStatus?: $Enums.TaskStatus | null
   order?: number
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   subtasks?: Prisma.SubtaskUncheckedCreateNestedManyWithoutTaskInput
@@ -2053,6 +2090,7 @@ export type TaskCreateWithoutParentTaskInput = {
   urgentBlockedById?: string | null
   urgentPreviousStatus?: $Enums.TaskStatus | null
   order?: number
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   tenant?: Prisma.TenantCreateNestedOneWithoutTasksInput
@@ -2095,6 +2133,7 @@ export type TaskUncheckedCreateWithoutParentTaskInput = {
   urgentBlockedById?: string | null
   urgentPreviousStatus?: $Enums.TaskStatus | null
   order?: number
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   subtasks?: Prisma.SubtaskUncheckedCreateNestedManyWithoutTaskInput
@@ -2146,6 +2185,7 @@ export type TaskUpdateWithoutChildTasksInput = {
   urgentBlockedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   urgentPreviousStatus?: Prisma.NullableEnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus | null
   order?: Prisma.IntFieldUpdateOperationsInput | number
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tenant?: Prisma.TenantUpdateOneRequiredWithoutTasksNestedInput
@@ -2189,6 +2229,7 @@ export type TaskUncheckedUpdateWithoutChildTasksInput = {
   urgentBlockedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   urgentPreviousStatus?: Prisma.NullableEnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus | null
   order?: Prisma.IntFieldUpdateOperationsInput | number
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   subtasks?: Prisma.SubtaskUncheckedUpdateManyWithoutTaskNestedInput
@@ -2234,6 +2275,7 @@ export type TaskCreateWithoutSubtasksInput = {
   urgentBlockedById?: string | null
   urgentPreviousStatus?: $Enums.TaskStatus | null
   order?: number
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   tenant?: Prisma.TenantCreateNestedOneWithoutTasksInput
@@ -2277,6 +2319,7 @@ export type TaskUncheckedCreateWithoutSubtasksInput = {
   urgentBlockedById?: string | null
   urgentPreviousStatus?: $Enums.TaskStatus | null
   order?: number
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   childTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutParentTaskInput
@@ -2322,6 +2365,7 @@ export type TaskUpdateWithoutSubtasksInput = {
   urgentBlockedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   urgentPreviousStatus?: Prisma.NullableEnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus | null
   order?: Prisma.IntFieldUpdateOperationsInput | number
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tenant?: Prisma.TenantUpdateOneRequiredWithoutTasksNestedInput
@@ -2365,6 +2409,7 @@ export type TaskUncheckedUpdateWithoutSubtasksInput = {
   urgentBlockedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   urgentPreviousStatus?: Prisma.NullableEnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus | null
   order?: Prisma.IntFieldUpdateOperationsInput | number
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   childTasks?: Prisma.TaskUncheckedUpdateManyWithoutParentTaskNestedInput
@@ -2394,6 +2439,7 @@ export type TaskCreateWithoutDependenciesInput = {
   urgentBlockedById?: string | null
   urgentPreviousStatus?: $Enums.TaskStatus | null
   order?: number
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   tenant?: Prisma.TenantCreateNestedOneWithoutTasksInput
@@ -2437,6 +2483,7 @@ export type TaskUncheckedCreateWithoutDependenciesInput = {
   urgentBlockedById?: string | null
   urgentPreviousStatus?: $Enums.TaskStatus | null
   order?: number
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   subtasks?: Prisma.SubtaskUncheckedCreateNestedManyWithoutTaskInput
@@ -2471,6 +2518,7 @@ export type TaskCreateWithoutDependencyOfInput = {
   urgentBlockedById?: string | null
   urgentPreviousStatus?: $Enums.TaskStatus | null
   order?: number
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   tenant?: Prisma.TenantCreateNestedOneWithoutTasksInput
@@ -2514,6 +2562,7 @@ export type TaskUncheckedCreateWithoutDependencyOfInput = {
   urgentBlockedById?: string | null
   urgentPreviousStatus?: $Enums.TaskStatus | null
   order?: number
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   subtasks?: Prisma.SubtaskUncheckedCreateNestedManyWithoutTaskInput
@@ -2559,6 +2608,7 @@ export type TaskUpdateWithoutDependenciesInput = {
   urgentBlockedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   urgentPreviousStatus?: Prisma.NullableEnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus | null
   order?: Prisma.IntFieldUpdateOperationsInput | number
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tenant?: Prisma.TenantUpdateOneRequiredWithoutTasksNestedInput
@@ -2602,6 +2652,7 @@ export type TaskUncheckedUpdateWithoutDependenciesInput = {
   urgentBlockedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   urgentPreviousStatus?: Prisma.NullableEnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus | null
   order?: Prisma.IntFieldUpdateOperationsInput | number
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   subtasks?: Prisma.SubtaskUncheckedUpdateManyWithoutTaskNestedInput
@@ -2642,6 +2693,7 @@ export type TaskUpdateWithoutDependencyOfInput = {
   urgentBlockedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   urgentPreviousStatus?: Prisma.NullableEnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus | null
   order?: Prisma.IntFieldUpdateOperationsInput | number
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tenant?: Prisma.TenantUpdateOneRequiredWithoutTasksNestedInput
@@ -2685,6 +2737,7 @@ export type TaskUncheckedUpdateWithoutDependencyOfInput = {
   urgentBlockedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   urgentPreviousStatus?: Prisma.NullableEnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus | null
   order?: Prisma.IntFieldUpdateOperationsInput | number
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   subtasks?: Prisma.SubtaskUncheckedUpdateManyWithoutTaskNestedInput
@@ -2714,6 +2767,7 @@ export type TaskCreateWithoutTimeLogsInput = {
   urgentBlockedById?: string | null
   urgentPreviousStatus?: $Enums.TaskStatus | null
   order?: number
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   tenant?: Prisma.TenantCreateNestedOneWithoutTasksInput
@@ -2757,6 +2811,7 @@ export type TaskUncheckedCreateWithoutTimeLogsInput = {
   urgentBlockedById?: string | null
   urgentPreviousStatus?: $Enums.TaskStatus | null
   order?: number
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   subtasks?: Prisma.SubtaskUncheckedCreateNestedManyWithoutTaskInput
@@ -2802,6 +2857,7 @@ export type TaskUpdateWithoutTimeLogsInput = {
   urgentBlockedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   urgentPreviousStatus?: Prisma.NullableEnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus | null
   order?: Prisma.IntFieldUpdateOperationsInput | number
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tenant?: Prisma.TenantUpdateOneRequiredWithoutTasksNestedInput
@@ -2845,6 +2901,7 @@ export type TaskUncheckedUpdateWithoutTimeLogsInput = {
   urgentBlockedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   urgentPreviousStatus?: Prisma.NullableEnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus | null
   order?: Prisma.IntFieldUpdateOperationsInput | number
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   subtasks?: Prisma.SubtaskUncheckedUpdateManyWithoutTaskNestedInput
@@ -2874,6 +2931,7 @@ export type TaskCreateWithoutCommentsInput = {
   urgentBlockedById?: string | null
   urgentPreviousStatus?: $Enums.TaskStatus | null
   order?: number
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   tenant?: Prisma.TenantCreateNestedOneWithoutTasksInput
@@ -2917,6 +2975,7 @@ export type TaskUncheckedCreateWithoutCommentsInput = {
   urgentBlockedById?: string | null
   urgentPreviousStatus?: $Enums.TaskStatus | null
   order?: number
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   subtasks?: Prisma.SubtaskUncheckedCreateNestedManyWithoutTaskInput
@@ -2962,6 +3021,7 @@ export type TaskUpdateWithoutCommentsInput = {
   urgentBlockedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   urgentPreviousStatus?: Prisma.NullableEnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus | null
   order?: Prisma.IntFieldUpdateOperationsInput | number
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tenant?: Prisma.TenantUpdateOneRequiredWithoutTasksNestedInput
@@ -3005,6 +3065,7 @@ export type TaskUncheckedUpdateWithoutCommentsInput = {
   urgentBlockedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   urgentPreviousStatus?: Prisma.NullableEnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus | null
   order?: Prisma.IntFieldUpdateOperationsInput | number
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   subtasks?: Prisma.SubtaskUncheckedUpdateManyWithoutTaskNestedInput
@@ -3034,6 +3095,7 @@ export type TaskCreateWithoutNotificationsInput = {
   urgentBlockedById?: string | null
   urgentPreviousStatus?: $Enums.TaskStatus | null
   order?: number
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   tenant?: Prisma.TenantCreateNestedOneWithoutTasksInput
@@ -3077,6 +3139,7 @@ export type TaskUncheckedCreateWithoutNotificationsInput = {
   urgentBlockedById?: string | null
   urgentPreviousStatus?: $Enums.TaskStatus | null
   order?: number
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   subtasks?: Prisma.SubtaskUncheckedCreateNestedManyWithoutTaskInput
@@ -3122,6 +3185,7 @@ export type TaskUpdateWithoutNotificationsInput = {
   urgentBlockedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   urgentPreviousStatus?: Prisma.NullableEnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus | null
   order?: Prisma.IntFieldUpdateOperationsInput | number
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tenant?: Prisma.TenantUpdateOneRequiredWithoutTasksNestedInput
@@ -3165,6 +3229,7 @@ export type TaskUncheckedUpdateWithoutNotificationsInput = {
   urgentBlockedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   urgentPreviousStatus?: Prisma.NullableEnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus | null
   order?: Prisma.IntFieldUpdateOperationsInput | number
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   subtasks?: Prisma.SubtaskUncheckedUpdateManyWithoutTaskNestedInput
@@ -3194,6 +3259,7 @@ export type TaskCreateWithoutStatusHistoriesInput = {
   urgentBlockedById?: string | null
   urgentPreviousStatus?: $Enums.TaskStatus | null
   order?: number
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   tenant?: Prisma.TenantCreateNestedOneWithoutTasksInput
@@ -3237,6 +3303,7 @@ export type TaskUncheckedCreateWithoutStatusHistoriesInput = {
   urgentBlockedById?: string | null
   urgentPreviousStatus?: $Enums.TaskStatus | null
   order?: number
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   subtasks?: Prisma.SubtaskUncheckedCreateNestedManyWithoutTaskInput
@@ -3282,6 +3349,7 @@ export type TaskUpdateWithoutStatusHistoriesInput = {
   urgentBlockedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   urgentPreviousStatus?: Prisma.NullableEnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus | null
   order?: Prisma.IntFieldUpdateOperationsInput | number
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tenant?: Prisma.TenantUpdateOneRequiredWithoutTasksNestedInput
@@ -3325,6 +3393,7 @@ export type TaskUncheckedUpdateWithoutStatusHistoriesInput = {
   urgentBlockedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   urgentPreviousStatus?: Prisma.NullableEnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus | null
   order?: Prisma.IntFieldUpdateOperationsInput | number
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   subtasks?: Prisma.SubtaskUncheckedUpdateManyWithoutTaskNestedInput
@@ -3354,6 +3423,7 @@ export type TaskCreateWithoutNotesInput = {
   urgentBlockedById?: string | null
   urgentPreviousStatus?: $Enums.TaskStatus | null
   order?: number
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   tenant?: Prisma.TenantCreateNestedOneWithoutTasksInput
@@ -3397,6 +3467,7 @@ export type TaskUncheckedCreateWithoutNotesInput = {
   urgentBlockedById?: string | null
   urgentPreviousStatus?: $Enums.TaskStatus | null
   order?: number
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   subtasks?: Prisma.SubtaskUncheckedCreateNestedManyWithoutTaskInput
@@ -3442,6 +3513,7 @@ export type TaskUpdateWithoutNotesInput = {
   urgentBlockedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   urgentPreviousStatus?: Prisma.NullableEnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus | null
   order?: Prisma.IntFieldUpdateOperationsInput | number
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tenant?: Prisma.TenantUpdateOneRequiredWithoutTasksNestedInput
@@ -3485,6 +3557,7 @@ export type TaskUncheckedUpdateWithoutNotesInput = {
   urgentBlockedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   urgentPreviousStatus?: Prisma.NullableEnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus | null
   order?: Prisma.IntFieldUpdateOperationsInput | number
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   subtasks?: Prisma.SubtaskUncheckedUpdateManyWithoutTaskNestedInput
@@ -3514,6 +3587,7 @@ export type TaskCreateWithoutAttachmentsInput = {
   urgentBlockedById?: string | null
   urgentPreviousStatus?: $Enums.TaskStatus | null
   order?: number
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   tenant?: Prisma.TenantCreateNestedOneWithoutTasksInput
@@ -3557,6 +3631,7 @@ export type TaskUncheckedCreateWithoutAttachmentsInput = {
   urgentBlockedById?: string | null
   urgentPreviousStatus?: $Enums.TaskStatus | null
   order?: number
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   subtasks?: Prisma.SubtaskUncheckedCreateNestedManyWithoutTaskInput
@@ -3602,6 +3677,7 @@ export type TaskUpdateWithoutAttachmentsInput = {
   urgentBlockedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   urgentPreviousStatus?: Prisma.NullableEnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus | null
   order?: Prisma.IntFieldUpdateOperationsInput | number
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tenant?: Prisma.TenantUpdateOneRequiredWithoutTasksNestedInput
@@ -3645,6 +3721,7 @@ export type TaskUncheckedUpdateWithoutAttachmentsInput = {
   urgentBlockedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   urgentPreviousStatus?: Prisma.NullableEnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus | null
   order?: Prisma.IntFieldUpdateOperationsInput | number
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   subtasks?: Prisma.SubtaskUncheckedUpdateManyWithoutTaskNestedInput
@@ -3680,6 +3757,7 @@ export type TaskCreateManyTenantInput = {
   urgentBlockedById?: string | null
   urgentPreviousStatus?: $Enums.TaskStatus | null
   order?: number
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -3700,6 +3778,7 @@ export type TaskUpdateWithoutTenantInput = {
   urgentBlockedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   urgentPreviousStatus?: Prisma.NullableEnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus | null
   order?: Prisma.IntFieldUpdateOperationsInput | number
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   project?: Prisma.ProjectUpdateOneRequiredWithoutTasksNestedInput
@@ -3742,6 +3821,7 @@ export type TaskUncheckedUpdateWithoutTenantInput = {
   urgentBlockedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   urgentPreviousStatus?: Prisma.NullableEnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus | null
   order?: Prisma.IntFieldUpdateOperationsInput | number
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   subtasks?: Prisma.SubtaskUncheckedUpdateManyWithoutTaskNestedInput
@@ -3778,6 +3858,7 @@ export type TaskUncheckedUpdateManyWithoutTenantInput = {
   urgentBlockedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   urgentPreviousStatus?: Prisma.NullableEnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus | null
   order?: Prisma.IntFieldUpdateOperationsInput | number
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -3804,6 +3885,7 @@ export type TaskCreateManyAssigneeInput = {
   urgentBlockedById?: string | null
   urgentPreviousStatus?: $Enums.TaskStatus | null
   order?: number
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -3830,6 +3912,7 @@ export type TaskCreateManyReporterInput = {
   urgentBlockedById?: string | null
   urgentPreviousStatus?: $Enums.TaskStatus | null
   order?: number
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -3850,6 +3933,7 @@ export type TaskUpdateWithoutAssigneeInput = {
   urgentBlockedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   urgentPreviousStatus?: Prisma.NullableEnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus | null
   order?: Prisma.IntFieldUpdateOperationsInput | number
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tenant?: Prisma.TenantUpdateOneRequiredWithoutTasksNestedInput
@@ -3892,6 +3976,7 @@ export type TaskUncheckedUpdateWithoutAssigneeInput = {
   urgentBlockedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   urgentPreviousStatus?: Prisma.NullableEnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus | null
   order?: Prisma.IntFieldUpdateOperationsInput | number
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   subtasks?: Prisma.SubtaskUncheckedUpdateManyWithoutTaskNestedInput
@@ -3928,6 +4013,7 @@ export type TaskUncheckedUpdateManyWithoutAssigneeInput = {
   urgentBlockedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   urgentPreviousStatus?: Prisma.NullableEnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus | null
   order?: Prisma.IntFieldUpdateOperationsInput | number
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -3948,6 +4034,7 @@ export type TaskUpdateWithoutReporterInput = {
   urgentBlockedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   urgentPreviousStatus?: Prisma.NullableEnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus | null
   order?: Prisma.IntFieldUpdateOperationsInput | number
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tenant?: Prisma.TenantUpdateOneRequiredWithoutTasksNestedInput
@@ -3990,6 +4077,7 @@ export type TaskUncheckedUpdateWithoutReporterInput = {
   urgentBlockedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   urgentPreviousStatus?: Prisma.NullableEnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus | null
   order?: Prisma.IntFieldUpdateOperationsInput | number
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   subtasks?: Prisma.SubtaskUncheckedUpdateManyWithoutTaskNestedInput
@@ -4026,6 +4114,7 @@ export type TaskUncheckedUpdateManyWithoutReporterInput = {
   urgentBlockedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   urgentPreviousStatus?: Prisma.NullableEnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus | null
   order?: Prisma.IntFieldUpdateOperationsInput | number
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -4052,6 +4141,7 @@ export type TaskCreateManyProjectInput = {
   urgentBlockedById?: string | null
   urgentPreviousStatus?: $Enums.TaskStatus | null
   order?: number
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -4072,6 +4162,7 @@ export type TaskUpdateWithoutProjectInput = {
   urgentBlockedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   urgentPreviousStatus?: Prisma.NullableEnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus | null
   order?: Prisma.IntFieldUpdateOperationsInput | number
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tenant?: Prisma.TenantUpdateOneRequiredWithoutTasksNestedInput
@@ -4114,6 +4205,7 @@ export type TaskUncheckedUpdateWithoutProjectInput = {
   urgentBlockedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   urgentPreviousStatus?: Prisma.NullableEnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus | null
   order?: Prisma.IntFieldUpdateOperationsInput | number
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   subtasks?: Prisma.SubtaskUncheckedUpdateManyWithoutTaskNestedInput
@@ -4150,6 +4242,7 @@ export type TaskUncheckedUpdateManyWithoutProjectInput = {
   urgentBlockedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   urgentPreviousStatus?: Prisma.NullableEnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus | null
   order?: Prisma.IntFieldUpdateOperationsInput | number
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -4176,6 +4269,7 @@ export type TaskCreateManyModuleInput = {
   urgentBlockedById?: string | null
   urgentPreviousStatus?: $Enums.TaskStatus | null
   order?: number
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -4196,6 +4290,7 @@ export type TaskUpdateWithoutModuleInput = {
   urgentBlockedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   urgentPreviousStatus?: Prisma.NullableEnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus | null
   order?: Prisma.IntFieldUpdateOperationsInput | number
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tenant?: Prisma.TenantUpdateOneRequiredWithoutTasksNestedInput
@@ -4238,6 +4333,7 @@ export type TaskUncheckedUpdateWithoutModuleInput = {
   urgentBlockedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   urgentPreviousStatus?: Prisma.NullableEnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus | null
   order?: Prisma.IntFieldUpdateOperationsInput | number
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   subtasks?: Prisma.SubtaskUncheckedUpdateManyWithoutTaskNestedInput
@@ -4274,6 +4370,7 @@ export type TaskUncheckedUpdateManyWithoutModuleInput = {
   urgentBlockedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   urgentPreviousStatus?: Prisma.NullableEnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus | null
   order?: Prisma.IntFieldUpdateOperationsInput | number
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -4300,6 +4397,7 @@ export type TaskCreateManyEpicInput = {
   urgentBlockedById?: string | null
   urgentPreviousStatus?: $Enums.TaskStatus | null
   order?: number
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -4320,6 +4418,7 @@ export type TaskUpdateWithoutEpicInput = {
   urgentBlockedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   urgentPreviousStatus?: Prisma.NullableEnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus | null
   order?: Prisma.IntFieldUpdateOperationsInput | number
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tenant?: Prisma.TenantUpdateOneRequiredWithoutTasksNestedInput
@@ -4362,6 +4461,7 @@ export type TaskUncheckedUpdateWithoutEpicInput = {
   urgentBlockedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   urgentPreviousStatus?: Prisma.NullableEnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus | null
   order?: Prisma.IntFieldUpdateOperationsInput | number
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   subtasks?: Prisma.SubtaskUncheckedUpdateManyWithoutTaskNestedInput
@@ -4398,6 +4498,7 @@ export type TaskUncheckedUpdateManyWithoutEpicInput = {
   urgentBlockedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   urgentPreviousStatus?: Prisma.NullableEnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus | null
   order?: Prisma.IntFieldUpdateOperationsInput | number
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -4424,6 +4525,7 @@ export type TaskCreateManyParentTaskInput = {
   urgentBlockedById?: string | null
   urgentPreviousStatus?: $Enums.TaskStatus | null
   order?: number
+  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -4444,6 +4546,7 @@ export type TaskUpdateWithoutParentTaskInput = {
   urgentBlockedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   urgentPreviousStatus?: Prisma.NullableEnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus | null
   order?: Prisma.IntFieldUpdateOperationsInput | number
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tenant?: Prisma.TenantUpdateOneRequiredWithoutTasksNestedInput
@@ -4486,6 +4589,7 @@ export type TaskUncheckedUpdateWithoutParentTaskInput = {
   urgentBlockedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   urgentPreviousStatus?: Prisma.NullableEnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus | null
   order?: Prisma.IntFieldUpdateOperationsInput | number
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   subtasks?: Prisma.SubtaskUncheckedUpdateManyWithoutTaskNestedInput
@@ -4522,6 +4626,7 @@ export type TaskUncheckedUpdateManyWithoutParentTaskInput = {
   urgentBlockedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   urgentPreviousStatus?: Prisma.NullableEnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus | null
   order?: Prisma.IntFieldUpdateOperationsInput | number
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -4661,6 +4766,7 @@ export type TaskSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   urgentBlockedById?: boolean
   urgentPreviousStatus?: boolean
   order?: boolean
+  deletedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
@@ -4708,11 +4814,12 @@ export type TaskSelectScalar = {
   urgentBlockedById?: boolean
   urgentPreviousStatus?: boolean
   order?: boolean
+  deletedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type TaskOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "projectId" | "moduleId" | "epicId" | "parentTaskId" | "title" | "description" | "status" | "complexity" | "assigneeId" | "reporterId" | "estimatedHours" | "actualHours" | "startDate" | "dueDate" | "completedAt" | "blockedReason" | "isUrgent" | "urgentBlockedById" | "urgentPreviousStatus" | "order" | "createdAt" | "updatedAt", ExtArgs["result"]["task"]>
+export type TaskOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "projectId" | "moduleId" | "epicId" | "parentTaskId" | "title" | "description" | "status" | "complexity" | "assigneeId" | "reporterId" | "estimatedHours" | "actualHours" | "startDate" | "dueDate" | "completedAt" | "blockedReason" | "isUrgent" | "urgentBlockedById" | "urgentPreviousStatus" | "order" | "deletedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["task"]>
 export type TaskInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
@@ -4778,6 +4885,7 @@ export type $TaskPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     urgentBlockedById: string | null
     urgentPreviousStatus: $Enums.TaskStatus | null
     order: number
+    deletedAt: Date | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["task"]>
@@ -5188,6 +5296,7 @@ export interface TaskFieldRefs {
   readonly urgentBlockedById: Prisma.FieldRef<"Task", 'String'>
   readonly urgentPreviousStatus: Prisma.FieldRef<"Task", 'TaskStatus'>
   readonly order: Prisma.FieldRef<"Task", 'Int'>
+  readonly deletedAt: Prisma.FieldRef<"Task", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"Task", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Task", 'DateTime'>
 }

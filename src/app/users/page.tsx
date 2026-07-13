@@ -5,8 +5,9 @@ import { useAuth } from "@/hooks/use-auth";
 import { useUserStore } from "@/stores";
 import { EmptyState } from "@/components/shared/empty-state";
 import { PageLoading } from "@/components/shared/page-loading";
-import { Users, Save, RotateCcw, ShieldCheck } from "lucide-react";
+import { Users, Save, RotateCcw, ShieldCheck, UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { UserDialog } from "@/features/users/user-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
@@ -107,6 +108,7 @@ export default function UsersPage() {
   const [permMap, setPermMap] = useState<PermissionMap>({});
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [createOpen, setCreateOpen] = useState(false);
 
   const users = useMemo<ApiUser[]>(() => storeUsers.map((u) => ({
     id: u.id,
@@ -240,10 +242,18 @@ export default function UsersPage() {
       <div className="flex h-[calc(100vh-64px)] overflow-hidden w-full">
         {/* ── Painel Esquerdo: Lista de Usuários ── */}
         <div className="w-80 min-w-[300px] border-r border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 overflow-y-auto flex flex-col">
-          <div className="p-4 border-b border-zinc-200 dark:border-zinc-800">
+          <div className="p-4 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between gap-2">
             <h2 className="text-sm font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-wider">
               Usuários ({users.length})
             </h2>
+            <Button
+              size="sm"
+              onClick={() => setCreateOpen(true)}
+              className="h-8 px-3 text-xs bg-violet-600 hover:bg-violet-700 text-white gap-1.5"
+            >
+              <UserPlus className="w-3.5 h-3.5" />
+              Novo Usuário
+            </Button>
           </div>
 
           {(isLoading || !hasLoaded) ? (
@@ -529,6 +539,9 @@ export default function UsersPage() {
             </>
           )}
         </div>
+
+        {/* Dialog de criação de usuário */}
+        <UserDialog open={createOpen} onOpenChange={setCreateOpen} editUser={null} />
       </div>
   );
 }

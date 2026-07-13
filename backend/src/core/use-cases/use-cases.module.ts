@@ -6,6 +6,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { LoginUseCase } from './auth/login.use-case';
 import { RegisterUseCase } from './auth/register.use-case';
 import { GetCurrentUserUseCase } from './auth/get-current-user.use-case';
+import { ChangePasswordUseCase } from './auth/change-password.use-case';
 
 // Company Use Cases
 import { ListCompaniesUseCase } from './companies/list-companies.use-case';
@@ -79,6 +80,7 @@ const useCases = [
   LoginUseCase,
   RegisterUseCase,
   GetCurrentUserUseCase,
+  ChangePasswordUseCase,
 
 
   // Companies

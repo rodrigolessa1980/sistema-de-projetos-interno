@@ -1,7 +1,8 @@
 "use client";
 
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { persist, createJSONStorage } from "zustand/middleware";
+import { safeLocalStorage } from "@/lib/safe-storage";
 import type { User, AuthSession, LoginCredentials, RegisterCredentials, UserPermission } from "@/types";
 import { login as apiLogin, logout as apiLogout, register as apiRegister, getStoredSession } from "@/lib/auth";
 import { api } from "@/lib/api";
@@ -72,6 +73,12 @@ export const useAuthStore = create<AuthStore>()(
               api.get<{ user: User }>("auth/me"),
               api.get<UserPermission[]>(`users/${session.user.id}/permissions`).catch(() => [] as UserPermission[]),
             ]);
+            // Guarda anti-corrida: se o usuário deslogou (ou entrou com outra
+            // conta) durante o fetch, NÃO restaura esta sessão obsoleta.
+            // Sem isso, um `auth/me` em voo reescrevia o localStorage/store
+            // depois do logout e "relogava" o usuário (bug do botão Sair).
+            const current = get().session;
+            if (!current || current.token !== session.token) return;
             const userWithPerms: User = { ...meData.user, permissions: permsData };
             const updatedSession = { ...session, user: userWithPerms };
             if (typeof window !== "undefined") {
@@ -81,6 +88,10 @@ export const useAuthStore = create<AuthStore>()(
             syncUserToStore(userWithPerms);
           } catch (err) {
             console.error("Falha ao sincronizar sessão:", err);
+            // Resposta obsoleta (usuário já deslogou/trocou de conta): ignora,
+            // para não derrubar a sessão nova nem reagir a um 401 antigo.
+            const current = get().session;
+            if (!current || current.token !== session.token) return;
             const message = err instanceof Error ? err.message : "";
             if (message.includes("401") || message.toLowerCase().includes("unauthorized")) {
               get().logout();
@@ -132,6 +143,7 @@ export const useAuthStore = create<AuthStore>()(
     }),
     {
       name: "devflow-auth-v2",
+      storage: createJSONStorage(() => safeLocalStorage),
       partialize: (state) => ({ session: state.session }),
     }
   )

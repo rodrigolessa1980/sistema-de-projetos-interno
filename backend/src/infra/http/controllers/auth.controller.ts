@@ -1,10 +1,12 @@
-import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Post, Req, UseGuards } from '@nestjs/common';
 import { LoginUseCase } from '../../../core/use-cases/auth/login.use-case';
 import { RegisterUseCase } from '../../../core/use-cases/auth/register.use-case';
 import { GetCurrentUserUseCase } from '../../../core/use-cases/auth/get-current-user.use-case';
+import { ChangePasswordUseCase } from '../../../core/use-cases/auth/change-password.use-case';
 import { ListTenantsUseCase } from '../../../core/use-cases/tenants/list-tenants.use-case';
 import { LoginDto } from '../dtos/auth/login.dto';
 import { RegisterDto } from '../dtos/auth/register.dto';
+import { ChangePasswordDto } from '../dtos/auth/change-password.dto';
 import { UserPresenter } from '../presenters/user.presenter';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { PermissionsGuard } from '../guards/permissions.guard';
@@ -17,6 +19,7 @@ export class AuthController {
     private readonly loginUseCase: LoginUseCase,
     private readonly registerUseCase: RegisterUseCase,
     private readonly getCurrentUserUseCase: GetCurrentUserUseCase,
+    private readonly changePasswordUseCase: ChangePasswordUseCase,
     private readonly listTenantsUseCase: ListTenantsUseCase,
   ) {}
 
@@ -65,6 +68,21 @@ export class AuthController {
   async me(@Req() req: AuthenticatedRequest) {
     const user = await this.getCurrentUserUseCase.execute(req.userId);
     return { user: UserPresenter.toHTTP(user) };
+  }
+
+  @Post('change-password')
+  @HttpCode(200)
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  async changePassword(
+    @Req() req: AuthenticatedRequest,
+    @Body() body: ChangePasswordDto,
+  ) {
+    await this.changePasswordUseCase.execute({
+      userId: req.userId,
+      currentPassword: body.currentPassword,
+      newPassword: body.newPassword,
+    });
+    return { success: true };
   }
 
   @Get('me/permissions')

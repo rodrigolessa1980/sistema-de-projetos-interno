@@ -10,6 +10,16 @@ import { TenantContext } from './tenant-context';
 const UNSCOPED_MODELS = new Set<string>(['Tenant']);
 
 /**
+ * Modelos com soft delete (coluna `deletedAt`). Em leituras/updates/deletes a
+ * extensão injeta `where.deletedAt = null`, então registros excluídos ficam
+ * invisíveis em TODO o domínio automaticamente — inclusive no /sync/changes
+ * (o snapshot de ids não os inclui, e o cliente os poda). A exclusão em si é um
+ * update que grava `data.deletedAt`; como o alvo ainda tem `deletedAt = null`,
+ * o filtro no `where` não impede a operação.
+ */
+const SOFT_DELETE_MODELS = new Set<string>(['Task', 'Module', 'Epic']);
+
+/**
  * Extensão de isolamento multi-tenant.
  *
  * - Leituras / agregações / update/delete em massa e por id -> injeta `where.tenantId`.
@@ -56,6 +66,10 @@ export const tenantExtension = Prisma.defineExtension({
           default:
             // find*, count, aggregate, groupBy, update, updateMany, delete, deleteMany
             a.where = { ...(a.where as object), tenantId };
+            // Esconde registros soft-deleted de toda leitura/escrita por id.
+            if (SOFT_DELETE_MODELS.has(model)) {
+              a.where = { ...(a.where as object), deletedAt: null };
+            }
         }
 
         return query(a);

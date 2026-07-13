@@ -20,6 +20,7 @@ import {
 import Link from "@/lib/router";
 import { UserDialog } from "@/features/users/user-dialog";
 import { ApiTokensPanel } from "@/features/api-tokens/api-tokens-panel";
+import { ChangePasswordCard } from "@/features/profile/change-password-card";
 import type { User } from "@/types";
 
 export default function ProfilePage() {
@@ -125,6 +126,9 @@ export default function ProfilePage() {
             <TabsTrigger value="tasks" className="data-[state=active]:bg-zinc-800">Minhas Tarefas</TabsTrigger>
             <TabsTrigger value="api" className="data-[state=active]:bg-zinc-800 gap-1.5">
               <KeyRound className="w-3.5 h-3.5" /> API
+            </TabsTrigger>
+            <TabsTrigger value="security" className="data-[state=active]:bg-zinc-800 gap-1.5">
+              <ShieldCheck className="w-3.5 h-3.5" /> Segurança
             </TabsTrigger>
             <TabsTrigger value="activity" className="data-[state=active]:bg-zinc-800">Atividade Recente</TabsTrigger>
           </TabsList>
@@ -251,6 +255,10 @@ export default function ProfilePage() {
 
           <TabsContent value="api" className="mt-4">
             <ApiTokensPanel />
+          </TabsContent>
+
+          <TabsContent value="security" className="mt-4">
+            <ChangePasswordCard />
           </TabsContent>
 
           {/* Atividade Recente */}

@@ -76,7 +76,12 @@ export const Sidebar = memo(function Sidebar() {
       transition={{ duration: 0.2, ease: "easeInOut" }}
       className="relative flex flex-col h-screen bg-zinc-950 border-r border-zinc-800/50 shrink-0 overflow-hidden"
     >
-      <div className="flex items-center justify-between p-4 border-b border-zinc-800/50">
+      <div
+        className={cn(
+          "p-4 border-b border-zinc-800/50",
+          sidebarCollapsed ? "flex flex-col items-center gap-2" : "flex items-center justify-between",
+        )}
+      >
         <AnimatePresence mode="wait">
           {!sidebarCollapsed && (
             <motion.div
@@ -100,20 +105,19 @@ export const Sidebar = memo(function Sidebar() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="w-7 h-7 rounded-lg bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center mx-auto"
+              className="w-7 h-7 rounded-lg bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center"
             >
               <Zap className="w-4 h-4 text-white" />
             </motion.div>
           )}
         </AnimatePresence>
-        {!sidebarCollapsed && (
-          <button
-            onClick={toggleSidebar}
-            className="p-1.5 rounded-md text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800 transition-colors"
-          >
-            <ChevronLeft className="w-4 h-4" />
-          </button>
-        )}
+        <button
+          onClick={toggleSidebar}
+          className="p-1.5 rounded-md text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800 transition-colors"
+          aria-label={sidebarCollapsed ? "Expandir barra lateral" : "Recolher barra lateral"}
+        >
+          {sidebarCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
+        </button>
       </div>
 
       <nav className="flex-1 overflow-y-auto py-3 scrollbar-thin scrollbar-thumb-zinc-800">
@@ -203,12 +207,6 @@ export const Sidebar = memo(function Sidebar() {
       <div className="border-t border-zinc-800/50 p-3">
         {sidebarCollapsed ? (
           <div className="flex flex-col items-center gap-2">
-            <button
-              onClick={toggleSidebar}
-              className="p-2 rounded-lg text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800 transition-colors"
-            >
-              <ChevronRight className="w-4 h-4" />
-            </button>
             <Avatar className="w-8 h-8">
               <AvatarImage src={user?.avatar} />
               <AvatarFallback className="bg-zinc-700 text-xs">{user?.name?.slice(0, 2)}</AvatarFallback>

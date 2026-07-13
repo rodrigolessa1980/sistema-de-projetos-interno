@@ -2,7 +2,6 @@
 
 import { useMemo, useState } from "react";
 import { useTaskStore, useProjectStore, useUserStore } from "@/stores";
-import { quickLogModuleIds } from "@/lib/worklog";
 import { StatusBadge } from "@/components/shared/task-badge";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { formatDate, formatHours, getComplexityLabel, getStatusLabel } from "@/lib/utils";
@@ -117,7 +116,7 @@ function GanttTaskTooltipContent({
 
 export default function GanttPage() {
   const { tasks } = useTaskStore();
-  const { projects, modules } = useProjectStore();
+  const { projects } = useProjectStore();
   const { users } = useUserStore();
 
   // INC-05: mapas de lookup (era find linear por task no render das linhas).
@@ -127,15 +126,16 @@ export default function GanttPage() {
   const [baseYear, setBaseYear] = useState(new Date().getFullYear());
 
   const visibleTasks = useMemo(() => {
-    // Esconde as tarefas-andaime do lançamento rápido de horas (timesheet).
-    const quickLog = quickLogModuleIds(modules);
+    // Toda tarefa aparece na Timeline (inclui lançamentos de hora do timesheet).
+    // Sem startDate/dueDate, é posicionada pela data de criação — o Gantt já usa
+    // createdAt/agora como fallback em getBarPosition.
     const filtered = projectFilter === "all" ? tasks : tasks.filter((t) => t.projectId === projectFilter);
-    return filtered.filter((t) => !quickLog.has(t.moduleId) && (t.startDate || t.dueDate)).sort((a, b) => {
-      const aDate = a.startDate ?? a.dueDate ?? "";
-      const bDate = b.startDate ?? b.dueDate ?? "";
+    return [...filtered].sort((a, b) => {
+      const aDate = a.startDate ?? a.dueDate ?? a.createdAt ?? "";
+      const bDate = b.startDate ?? b.dueDate ?? b.createdAt ?? "";
       return aDate.localeCompare(bDate);
     });
-  }, [tasks, projectFilter, modules]);
+  }, [tasks, projectFilter]);
 
   const months = useMemo(() => {
     return MONTH_NAMES.map((name, i) => ({ name, index: i }));

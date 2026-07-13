@@ -217,6 +217,7 @@ export const ModuleScalarFieldEnum = {
   workDate: 'workDate',
   loggedHours: 'loggedHours',
   loggedByUserId: 'loggedByUserId',
+  deletedAt: 'deletedAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -235,6 +236,7 @@ export const EpicScalarFieldEnum = {
   startDate: 'startDate',
   endDate: 'endDate',
   progress: 'progress',
+  deletedAt: 'deletedAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -274,6 +276,7 @@ export const TaskScalarFieldEnum = {
   urgentBlockedById: 'urgentBlockedById',
   urgentPreviousStatus: 'urgentPreviousStatus',
   order: 'order',
+  deletedAt: 'deletedAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
