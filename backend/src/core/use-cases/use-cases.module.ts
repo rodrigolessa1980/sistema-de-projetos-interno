@@ -47,7 +47,11 @@ import { ListTasksByAssigneeUseCase } from './tasks/list-tasks-by-assignee.use-c
 import { SetTaskUrgentUseCase } from './tasks/set-task-urgent.use-case';
 import { ReorderKanbanTasksUseCase } from './tasks/reorder-kanban-tasks.use-case';
 import { ReleaseUrgencyBlocksUseCase } from './tasks/release-urgency-blocks.use-case';
-import { CreateCommentUseCase, DeleteCommentUseCase } from './tasks/comment.use-cases';
+import {
+  CreateCommentUseCase,
+  UpdateCommentUseCase,
+  DeleteCommentUseCase,
+} from './tasks/comment.use-cases';
 import {
   CreateSubtaskUseCase,
   UpdateSubtaskUseCase,
@@ -150,6 +154,7 @@ const useCases = [
   ReleaseUrgencyBlocksUseCase,
   ReorderKanbanTasksUseCase,
   CreateCommentUseCase,
+  UpdateCommentUseCase,
   DeleteCommentUseCase,
   CreateSubtaskUseCase,
   UpdateSubtaskUseCase,

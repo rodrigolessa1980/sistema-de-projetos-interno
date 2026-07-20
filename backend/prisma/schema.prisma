@@ -422,6 +422,7 @@ model Subtask {
 
   @@index([taskId])
   @@index([tenantId])
+  @@index([tenantId, updatedAt]) // delta sync
   @@map("subtasks")
 }
 
@@ -438,6 +439,7 @@ model TaskDependency {
 
   @@unique([taskId, dependsOnTaskId])
   @@index([tenantId])
+  @@index([tenantId, createdAt]) // delta sync (createdAt > since)
   @@map("task_dependencies")
 }
 
@@ -488,11 +490,13 @@ model Comment {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   content   String   @db.Text
   mentions  Json
+  deletedAt DateTime? // Soft delete: NULL = ativo; preenchido = apagado (mostra "apagado").
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([taskId])
   @@index([tenantId])
+  @@index([tenantId, updatedAt]) // delta sync (updatedAt > since)
   @@map("comments")
 }
 
@@ -571,6 +575,7 @@ model TaskNote {
 
   @@index([taskId])
   @@index([tenantId])
+  @@index([tenantId, updatedAt]) // delta sync
   @@map("task_notes")
 }
 

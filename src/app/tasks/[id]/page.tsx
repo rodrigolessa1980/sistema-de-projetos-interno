@@ -33,6 +33,7 @@ import { NotesPanel } from "@/features/tasks/notes-panel";
 import { AttachmentsPanel } from "@/features/tasks/attachments-panel";
 import { TaskEditDialog } from "@/features/tasks/task-edit-dialog";
 import { TaskAuditDialog } from "@/features/tasks/task-audit-dialog";
+import { CommentItem } from "@/features/tasks/comment-item";
 
 export default function TaskDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -167,12 +168,15 @@ export default function TaskDetailPage() {
   }
 
   const handleAddComment = async () => {
-    if (!commentText.trim()) return;
+    const text = commentText.trim();
+    if (!text) return;
+    // Limpa o input JÁ: o envio é otimista (aparece na hora) e um 2º Enter não
+    // reenvia (evita os duplicados de duplo-clique). Restaura o texto se falhar.
+    setCommentText("");
     try {
-      await addComment({ taskId: id, userId: user?.id ?? "", content: commentText, mentions: [] });
-      setCommentText("");
-      toast.success("Comentário adicionado");
+      await addComment({ taskId: id, userId: user?.id ?? "", content: text, mentions: [] });
     } catch (error) {
+      setCommentText(text);
       toast.error(error instanceof Error ? error.message : "Não foi possível adicionar o comentário.");
     }
   };
@@ -452,24 +456,9 @@ export default function TaskDetailPage() {
                   </div>
                 </div>
 
-                {comments.map((comment) => {
-                  const author = users.find((u) => u.id === comment.userId);
-                  return (
-                    <div key={comment.id} className="flex gap-3 bg-zinc-900/40 border border-zinc-800/40 rounded-xl p-4">
-                      <Avatar className="w-7 h-7 shrink-0">
-                        <AvatarImage src={author?.avatar} />
-                        <AvatarFallback className="text-[9px] bg-zinc-700">{author?.name?.slice(0, 2)}</AvatarFallback>
-                      </Avatar>
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="text-xs font-semibold text-zinc-300">{author?.name}</span>
-                          <span className="text-[10px] text-zinc-600">{formatRelativeTime(comment.createdAt)}</span>
-                        </div>
-                        <p className="text-sm text-zinc-400 leading-relaxed">{comment.content}</p>
-                      </div>
-                    </div>
-                  );
-                })}
+                {comments.map((comment) => (
+                  <CommentItem key={comment.id} comment={comment} />
+                ))}
               </TabsContent>
 
               <TabsContent value="notes" className="mt-3">

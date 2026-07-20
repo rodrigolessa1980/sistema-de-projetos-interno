@@ -126,6 +126,8 @@ interface TaskStore {
   fetchModuleAttachmentsForProject: (projectId: string, moduleIds: string[]) => Promise<void>;
   deleteTimeLog: (id: string, taskId: string) => Promise<void>;
   addComment: (data: Omit<Comment, "id" | "createdAt" | "updatedAt">) => Promise<Comment>;
+  updateComment: (id: string, content: string) => Promise<Comment>;
+  deleteComment: (id: string) => Promise<void>;
   toggleSubtask: (subtaskId: string) => Promise<void>;
   addSubtask: (data: Omit<Subtask, "id" | "createdAt" | "updatedAt">) => Promise<Subtask>;
   addDependency: (data: Omit<TaskDependency, "id" | "createdAt">) => Promise<TaskDependency>;
@@ -346,12 +348,43 @@ export const useTaskStore = create<TaskStore>()(
   },
 
   addComment: async (data) => {
-    const comment = await api.post<Comment>(`tasks/${data.taskId}/comments`, {
-      content: data.content,
+    // Otimista: mostra o comentário na hora (sensação instantânea) e reconcilia
+    // com a versão do servidor; remove se falhar. A UI limpa o input no envio,
+    // então um 2º Enter não duplica (a causa dos "neuro divergente" repetidos).
+    const tempId = `temp-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+    const now = new Date().toISOString();
+    const optimistic: Comment = {
+      ...data,
       mentions: data.mentions ?? [],
-    });
-    set((state) => ({ comments: [...state.comments, comment] }));
-    return comment;
+      id: tempId,
+      createdAt: now,
+      updatedAt: now,
+    };
+    set((state) => ({ comments: [...state.comments, optimistic] }));
+    try {
+      const saved = await api.post<Comment>(`tasks/${data.taskId}/comments`, {
+        content: data.content,
+        mentions: data.mentions ?? [],
+      });
+      set((state) => ({ comments: state.comments.map((c) => (c.id === tempId ? saved : c)) }));
+      return saved;
+    } catch (error) {
+      set((state) => ({ comments: state.comments.filter((c) => c.id !== tempId) }));
+      throw error instanceof Error ? error : new Error("Erro ao comentar");
+    }
+  },
+
+  updateComment: async (id, content) => {
+    const updated = await api.patch<Comment>(`tasks/comments/${id}`, { content });
+    set((state) => ({ comments: state.comments.map((c) => (c.id === id ? updated : c)) }));
+    return updated;
+  },
+
+  deleteComment: async (id) => {
+    // Soft delete: o backend retorna o comentário marcado (deletedAt) — mantém na
+    // thread como "apagado" em vez de sumir; fica no log de auditoria.
+    const updated = await api.delete<Comment>(`tasks/comments/${id}`);
+    set((state) => ({ comments: state.comments.map((c) => (c.id === id ? updated : c)) }));
   },
 
   toggleSubtask: async (subtaskId) => {

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useProjectStore, useTaskStore, useUserStore } from "@/stores";
+import { useViewPrefs } from "@/stores/view-prefs-store";
 import { isQuickLogModule } from "@/lib/worklog";
 import { useAuth } from "@/hooks/use-auth";
 import { StatusBadge, ComplexityBadge } from "@/components/shared/task-badge";
@@ -163,8 +164,10 @@ export default function ProjectDetailPage() {
   const [calendar, setCalendar] = useState<CalendarDay[]>([]);
   const [loadingReport, setLoadingReport] = useState(false);
   // Por padrão esconde módulos/tarefas concluídos (e cancelados) para não poluir.
-  const [showDoneModules, setShowDoneModules] = useState(false);
-  const [showDoneTasks, setShowDoneTasks] = useState(false);
+  const showDoneModules = useViewPrefs((s) => s.showDoneModules);
+  const setShowDoneModules = useViewPrefs((s) => s.setShowDoneModules);
+  const showDoneTasks = useViewPrefs((s) => s.showDoneTasks);
+  const setShowDoneTasks = useViewPrefs((s) => s.setShowDoneTasks);
 
   const projectsLoaded = useProjectStore((s) => s.hasLoaded);
   const projectResult = getProjectById(id);

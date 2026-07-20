@@ -14,6 +14,7 @@ export class PrismaCommentRepository implements ICommentRepository {
       userId: raw.userId,
       content: raw.content,
       mentions: Array.isArray(raw.mentions) ? (raw.mentions as string[]) : [],
+      deletedAt: raw.deletedAt ?? null,
       createdAt: raw.createdAt,
       updatedAt: raw.updatedAt,
     });
@@ -32,7 +33,18 @@ export class PrismaCommentRepository implements ICommentRepository {
     return this.mapToDomain(raw);
   }
 
-  async delete(id: string): Promise<void> {
-    await this.prisma.comment.delete({ where: { id } });
+  async findById(id: string): Promise<Comment | null> {
+    const raw = await this.prisma.comment.findUnique({ where: { id } });
+    return raw ? this.mapToDomain(raw) : null;
+  }
+
+  async updateContent(id: string, content: string): Promise<Comment> {
+    const raw = await this.prisma.comment.update({ where: { id }, data: { content } });
+    return this.mapToDomain(raw);
+  }
+
+  async softDelete(id: string): Promise<Comment> {
+    const raw = await this.prisma.comment.update({ where: { id }, data: { deletedAt: new Date() } });
+    return this.mapToDomain(raw);
   }
 }

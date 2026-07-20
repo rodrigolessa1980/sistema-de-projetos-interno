@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
 import { PageHeader } from "@/components/shared/page-header";
 import { useProjectStore, useTaskStore } from "@/stores";
+import { useViewPrefs } from "@/stores/view-prefs-store";
 import { motion } from "@/lib/motion";
 import { Box, ChevronRight } from "lucide-react";
 import { ProjectAvatar } from "@/components/shared/project-avatar";
@@ -32,8 +32,9 @@ export default function ModulesPage() {
   const { modules, projects } = useProjectStore();
   const hasLoaded = useProjectStore((s) => s.hasLoaded);
   const { tasks, getAttachmentsByModule } = useTaskStore();
-  // Por padrão esconde módulos concluídos para não poluir a lista.
-  const [showDoneModules, setShowDoneModules] = useState(false);
+  // Por padrão esconde módulos concluídos; a escolha fica salva (persistida).
+  const showDoneModules = useViewPrefs((s) => s.showDoneModules);
+  const setShowDoneModules = useViewPrefs((s) => s.setShowDoneModules);
 
   return (
     <>

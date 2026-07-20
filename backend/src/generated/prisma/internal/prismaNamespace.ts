@@ -2234,6 +2234,7 @@ export const CommentScalarFieldEnum = {
   userId: 'userId',
   content: 'content',
   mentions: 'mentions',
+  deletedAt: 'deletedAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

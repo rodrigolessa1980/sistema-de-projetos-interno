@@ -7,6 +7,8 @@ import { PageLoading } from "@/components/shared/page-loading";
 import { useProjectStore } from "@/stores";
 import { useAuth } from "@/hooks/use-auth";
 import { useUserStore } from "@/stores";
+import { useViewPrefs } from "@/stores/view-prefs-store";
+import { Switch } from "@/components/ui/switch";
 import { formatDate, todayISO } from "@/lib/utils";
 import { motion } from "@/lib/motion";
 import { FolderKanban, Plus, Users, Calendar, TrendingUp, MoreVertical, Edit, Trash2, Eye, Crown, UserCog, ImagePlus, X, Link2, ExternalLink, Box, GripVertical, ListOrdered, Flag, Building2 } from "lucide-react";
@@ -88,9 +90,21 @@ export default function ProjectsPage() {
   const companyItems = useMemo(() => companies.map((c) => ({ value: c.id, label: c.name })), [companies]);
   const userItems = useMemo(() => users.map((u) => ({ value: u.id, label: u.name })), [users]);
 
-  const visibleProjects = useMemo(
+  const showDoneProjects = useViewPrefs((s) => s.showDoneProjects);
+  const setShowDoneProjects = useViewPrefs((s) => s.setShowDoneProjects);
+
+  const scopedProjects = useMemo(
     () => (isAdmin ? projects : projects.filter((p) => p.developerIds.includes(user?.id ?? "") || p.ownerId === user?.id)),
     [isAdmin, projects, user?.id],
+  );
+  const doneProjectsCount = useMemo(
+    () => scopedProjects.filter((p) => p.status === "CONCLUIDO" || p.progress >= 100).length,
+    [scopedProjects],
+  );
+  // Por padrão esconde projetos concluídos (100%/CONCLUIDO) — menos poluição; persistido.
+  const visibleProjects = useMemo(
+    () => (showDoneProjects ? scopedProjects : scopedProjects.filter((p) => p.status !== "CONCLUIDO" && p.progress < 100)),
+    [scopedProjects, showDoneProjects],
   );
 
   // INC-05: mapas de lookup (era find/filter por projeto sobre todos os users no JSX).
@@ -263,6 +277,14 @@ export default function ProjectsPage() {
       />
 
       <div className="p-6 w-full">
+        {hasLoaded && doneProjectsCount > 0 && (
+          <div className="flex items-center justify-end mb-4">
+            <label className="flex items-center gap-2 text-xs text-zinc-400 cursor-pointer select-none">
+              <Switch size="sm" checked={showDoneProjects} onCheckedChange={setShowDoneProjects} />
+              Mostrar concluídos ({doneProjectsCount})
+            </label>
+          </div>
+        )}
         {!hasLoaded ? (
           <PageLoading label="Carregando projetos..." />
         ) : visibleProjects.length === 0 ? (

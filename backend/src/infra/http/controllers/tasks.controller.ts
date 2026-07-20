@@ -28,7 +28,11 @@ import { SetTaskUrgentDto } from '../dtos/tasks/set-task-urgent.dto';
 import { ReorderKanbanTasksDto } from '../dtos/tasks/reorder-kanban-tasks.dto';
 import { TaskPresenter, TaskResponse } from '../presenters/task.presenter';
 import { UserRole } from '../../../core/domain/entities/enums';
-import { CreateCommentUseCase, DeleteCommentUseCase } from '../../../core/use-cases/tasks/comment.use-cases';
+import {
+  CreateCommentUseCase,
+  UpdateCommentUseCase,
+  DeleteCommentUseCase,
+} from '../../../core/use-cases/tasks/comment.use-cases';
 import {
   CreateSubtaskUseCase,
   UpdateSubtaskUseCase,
@@ -48,7 +52,7 @@ import {
   UpdateTaskNoteUseCase,
   DeleteTaskNoteUseCase,
 } from '../../../core/use-cases/tasks/task-note.use-cases';
-import { CreateCommentDto } from '../dtos/tasks/comment.dto';
+import { CreateCommentDto, UpdateCommentDto } from '../dtos/tasks/comment.dto';
 import { CreateSubtaskDto, UpdateSubtaskDto } from '../dtos/tasks/subtask.dto';
 import { CreateTaskDependencyDto } from '../dtos/tasks/task-dependency.dto';
 import { CreateTaskAttachmentDto } from '../dtos/tasks/create-task-attachment.dto';
@@ -66,6 +70,7 @@ function commentToHTTP(c: Comment) {
     userId: c.userId,
     content: c.content,
     mentions: c.mentions,
+    deletedAt: c.deletedAt ? c.deletedAt.toISOString() : null,
     createdAt: c.createdAt.toISOString(),
     updatedAt: c.updatedAt.toISOString(),
   };
@@ -131,6 +136,7 @@ export class TasksController {
     private readonly setTaskUrgentUseCase: SetTaskUrgentUseCase,
     private readonly reorderKanbanTasksUseCase: ReorderKanbanTasksUseCase,
     private readonly createCommentUseCase: CreateCommentUseCase,
+    private readonly updateCommentUseCase: UpdateCommentUseCase,
     private readonly deleteCommentUseCase: DeleteCommentUseCase,
     private readonly createSubtaskUseCase: CreateSubtaskUseCase,
     private readonly updateSubtaskUseCase: UpdateSubtaskUseCase,
@@ -284,11 +290,27 @@ export class TasksController {
     return commentToHTTP(comment);
   }
 
+  // Editar/apagar: SEM @RequirePermission — a autorização (admin OU autor) é
+  // feita no use-case, para o autor poder gerenciar o próprio comentário.
+  @Patch('comments/:commentId')
+  async editComment(
+    @Req() req: AuthenticatedRequest,
+    @Param('commentId') commentId: string,
+    @Body() body: UpdateCommentDto,
+  ) {
+    const comment = await this.updateCommentUseCase.execute(
+      commentId,
+      body.content,
+      req.userId,
+      req.userRole,
+    );
+    return commentToHTTP(comment);
+  }
+
   @Delete('comments/:commentId')
-  @RequirePermission('tasks:update')
-  async removeComment(@Param('commentId') commentId: string) {
-    await this.deleteCommentUseCase.execute(commentId);
-    return { success: true };
+  async removeComment(@Req() req: AuthenticatedRequest, @Param('commentId') commentId: string) {
+    const comment = await this.deleteCommentUseCase.execute(commentId, req.userId, req.userRole);
+    return commentToHTTP(comment);
   }
 
   // ── Subtarefas ───────────────────────────────────────────────────────────

@@ -247,6 +247,8 @@ export interface Comment {
   userId: string;
   content: string;
   mentions: string[];
+  /** Soft delete: preenchido = comentário apagado (mostra "apagado" na thread). */
+  deletedAt?: string | null;
   createdAt: string;
   updatedAt: string;
 }

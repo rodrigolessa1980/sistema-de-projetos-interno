@@ -10,3 +10,9 @@ export class CreateCommentDto {
   @IsString({ each: true })
   mentions?: string[];
 }
+
+export class UpdateCommentDto {
+  @IsString()
+  @IsNotEmpty({ message: 'O comentário não pode ser vazio' })
+  content: string;
+}

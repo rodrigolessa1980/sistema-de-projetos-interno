@@ -155,7 +155,7 @@ export class PrismaTaskRepository implements ITaskRepository {
       // moduleId anterior: se a tarefa mudou de módulo, ambos precisam recalcular.
       const previous = await tx.task.findUnique({
         where: { id: task.id },
-        select: { moduleId: true },
+        select: { moduleId: true, status: true },
       });
       const updated = await tx.task.update({
         where: { id: task.id },
@@ -182,7 +182,15 @@ export class PrismaTaskRepository implements ITaskRepository {
           order: task.order,
         },
       });
-      await this.syncHierarchy(tx, [previous?.moduleId, updated.moduleId]);
+      // PERF: a derivação módulo/projeto só depende de STATUS e MÓDULO. Editar
+      // título, prazo, horas, responsável, etc. NÃO muda a hierarquia — então só
+      // recalcula quando um desses dois mudou (antes recomputava o projeto
+      // inteiro a cada escrita, o gargalo "porco").
+      const affectsHierarchy =
+        previous?.status !== updated.status || previous?.moduleId !== updated.moduleId;
+      if (affectsHierarchy) {
+        await this.syncHierarchy(tx, [previous?.moduleId, updated.moduleId]);
+      }
       return updated;
     });
     return this.mapToDomain(raw);

@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { ForbiddenException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { Comment } from '../../domain/entities/comment.entity';
 import type { ICommentRepository } from '../../domain/repositories/comment-repository.interface';
 import { ICommentRepositoryToken } from '../../domain/repositories/comment-repository.interface';
@@ -6,7 +6,14 @@ import type { ITaskRepository } from '../../domain/repositories/task-repository.
 import { ITaskRepositoryToken } from '../../domain/repositories/task-repository.interface';
 import { NotificationService } from '../../services/notification.service';
 import { AuditService } from '../../services/audit.service';
-import { NotificationType, AuditAction } from '../../domain/entities/enums';
+import { NotificationType, AuditAction, UserRole } from '../../domain/entities/enums';
+
+/** Só o admin ou o próprio autor pode editar/apagar o comentário. */
+function assertCanManage(comment: Comment, actorUserId: string, actorRole: UserRole): void {
+  if (actorRole !== UserRole.ADMIN && comment.userId !== actorUserId) {
+    throw new ForbiddenException('Você só pode editar ou apagar os seus próprios comentários.');
+  }
+}
 
 export interface CreateCommentInput {
   taskId: string;
@@ -65,13 +72,39 @@ export class CreateCommentUseCase {
 }
 
 @Injectable()
+export class UpdateCommentUseCase {
+  constructor(
+    @Inject(ICommentRepositoryToken)
+    private readonly commentRepository: ICommentRepository,
+    private readonly audit: AuditService,
+  ) {}
+
+  async execute(id: string, content: string, actorUserId: string, actorRole: UserRole): Promise<Comment> {
+    const trimmed = content.trim();
+    if (!trimmed) throw new Error('O comentário não pode ser vazio');
+    const comment = await this.commentRepository.findById(id);
+    if (!comment) throw new NotFoundException('Comentário não encontrado.');
+    if (comment.deletedAt) throw new ForbiddenException('Comentário apagado não pode ser editado.');
+    assertCanManage(comment, actorUserId, actorRole);
+    this.audit.describe({ action: AuditAction.UPDATED, description: 'Editou um comentário' });
+    return this.commentRepository.updateContent(id, trimmed);
+  }
+}
+
+@Injectable()
 export class DeleteCommentUseCase {
   constructor(
     @Inject(ICommentRepositoryToken)
     private readonly commentRepository: ICommentRepository,
+    private readonly audit: AuditService,
   ) {}
 
-  async execute(id: string): Promise<void> {
-    await this.commentRepository.delete(id);
+  async execute(id: string, actorUserId: string, actorRole: UserRole): Promise<Comment> {
+    const comment = await this.commentRepository.findById(id);
+    if (!comment) throw new NotFoundException('Comentário não encontrado.');
+    assertCanManage(comment, actorUserId, actorRole);
+    this.audit.describe({ action: AuditAction.DELETED, description: 'Apagou um comentário' });
+    // Soft delete: o comentário permanece (marcado "apagado") para a thread e o log.
+    return this.commentRepository.softDelete(id);
   }
 }

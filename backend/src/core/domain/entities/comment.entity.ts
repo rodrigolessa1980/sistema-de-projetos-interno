@@ -4,12 +4,13 @@ export interface CommentProps {
   userId: string;
   content: string;
   mentions?: string[];
+  deletedAt?: Date | null;
   createdAt?: Date;
   updatedAt?: Date;
 }
 
 export class Comment {
-  private props: Required<CommentProps>;
+  private props: Required<Omit<CommentProps, 'deletedAt'>> & { deletedAt: Date | null };
 
   constructor(props: CommentProps) {
     this.props = {
@@ -18,6 +19,7 @@ export class Comment {
       userId: props.userId,
       content: props.content,
       mentions: props.mentions ?? [],
+      deletedAt: props.deletedAt ?? null,
       createdAt: props.createdAt || new Date(),
       updatedAt: props.updatedAt || new Date(),
     };
@@ -28,6 +30,7 @@ export class Comment {
   public get userId(): string { return this.props.userId; }
   public get content(): string { return this.props.content; }
   public get mentions(): string[] { return this.props.mentions; }
+  public get deletedAt(): Date | null { return this.props.deletedAt; }
   public get createdAt(): Date { return this.props.createdAt; }
   public get updatedAt(): Date { return this.props.updatedAt; }
 }

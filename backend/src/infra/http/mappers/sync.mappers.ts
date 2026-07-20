@@ -127,6 +127,7 @@ export function mapComment(c: any) {
     userId: c.userId,
     content: c.content,
     mentions: Array.isArray(c.mentions) ? c.mentions : [],
+    deletedAt: toISO(c.deletedAt),
     createdAt: toISO(c.createdAt),
     updatedAt: toISO(c.updatedAt),
   };
