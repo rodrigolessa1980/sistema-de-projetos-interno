@@ -21,7 +21,13 @@ export class SyncStreamController {
 
     const changes = syncEvents.asObservable().pipe(
       filter((event) => event.tenantId === tenantId),
-      map(() => ({ data: { type: 'changed' } }) as MessageEvent),
+      map((event) =>
+        event.change
+          ? // Push do dado da entidade folha: o cliente aplica sem buscar.
+            ({ data: { type: 'entity', change: event.change } } as MessageEvent)
+          : // Sinal genérico: o cliente busca o delta coalescido.
+            ({ data: { type: 'changed' } } as MessageEvent),
+      ),
     );
 
     // Heartbeat (comentário SSE) a cada 30s p/ não deixar a conexão ociosa cair.

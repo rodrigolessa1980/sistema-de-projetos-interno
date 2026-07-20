@@ -366,7 +366,11 @@ export const useTaskStore = create<TaskStore>()(
         content: data.content,
         mentions: data.mentions ?? [],
       });
-      set((state) => ({ comments: state.comments.map((c) => (c.id === tempId ? saved : c)) }));
+      // Remove o temp E qualquer cópia já inserida pelo push SSE (o ator também
+      // recebe o próprio evento) — dedupe por id, sem duplicar na thread.
+      set((state) => ({
+        comments: [...state.comments.filter((c) => c.id !== tempId && c.id !== saved.id), saved],
+      }));
       return saved;
     } catch (error) {
       set((state) => ({ comments: state.comments.filter((c) => c.id !== tempId) }));
