@@ -1,15 +1,17 @@
 "use client";
 
+import { useState } from "react";
 import { PageHeader } from "@/components/shared/page-header";
 import { useProjectStore, useTaskStore } from "@/stores";
 import { motion } from "@/lib/motion";
 import { Box, ChevronRight } from "lucide-react";
 import { ProjectAvatar } from "@/components/shared/project-avatar";
 import { Progress } from "@/components/ui/progress";
+import { Switch } from "@/components/ui/switch";
 import { EmptyState } from "@/components/shared/empty-state";
 import { PageLoading } from "@/components/shared/page-loading";
 import { Badge } from "@/components/ui/badge";
-import { cn, moduleColorFromId, shortId } from "@/lib/utils";
+import { cn, moduleColorFromId, shortId, isDone, isModuleDone, calculateProgress } from "@/lib/utils";
 import Link from "@/lib/router";
 import { ModuleActions } from "@/features/modules/module-actions";
 import type { ModuleStatus } from "@/types";
@@ -30,6 +32,8 @@ export default function ModulesPage() {
   const { modules, projects } = useProjectStore();
   const hasLoaded = useProjectStore((s) => s.hasLoaded);
   const { tasks, getAttachmentsByModule } = useTaskStore();
+  // Por padrão esconde módulos concluídos para não poluir a lista.
+  const [showDoneModules, setShowDoneModules] = useState(false);
 
   return (
     <>
@@ -44,21 +48,46 @@ export default function ModulesPage() {
           <EmptyState icon={Box} title="Nenhum módulo" description="Os módulos serão exibidos aqui." />
         ) : (
           <div className="space-y-6">
+            <div className="flex items-center justify-end">
+              <label className="flex items-center gap-2 text-xs text-zinc-400 cursor-pointer select-none">
+                <Switch size="sm" checked={showDoneModules} onCheckedChange={(v) => setShowDoneModules(v)} />
+                Mostrar concluídos
+              </label>
+            </div>
             {projects.map((project) => {
               const projectModules = modules.filter((m) => m.projectId === project.id);
               if (projectModules.length === 0) return null;
+              const doneModules = projectModules.filter((m) => isModuleDone(m.status)).length;
+              const visibleModules = showDoneModules
+                ? projectModules
+                : projectModules.filter((m) => !isModuleDone(m.status));
               return (
-                <div key={project.id}>
-                  <div className="flex items-center gap-2 mb-3">
-                    <ProjectAvatar name={project.name} color={project.color} avatar={project.avatar} size="xs" />
-                    <h2 className="text-sm font-semibold text-zinc-300">{project.name}</h2>
-                    <span className="text-xs text-zinc-600">({projectModules.length} módulos)</span>
+                <div key={project.id} className="rounded-2xl border border-zinc-800/60 bg-zinc-900/30 p-4 sm:p-5">
+                  {/* O PROJETO é o card (a seção). Cabeçalho + progresso + módulos
+                      ficam DENTRO, deixando a hierarquia visual explícita. */}
+                  <div className="flex items-center gap-3 mb-3">
+                    <ProjectAvatar name={project.name} color={project.color} avatar={project.avatar} size="sm" />
+                    <div className="min-w-0">
+                      <h2 className="text-base font-bold text-zinc-100 truncate leading-tight">{project.name}</h2>
+                      <span className="text-xs text-zinc-500">
+                        {doneModules} de {projectModules.length} módulo{projectModules.length !== 1 ? "s" : ""} concluído{doneModules !== 1 ? "s" : ""}
+                      </span>
+                    </div>
+                    <span className="ml-auto text-sm font-bold text-zinc-200 shrink-0">
+                      {calculateProgress(doneModules, projectModules.length)}%
+                    </span>
                   </div>
+                  <Progress value={calculateProgress(doneModules, projectModules.length)} className="h-1.5 bg-zinc-800 mb-4" />
+                  {visibleModules.length === 0 ? (
+                    <p className="text-xs text-zinc-600 italic py-2">
+                      Todos os módulos deste projeto estão concluídos e ocultos.
+                    </p>
+                  ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                    {projectModules.map((mod, i) => {
+                    {visibleModules.map((mod, i) => {
                       const modTasks = tasks.filter((t) => t.moduleId === mod.id);
                       const modAttachments = getAttachmentsByModule(mod.id);
-                      const completedTasks = modTasks.filter((t) => t.status === "CONCLUIDA").length;
+                      const completedTasks = modTasks.filter((t) => isDone(t.status)).length;
                       const status = mod.status ?? "INICIADO";
 
                       return (
@@ -110,6 +139,7 @@ export default function ModulesPage() {
                       );
                     })}
                   </div>
+                  )}
                 </div>
               );
             })}

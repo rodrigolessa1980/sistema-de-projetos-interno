@@ -22,6 +22,16 @@ import { IApiTokenRepositoryToken } from '../../core/domain/repositories/api-tok
 import { PrismaApiTokenRepository } from './repositories/prisma-api-token.repository';
 import { ITenantRepositoryToken } from '../../core/domain/repositories/tenant-repository.interface';
 import { PrismaTenantRepository } from './repositories/prisma-tenant.repository';
+import { ICommentRepositoryToken } from '../../core/domain/repositories/comment-repository.interface';
+import { PrismaCommentRepository } from './repositories/prisma-comment.repository';
+import { ISubtaskRepositoryToken } from '../../core/domain/repositories/subtask-repository.interface';
+import { PrismaSubtaskRepository } from './repositories/prisma-subtask.repository';
+import { ITaskDependencyRepositoryToken } from '../../core/domain/repositories/task-dependency-repository.interface';
+import { PrismaTaskDependencyRepository } from './repositories/prisma-task-dependency.repository';
+import { ITaskAttachmentRepositoryToken } from '../../core/domain/repositories/task-attachment-repository.interface';
+import { PrismaTaskAttachmentRepository } from './repositories/prisma-task-attachment.repository';
+import { ITaskNoteRepositoryToken } from '../../core/domain/repositories/task-note-repository.interface';
+import { PrismaTaskNoteRepository } from './repositories/prisma-task-note.repository';
 
 @Global()
 @Module({
@@ -38,6 +48,11 @@ import { PrismaTenantRepository } from './repositories/prisma-tenant.repository'
     { provide: IEpicRepositoryToken, useClass: PrismaEpicRepository },
     { provide: IApiTokenRepositoryToken, useClass: PrismaApiTokenRepository },
     { provide: ITenantRepositoryToken, useClass: PrismaTenantRepository },
+    { provide: ICommentRepositoryToken, useClass: PrismaCommentRepository },
+    { provide: ISubtaskRepositoryToken, useClass: PrismaSubtaskRepository },
+    { provide: ITaskDependencyRepositoryToken, useClass: PrismaTaskDependencyRepository },
+    { provide: ITaskAttachmentRepositoryToken, useClass: PrismaTaskAttachmentRepository },
+    { provide: ITaskNoteRepositoryToken, useClass: PrismaTaskNoteRepository },
   ],
   exports: [
     IUserRepositoryToken,
@@ -51,6 +66,11 @@ import { PrismaTenantRepository } from './repositories/prisma-tenant.repository'
     IEpicRepositoryToken,
     IApiTokenRepositoryToken,
     ITenantRepositoryToken,
+    ICommentRepositoryToken,
+    ISubtaskRepositoryToken,
+    ITaskDependencyRepositoryToken,
+    ITaskAttachmentRepositoryToken,
+    ITaskNoteRepositoryToken,
   ],
 })
 export class DatabaseModule {}

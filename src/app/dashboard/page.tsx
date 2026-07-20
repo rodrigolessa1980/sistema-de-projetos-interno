@@ -7,7 +7,7 @@ import { StatusBadge } from "@/components/shared/task-badge";
 import { useMetrics } from "@/hooks/use-metrics";
 import { useProjectStore, useTaskStore, useUserStore, useAuthStore } from "@/stores";
 import { useAuth } from "@/hooks/use-auth";
-import { formatDate, formatRelativeTime, getStatusLabel } from "@/lib/utils";
+import { formatDate, formatRelativeTime, getStatusLabel, getScheduleStatus, isOpen, todayISO } from "@/lib/utils";
 import { motion } from "@/lib/motion";
 import {
   FolderKanban, ListTodo, CheckCircle2, AlertTriangle, Clock,
@@ -19,6 +19,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { MetricsAreaChart } from "@/components/shared/mui-charts";
 import Link from "@/lib/router";
 import { Badge } from "@/components/ui/badge";
+import type { Task } from "@/types";
 import {
   PeriodFilter,
   rangeFromPreset,
@@ -52,14 +53,14 @@ export default function DashboardPage() {
   }, [activeSession]);
 
   // `today` como valor estável (string) — não recomputa memos a cada render.
-  const today = useMemo(() => new Date().toISOString().split("T")[0], []);
+  const today = useMemo(() => todayISO(), []);
   const todayInRange = useMemo(() => isInRange(today, range), [today, range]);
 
   // INC-05: derivações pesadas em useMemo (deps reais) — NÃO recalculam a cada tick
   // do cronômetro (setTick) nem a cada poll do delta sync.
   const overdueTasks = useMemo(
-    () => tasks.filter((t) => t.dueDate && t.dueDate < today && !["CONCLUIDA", "CANCELADA"].includes(t.status)),
-    [tasks, today],
+    () => tasks.filter((t) => getScheduleStatus(t).status === "atrasada"),
+    [tasks],
   );
   const overdueCount = overdueTasks.length;
   const overdueProjects = useMemo(() => new Set(overdueTasks.map((t) => t.projectId)).size, [overdueTasks]);
@@ -103,31 +104,47 @@ export default function DashboardPage() {
     }
   }
 
-  const myTasks = useMemo(
-    () => (isAdmin
-      ? tasks.filter((t) => ["EM_DESENVOLVIMENTO", "EM_REVISAO"].includes(t.status)).slice(0, 5)
-      : tasks.filter((t) => t.assigneeId === user?.id).slice(0, 5)),
-    [isAdmin, tasks, user?.id],
-  );
-
   const projectById = useMemo(() => new Map(projects.map((p) => [p.id, p])), [projects]);
 
   // Tarefas ABERTAS atribuídas ao usuário logado — destaque principal do painel.
-  // Ordem: urgentes primeiro, depois por prazo mais próximo (sem prazo por último).
-  const myAssignedTasks = useMemo(
-    () =>
-      tasks
-        .filter((t) => t.assigneeId === user?.id && !["CONCLUIDA", "CANCELADA"].includes(t.status))
-        .sort((a, b) => {
-          if (!!a.isUrgent !== !!b.isUrgent) return a.isUrgent ? -1 : 1;
-          return (a.dueDate ?? "9999-99-99").localeCompare(b.dueDate ?? "9999-99-99");
-        }),
-    [tasks, user?.id],
-  );
+  // "Próximas" primeiro: urgentes no topo, depois pela data mais próxima entre
+  // início planejado e prazo (as sem data por último).
+  const myAssignedTasks = useMemo(() => {
+    const soonest = (t: Task) => {
+      const dates = [t.startDate, t.dueDate].filter(Boolean) as string[];
+      return dates.length ? dates.sort()[0] : "9999-99-99";
+    };
+    return tasks
+      .filter((t) => t.assigneeId === user?.id && isOpen(t.status))
+      .sort((a, b) => {
+        if (!!a.isUrgent !== !!b.isUrgent) return a.isUrgent ? -1 : 1;
+        return soonest(a).localeCompare(soonest(b));
+      });
+  }, [tasks, user?.id]);
   const myOverdueCount = useMemo(
-    () => myAssignedTasks.filter((t) => t.dueDate && t.dueDate < today).length,
-    [myAssignedTasks, today],
+    () => myAssignedTasks.filter((t) => getScheduleStatus(t).isLate).length,
+    [myAssignedTasks],
   );
+
+  // Card inferior: admin vê o que está em andamento no time; o dev vê a MESMA
+  // fila priorizada de abertas do topo (sem concluídas), agora com horas.
+  const myTasks = useMemo(
+    () => (isAdmin
+      ? tasks.filter((t) => ["EM_DESENVOLVIMENTO", "EM_REVISAO"].includes(t.status)).slice(0, 5)
+      : myAssignedTasks.slice(0, 5)),
+    [isAdmin, tasks, myAssignedTasks],
+  );
+
+  // Levantamento fixo (independe do filtro do topo): semana atual (seg–dom) e mês.
+  const weekRange = useMemo(() => rangeFromPreset("semana"), []);
+  const monthRange = useMemo(() => rangeFromPreset("mes"), []);
+  const rollup = useMemo(() => {
+    const summarize = (r: DateRange) => ({
+      done: tasks.filter((t) => isInRange(t.completedAt, r)).length,
+      hours: timeLogs.filter((tl) => isInRange(tl.date, r)).reduce((acc, tl) => acc + tl.hours, 0),
+    });
+    return { week: summarize(weekRange), month: summarize(monthRange) };
+  }, [tasks, timeLogs, weekRange, monthRange]);
 
   // Ranking de devs: passada única (era O(users × (tasks+projects)) a cada segundo).
   const devRanking = useMemo(() => {
@@ -246,7 +263,8 @@ export default function DashboardPage() {
               {myAssignedTasks.slice(0, 6).map((task) => {
                 const project = projectById.get(task.projectId);
                 const isActive = activeSession?.taskId === task.id;
-                const isOverdue = task.dueDate && task.dueDate < today;
+                const isOverdue = getScheduleStatus(task).status === "atrasada";
+                const startsFuture = task.startDate && task.startDate > today;
                 return (
                   <Link
                     key={task.id}
@@ -273,11 +291,15 @@ export default function DashboardPage() {
                           {project.name}
                         </span>
                       )}
-                      {task.dueDate && (
+                      {startsFuture ? (
+                        <span className="text-[11px] ml-auto text-blue-400">
+                          início {formatDate(task.startDate!)}
+                        </span>
+                      ) : task.dueDate ? (
                         <span className={`text-[11px] ml-auto ${isOverdue ? "text-orange-400 font-medium" : "text-zinc-500"}`}>
                           {isOverdue ? "atrasada · " : ""}{formatDate(task.dueDate)}
                         </span>
-                      )}
+                      ) : null}
                     </div>
                   </Link>
                 );
@@ -318,6 +340,39 @@ export default function DashboardPage() {
             title="Bloqueadas" value={summary.blockedTasks} subtitle="requer atenção"
             icon={AlertTriangle} color="red" delay={0.2} trend={-3}
           />
+        </div>
+
+        {/* ── Levantamento fixo: semana atual (seg–dom) e mês ── */}
+        <div className="grid grid-cols-2 gap-4">
+          {[
+            { label: "Esta semana", sub: "seg — dom", data: rollup.week },
+            { label: "Este mês", sub: monthRange.label, data: rollup.month },
+          ].map((r, i) => (
+            <motion.div
+              key={r.label}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 + i * 0.05 }}
+              className="bg-zinc-900/60 border border-zinc-800/50 rounded-xl p-4"
+            >
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-sm font-semibold text-zinc-100">{r.label}</h3>
+                <span className="text-[10px] uppercase tracking-wide text-zinc-600">{r.sub}</span>
+              </div>
+              <div className="flex items-end gap-8">
+                <div>
+                  <p className="text-2xl font-black tabular-nums text-white leading-none">{r.data.done}</p>
+                  <p className="text-[11px] text-zinc-500 mt-1">concluídas</p>
+                </div>
+                <div>
+                  <p className="text-2xl font-black tabular-nums text-white leading-none">
+                    {r.data.hours >= 1 ? `${r.data.hours.toFixed(1)}h` : `${Math.round(r.data.hours * 60)}m`}
+                  </p>
+                  <p className="text-[11px] text-zinc-500 mt-1">horas registradas</p>
+                </div>
+              </div>
+            </motion.div>
+          ))}
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
@@ -457,7 +512,7 @@ export default function DashboardPage() {
               <h3 className="text-sm font-semibold text-zinc-100">
                 {isAdmin ? "Tarefas em Andamento" : "Minhas Tarefas"}
               </h3>
-              <Link href="/tasks" className="text-xs text-violet-400 hover:text-violet-300 flex items-center gap-1">
+              <Link href={isAdmin ? "/kanban" : "/my-queue"} className="text-xs text-violet-400 hover:text-violet-300 flex items-center gap-1">
                 Ver todas <ArrowRight className="w-3 h-3" />
               </Link>
             </div>
@@ -479,7 +534,7 @@ export default function DashboardPage() {
                 const hoursDisplay = hoursToday >= 0.017
                   ? hoursToday >= 1 ? `${hoursToday.toFixed(1)}h` : `${Math.round(hoursToday * 60)}m`
                   : null;
-                const isOverdue = task.dueDate && task.dueDate < today;
+                const isOverdue = getScheduleStatus(task).status === "atrasada";
                 return (
                   <Link
                     key={task.id}

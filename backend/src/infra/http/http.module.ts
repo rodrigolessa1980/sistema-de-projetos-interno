@@ -18,10 +18,12 @@ import { BootstrapController } from './controllers/bootstrap.controller';
 import { SyncController } from './controllers/sync.controller';
 import { SyncStreamController } from './controllers/sync-stream.controller';
 import { TrashController } from './controllers/trash.controller';
+import { AuditController } from './controllers/audit.controller';
 import { PermissionsGuard } from './guards/permissions.guard';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { SseAuthGuard } from './guards/sse-auth.guard';
 import { SyncEmitInterceptor } from './interceptors/sync-emit.interceptor';
+import { AuditInterceptor } from './interceptors/audit.interceptor';
 
 @Module({
   imports: [UseCasesModule],
@@ -32,6 +34,8 @@ import { SyncEmitInterceptor } from './interceptors/sync-emit.interceptor';
     { provide: APP_INTERCEPTOR, useClass: TenantContextInterceptor },
     // INC-14: emite evento de mudança (por tenant) após escritas HTTP -> alimenta o SSE.
     { provide: APP_INTERCEPTOR, useClass: SyncEmitInterceptor },
+    // Audit log: registra escritas mutantes (ator + tenant + entidade).
+    { provide: APP_INTERCEPTOR, useClass: AuditInterceptor },
   ],
   controllers: [
     HealthController,
@@ -50,6 +54,7 @@ import { SyncEmitInterceptor } from './interceptors/sync-emit.interceptor';
     SyncController,
     SyncStreamController,
     TrashController,
+    AuditController,
   ],
 })
 export class HttpModule {}

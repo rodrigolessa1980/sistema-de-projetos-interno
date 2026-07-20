@@ -13,7 +13,7 @@ import {
 import { useUIStore } from "@/stores";
 import { useAuth } from "@/hooks/use-auth";
 import { formatRelativeTime } from "@/lib/utils";
-import { cn } from "@/lib/utils";
+import { cn, isTerminal } from "@/lib/utils";
 import { useTaskStore, useProjectStore } from "@/stores";
 import { useActiveWorkSession } from "@/hooks/use-work-session";
 import Link from "@/lib/router";
@@ -53,7 +53,7 @@ export function Header({ title }: { title?: string }) {
   // Tarefas vencidas: dueDate no passado e status não finalizado
   const overdueTasks = tasks.filter((t) => {
     if (!t.dueDate) return false;
-    if (t.status === "CONCLUIDA" || t.status === "CANCELADA") return false;
+    if (isTerminal(t.status)) return false;
     // Desenvolvedor vê apenas as suas; admin vê todas
     if (!isAdmin && t.assigneeId !== user?.id) return false;
     const due = new Date(t.dueDate);

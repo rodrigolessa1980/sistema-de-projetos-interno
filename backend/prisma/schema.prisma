@@ -146,6 +146,7 @@ model User {
   isActive     Boolean   @default(true)
   isApproved   Boolean   @default(false)
   lastLoginAt  DateTime?
+  deletedAt    DateTime? // Soft delete: NULL = ativo; preenchido = excluído.
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
 

@@ -66,6 +66,10 @@ export class UpdateTaskDto {
   dueDate?: string | null;
 
   @IsOptional()
+  @IsDateString()
+  completedAt?: string | null;
+
+  @IsOptional()
   isUrgent?: boolean;
 
   @IsOptional()

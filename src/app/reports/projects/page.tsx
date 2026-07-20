@@ -7,6 +7,7 @@ import { ClipboardList, CheckCircle2, Clock, AlertTriangle, Users, Box } from "l
 import { PrintButton } from "@/components/shared/print-button";
 import { StatusBadge } from "@/components/shared/task-badge";
 import { ProjectAvatar } from "@/components/shared/project-avatar";
+import { getScheduleStatus, isDone } from "@/lib/utils";
 import Link from "@/lib/router";
 
 export default function ProjectsReportPage() {
@@ -14,17 +15,13 @@ export default function ProjectsReportPage() {
   const { projects, modules } = useProjectStore();
   const { users } = useUserStore();
 
-  const today = new Date().toISOString().split("T")[0];
-
   const projectStats = projects.map((project) => {
     const projectTasks = tasks.filter((t) => t.projectId === project.id);
     const projectModules = modules.filter((m) => m.projectId === project.id);
-    const completed = projectTasks.filter((t) => t.status === "CONCLUIDA").length;
+    const completed = projectTasks.filter((t) => isDone(t.status)).length;
     const inProgress = projectTasks.filter((t) => t.status === "EM_DESENVOLVIMENTO").length;
     const blocked = projectTasks.filter((t) => t.status === "BLOQUEADA").length;
-    const overdue = projectTasks.filter(
-      (t) => t.dueDate && t.dueDate < today && !["CONCLUIDA", "CANCELADA"].includes(t.status)
-    ).length;
+    const overdue = projectTasks.filter((t) => getScheduleStatus(t).status === "atrasada").length;
     const totalHours = timeLogs
       .filter((tl) => projectTasks.some((t) => t.id === tl.taskId))
       .reduce((acc, tl) => acc + tl.hours, 0);

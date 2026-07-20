@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { useTaskStore } from "@/stores";
 import { useProjectStore } from "@/stores";
 import type { MetricSummary } from "@/types";
+import { isDone } from "@/lib/utils";
 
 const SPRINT_VELOCITY = [28, 31, 35, 33, 38, 34, 39, 36].map((points, index) => ({
   sprint: `S${index + 1}`,
@@ -21,7 +22,7 @@ export function useMetrics(projectId?: string) {
   );
 
   const summary: MetricSummary = useMemo(() => {
-    const completed = filteredTasks.filter((t) => t.status === "CONCLUIDA");
+    const completed = filteredTasks.filter((t) => isDone(t.status));
     const blocked = filteredTasks.filter((t) => t.status === "BLOQUEADA");
     const totalEstimated = filteredTasks.reduce((acc, t) => acc + t.estimatedHours, 0);
     const totalActual = filteredTasks.reduce((acc, t) => acc + t.actualHours, 0);
@@ -77,7 +78,7 @@ export function useMetrics(projectId?: string) {
       data.push({
         date: dateStr,
         estimado: Math.round(filteredTasks.length * (1 - i / 6) * 0.8),
-        real: Math.round(filteredTasks.filter((t) => t.status === "CONCLUIDA").length * (1 - i / 7) * 1.1),
+        real: Math.round(filteredTasks.filter((t) => isDone(t.status)).length * (1 - i / 7) * 1.1),
       });
     }
     return data;

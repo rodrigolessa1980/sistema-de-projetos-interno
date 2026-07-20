@@ -19,7 +19,7 @@ import {
   ArrowLeft, Box, Calendar, Clock, User2, MessageSquare, Paperclip,
   Plus, ListTodo, ChevronRight, Download, FileText, FileImage, File as FileIcon,
 } from "lucide-react";
-import { cn, moduleColorFromId, shortId } from "@/lib/utils";
+import { cn, moduleColorFromId, shortId, isDone } from "@/lib/utils";
 import { toast } from "sonner";
 import type { ModuleStatus, ModuleAttachment } from "@/types";
 
@@ -133,7 +133,7 @@ export default function ModuleDetailPage() {
   const workDate = moduleLogs[0]?.date ?? projectModule.workDate ?? projectModule.createdAt.split("T")[0];
   const responsibleId = moduleLogs[0]?.userId ?? projectModule.loggedByUserId;
   const responsible = responsibleId ? users.find((u) => u.id === responsibleId) : null;
-  const completedTasks = moduleTasks.filter((t) => t.status === "CONCLUIDA").length;
+  const completedTasks = moduleTasks.filter((t) => isDone(t.status)).length;
 
   return (
     <div className="p-4 sm:p-6 w-full max-w-5xl mx-auto">

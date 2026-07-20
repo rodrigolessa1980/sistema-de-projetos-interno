@@ -45,7 +45,7 @@ export function UserDialog(props: UserDialogProps) {
 }
 
 function UserDialogForm({ open, onOpenChange, editUser }: UserDialogProps) {
-  const { createUser, createUserRemote, updateUser } = useUserStore();
+  const { createUserRemote, updateUser } = useUserStore();
   const { projects, addDeveloperToProject, removeDeveloperFromProject } = useProjectStore();
   const { tasks, updateTask } = useTaskStore();
 
@@ -113,21 +113,21 @@ function UserDialogForm({ open, onOpenChange, editUser }: UserDialogProps) {
         added.forEach((pId) => addDeveloperToProject(pId, userId));
         removed.forEach((pId) => removeDeveloperFromProject(pId, userId));
       } else {
-        if (normalizedValues.password) {
-          // Cria a conta DE VERDADE no grupo do admin, com o papel escolhido.
-          const created = await createUserRemote({
-            name: normalizedValues.name,
-            email: normalizedValues.email,
-            password: normalizedValues.password,
-            position: normalizedValues.position,
-            department: normalizedValues.department,
-            role: normalizedValues.role,
-          });
-          userId = created.id;
-        } else {
-          const user = createUser({ ...normalizedValues, projectIds: selectedProjects, avatar: undefined });
-          userId = user.id;
+        // Criar usuário exige senha: sem ela, a conta não é persistida no backend
+        // (antes caía num mock local que criava um usuário-fantasma que sumia).
+        if (!normalizedValues.password) {
+          throw new Error("Defina uma senha para criar o usuário.");
         }
+        // Cria a conta DE VERDADE no grupo do admin, com o papel escolhido.
+        const created = await createUserRemote({
+          name: normalizedValues.name,
+          email: normalizedValues.email,
+          password: normalizedValues.password,
+          position: normalizedValues.position,
+          department: normalizedValues.department,
+          role: normalizedValues.role,
+        });
+        userId = created.id;
         selectedProjects.forEach((pId) => addDeveloperToProject(pId, userId));
       }
 

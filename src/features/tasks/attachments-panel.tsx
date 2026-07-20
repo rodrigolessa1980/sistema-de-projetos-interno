@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useCallback } from "react";
+import { useRef, useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "@/lib/motion";
 import {
   Upload, Trash2, Download, FileText, FileImage,
@@ -123,8 +123,12 @@ function AttachmentCard({ attachment, onDelete, currentUserId }: AttachmentCardP
           </button>
           <button
             onClick={async () => {
-              await onDelete(attachment.id);
-              toast.success("Anexo removido");
+              try {
+                await onDelete(attachment.id);
+                toast.success("Anexo removido");
+              } catch (error) {
+                toast.error(error instanceof Error ? error.message : "Erro ao remover anexo");
+              }
             }}
             className="p-1.5 rounded-lg text-zinc-500 hover:text-red-400 hover:bg-red-500/10 transition-colors"
             title="Remover anexo"
@@ -142,13 +146,18 @@ interface AttachmentsPanelProps {
 }
 
 export function AttachmentsPanel({ taskId }: AttachmentsPanelProps) {
-  const { getAttachmentsByTask, addAttachment, deleteAttachment } = useTaskStore();
+  const { getAttachmentsByTask, addAttachment, deleteAttachment, fetchAttachmentsForTask } = useTaskStore();
   const { user } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [uploading, setUploading] = useState<string[]>([]);
 
   const attachments = getAttachmentsByTask(taskId);
+
+  // Anexos são carregados sob demanda (base64 pesado não vem no bootstrap).
+  useEffect(() => {
+    fetchAttachmentsForTask(taskId);
+  }, [taskId, fetchAttachmentsForTask]);
 
   const processFile = useCallback(
     async (file: File) => {
@@ -164,13 +173,12 @@ export function AttachmentsPanel({ taskId }: AttachmentsPanelProps) {
         const dataUrl = await new Promise<string>((resolve, reject) => {
           const reader = new FileReader();
           reader.onload = (e) => resolve(e.target?.result as string);
-          reader.onerror = reject;
+          reader.onerror = () =>
+            reject(new Error(`Não foi possível ler "${file.name}" — arquivo corrompido ou inacessível`));
           reader.readAsDataURL(file);
         });
 
-        // Simula latência de upload
-        await new Promise((r) => setTimeout(r, 600));
-
+        // Chamada real ao backend: persiste de verdade (sem confirmação manual).
         await addAttachment({
           taskId,
           userId: user.id,
@@ -181,8 +189,9 @@ export function AttachmentsPanel({ taskId }: AttachmentsPanelProps) {
         });
 
         toast.success(`"${file.name}" anexado com sucesso`);
-      } catch {
-        toast.error(`Erro ao processar "${file.name}"`);
+      } catch (error) {
+        // Feedback real: mostra o motivo (limite 10MB, corrompido, falha de rede, etc.).
+        toast.error(error instanceof Error ? error.message : `Erro ao anexar "${file.name}"`);
       } finally {
         setUploading((prev) => prev.filter((n) => n !== file.name));
       }

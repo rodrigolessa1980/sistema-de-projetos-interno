@@ -1,0 +1,335 @@
+
+*** MODO APPLY — GRAVANDO NA PRODUÇÃO ***
+(WITH_PROJECTS=1: progresso dos projetos será realinhado)
+
+
+===================== Tenant: DESENVOLVIMENTO =====================
+
+[Tarefas] 287 CONCLUÍDA(s) sem data de conclusão
+  - "2026-03-19 — Update"  ->  completedAt=2026-03-19, startDate=2026-03-19
+  - "Resultado"  ->  completedAt=2026-06-26, startDate=2026-06-26
+  - "2026-04-15 — enhance user experience with CPF handling and a"  ->  completedAt=2026-04-15, startDate=2026-04-15
+  - "2026-04-11 — introduce truck complements management and enha"  ->  completedAt=2026-04-11, startDate=2026-04-11
+  - "2026-01-13 — dashboard bug fix"  ->  completedAt=2026-01-13, startDate=2026-01-13
+  - "FiscalMind Início do projeto (First Commit)"  ->  completedAt=2026-05-20, startDate=2026-05-20
+  - "2026-05-20 — add CTASmart environment variables for deployme"  ->  completedAt=2026-05-20, startDate=2026-05-20
+  - "lançamento estoque"  ->  completedAt=2026-06-19, startDate=2026-06-19
+  - "Proveniência completa + Embalagem + Relatórios"  ->  completedAt=2026-06-02, startDate=2026-06-02
+  - "remoção de dados mock, db, migrations e Pr's abertos"  ->  completedAt=2026-06-28, startDate=2026-06-28
+  - "2026-06-14 — implement import simulation functionality with "  ->  completedAt=2026-06-14, startDate=2026-06-14
+  - "2026-05-06 — implement polling endpoint for resource updates"  ->  completedAt=2026-05-06, startDate=2026-05-06
+  - "Inclusão de registros de Abastecimento, notas de entradas"  ->  completedAt=2026-06-15, startDate=2026-06-15
+  - "2026-04-10 — Enhance fleet management by adding logic to que"  ->  completedAt=2026-04-10, startDate=2026-04-10
+  - "Inicio"  ->  completedAt=2026-06-11, startDate=2026-06-11
+  - "System design, refactor"  ->  completedAt=2026-06-16, startDate=2026-06-16
+  - "Recrutamento por vagas + fechamento por empresa"  ->  completedAt=2026-07-10, startDate=2026-07-10
+  - "2026-05-22 — enhance EPI handling and filtering across compo"  ->  completedAt=2026-05-22, startDate=2026-05-22
+  - "2026-04-02 — Update environment configuration and enhance sy"  ->  completedAt=2026-04-02, startDate=2026-04-02
+  - "2026-02-09 — V1.2 - Null user to advance on the Production"  ->  completedAt=2026-02-09, startDate=2026-02-09
+  - "deslocamento"  ->  completedAt=2026-06-19, startDate=2026-06-19
+  - "2026-01-23 — V1 - [Feature] Implement functionality to view "  ->  completedAt=2026-01-23, startDate=2026-01-23
+  - "Droplet digital ocean, database infra, firewall"  ->  completedAt=2026-06-22, startDate=2026-06-22
+  - "2026-02-11 — V1.3 - Diretoria 2 vistos"  ->  completedAt=2026-02-11, startDate=2026-02-11
+  - "2026-05-21 — implement webhook notification for overdue orde"  ->  completedAt=2026-05-21, startDate=2026-05-21
+  - "mapeamento Pa carregadeira balanças"  ->  completedAt=2026-06-18, startDate=2026-06-18
+  - "2026-05-25 — Update package-lock.json: Added "peer" property"  ->  completedAt=2026-05-25, startDate=2026-05-25
+  - "Backend, DB, ROTAS"  ->  completedAt=2026-06-25, startDate=2026-06-25
+  - "db, sec,"  ->  completedAt=2026-06-28, startDate=2026-06-28
+  - "Catálogo e filtros avançados"  ->  completedAt=2026-05-23, startDate=2026-05-23
+  - "Estoque"  ->  completedAt=2026-06-19, startDate=2026-06-19
+  - "WA + Checklist trava + GuiaINSS + Importação (M1.1–M1.3, M2."  ->  completedAt=2026-06-22, startDate=2026-06-22
+  - "Ajuste de relatorio de produtividade"  ->  completedAt=2026-06-15, startDate=2026-06-15
+  - "2026-05-26 — Enhance deployment workflow with Nginx reverse "  ->  completedAt=2026-05-26, startDate=2026-05-26
+  - "2026-03-24 — Implement purchase management features includin"  ->  completedAt=2026-03-24, startDate=2026-03-24
+  - "Alinhando a leitura do tanque de combustível"  ->  completedAt=2026-06-15, startDate=2026-06-15
+  - "Suporte às operações"  ->  completedAt=2026-06-15, startDate=2026-06-15
+  - "2026-06-12 — Remove biome configuration and Playwright setup"  ->  completedAt=2026-06-12, startDate=2026-06-12
+  - "Motor IA via n8n substituindo Anthropic SDK diretamente"  ->  completedAt=2026-05-28, startDate=2026-05-28
+  - "2026-01-08 — resolvido background branco em algumas telas"  ->  completedAt=2026-01-08, startDate=2026-01-08
+  - "2026-04-29 — Refactor project structure and update configura"  ->  completedAt=2026-04-29, startDate=2026-04-29
+  - "2026-04-28 — integrate CTASmart refuels synchronization and "  ->  completedAt=2026-04-28, startDate=2026-04-28
+  - "Refinamento de pesquisas e Catálogo"  ->  completedAt=2026-05-29, startDate=2026-05-29
+  - "Criação do sistema, implementação completa"  ->  completedAt=2026-07-13, startDate=2026-07-13
+  - "Grande release do Catálogo + Deleção + IA unificada"  ->  completedAt=2026-06-08, startDate=2026-06-08
+  - "2026-01-22 — V1 - Refactor inventory and order processing lo"  ->  completedAt=2026-01-22, startDate=2026-01-22
+  - "2026-04-28 — enhance user permission checks for listagem wit"  ->  completedAt=2026-04-28, startDate=2026-04-28
+  - "2026-06-10 — Refactor deployment scripts to ensure ports are"  ->  completedAt=2026-06-10, startDate=2026-06-10
+  - "2026-05-19 — improve dialog layout and responsiveness in Sol"  ->  completedAt=2026-05-19, startDate=2026-05-19
+  - "2026-04-27 — simplify ComplementsPage layout and improve ove"  ->  completedAt=2026-04-27, startDate=2026-04-27
+  - "Módulo Transporte — rastreio de containers"  ->  completedAt=2026-07-10, startDate=2026-07-10
+  - "2026-03-30 — Refactor tenant selection in Login component by"  ->  completedAt=2026-03-30, startDate=2026-03-30
+  - "2026-03-09 — BASE"  ->  completedAt=2026-03-09, startDate=2026-03-09
+  - "Criaçao de telas de ferias para funcionarios"  ->  completedAt=2026-06-16, startDate=2026-06-16
+  - "URL - backend sync, config , env, rollback, terraform"  ->  completedAt=2026-06-21, startDate=2026-06-21
+  - "Workflow fiscal e precificação"  ->  completedAt=2026-05-24, startDate=2026-05-24
+  - "2026-01-21 — V1 - Enhance inventory management and order pro"  ->  completedAt=2026-01-21, startDate=2026-01-21
+  - "JWT, deep-link, homologação aprimorada."  ->  completedAt=2026-07-06, startDate=2026-07-06
+  - "2026-05-04 — implement user authentication and authorization"  ->  completedAt=2026-05-04, startDate=2026-05-04
+  - "Negociação nova sonda"  ->  completedAt=2026-06-19, startDate=2026-06-19
+  - "2026-06-08 — Implement admin notification for new user regis"  ->  completedAt=2026-06-08, startDate=2026-06-08
+  - "2026-03-26 — Enhance data synchronization in App and Dashboa"  ->  completedAt=2026-03-26, startDate=2026-03-26
+  - "2026-05-15 — add infoFinalizado utility and enhance PedidosT"  ->  completedAt=2026-05-15, startDate=2026-05-15
+  - "Validação NCM/CEST e dados atacadistas"  ->  completedAt=2026-06-07, startDate=2026-06-07
+  - "Checklist RH exige validação documental."  ->  completedAt=2026-07-06, startDate=2026-07-06
+  - "2026-03-03 — Refactor MeetingsCalendar to improve room color"  ->  completedAt=2026-03-03, startDate=2026-03-03
+  - "Tour guiado e FAQ do Catálogo/Solicitaçao, Validação"  ->  completedAt=2026-06-10, startDate=2026-06-10
+  - "estoque"  ->  completedAt=2026-06-11, startDate=2026-06-11
+  - "Plano de reativação do backup agendado"  ->  completedAt=2026-07-01, startDate=2026-07-01
+  - "2026-02-04 — V1.2 - Implement SSE notifications for document"  ->  completedAt=2026-02-04, startDate=2026-02-04
+  - "2026-04-01 — Add showTimeRange prop to RoomColumn and update"  ->  completedAt=2026-04-01, startDate=2026-04-01
+  - "2026-03-12 — Update .gitignore to include environment files,"  ->  completedAt=2026-03-12, startDate=2026-03-12
+  - "Motor de regras fiscais"  ->  completedAt=2026-06-09, startDate=2026-06-09
+  - "2026-06-02 — Update deploy.yml to reflect new image names fo"  ->  completedAt=2026-06-02, startDate=2026-06-02
+  - "2026-05-28 — add API fallbacks documentation and update .env"  ->  completedAt=2026-05-28, startDate=2026-05-28
+  - "2026-05-19 — add dataAgendamento field to Pedido model and e"  ->  completedAt=2026-05-19, startDate=2026-05-19
+  - "2026-02-06 — V1.2 - Implement product duplication check in o"  ->  completedAt=2026-02-06, startDate=2026-02-06
+  - "sec"  ->  completedAt=2026-06-29, startDate=2026-06-29
+  - "2026-01-20 — V1 - Restructure production flow and enhance do"  ->  completedAt=2026-01-20, startDate=2026-01-20
+  - "Proxy reverso configurado"  ->  completedAt=2026-07-02, startDate=2026-07-02
+  - "2026-01-30 — V1 - feat: Implement Kanban-based order managem"  ->  completedAt=2026-01-30, startDate=2026-01-30
+  - "Reunião e planejamentos"  ->  completedAt=2026-06-24, startDate=2026-06-24
+  - "Autotrac"  ->  completedAt=2026-06-20, startDate=2026-06-20
+  - "2026-03-27 — Implement server-sent events (SSE) for tenant c"  ->  completedAt=2026-03-27, startDate=2026-03-27
+  - "Pequenos ajustes"  ->  completedAt=2026-07-13, startDate=2026-07-13
+  - "feat: implement e2e testing command and soft delete in Prism"  ->  completedAt=2026-07-03, startDate=2026-07-03
+  - "semana de fundação"  ->  completedAt=2026-05-21, startDate=2026-05-21
+  - "2026-04-16 — enhance EPI management with new models and perm"  ->  completedAt=2026-04-16, startDate=2026-04-16
+  - "TLS, Uploads, lockfile"  ->  completedAt=2026-07-04, startDate=2026-07-04
+  - "Rotas para acessar e unificar aplicação, detalhar banco"  ->  completedAt=2026-06-24, startDate=2026-06-24
+  - "2026-05-05 — Enhance Pedido model by adding 'dataPedido' fie"  ->  completedAt=2026-05-05, startDate=2026-05-05
+  - "Rotas para acessar e unificar aplicação, detalhar banco"  ->  completedAt=2026-06-23, startDate=2026-06-23
+  - "Segurança de CI"  ->  completedAt=2026-07-02, startDate=2026-07-02
+  - "estudo manual balanças"  ->  completedAt=2026-06-18, startDate=2026-06-18
+  - "Treinamento borracheiro e mecanicos sobre a ficha"  ->  completedAt=2026-06-18, startDate=2026-06-18
+  - "2026-05-06 — Add attachment functionality to Pedido model an"  ->  completedAt=2026-05-06, startDate=2026-05-06
+  - "Integrações que não dependam de IA"  ->  completedAt=2026-07-10, startDate=2026-07-10
+  - "2026-06-02 — Update environment and deployment documentation"  ->  completedAt=2026-06-02, startDate=2026-06-02
+  - "2026-01-26 — V1 - Colunas e teste deploy"  ->  completedAt=2026-01-26, startDate=2026-01-26
+  - "Ownership, ST determinística e tabelas DB-only"  ->  completedAt=2026-06-06, startDate=2026-06-06
+  - "2026-04-30 — first commit"  ->  completedAt=2026-04-30, startDate=2026-04-30
+  - "Analise inicial de integração entre projetos"  ->  completedAt=2026-06-16, startDate=2026-06-16
+  - "2026-02-10 — V1.3 - Update Regra de neg├│cio"  ->  completedAt=2026-02-10, startDate=2026-02-10
+  - "2026-02-14 — V1.3 - Optimize dashboard and Kanban flow with "  ->  completedAt=2026-02-14, startDate=2026-02-14
+  - "2026-05-26 — add LHG export and reconciliation endpoints wit"  ->  completedAt=2026-05-26, startDate=2026-05-26
+  - "Ajuste da planilha de lançamentos"  ->  completedAt=2026-06-16, startDate=2026-06-16
+  - "2026-04-13 — enhance mobile responsiveness and UI components"  ->  completedAt=2026-04-13, startDate=2026-04-13
+  - "2026-04-08 — Enhance fleet management features by integratin"  ->  completedAt=2026-04-08, startDate=2026-04-08
+  - "Carta mensal por IA + certificações + entrevistas de saída +"  ->  completedAt=2026-06-23, startDate=2026-06-23
+  - "confeccção checklist compra das DAFS"  ->  completedAt=2026-06-16, startDate=2026-06-16
+  - "resultado"  ->  completedAt=2026-06-30, startDate=2026-06-30
+  - "2026-06-14 — add fuel tank period summary and reading classi"  ->  completedAt=2026-06-14, startDate=2026-06-14
+  - "2026-02-23 — Update index.html, replace assets, and enhance "  ->  completedAt=2026-02-23, startDate=2026-02-23
+  - "Sistema de Segurança CPF"  ->  completedAt=2026-06-16, startDate=2026-06-16
+  - "2026-01-27 — V1 - prototipo extra├º├úo"  ->  completedAt=2026-01-27, startDate=2026-01-27
+  - "2026-01-09 — abas"  ->  completedAt=2026-01-09, startDate=2026-01-09
+  - "2026-02-19 — V1.3 - prod BL"  ->  completedAt=2026-02-19, startDate=2026-02-19
+  - "feat(kanban): add assignee filtering to Kanban board"  ->  completedAt=2026-07-13, startDate=2026-07-13
+  - "2026-05-19 — enhance CTASmart integration with stock synchro"  ->  completedAt=2026-05-19, startDate=2026-05-19
+  - "Migraçao de Mysql para PostgreSQL com Docker e RLS"  ->  completedAt=2026-06-21, startDate=2026-06-21
+  - "atualização dashboard e container"  ->  completedAt=2026-06-25, startDate=2026-06-25
+  - "reuniao Edson, Resultado"  ->  completedAt=2026-06-22, startDate=2026-06-22
+  - "visita as VLI para cadastro do registro ponto"  ->  completedAt=2026-06-24, startDate=2026-06-24
+  - "Motor Petkov: Integração do n8n (Fases 0–5)"  ->  completedAt=2026-05-27, startDate=2026-05-27
+  - "2026-06-11 — enhance EPI management and improve user experie"  ->  completedAt=2026-06-11, startDate=2026-06-11
+  - "Teste de bloqueio do caminhão"  ->  completedAt=2026-06-16, startDate=2026-06-16
+  - "DRE"  ->  completedAt=2026-07-01, startDate=2026-07-01
+  - "Correções de produção"  ->  completedAt=2026-06-24, startDate=2026-06-24
+  - "2026-05-13 — Adiciona l├│gica para alterar o layout da aplic"  ->  completedAt=2026-05-13, startDate=2026-05-13
+  - "2026-05-14 — enhance delivery photo handling in FichaEPIMode"  ->  completedAt=2026-05-14, startDate=2026-05-14
+  - "2026-03-23 — Refactor loading state in App component; extrac"  ->  completedAt=2026-03-23, startDate=2026-03-23
+  - "confeccção checklist pa carregadeira"  ->  completedAt=2026-06-16, startDate=2026-06-16
+  - "2026-05-21 — Add deployment section to README with Docker an"  ->  completedAt=2026-05-21, startDate=2026-05-21
+  - "2026-03-25 — Refactor backend routes to enhance query handli"  ->  completedAt=2026-03-25, startDate=2026-03-25
+  - "Update imagem sala de reunião"  ->  completedAt=2026-06-16, startDate=2026-06-16
+  - "2026-06-05 — tabelas fiscais DB-only + painel de bases em Co"  ->  completedAt=2026-06-05, startDate=2026-06-05
+  - "2026-04-01 — Implement enhanced synchronization features for"  ->  completedAt=2026-04-01, startDate=2026-04-01
+  - "Catálogo público + Siscomex + Arquivos no banco"  ->  completedAt=2026-05-25, startDate=2026-05-25
+  - "2026-05-04 — Ajusta layout da se├â┬º├â┬úo de inf├â┬óncia e c"  ->  completedAt=2026-05-04, startDate=2026-05-04
+  - "2026-04-23 — add purchaseBatchId to Purchase model and enhan"  ->  completedAt=2026-04-23, startDate=2026-04-23
+  - "deploy e fix"  ->  completedAt=2026-06-23, startDate=2026-06-23
+  - "Correção de Segurança e Validação de Permissões – Módulo "Al"  ->  completedAt=2026-06-17, startDate=2026-06-17
+  - "2026-04-29 — enhance delivery and purchase management with n"  ->  completedAt=2026-04-29, startDate=2026-04-29
+  - "2026-04-30 — Refactor LoginPage component to improve token h"  ->  completedAt=2026-04-30, startDate=2026-04-30
+  - "2026-04-24 — update EPI model to remove tenantId and simplif"  ->  completedAt=2026-04-24, startDate=2026-04-24
+  - "Reuniao"  ->  completedAt=2026-06-22, startDate=2026-06-22
+  - "2026-06-09 — add Fuel Efficiency, Infraction Detail, Engine "  ->  completedAt=2026-06-09, startDate=2026-06-09
+  - "2026-05-25 — enhance LHG import functionality with carrier s"  ->  completedAt=2026-05-25, startDate=2026-05-25
+  - "Bug fix, update, stock data input"  ->  completedAt=2026-06-17, startDate=2026-06-17
+  - "Implementação do RH — próximas etapas, filtros por entidade,"  ->  completedAt=2026-06-15, startDate=2026-06-15
+  - "Painel da operadora — lista única de tarefas"  ->  completedAt=2026-07-10, startDate=2026-07-10
+  - "Confeccção ficha saida de estoque"  ->  completedAt=2026-06-17, startDate=2026-06-17
+  - "2026-06-05 — enhance fuel management with new tank monitorin"  ->  completedAt=2026-06-05, startDate=2026-06-05
+  - "2026-04-22 — Primeiro commit do site QuietArt Made-with: Cur"  ->  completedAt=2026-04-22, startDate=2026-04-22
+  - "Update Terraform example for FiscalMind site configuration"  ->  completedAt=2026-07-06, startDate=2026-07-06
+  - "treinamento sistema de coleta de dados dos Dafs"  ->  completedAt=2026-06-17, startDate=2026-06-17
+  - "Atualizações, fix e pesquisas"  ->  completedAt=2026-06-23, startDate=2026-06-23
+  - "2026-05-05 — Refactor specifications section layout to use a"  ->  completedAt=2026-05-05, startDate=2026-05-05
+  - "2026-02-04 — pm2 container name"  ->  completedAt=2026-02-04, startDate=2026-02-04
+  - "2026-06-09 — enhance task management with urgency block hand"  ->  completedAt=2026-06-09, startDate=2026-06-09
+  - "security: add E2E audit report with 27 findings and fixes"  ->  completedAt=2026-07-03, startDate=2026-07-03
+  - "2026-01-16 — base v1"  ->  completedAt=2026-01-16, startDate=2026-01-16
+  - "2026-05-13 — enhance canhotos reconciliation with NF linkage"  ->  completedAt=2026-05-13, startDate=2026-05-13
+  - "2026-04-07 — Implement date handling utilities and enhance f"  ->  completedAt=2026-04-07, startDate=2026-04-07
+  - "2026-05-22 — enhance App and PedidosTable components with in"  ->  completedAt=2026-05-22, startDate=2026-05-22
+  - "Modificação do Site, solicitação de Felipe Marketing"  ->  completedAt=2026-06-05, startDate=2026-06-05
+  - "Confecção ficha borracharia"  ->  completedAt=2026-06-17, startDate=2026-06-17
+  - "2026-05-29 — enhance permission checks and EPI handling in C"  ->  completedAt=2026-05-29, startDate=2026-05-29
+  - "2026-04-12 — enhance fleet and reconciliation data handling "  ->  completedAt=2026-04-12, startDate=2026-04-12
+  - "Comntinuação, otimização para uso interno do marketing"  ->  completedAt=2026-07-08, startDate=2026-07-08
+  - "2026-05-22 — add vehicle positions purge functionality and r"  ->  completedAt=2026-05-22, startDate=2026-05-22
+  - "Conferencia de Planilha para subir nos processos"  ->  completedAt=2026-06-08, startDate=2026-06-08
+  - "Combustivel , estoque movtrans"  ->  completedAt=2026-06-22, startDate=2026-06-22
+  - "2026-05-19 — Adiciona campo de data de atualiza├º├úo e l├│gi"  ->  completedAt=2026-05-19, startDate=2026-05-19
+  - "Suporte da Sonda (1 hora)"  ->  completedAt=2026-06-15, startDate=2026-06-15
+  - "Reunião inicial, planejamento"  ->  completedAt=2026-06-17, startDate=2026-06-17
+  - "Cadastro de endereços dos sistemas"  ->  completedAt=2026-07-01, startDate=2026-07-01
+  - "Consolidação do fluxo e deploy"  ->  completedAt=2026-05-22, startDate=2026-05-22
+  - "2026-03-13 — Enhance Autotrac synchronization features by ad"  ->  completedAt=2026-03-13, startDate=2026-03-13
+  - "Reunião de alinhamento"  ->  completedAt=2026-06-17, startDate=2026-06-17
+  - "2026-05-12 — add obraIds support to user routes and enhance "  ->  completedAt=2026-05-12, startDate=2026-05-12
+  - "Lançamento de combustivel"  ->  completedAt=2026-06-17, startDate=2026-06-17
+  - "Orçamento DAFs"  ->  completedAt=2026-06-29, startDate=2026-06-29
+  - "Adicionar Dowlond de arquivo dentro de varinha magica"  ->  completedAt=2026-06-30, startDate=2026-06-30
+  - "2026-04-15 — enhance LHG import processing and UI to support"  ->  completedAt=2026-04-15, startDate=2026-04-15
+  - "Reunião sistema abastecimento"  ->  completedAt=2026-06-19, startDate=2026-06-19
+  - "Optimization backend"  ->  completedAt=2026-06-17, startDate=2026-06-17
+  - "CRÍTICO autocadastro público + lote MÉDIO da auditoria"  ->  completedAt=2026-07-09, startDate=2026-07-09
+  - "2026-05-26 — integrate OpenFiscal as third service in deploy"  ->  completedAt=2026-05-26, startDate=2026-05-26
+  - "2026-05-12 — enhance reconciliation features with tariff man"  ->  completedAt=2026-05-12, startDate=2026-05-12
+  - "2026-03-20 — Add quantity field to Employee model; implement"  ->  completedAt=2026-03-20, startDate=2026-03-20
+  - "Rotas para acessar e unificar aplicação, detalhar banco"  ->  completedAt=2026-06-24, startDate=2026-06-24
+  - "2026-04-20 — enhance CA import functionality and user experi"  ->  completedAt=2026-04-20, startDate=2026-04-20
+  - "Database design and RLS"  ->  completedAt=2026-06-17, startDate=2026-06-17
+  - "Tela de Login, tela Direoria, Correçao de bug, etc"  ->  completedAt=2026-06-19, startDate=2026-06-19
+  - "2026-01-14 — Revert "resolvido background branco em algumas "  ->  completedAt=2026-01-14, startDate=2026-01-14
+  - "Tela de diretoria"  ->  completedAt=2026-06-18, startDate=2026-06-18
+  - "2026-04-21 — enhance fleet and reconciliation features with "  ->  completedAt=2026-04-21, startDate=2026-04-21
+  - "Projeto de unificação, protitipagem e análise de estrutura d"  ->  completedAt=2026-07-02, startDate=2026-07-02
+  - "Alinhamento Interno"  ->  completedAt=2026-06-18, startDate=2026-06-18
+  - "reuniao"  ->  completedAt=2026-06-30, startDate=2026-06-30
+  - "Database and backend security and integrity"  ->  completedAt=2026-06-18, startDate=2026-06-18
+  - "2026-02-02 — V1.1 - feat: Add PDF to image conversion functi"  ->  completedAt=2026-02-02, startDate=2026-02-02
+  - "2026-01-28 — V1 - Performance improvement"  ->  completedAt=2026-01-28, startDate=2026-01-28
+  - "Segurança pré-pentest — Fases 1 a 5"  ->  completedAt=2026-07-08, startDate=2026-07-08
+  - "Fluxo de convite/Trilha R.4 — eliminar regras-legado.js"  ->  completedAt=2026-06-22, startDate=2026-06-22
+  - "2026-02-03 — V1 - Excell better image resolution and data fo"  ->  completedAt=2026-02-03, startDate=2026-02-03
+  - "2026-04-20 — add crValorAReceber field and enhance reconcili"  ->  completedAt=2026-04-20, startDate=2026-04-20
+  - "Validação importação"  ->  completedAt=2026-06-16, startDate=2026-06-16
+  - "2026-02-24 — Implement reservation deletion restrictions for"  ->  completedAt=2026-02-24, startDate=2026-02-24
+  - "Manutenção de dependências (CI/CD)"  ->  completedAt=2026-07-02, startDate=2026-07-02
+  - "avaliar prs"  ->  completedAt=2026-06-28, startDate=2026-06-28
+  - "2026-01-31 — V1 - SSE"  ->  completedAt=2026-01-31, startDate=2026-01-31
+  - "suporte"  ->  completedAt=2026-06-26, startDate=2026-06-26
+  - "Notificações por perfil + filtragem + auditoria de renderiza"  ->  completedAt=2026-07-09, startDate=2026-07-09
+  - "Índices de banco de dados"  ->  completedAt=2026-06-24, startDate=2026-06-24
+  - "Adaptação para o marketing"  ->  completedAt=2026-07-08, startDate=2026-07-08
+  - "Analsiis de Comportamento do sistema"  ->  completedAt=2026-06-17, startDate=2026-06-17
+  - "sec, test, pentest"  ->  completedAt=2026-06-27, startDate=2026-06-27
+  - "Teste do Robo para abertura de Processos com terceiros (2 ho"  ->  completedAt=2026-06-15, startDate=2026-06-15
+  - "Auditoria de segurança multiempresa (5 eixos do dono)"  ->  completedAt=2026-07-07, startDate=2026-07-07
+  - "2026-05-20 — add clipboard copy functionality in Solicitacoe"  ->  completedAt=2026-05-20, startDate=2026-05-20
+  - "Implementação - modulos, gamificação"  ->  completedAt=2026-06-12, startDate=2026-06-12
+  - "2026-05-15 — enhance canhotos management with invalidation t"  ->  completedAt=2026-05-15, startDate=2026-05-15
+  - "URL para todos os projetos"  ->  completedAt=2026-06-18, startDate=2026-06-18
+  - "Mapeamento do sistema interno RH, utilizaçao de novo banco, "  ->  completedAt=2026-06-16, startDate=2026-06-16
+  - "2026-05-11 — enhance permission handling with canInAnyScope "  ->  completedAt=2026-05-11, startDate=2026-05-11
+  - "resultado"  ->  completedAt=2026-06-29, startDate=2026-06-29
+  - "2026-01-29 — V1 - feat: Implement Kanban system for producti"  ->  completedAt=2026-01-29, startDate=2026-01-29
+  - "Healthcheck do container"  ->  completedAt=2026-06-25, startDate=2026-06-25
+  - "2026-04-09 — Enhance EPI and Purchase models, and improve fo"  ->  completedAt=2026-04-09, startDate=2026-04-09
+  - "2026-06-05 — update .gitignore to explicitly include .env fi"  ->  completedAt=2026-06-05, startDate=2026-06-05
+  - "ST, Proveniência e Catálogo"  ->  completedAt=2026-06-01, startDate=2026-06-01
+  - "2026-03-11 — countdown"  ->  completedAt=2026-03-11, startDate=2026-03-11
+  - "2026-02-19 — base backend"  ->  completedAt=2026-02-19, startDate=2026-02-19
+  - "Proxy da API pelo nginx do frontend"  ->  completedAt=2026-06-25, startDate=2026-06-25
+  - "Backend optimization"  ->  completedAt=2026-06-24, startDate=2026-06-24
+  - "manutenção e borracharia"  ->  completedAt=2026-06-11, startDate=2026-06-11
+  - "Reunião LHG"  ->  completedAt=2026-06-15, startDate=2026-06-15
+  - "Deslocamento (Aéreo e terrestre)"  ->  completedAt=2026-06-27, startDate=2026-06-27
+  - "2026-03-12 — uhuhuhuh"  ->  completedAt=2026-03-12, startDate=2026-03-12
+  - "Motor de IA (custo/roteamento) + controle de acesso + deploy"  ->  completedAt=2026-07-10, startDate=2026-07-10
+  - "Suporte movtrans"  ->  completedAt=2026-06-16, startDate=2026-06-16
+  - "Visitar todas as VLIs"  ->  completedAt=2026-06-27, startDate=2026-06-27
+  - "Permissões"  ->  completedAt=2026-06-20, startDate=2026-06-20
+  - "Autotrac"  ->  completedAt=2026-06-14, startDate=2026-06-14
+  - "2026-01-19 — V1 - Implement Excel data extraction feature an"  ->  completedAt=2026-01-19, startDate=2026-01-19
+  - "Componentes de campo para o Catálogo"  ->  completedAt=2026-05-31, startDate=2026-05-31
+  - "Configurando URL de todos projetos - Proxy, https, deploy, e"  ->  completedAt=2026-06-19, startDate=2026-06-19
+  - "Integração e hooks de time"  ->  completedAt=2026-07-02, startDate=2026-07-02
+  - "Instalar sistema Totvs de ponto"  ->  completedAt=2026-06-27, startDate=2026-06-27
+  - "2026-04-22 — Enhance Excel data handling in NovoPedidoModal "  ->  completedAt=2026-04-22, startDate=2026-04-22
+  - "Transferencia de Repositorio para Monkey"  ->  completedAt=2026-06-30, startDate=2026-06-30
+  - "Feature — Onboarding (tours guiados)"  ->  completedAt=2026-07-02, startDate=2026-07-02
+  - "2026-04-24 — enhance ComplementsPage with collapsible add fo"  ->  completedAt=2026-04-24, startDate=2026-04-24
+  - "2026-03-04 — Admins can schedule meetings for others and hav"  ->  completedAt=2026-03-04, startDate=2026-03-04
+  - "2026-05-13 — enhance sorting and pagination in various compo"  ->  completedAt=2026-05-13, startDate=2026-05-13
+  - "VehicleCheck — Sistema de Gestão de Problemas em Veículos"  ->  completedAt=2026-06-17, startDate=2026-06-17
+  - "Revisão de segurança do upload de documentos (2h30)"  ->  completedAt=2026-07-01, startDate=2026-07-01
+  - "2026-05-11 — implement interactive orders table with filteri"  ->  completedAt=2026-05-11, startDate=2026-05-11
+  - "Ajustes de documentação pós-A-14 e README"  ->  completedAt=2026-07-01, startDate=2026-07-01
+  - "confeccção ficha OS"  ->  completedAt=2026-06-17, startDate=2026-06-17
+  - "Adaptação para marketing, simplificação e remodel interno"  ->  completedAt=2026-07-08, startDate=2026-07-08
+  - "Controle integrado de custo de pessoas"  ->  completedAt=2026-06-16, startDate=2026-06-16
+  - "2026-04-19 — add missing NFs retrieval and enhance canhotos "  ->  completedAt=2026-04-19, startDate=2026-04-19
+  - "2026-02-12 — V1.3"  ->  completedAt=2026-02-12, startDate=2026-02-12
+  - "2026-05-11 — enhance trip counting and reconciliation featur"  ->  completedAt=2026-05-11, startDate=2026-05-11
+  - "2026-01-23 — [Fix] Reports Date Persistence"  ->  completedAt=2026-01-23, startDate=2026-01-23
+  - "Multi-tenancy com Tenant estruturado."  ->  completedAt=2026-07-07, startDate=2026-07-07
+  - "Desfazer monolito de codigo"  ->  completedAt=2026-06-16, startDate=2026-06-16
+  - "2026-01-07 — Adiciona atualiza├º├úo autom├ítica a cada 30 se"  ->  completedAt=2026-01-07, startDate=2026-01-07
+  - "Permissões e controle de acesso"  ->  completedAt=2026-06-22, startDate=2026-06-22
+  - "Fase 6 — minimização do log imutável + 2FA + ponto só do pró"  ->  completedAt=2026-07-09, startDate=2026-07-09
+  - "Catálogo completo + deploy"  ->  completedAt=2026-06-03, startDate=2026-06-03
+  - "Backend and deploy"  ->  completedAt=2026-06-13, startDate=2026-06-13
+  - "Validação de imagens de baixa qualidade"  ->  completedAt=2026-07-13, startDate=2026-07-13
+  - "Continuação do commit bb83987 (validação de documentos pelo "  ->  completedAt=2026-07-01, startDate=2026-07-01
+  - "2026-06-10 — refactor OverviewTab to integrate FleetSummaryT"  ->  completedAt=2026-06-10, startDate=2026-06-10
+  - "2026-04-22 — enhance delivery signature process with IP capt"  ->  completedAt=2026-04-22, startDate=2026-04-22
+  - "2026-04-28 — Update environment configurations and deploymen"  ->  completedAt=2026-04-28, startDate=2026-04-28
+  - "Rotas para acessar e unificar aplicação, detalhar banco"  ->  completedAt=2026-06-23, startDate=2026-06-23
+  - "Segurança pós-desligamento + antifraude canônica"  ->  completedAt=2026-06-22, startDate=2026-06-22
+  - "Analisis e estruturaçao de codigos"  ->  completedAt=2026-06-18, startDate=2026-06-18
+  - "2026-05-29 — clean up dist directory by removing generated f"  ->  completedAt=2026-05-29, startDate=2026-05-29
+  - "2026-02-20 — Enhance email sending functionality with error "  ->  completedAt=2026-02-20, startDate=2026-02-20
+  - "checklist das Pa carregadeiras"  ->  completedAt=2026-06-18, startDate=2026-06-18
+  - "Recrutamento e banco de talentos"  ->  completedAt=2026-06-23, startDate=2026-06-23
+
+[Módulos] 18 com todas as tarefas concluídas mas ainda não CONCLUIDO
+  - "Autotrac" (INICIADO/0%)  ->  CONCLUIDO/100%
+  - "estoque" (INICIADO/0%)  ->  CONCLUIDO/100%
+  - "2026-06-12 — Remove biome configuration and Playwright setup" (EM_PROCESSO/50%)  ->  CONCLUIDO/100%
+  - "2026-06-10 — Refactor deployment scripts to ensure ports are" (EM_PROCESSO/50%)  ->  CONCLUIDO/100%
+  - "Conferencia de Planilha para subir nos processos" (INICIADO/0%)  ->  CONCLUIDO/100%
+  - "2026-06-09 — add Fuel Efficiency, Infraction Detail, Engine " (EM_PROCESSO/50%)  ->  CONCLUIDO/100%
+  - "2026-06-14 — add fuel tank period summary and reading classi" (EM_PROCESSO/50%)  ->  CONCLUIDO/100%
+  - "Criar o projeto de automação de emails com relatórios" (INICIADO/0%)  ->  CONCLUIDO/100%
+  - "Novas modificações, adaptação de OCR, Tesseract, validação d" (INICIADO/0%)  ->  CONCLUIDO/100%
+  - "Instalar sistema Totvs de ponto" (INICIADO/0%)  ->  CONCLUIDO/100%
+  - "2026-06-09 — enhance task management with urgency block hand" (EM_PROCESSO/50%)  ->  CONCLUIDO/100%
+  - "manutenção e borracharia" (INICIADO/0%)  ->  CONCLUIDO/100%
+  - "2026-06-10 — refactor OverviewTab to integrate FleetSummaryT" (EM_PROCESSO/50%)  ->  CONCLUIDO/100%
+  - "Manutenção e suporte para uso do marketing" (INICIADO/0%)  ->  CONCLUIDO/100%
+  - "2026-06-11 — enhance EPI management and improve user experie" (EM_PROCESSO/50%)  ->  CONCLUIDO/100%
+  - "Visitar todas as VLIs" (INICIADO/0%)  ->  CONCLUIDO/100%
+  - "2026-06-14 — implement import simulation functionality with " (EM_PROCESSO/50%)  ->  CONCLUIDO/100%
+  - "Deslocamento (Aéreo e terrestre)" (INICIADO/0%)  ->  CONCLUIDO/100%
+
+[Projetos] 9 projeto(s) com módulos alterados — realinhando progresso
+  - "Gerenciamento Corumbá": armazenado=0% derivado=100%  <-- defasado
+  - "Sistema Interno de Tecnologia": armazenado=80% derivado=100%  <-- defasado
+  - "Agenda Sala de Reunião": armazenado=95% derivado=100%  <-- defasado
+  - "Dashboard Transporte": armazenado=95% derivado=100%  <-- defasado
+  - "Edson - Financeiro - Automações": armazenado=0% derivado=100%  <-- defasado
+  - "Linha de Produção Petkov": armazenado=100% derivado=100%
+  - "Registro ponto VLI  MINAS": armazenado=0% derivado=75%  <-- defasado
+  - "Sistema Controle de EPI": armazenado=93% derivado=100%  <-- defasado
+  - "FiscalMind / Fluxograma de Produto": armazenado=99% derivado=100%  <-- defasado
+
+===================== Tenant: MARKETING =====================
+
+[Tarefas] 0 CONCLUÍDA(s) sem data de conclusão
+
+[Módulos] 0 com todas as tarefas concluídas mas ainda não CONCLUIDO
+
+================================================================
+Resumo (gravado): 287 tarefa(s), 18 módulo(s), 8 projeto(s)

@@ -2,7 +2,7 @@
 
 import { create } from "zustand";
 import type { Project, Module, Epic, Company, ModuleStatus, ProjectShowcaseAttachment, ProjectDemandAttachment } from "@/types";
-import type { Task, TimeLog, ModuleAttachment } from "@/types";
+import type { Task, TimeLog, ModuleAttachment, Comment, Subtask, TaskDependency, TaskNote } from "@/types";
 // Module and Epic are fetched from API; types re-exported for clarity
 import { api } from "@/lib/api";
 import { toast } from "sonner";
@@ -147,6 +147,10 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
         modules: Module[];
         epics: Epic[];
         tasks: Parameters<typeof normalizeTask>[0][];
+        comments?: Comment[];
+        subtasks?: Subtask[];
+        dependencies?: TaskDependency[];
+        notes?: TaskNote[];
       }>("bootstrap");
 
       const normalizedProjects = asArray(data.projects).map(normalizeProject);
@@ -168,6 +172,12 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
       useTaskStore.setState((state) => ({
         tasks: replacePreservingDirty(state.tasks, incomingTasks, taskDirty.ids),
         moduleAttachments: [],
+        // Coleções de tarefa vêm do backend (server-state), substituindo os mocks
+        // locais. Anexos NÃO vêm aqui (base64 pesado) — carregam sob demanda.
+        comments: asArray(data.comments),
+        subtasks: asArray(data.subtasks),
+        dependencies: asArray(data.dependencies),
+        notes: asArray(data.notes),
         // O bootstrap traz as tasks junto: marca a task-store como carregada também.
         hasLoaded: true,
       }));

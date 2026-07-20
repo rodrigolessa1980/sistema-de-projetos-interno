@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useTaskStore } from "@/stores";
-import { ALL_STATUSES, getStatusLabel, COMPLEXITY_OPTIONS } from "@/lib/utils";
+import { ALL_STATUSES, getStatusLabel, COMPLEXITY_OPTIONS, isDone, todayISO } from "@/lib/utils";
 import type { Task, TaskComplexity, TaskStatus } from "@/types";
 import { toast } from "sonner";
 import { CharCounter } from "@/components/shared/char-counter";
@@ -32,7 +32,10 @@ const schema = z.object({
   status: z.enum(["BACKLOG", "PLANEJADA", "BLOQUEADA", "EM_DESENVOLVIMENTO", "EM_REVISAO", "HOMOLOGACAO", "CONCLUIDA", "CANCELADA"] as const).optional(),
   complexity: z.number().optional(),
   estimatedHours: z.number().optional(),
+  startDate: z.string().optional(),
   dueDate: z.string().optional(),
+  completedAt: z.string().optional(),
+  actualHours: z.number().optional(),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -59,7 +62,10 @@ export function TaskEditDialog({ task, open, onOpenChange }: Props) {
       status: task.status,
       complexity: task.complexity,
       estimatedHours: task.estimatedHours,
+      startDate: toDateInput(task.startDate),
       dueDate: toDateInput(task.dueDate),
+      completedAt: toDateInput(task.completedAt),
+      actualHours: task.actualHours,
     },
   });
 
@@ -77,14 +83,24 @@ export function TaskEditDialog({ task, open, onOpenChange }: Props) {
   }, [open, task, form]);
 
   const onSubmit = async (data: FormData) => {
+    const nextStatus = (data.status ?? task.status) as TaskStatus;
+    const isCompleting = isDone(nextStatus);
     try {
       await updateTask(task.id, {
         title: data.title?.trim() || task.title,
         description: data.description ?? "",
-        status: (data.status ?? task.status) as TaskStatus,
+        status: nextStatus,
         complexity: (data.complexity ?? task.complexity) as TaskComplexity,
         estimatedHours: data.estimatedHours ?? task.estimatedHours,
+        startDate: data.startDate?.trim() || undefined,
         dueDate: data.dueDate?.trim() || undefined,
+        // Concluindo: registra a data de conclusão (default hoje) e o tempo real.
+        ...(isCompleting
+          ? {
+              completedAt: data.completedAt?.trim() || todayISO(),
+              actualHours: data.actualHours ?? task.actualHours,
+            }
+          : {}),
       });
       toast.success("Tarefa atualizada");
       onOpenChange(false);
@@ -92,6 +108,9 @@ export function TaskEditDialog({ task, open, onOpenChange }: Props) {
       toast.error(error instanceof Error ? error.message : "Não foi possível salvar a tarefa.");
     }
   };
+
+  const watchedStatus = (form.watch("status") ?? task.status) as TaskStatus;
+  const isCompleting = isDone(watchedStatus);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -173,15 +192,57 @@ export function TaskEditDialog({ task, open, onOpenChange }: Props) {
                 </FormItem>
               )} />
             </div>
-            <FormField control={form.control} name="dueDate" render={({ field }) => (
-              <FormItem>
-                <Label className="text-zinc-300 text-sm">Prazo (opcional)</Label>
-                <FormControl>
-                  <Input {...field} type="date" className="bg-zinc-800 border-zinc-700 text-zinc-100" />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )} />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <FormField control={form.control} name="startDate" render={({ field }) => (
+                <FormItem>
+                  <Label className="text-zinc-300 text-sm">Início planejado (opcional)</Label>
+                  <FormControl>
+                    <Input {...field} type="date" className="bg-zinc-800 border-zinc-700 text-zinc-100" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+              <FormField control={form.control} name="dueDate" render={({ field }) => (
+                <FormItem>
+                  <Label className="text-zinc-300 text-sm">Prazo (opcional)</Label>
+                  <FormControl>
+                    <Input {...field} type="date" className="bg-zinc-800 border-zinc-700 text-zinc-100" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+            </div>
+
+            {isCompleting && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 rounded-lg border border-emerald-500/25 bg-emerald-500/5 p-3">
+                <FormField control={form.control} name="completedAt" render={({ field }) => (
+                  <FormItem>
+                    <Label className="text-emerald-300 text-sm">Data de conclusão</Label>
+                    <FormControl>
+                      <Input {...field} type="date" className="bg-zinc-800 border-zinc-700 text-zinc-100" />
+                    </FormControl>
+                    <p className="text-[10px] text-zinc-500">Em branco = hoje.</p>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+                <FormField control={form.control} name="actualHours" render={({ field }) => (
+                  <FormItem>
+                    <Label className="text-emerald-300 text-sm">Tempo real (horas)</Label>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        type="number"
+                        min={0}
+                        step="0.25"
+                        onChange={(e) => field.onChange(Number(e.target.value))}
+                        className="bg-zinc-800 border-zinc-700 text-zinc-100"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+              </div>
+            )}
             <div className="flex justify-end gap-2 pt-2">
               <Button type="button" variant="ghost" onClick={() => onOpenChange(false)} className="text-zinc-400">Cancelar</Button>
               <Button type="submit" disabled={form.formState.isSubmitting} className="bg-violet-600 hover:bg-violet-700 disabled:opacity-60">

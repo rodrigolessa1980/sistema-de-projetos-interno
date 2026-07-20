@@ -5,7 +5,7 @@ import { useTaskStore, useProjectStore, useUserStore } from "@/stores";
 import { useAuth } from "@/hooks/use-auth";
 import { useUpdateKanbanOrder } from "@/hooks/use-tasks";
 import { ComplexityBadge } from "@/components/shared/task-badge";
-import { formatDate, getStatusLabel, getStatusDotColor } from "@/lib/utils";
+import { formatDate, getStatusLabel, getStatusDotColor, getScheduleStatus, getHoursStatus } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Select, SelectContent, SelectItem, SelectSeparator, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AlertTriangle, Clock, GripVertical, Plus, Lock, Flame, Users } from "lucide-react";
@@ -90,7 +90,8 @@ function KanbanCard({ task, isDragging }: { task: Task; isDragging?: boolean }) 
   const { activeSession } = useWorkSessionStore();
   const { getBlockersForTask } = useTaskStore();
   const assignee = users.find((u) => u.id === task.assigneeId);
-  const isOverdue = task.dueDate && new Date(task.dueDate) < new Date() && task.status !== "CONCLUIDA";
+  const schedule = getScheduleStatus(task);
+  const hours = getHoursStatus(task);
   const isBeingWorked = activeSession?.taskId === task.id;
   const pendingBlockers = getBlockersForTask(task.id);
   const tags = task.tags ?? [];
@@ -172,14 +173,15 @@ function KanbanCard({ task, isDragging }: { task: Task; isDragging?: boolean }) 
       ))}
 
       <div className="flex items-center justify-between mt-2 pt-2 border-t border-zinc-800/50">
-        <div className="flex items-center gap-1 text-[10px] text-zinc-500">
+        <div className={cn("flex items-center gap-1 text-[10px]", hours.over ? "text-red-400" : "text-zinc-500")}>
           <Clock className="w-3 h-3" />
           {task.actualHours}/{task.estimatedHours}h
+          {hours.over && <span className="font-semibold">+{hours.deviationPct}%</span>}
         </div>
         <div className="flex items-center gap-2">
           {task.dueDate && (
-            <span className={cn("text-[10px]", isOverdue ? "text-red-400" : "text-zinc-600")}>
-              {formatDate(task.dueDate)}
+            <span className={cn("text-[10px]", schedule.isLate ? "text-red-400" : "text-zinc-600")}>
+              {schedule.status === "entregue-com-atraso" ? `${formatDate(task.dueDate)} · +${schedule.daysLate}d` : formatDate(task.dueDate)}
             </span>
           )}
           <Avatar className="w-5 h-5">

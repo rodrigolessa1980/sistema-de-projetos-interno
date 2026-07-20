@@ -14,7 +14,7 @@ export interface DateRange {
   label: string;
 }
 
-export type PresetKey = "hoje" | "7d" | "30d" | "mes" | "tudo" | "custom";
+export type PresetKey = "hoje" | "semana" | "30d" | "mes" | "tudo" | "custom";
 
 function addDays(base: Date, days: number): Date {
   const d = new Date(base);
@@ -29,8 +29,14 @@ export function rangeFromPreset(preset: PresetKey): DateRange {
   switch (preset) {
     case "hoje":
       return { start: todayIso, end: todayIso, label: "Hoje" };
-    case "7d":
-      return { start: toISODate(addDays(today, -6)), end: todayIso, label: "Últimos 7 dias" };
+    case "semana": {
+      // Semana atual: segunda 00:00 → domingo (padrão BR), não os últimos 7 dias.
+      const dow = today.getDay(); // 0=domingo … 6=sábado
+      const daysSinceMonday = (dow + 6) % 7;
+      const monday = addDays(today, -daysSinceMonday);
+      const sunday = addDays(monday, 6);
+      return { start: toISODate(monday), end: toISODate(sunday), label: "Esta semana" };
+    }
     case "30d":
       return { start: toISODate(addDays(today, -29)), end: todayIso, label: "Últimos 30 dias" };
     case "mes": {
@@ -56,7 +62,7 @@ export function isInRange(dateValue: string | null | undefined, range: DateRange
 
 const PRESETS: { key: PresetKey; label: string }[] = [
   { key: "hoje", label: "Hoje" },
-  { key: "7d", label: "7 dias" },
+  { key: "semana", label: "Semana" },
   { key: "30d", label: "30 dias" },
   { key: "mes", label: "Este mês" },
   { key: "tudo", label: "Tudo" },

@@ -2,7 +2,9 @@ import { Inject, Injectable } from '@nestjs/common';
 import type { ITaskRepository } from '../../domain/repositories/task-repository.interface';
 import { ITaskRepositoryToken } from '../../domain/repositories/task-repository.interface';
 import { Task } from '../../domain/entities/task.entity';
-import { TaskStatus } from '../../domain/entities/enums';
+import { TaskStatus, NotificationType, AuditAction } from '../../domain/entities/enums';
+import { NotificationService } from '../../services/notification.service';
+import { AuditService } from '../../services/audit.service';
 
 export interface CreateTaskInput {
   projectId: string;
@@ -29,6 +31,8 @@ export class CreateTaskUseCase {
   constructor(
     @Inject(ITaskRepositoryToken)
     private readonly taskRepository: ITaskRepository,
+    private readonly notifications: NotificationService,
+    private readonly audit: AuditService,
   ) {}
 
   async execute(input: CreateTaskInput): Promise<Task> {
@@ -64,6 +68,24 @@ export class CreateTaskUseCase {
       );
       for (const t of toBlock) t.blockDueToUrgency(savedTask.id);
       await this.taskRepository.bulkUpdate(toBlock);
+    }
+
+    this.audit.describe({
+      action: AuditAction.CREATED,
+      description: `Criou a tarefa "${savedTask.title}"`,
+      newValue: { title: savedTask.title, status: savedTask.status, assigneeId: savedTask.assigneeId },
+    });
+
+    // Notifica o responsável quando a tarefa é atribuída a outra pessoa.
+    if (savedTask.assigneeId && savedTask.assigneeId !== savedTask.reporterId) {
+      await this.notifications.notify({
+        userId: savedTask.assigneeId,
+        type: NotificationType.TASK_ASSIGNED,
+        title: 'Nova tarefa atribuída',
+        message: `Você foi atribuído à tarefa "${savedTask.title}".`,
+        relatedTaskId: savedTask.id,
+        relatedProjectId: savedTask.projectId,
+      });
     }
 
     return savedTask;

@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useTaskStore, useProjectStore, useUserStore } from "@/stores";
 import { useAuth } from "@/hooks/use-auth";
-import { ALL_STATUSES, getStatusLabel, COMPLEXITY_OPTIONS, getComplexityLabel, moduleColorFromId, shortId } from "@/lib/utils";
+import { ALL_STATUSES, getStatusLabel, COMPLEXITY_OPTIONS, getComplexityLabel, moduleColorFromId, shortId, isOpen, isDone, todayISO } from "@/lib/utils";
 import type { TaskComplexity, TaskStatus } from "@/types";
 import { toast } from "sonner";
 import { Link2, X, AlertTriangle, Flame, ShieldAlert, Plus } from "lucide-react";
@@ -65,7 +65,7 @@ export function TaskCreateDialog({ open, onOpenChange, defaultProjectId, default
   const [newModuleName, setNewModuleName] = useState("");
   const [creatingModule, setCreatingModule] = useState(false);
   // Hoje (YYYY-MM-DD) — usado como mínimo dos campos de prazo (sem datas passadas).
-  const today = new Date().toISOString().split("T")[0];
+  const today = todayISO();
 
   const form = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -90,7 +90,7 @@ export function TaskCreateDialog({ open, onOpenChange, defaultProjectId, default
   const existingUrgent = assigneeId ? getUrgentTaskForDev(assigneeId) : undefined;
   // Qtd de tarefas do dev que serão bloqueadas
   const willBlockCount = isUrgent && assigneeId
-    ? tasks.filter((t) => t.assigneeId === assigneeId && !["CONCLUIDA", "CANCELADA"].includes(t.status)).length
+    ? tasks.filter((t) => t.assigneeId === assigneeId && isOpen(t.status)).length
     : 0;
   // Só módulos de planejamento (exclui os "andaimes" de lançamento rápido de
   // horas). Tarefas nesses andaimes ficam escondidas do Kanban/Timeline.
@@ -123,7 +123,7 @@ export function TaskCreateDialog({ open, onOpenChange, defaultProjectId, default
 
   const selectedDepTasks = tasks.filter((t) => selectedDepIds.includes(t.id));
   const hasPendingDeps = selectedDepTasks.some(
-    (t) => t.status !== "CONCLUIDA" && t.status !== "CANCELADA"
+    (t) => isOpen(t.status)
   );
 
   function toggleDep(taskId: string) {
@@ -163,7 +163,7 @@ export function TaskCreateDialog({ open, onOpenChange, defaultProjectId, default
         moduleId: finalModuleId,
         name: mod?.name ?? "Geral",
         description: "",
-        startDate: new Date().toISOString().split("T")[0],
+        startDate: todayISO(),
         endDate: undefined,
         developerIds: [],
       });
@@ -197,7 +197,7 @@ export function TaskCreateDialog({ open, onOpenChange, defaultProjectId, default
         tags: [],
         isUrgent,
         blockedReason: hasPendingDeps
-          ? `Aguardando conclusão de: ${selectedDepTasks.filter((t) => t.status !== "CONCLUIDA" && t.status !== "CANCELADA").map((t) => t.title).join(", ")}`
+          ? `Aguardando conclusão de: ${selectedDepTasks.filter((t) => isOpen(t.status)).map((t) => t.title).join(", ")}`
           : undefined,
       });
 
@@ -469,12 +469,12 @@ export function TaskCreateDialog({ open, onOpenChange, defaultProjectId, default
                       <span
                         key={dep.id}
                         className={`inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full border ${
-                          dep.status === "CONCLUIDA"
+                          isDone(dep.status)
                             ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400"
                             : "bg-amber-500/10 border-amber-500/30 text-amber-400"
                         }`}
                       >
-                        {dep.status === "CONCLUIDA" ? "✓" : "⏳"} {dep.title.length > 28 ? dep.title.slice(0, 28) + "…" : dep.title}
+                        {isDone(dep.status) ? "✓" : "⏳"} {dep.title.length > 28 ? dep.title.slice(0, 28) + "…" : dep.title}
                         <button type="button" onClick={() => toggleDep(dep.id)} className="hover:text-red-400 ml-0.5">
                           <X className="w-3 h-3" />
                         </button>
@@ -510,7 +510,7 @@ export function TaskCreateDialog({ open, onOpenChange, defaultProjectId, default
                         className="w-full flex items-center gap-2 px-3 py-2 text-xs text-zinc-300 hover:bg-zinc-800/60 transition-colors text-left"
                       >
                         <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${
-                          dep.status === "CONCLUIDA" ? "bg-emerald-400" :
+                          isDone(dep.status) ? "bg-emerald-400" :
                           dep.status === "EM_DESENVOLVIMENTO" ? "bg-blue-400" :
                           dep.status === "BLOQUEADA" ? "bg-red-400" : "bg-zinc-500"
                         }`} />

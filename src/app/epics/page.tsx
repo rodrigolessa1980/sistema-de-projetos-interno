@@ -4,7 +4,7 @@ import { useState } from "react";
 import { PageHeader } from "@/components/shared/page-header";
 import { useProjectStore, useTaskStore, useUserStore } from "@/stores";
 import { useAuth } from "@/hooks/use-auth";
-import { formatDate, cn, moduleColorFromId, shortId } from "@/lib/utils";
+import { formatDate, cn, moduleColorFromId, shortId, isDone, todayISO } from "@/lib/utils";
 import { quickLogModuleIds } from "@/lib/worklog";
 import { motion } from "@/lib/motion";
 import { ChevronRight, ExternalLink, FolderKanban, Layers, ListTodo, Users } from "lucide-react";
@@ -68,7 +68,7 @@ export default function EpicsPage() {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [selectedEpicId, setSelectedEpicId] = useState<string | null>(null);
   const [creatingEpic, setCreatingEpic] = useState(false);
-  const today = new Date().toISOString().split("T")[0];
+  const today = todayISO();
   const selectedEpic = epics.find((e) => e.id === selectedEpicId) ?? null;
   const form = useForm<EpicForm>({
     defaultValues: {
@@ -76,7 +76,7 @@ export default function EpicsPage() {
       moduleId: "",
       name: "",
       description: "",
-      startDate: new Date().toISOString().split("T")[0],
+      startDate: todayISO(),
       endDate: "",
       developerIds: [],
     },
@@ -104,7 +104,7 @@ export default function EpicsPage() {
       moduleId: "",
       name: "",
       description: "",
-      startDate: new Date().toISOString().split("T")[0],
+      startDate: todayISO(),
       endDate: "",
       developerIds: [],
     });
@@ -138,7 +138,7 @@ export default function EpicsPage() {
         moduleId: finalModuleId,
         name: data.name?.trim() || `Epic ${new Date().toLocaleString("pt-BR")}`,
         description: data.description?.trim() || "Epic criado sem descricao.",
-        startDate: data.startDate || new Date().toISOString().split("T")[0],
+        startDate: data.startDate || todayISO(),
         endDate: data.endDate || undefined,
         developerIds: data.developerIds ?? [],
       });
@@ -442,7 +442,7 @@ function EpicDetailSheet({
   const projectModule = modules.find((m) => m.id === epic.moduleId);
   const epicTasks = tasks.filter((t) => t.epicId === epic.id);
   const epicDevs = users.filter((u) => epic.developerIds?.includes(u.id));
-  const completedTasks = epicTasks.filter((t) => t.status === "CONCLUIDA").length;
+  const completedTasks = epicTasks.filter((t) => isDone(t.status)).length;
   const inProgressTasks = epicTasks.filter((t) => t.status === "EM_DESENVOLVIMENTO").length;
 
   return (

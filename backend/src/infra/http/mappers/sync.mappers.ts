@@ -119,3 +119,52 @@ export function mapTimeLog(t: any) {
     updatedAt: toISO(t.updatedAt),
   };
 }
+
+export function mapComment(c: any) {
+  return {
+    id: c.id,
+    taskId: c.taskId,
+    userId: c.userId,
+    content: c.content,
+    mentions: Array.isArray(c.mentions) ? c.mentions : [],
+    createdAt: toISO(c.createdAt),
+    updatedAt: toISO(c.updatedAt),
+  };
+}
+
+export function mapSubtask(s: any) {
+  return {
+    id: s.id,
+    taskId: s.taskId,
+    title: s.title,
+    completed: s.completed,
+    assigneeId: s.assigneeId ?? undefined,
+    createdAt: toISO(s.createdAt),
+    updatedAt: toISO(s.updatedAt),
+  };
+}
+
+export function mapTaskNote(n: any) {
+  return {
+    id: n.id,
+    taskId: n.taskId,
+    userId: n.userId,
+    content: n.content,
+    isPinned: n.isPinned,
+    createdAt: toISO(n.createdAt),
+    updatedAt: toISO(n.updatedAt),
+  };
+}
+
+export function mapTaskDependency(d: any) {
+  return {
+    id: d.id,
+    taskId: d.taskId,
+    dependsOnTaskId: d.dependsOnTaskId,
+    type: d.type,
+    createdAt: toISO(d.createdAt),
+    // Dependência é imutável (create/delete): expõe updatedAt=createdAt para
+    // caber no merge por versão do delta sync (mergeById espera updatedAt).
+    updatedAt: toISO(d.createdAt),
+  };
+}

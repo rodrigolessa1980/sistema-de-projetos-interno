@@ -33,6 +33,7 @@ const SOFT_DELETE_MODELS = new Set<string>([
   'ModuleAttachment',
   'ProjectShowcaseAttachment',
   'ProjectDemandAttachment',
+  'User',
 ]);
 
 /**

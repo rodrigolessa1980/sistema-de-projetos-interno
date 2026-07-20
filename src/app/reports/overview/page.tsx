@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import { PrintButton } from "@/components/shared/print-button";
 import { MetricsAreaChart, MetricsPieChart } from "@/components/shared/mui-charts";
-import { cn, formatDate } from "@/lib/utils";
+import { cn, formatDate, getScheduleStatus, isDone } from "@/lib/utils";
 
 const STATUS_COLORS: Record<string, string> = {
   BACKLOG: "#52525b",
@@ -114,11 +114,11 @@ export default function OverviewReportPage() {
 
   const totalHours = useMemo(() => timeLogs.reduce((acc, tl) => acc + tl.hours, 0), [timeLogs]);
   const overdueTasks = useMemo(
-    () => tasks.filter((t) => t.dueDate && t.dueDate < today && !["CONCLUIDA", "CANCELADA"].includes(t.status)).length,
-    [tasks, today],
+    () => tasks.filter((t) => getScheduleStatus(t).status === "atrasada").length,
+    [tasks],
   );
   const completionRate = useMemo(
-    () => (tasks.length > 0 ? Math.round((tasks.filter((t) => t.status === "CONCLUIDA").length / tasks.length) * 100) : 0),
+    () => (tasks.length > 0 ? Math.round((tasks.filter((t) => isDone(t.status)).length / tasks.length) * 100) : 0),
     [tasks],
   );
 
@@ -139,7 +139,7 @@ export default function OverviewReportPage() {
     const totalByUser = new Map<string, number>();
     for (const t of tasks) {
       totalByUser.set(t.assigneeId, (totalByUser.get(t.assigneeId) ?? 0) + 1);
-      if (t.status === "CONCLUIDA") doneByUser.set(t.assigneeId, (doneByUser.get(t.assigneeId) ?? 0) + 1);
+      if (isDone(t.status)) doneByUser.set(t.assigneeId, (doneByUser.get(t.assigneeId) ?? 0) + 1);
       if (t.status === "EM_DESENVOLVIMENTO") activeByUser.set(t.assigneeId, (activeByUser.get(t.assigneeId) ?? 0) + 1);
     }
     const hoursByUser = new Map<string, number>();

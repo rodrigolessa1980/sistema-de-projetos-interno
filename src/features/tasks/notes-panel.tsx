@@ -76,9 +76,13 @@ function NoteCard({ note, onUpdate, onDelete, onTogglePin, currentUserId }: Note
 
   const handleSave = async () => {
     if (!editContent.trim()) return;
-    await onUpdate(note.id, editContent.trim());
-    setIsEditing(false);
-    toast.success("Anotação atualizada");
+    try {
+      await onUpdate(note.id, editContent.trim());
+      setIsEditing(false);
+      toast.success("Anotação atualizada");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Não foi possível salvar a anotação.");
+    }
   };
 
   const handleDiscard = () => {
@@ -125,7 +129,13 @@ function NoteCard({ note, onUpdate, onDelete, onTogglePin, currentUserId }: Note
 
         <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
           <button
-            onClick={() => onTogglePin(note.id)}
+            onClick={async () => {
+              try {
+                await onTogglePin(note.id);
+              } catch (error) {
+                toast.error(error instanceof Error ? error.message : "Não foi possível fixar a anotação.");
+              }
+            }}
             className="p-1.5 rounded-lg text-zinc-500 hover:text-amber-400 hover:bg-amber-500/10 transition-colors"
             title={note.isPinned ? "Desafixar" : "Fixar anotação"}
           >
@@ -141,7 +151,14 @@ function NoteCard({ note, onUpdate, onDelete, onTogglePin, currentUserId }: Note
                 <Pencil className="w-3.5 h-3.5" />
               </button>
               <button
-                onClick={async () => { await onDelete(note.id); toast.success("Anotação removida"); }}
+                onClick={async () => {
+                  try {
+                    await onDelete(note.id);
+                    toast.success("Anotação removida");
+                  } catch (error) {
+                    toast.error(error instanceof Error ? error.message : "Não foi possível remover a anotação.");
+                  }
+                }}
                 className="p-1.5 rounded-lg text-zinc-500 hover:text-red-400 hover:bg-red-500/10 transition-colors"
                 title="Excluir"
               >
@@ -222,15 +239,20 @@ export function NotesPanel({ taskId }: NotesPanelProps) {
 
   const handleAdd = async () => {
     if (!newContent.trim() || !user) return;
-    await addNote({
-      taskId,
-      userId: user.id,
-      content: newContent.trim(),
-      isPinned: false,
-    });
-    setNewContent("");
-    setIsAdding(false);
-    toast.success("Anotação salva");
+    try {
+      await addNote({
+        taskId,
+        userId: user.id,
+        content: newContent.trim(),
+        isPinned: false,
+      });
+      setNewContent("");
+      setIsAdding(false);
+      toast.success("Anotação salva");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Não foi possível salvar a anotação.");
+      return;
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {

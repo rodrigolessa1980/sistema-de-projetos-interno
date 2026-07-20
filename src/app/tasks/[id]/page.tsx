@@ -4,12 +4,13 @@ import { useState } from "react";
 import { useTaskStore, useProjectStore, useUserStore } from "@/stores";
 import { useAuth } from "@/hooks/use-auth";
 import { StatusBadge, ComplexityBadge } from "@/components/shared/task-badge";
-import { formatDate, formatDateTime, formatRelativeTime, getStatusLabel, ALL_STATUSES } from "@/lib/utils";
+import { formatDate, formatDateTime, formatRelativeTime, getStatusLabel, getScheduleStatus, getScheduleLabel, getHoursStatus, isOpen, isTerminal, isDone, todayISO, ALL_STATUSES } from "@/lib/utils";
 import { motion, AnimatePresence } from "@/lib/motion";
 import {
   ChevronLeft, Clock, AlertTriangle, MessageSquare, CheckSquare,
   Square, Plus, Send, Calendar, User2, Layers, Timer, Activity,
   Link2, Lock, CheckCircle2, ArrowRight, X, Flame, ShieldAlert, Trash2, Pencil,
+  Building2, Box, History,
 } from "lucide-react";
 import { ReassignPopover } from "@/components/shared/reassign-popover";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -31,11 +32,12 @@ import { ExpandableText } from "@/components/shared/expandable-text";
 import { NotesPanel } from "@/features/tasks/notes-panel";
 import { AttachmentsPanel } from "@/features/tasks/attachments-panel";
 import { TaskEditDialog } from "@/features/tasks/task-edit-dialog";
+import { TaskAuditDialog } from "@/features/tasks/task-audit-dialog";
 
 export default function TaskDetailPage() {
   const { id } = useParams<{ id: string }>();
   const { getTaskById, getSubtasksByTask, getCommentsByTask, getTimeLogsByTask, addComment, toggleSubtask, addSubtask, getDependenciesByTask, updateTask, getBlockersForTask, tasks, addDependency, removeDependency, dependencies, setTaskUrgent, deleteTask } = useTaskStore();
-  const { getProjectById } = useProjectStore();
+  const { getProjectById, getCompanyById, modules } = useProjectStore();
   const { users } = useUserStore();
   const { user, isAdmin } = useAuth();
   const router = useRouter();
@@ -51,6 +53,7 @@ export default function TaskDetailPage() {
   const [depSearch, setDepSearch] = useState("");
   const [justDeleted, setJustDeleted] = useState(false);
   const [editingTask, setEditingTask] = useState(false);
+  const [showAudit, setShowAudit] = useState(false);
 
   const task = getTaskById(id);
   if (!task) {
@@ -77,6 +80,12 @@ export default function TaskDetailPage() {
   }
 
   const project = getProjectById(task.projectId);
+  // Toda tarefa pertence a um módulo (hierarquia estrita); o fallback abaixo só
+  // cobre o módulo ainda não presente no store, não uma tarefa sem módulo.
+  const taskModule = modules.find((m) => m.id === task.moduleId) ?? null;
+  const company = project?.companyId ? getCompanyById(project.companyId) ?? null : null;
+  const backHref = taskModule ? `/modules/${taskModule.id}` : `/projects/${task.projectId}`;
+  const backLabel = taskModule ? taskModule.name : "Projeto";
   const assignee = users.find((u) => u.id === task.assigneeId);
   const reporter = users.find((u) => u.id === task.reporterId);
   const subtasks = getSubtasksByTask(id);
@@ -88,7 +97,7 @@ export default function TaskDetailPage() {
   // Dependências desta tarefa (o que ela depende) — type BLOCKED_BY
   const myDeps = getDependenciesByTask(id).filter((d) => d.taskId === id && d.type === "BLOCKED_BY");
   const blockerTasks = myDeps.map((d) => tasks.find((t) => t.id === d.dependsOnTaskId)).filter(Boolean) as import("@/types").Task[];
-  const pendingBlockers = blockerTasks.filter((t) => t.status !== "CONCLUIDA" && t.status !== "CANCELADA");
+  const pendingBlockers = blockerTasks.filter((t) => isOpen(t.status));
   const isBlocked = pendingBlockers.length > 0;
 
   // Tarefas que dependem desta (ela bloqueia outras)
@@ -120,7 +129,7 @@ export default function TaskDetailPage() {
     if (!depTask) return;
     try {
       await addDependency({ taskId: id, dependsOnTaskId: depTaskId, type: "BLOCKED_BY" });
-      const isPending = depTask.status !== "CONCLUIDA" && depTask.status !== "CANCELADA";
+      const isPending = isOpen(depTask.status);
       if (isPending) {
         await updateTask(id, {
           status: "BLOQUEADA",
@@ -143,7 +152,7 @@ export default function TaskDetailPage() {
       const remaining = myDeps.filter((d) => d.id !== depRecord.id);
       const stillBlocked = remaining.some((d) => {
         const t = tasks.find((tt) => tt.id === d.dependsOnTaskId);
-        return t && t.status !== "CONCLUIDA" && t.status !== "CANCELADA";
+        return t && isOpen(t.status);
       });
       const currentTask = getTaskById(id);
       if (!stillBlocked && currentTask?.status === "BLOQUEADA") {
@@ -159,15 +168,30 @@ export default function TaskDetailPage() {
 
   const handleAddComment = async () => {
     if (!commentText.trim()) return;
-    await addComment({ taskId: id, userId: user?.id ?? "", content: commentText, mentions: [] });
-    setCommentText("");
-    toast.success("Comentário adicionado");
+    try {
+      await addComment({ taskId: id, userId: user?.id ?? "", content: commentText, mentions: [] });
+      setCommentText("");
+      toast.success("Comentário adicionado");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Não foi possível adicionar o comentário.");
+    }
   };
 
   const handleAddSubtask = async () => {
     if (!newSubtask.trim()) return;
-    await addSubtask({ taskId: id, title: newSubtask, completed: false, assigneeId: user?.id });
-    setNewSubtask("");
+    try {
+      await addSubtask({ taskId: id, title: newSubtask, completed: false, assigneeId: user?.id });
+      setNewSubtask("");
+      toast.success("Subtarefa adicionada");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Não foi possível adicionar a subtarefa.");
+    }
+  };
+
+  const handleToggleSubtask = (subtaskId: string) => {
+    toggleSubtask(subtaskId).catch((error) => {
+      toast.error(error instanceof Error ? error.message : "Não foi possível atualizar a subtarefa.");
+    });
   };
 
   const handleLogTime = async () => {
@@ -178,13 +202,15 @@ export default function TaskDetailPage() {
       projectId: task.projectId,
       hours,
       description: logDesc,
-      date: new Date().toISOString().split("T")[0],
+      date: todayISO(),
       status: task.status,
     });
     setLogHours(""); setLogDesc("");
   };
 
   const progressPercent = task.estimatedHours > 0 ? Math.min(100, (task.actualHours / task.estimatedHours) * 100) : 0;
+  const schedule = getScheduleStatus(task);
+  const hoursStatus = getHoursStatus(task);
 
   // Só admin ou o autor (criador/reporter) da tarefa pode excluí-la.
   const canDelete = isAdmin || user?.id === task.reporterId;
@@ -209,13 +235,25 @@ export default function TaskDetailPage() {
   return (
       <div className="p-6 w-full">
         <div className="flex items-center gap-2 mb-6">
-          <Link href="/tasks" className="flex items-center gap-1 text-sm text-zinc-500 hover:text-zinc-300">
-            <ChevronLeft className="w-4 h-4" /> Tarefas
+          <Link href={backHref} className="flex items-center gap-1 text-sm text-zinc-500 hover:text-zinc-300 truncate">
+            <ChevronLeft className="w-4 h-4 shrink-0" /> <span className="truncate">{backLabel}</span>
           </Link>
           <span className="text-zinc-700">/</span>
           <span className="text-sm text-zinc-400 truncate">{task.title}</span>
-          {canDelete && (
+          {(canDelete || isAdmin) && (
             <div className="ml-auto flex items-center gap-1 shrink-0">
+              {isAdmin && (
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => setShowAudit(true)}
+                  className="h-7 px-2 text-xs text-zinc-400 hover:text-violet-300 hover:bg-violet-500/10 gap-1"
+                >
+                  <History className="w-3.5 h-3.5" /> Histórico
+                </Button>
+              )}
+              {canDelete && (
               <Button
                 type="button"
                 size="sm"
@@ -225,6 +263,7 @@ export default function TaskDetailPage() {
               >
                 <Pencil className="w-3.5 h-3.5" /> Editar
               </Button>
+              )}
               <Button
                 type="button"
                 size="sm"
@@ -239,6 +278,7 @@ export default function TaskDetailPage() {
         </div>
 
         {editingTask && <TaskEditDialog task={task} open={editingTask} onOpenChange={setEditingTask} />}
+        {showAudit && <TaskAuditDialog taskId={id} open={showAudit} onOpenChange={setShowAudit} />}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-5">
@@ -293,7 +333,7 @@ export default function TaskDetailPage() {
               {/* Banner bloqueado por urgência */}
               {task.urgentBlockedById && (() => {
                 const urgentTask = tasks.find((t) => t.id === task.urgentBlockedById);
-                const isStillBlocking = urgentTask && !["CONCLUIDA", "CANCELADA"].includes(urgentTask.status);
+                const isStillBlocking = urgentTask && isOpen(urgentTask.status);
                 return urgentTask && isStillBlocking ? (
                   <div className="flex items-start gap-2 p-3 rounded-lg bg-orange-500/10 border border-orange-500/20 mb-4">
                     <ShieldAlert className="w-4 h-4 text-orange-400 shrink-0 mt-0.5" />
@@ -342,7 +382,7 @@ export default function TaskDetailPage() {
                     {subtasks.map((sub) => (
                       <button
                         key={sub.id}
-                        onClick={() => toggleSubtask(sub.id)}
+                        onClick={() => handleToggleSubtask(sub.id)}
                         className="flex items-center gap-2.5 w-full p-2 rounded-lg hover:bg-zinc-800/40 transition-colors text-left"
                       >
                         {sub.completed ? (
@@ -508,8 +548,7 @@ export default function TaskDetailPage() {
               taskId={id}
               taskTitle={task.title}
               disabled={
-                task.status === "CONCLUIDA" ||
-                task.status === "CANCELADA" ||
+                isTerminal(task.status) ||
                 task.status === "BLOQUEADA"
               }
             />
@@ -587,6 +626,38 @@ export default function TaskDetailPage() {
                   </div>
                 )}
 
+                <div className="flex items-center gap-3">
+                  <Building2 className="w-4 h-4 text-zinc-500 shrink-0" />
+                  <div>
+                    <p className="text-[10px] text-zinc-600 mb-1">Empresa</p>
+                    {company ? (
+                      <div className="flex items-center gap-1.5">
+                        <div className="w-2 h-2 rounded-full" style={{ background: company.color }} />
+                        <span className="text-xs text-zinc-300">{company.name}</span>
+                      </div>
+                    ) : (
+                      <span className="text-xs text-zinc-500">—</span>
+                    )}
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <Box className="w-4 h-4 text-zinc-500 shrink-0" />
+                  <div>
+                    <p className="text-[10px] text-zinc-600 mb-1">Módulo</p>
+                    {taskModule ? (
+                      <Link
+                        href={`/modules/${taskModule.id}`}
+                        className="text-xs text-zinc-300 hover:text-violet-300 hover:underline"
+                      >
+                        {taskModule.name}
+                      </Link>
+                    ) : (
+                      <span className="text-xs text-zinc-500">—</span>
+                    )}
+                  </div>
+                </div>
+
                 {task.dueDate && (
                   <div className="flex items-center gap-3">
                     <Calendar className="w-4 h-4 text-zinc-500 shrink-0" />
@@ -594,6 +665,18 @@ export default function TaskDetailPage() {
                       <p className="text-[10px] text-zinc-600 mb-1">Prazo</p>
                       <span className="text-xs text-zinc-300">{formatDate(task.dueDate)}</span>
                     </div>
+                  </div>
+                )}
+
+                {schedule.status !== "sem-prazo" && (
+                  <div
+                    className={`text-[11px] font-medium px-2 py-1 rounded-md border ${
+                      schedule.isLate
+                        ? "bg-red-500/10 border-red-500/30 text-red-300"
+                        : "bg-emerald-500/10 border-emerald-500/25 text-emerald-300"
+                    }`}
+                  >
+                    {getScheduleLabel(schedule)}
                   </div>
                 )}
               </div>
@@ -631,11 +714,17 @@ export default function TaskDetailPage() {
               <div className="pt-3 border-t border-zinc-800/50">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-xs text-zinc-500">Horas</span>
-                  <span className="text-xs font-semibold text-zinc-300">{task.actualHours}/{task.estimatedHours}h</span>
+                  <span className={`text-xs font-semibold ${hoursStatus.over ? "text-red-300" : "text-zinc-300"}`}>
+                    {task.actualHours}/{task.estimatedHours}h
+                  </span>
                 </div>
                 <Progress value={progressPercent} className="h-1.5 bg-zinc-800" />
-                <p className="text-[10px] text-zinc-600 mt-1">
-                  {progressPercent > 100 ? `${(progressPercent - 100).toFixed(0)}% acima do estimado` : `${(100 - progressPercent).toFixed(0)}% restante`}
+                <p className={`text-[10px] mt-1 ${hoursStatus.over ? "text-red-400" : "text-zinc-600"}`}>
+                  {hoursStatus.status === "sem-estimativa"
+                    ? "Sem estimativa definida"
+                    : hoursStatus.over
+                      ? `${hoursStatus.deviationPct}% acima do estimado`
+                      : `${(100 - progressPercent).toFixed(0)}% restante`}
                 </p>
               </div>
             </div>
@@ -659,7 +748,7 @@ export default function TaskDetailPage() {
                   <p className="text-[10px] text-zinc-600 uppercase tracking-wide">Precisa que terminem primeiro</p>
                   {blockerTasks.map((bt) => {
                     const dep = myDeps.find((d) => d.dependsOnTaskId === bt.id);
-                    const done = bt.status === "CONCLUIDA" || bt.status === "CANCELADA";
+                    const done = isTerminal(bt.status);
                     return (
                       <div key={bt.id} className={`flex items-center gap-2 p-2 rounded-lg border text-xs group ${done ? "bg-emerald-500/5 border-emerald-500/20" : "bg-red-500/5 border-red-500/20"}`}>
                         {done
@@ -718,7 +807,7 @@ export default function TaskDetailPage() {
                         onClick={() => handleAddDep(t.id)}
                         className="w-full flex items-center gap-2 px-3 py-1.5 text-[11px] text-zinc-300 hover:bg-zinc-800/60 transition-colors text-left"
                       >
-                        <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${t.status === "CONCLUIDA" ? "bg-emerald-400" : t.status === "EM_DESENVOLVIMENTO" ? "bg-blue-400" : "bg-zinc-500"}`} />
+                        <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${isDone(t.status) ? "bg-emerald-400" : t.status === "EM_DESENVOLVIMENTO" ? "bg-blue-400" : "bg-zinc-500"}`} />
                         <span className="flex-1 truncate">{t.title}</span>
                         <span className="text-zinc-600 text-[10px] shrink-0">{getStatusLabel(t.status)}</span>
                       </button>

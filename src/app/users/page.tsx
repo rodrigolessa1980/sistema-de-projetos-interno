@@ -5,7 +5,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useUserStore } from "@/stores";
 import { EmptyState } from "@/components/shared/empty-state";
 import { PageLoading } from "@/components/shared/page-loading";
-import { Users, Save, RotateCcw, ShieldCheck, UserPlus } from "lucide-react";
+import { Users, Save, RotateCcw, ShieldCheck, UserPlus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { UserDialog } from "@/features/users/user-dialog";
 import { Badge } from "@/components/ui/badge";
@@ -100,8 +100,8 @@ function formatLastLogin(date: string | null): string {
 // Page Component
 // ──────────────────────────────────────────────
 export default function UsersPage() {
-  const { isAdmin } = useAuth();
-  const { users: storeUsers, fetchUsers, updateUserPermissions, approveUser, setUserRole } = useUserStore();
+  const { isAdmin, user: currentUser } = useAuth();
+  const { users: storeUsers, fetchUsers, updateUserPermissions, approveUser, setUserRole, deleteUser } = useUserStore();
   const hasLoaded = useUserStore((s) => s.hasLoaded);
   const [rolePendingId, setRolePendingId] = useState<string | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -132,6 +132,21 @@ export default function UsersPage() {
       toast.error("Erro ao aprovar usuário");
     }
   }, [approveUser]);
+
+  const handleDeleteUser = useCallback(async (u: ApiUser) => {
+    if (u.id === currentUser?.id) {
+      toast.error("Você não pode excluir a própria conta.");
+      return;
+    }
+    if (!window.confirm(`Excluir "${u.name}"? A conta perde o acesso e some das listas (soft delete).`)) return;
+    try {
+      await deleteUser(u.id);
+      setSelectedId(null);
+      toast.success("Usuário excluído");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Erro ao excluir usuário");
+    }
+  }, [deleteUser, currentUser?.id]);
 
   const handleToggleRole = useCallback(async (user: ApiUser) => {
     const next = user.role === "ADMIN" ? "DEVELOPER" : "ADMIN";
@@ -399,6 +414,17 @@ export default function UsersPage() {
                     <Save className="w-3.5 h-3.5" />
                     {isSaving ? "Salvando..." : "Salvar permissões"}
                   </Button>
+                  {selectedUser.id !== currentUser?.id && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleDeleteUser(selectedUser)}
+                      className="text-red-500 hover:text-red-600 hover:bg-red-500/10 gap-1.5"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                      Excluir
+                    </Button>
+                  )}
                 </div>
               </div>
 

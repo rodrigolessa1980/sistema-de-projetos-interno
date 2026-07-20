@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { TrendingUp, CheckCircle2, Clock, Zap, AlertTriangle, BarChart2 } from "lucide-react";
 import { PrintButton } from "@/components/shared/print-button";
 import { MetricsBarChart } from "@/components/shared/mui-charts";
+import { getScheduleStatus, isDone } from "@/lib/utils";
 
 export default function ProductivityReportPage() {
   const { tasks, timeLogs } = useTaskStore();
@@ -20,11 +21,9 @@ export default function ProductivityReportPage() {
 
   const devStats = targetUsers.map((u) => {
     const userTasks = tasks.filter((t) => t.assigneeId === u.id);
-    const completed = userTasks.filter((t) => t.status === "CONCLUIDA");
+    const completed = userTasks.filter((t) => isDone(t.status));
     const inProgress = userTasks.filter((t) => t.status === "EM_DESENVOLVIMENTO");
-    const overdue = userTasks.filter(
-      (t) => t.dueDate && t.dueDate < new Date().toISOString().split("T")[0] && !["CONCLUIDA", "CANCELADA"].includes(t.status)
-    );
+    const overdue = userTasks.filter((t) => getScheduleStatus(t).status === "atrasada");
     const totalHours = timeLogs.filter((tl) => tl.userId === u.id).reduce((acc, tl) => acc + tl.hours, 0);
     const estimatedTotal = userTasks.reduce((acc, t) => acc + t.estimatedHours, 0);
     const actualTotal = userTasks.reduce((acc, t) => acc + t.actualHours, 0);

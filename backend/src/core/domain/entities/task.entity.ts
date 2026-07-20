@@ -56,6 +56,7 @@ export class Task {
       updatedAt: props.updatedAt || new Date(),
     };
     this.validate();
+    this.enforceCompletionInvariant();
   }
 
   private validate() {
@@ -64,6 +65,21 @@ export class Task {
     }
     if (this.props.estimatedHours < 0) {
       throw new Error('As horas estimadas não podem ser negativas.');
+    }
+  }
+
+  /**
+   * Invariante de conclusão: CONCLUÍDA ⟺ possui `completedAt`; qualquer outro
+   * status nunca tem. Garantido no construtor (e não só em updateStatus) para
+   * fechar a brecha de writes diretos — imports, seeds, reconstrução do
+   * repositório — que era a origem da tarefa "concluída que nunca finaliza"
+   * no Gantt. Se faltar a data numa tarefa concluída, cai para a criação.
+   */
+  private enforceCompletionInvariant() {
+    if (this.props.status === TaskStatus.CONCLUIDA) {
+      this.props.completedAt = this.props.completedAt ?? this.props.createdAt;
+    } else {
+      this.props.completedAt = null;
     }
   }
 

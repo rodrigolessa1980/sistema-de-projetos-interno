@@ -3,7 +3,16 @@ import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { PermissionsGuard } from '../guards/permissions.guard';
 import { RequirePermission } from '../decorators/require-permission.decorator';
 import { PrismaService } from '../../database/prisma/prisma.service';
-import { mapEpic, mapModule, mapProject, mapTask } from '../mappers/sync.mappers';
+import {
+  mapEpic,
+  mapModule,
+  mapProject,
+  mapTask,
+  mapComment,
+  mapSubtask,
+  mapTaskNote,
+  mapTaskDependency,
+} from '../mappers/sync.mappers';
 
 /**
  * Endpoint agregado de bootstrap (INC-01).
@@ -25,13 +34,20 @@ export class BootstrapController {
   @Get()
   @RequirePermission('projects:read')
   async load() {
-    const [projects, companies, modules, epics, tasks] = await Promise.all([
-      this.prisma.project.findMany({ include: { developers: { select: { userId: true } } } }),
-      this.prisma.company.findMany(),
-      this.prisma.module.findMany({ orderBy: { order: 'asc' } }),
-      this.prisma.epic.findMany({ include: { developers: { select: { userId: true } } } }),
-      this.prisma.task.findMany(),
-    ]);
+    const [projects, companies, modules, epics, tasks, comments, subtasks, dependencies, notes] =
+      await Promise.all([
+        this.prisma.project.findMany({ include: { developers: { select: { userId: true } } } }),
+        this.prisma.company.findMany(),
+        this.prisma.module.findMany({ orderBy: { order: 'asc' } }),
+        this.prisma.epic.findMany({ include: { developers: { select: { userId: true } } } }),
+        this.prisma.task.findMany(),
+        // Coleções leves de tarefa: texto/flags, não os anexos (base64) — esses
+        // seguem sob demanda ao abrir o detalhe (INC-02).
+        this.prisma.comment.findMany({ orderBy: { createdAt: 'asc' } }),
+        this.prisma.subtask.findMany({ orderBy: { createdAt: 'asc' } }),
+        this.prisma.taskDependency.findMany(),
+        this.prisma.taskNote.findMany({ orderBy: { createdAt: 'asc' } }),
+      ]);
 
     return {
       projects: projects.map(mapProject),
@@ -39,6 +55,10 @@ export class BootstrapController {
       modules: modules.map(mapModule),
       epics: epics.map(mapEpic),
       tasks: tasks.map(mapTask),
+      comments: comments.map(mapComment),
+      subtasks: subtasks.map(mapSubtask),
+      dependencies: dependencies.map(mapTaskDependency),
+      notes: notes.map(mapTaskNote),
     };
   }
 }

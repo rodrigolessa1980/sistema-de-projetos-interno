@@ -32,11 +32,11 @@ const OverviewReportPage = lazyPage(pageLoaders.overviewReport);
 const ProductivityReportPage = lazyPage(pageLoaders.productivityReport);
 const ProjectsReportPage = lazyPage(pageLoaders.projectsReport);
 const ProjectReportDetailPage = lazyPage(pageLoaders.projectReportDetail);
-const TasksPage = lazyPage(pageLoaders.tasks);
 const TaskDetailPage = lazyPage(pageLoaders.taskDetail);
 const TimeLogsPage = lazyPage(pageLoaders.timeLogs);
 const UsersPage = lazyPage(pageLoaders.users);
 const TrashPage = lazyPage(pageLoaders.trash);
+const AuditPage = lazyPage(pageLoaders.audit);
 
 const routes = [
   { pattern: /^\/$/, component: RootPage },
@@ -62,11 +62,11 @@ const routes = [
   { pattern: /^\/reports\/productivity\/?$/, component: ProductivityReportPage },
   { pattern: /^\/reports\/projects\/?$/, component: ProjectsReportPage },
   { pattern: /^\/reports\/projects\/([^/]+)\/?$/, component: ProjectReportDetailPage },
-  { pattern: /^\/tasks\/?$/, component: TasksPage },
   { pattern: /^\/tasks\/([^/]+)\/?$/, component: TaskDetailPage },
   { pattern: /^\/time-logs\/?$/, component: TimeLogsPage },
   { pattern: /^\/users\/?$/, component: UsersPage },
   { pattern: /^\/trash\/?$/, component: TrashPage },
+  { pattern: /^\/audit\/?$/, component: AuditPage },
 ];
 
 const PUBLIC_ROUTE_PATTERN = /^\/(login|register)\/?$/;

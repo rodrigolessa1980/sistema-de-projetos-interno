@@ -39,7 +39,8 @@ export class PrismaUserRepository implements IUserRepository {
 
   async findByEmailAndTenant(email: string, tenantId: string): Promise<User | null> {
     // E-mail é único POR GRUPO: busca no client base (sem contexto) filtrando por tenant.
-    const raw = await this.base.user.findFirst({ where: { email, tenantId } });
+    // `deletedAt: null` bloqueia login de conta excluída (o client base não filtra sozinho).
+    const raw = await this.base.user.findFirst({ where: { email, tenantId, deletedAt: null } });
     return raw ? this.mapToDomain(raw) : null;
   }
 
@@ -115,7 +116,12 @@ export class PrismaUserRepository implements IUserRepository {
   }
 
   async delete(id: string): Promise<void> {
-    await this.prisma.user.delete({ where: { id } });
+    // Soft delete: marca deletedAt e desativa (isActive=false, dupla proteção p/
+    // fluxos que checam isActive). A extensão esconde o usuário das leituras.
+    await this.prisma.user.update({
+      where: { id },
+      data: { deletedAt: new Date(), isActive: false },
+    });
   }
 
   async listAll(): Promise<User[]> {

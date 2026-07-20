@@ -26,11 +26,11 @@ export const pageLoaders = {
   productivityReport: () => import("@/app/reports/productivity/page"),
   projectsReport: () => import("@/app/reports/projects/page"),
   projectReportDetail: () => import("@/app/reports/projects/[id]/page"),
-  tasks: () => import("@/app/tasks/page"),
   taskDetail: () => import("@/app/tasks/[id]/page"),
   timeLogs: () => import("@/app/time-logs/page"),
   users: () => import("@/app/users/page"),
   trash: () => import("@/app/trash/page"),
+  audit: () => import("@/app/audit/page"),
 } as const;
 
 /** Rotas principais da sidebar — pré-carregadas após login. */
@@ -42,7 +42,6 @@ export const mainPageLoaders: Array<() => Promise<PageModule>> = [
   pageLoaders.epics,
   pageLoaders.companies,
   pageLoaders.myQueue,
-  pageLoaders.tasks,
   pageLoaders.kanban,
   pageLoaders.gantt,
   pageLoaders.dependencies,
@@ -65,7 +64,6 @@ const loaderByHref: Record<string, () => Promise<PageModule>> = {
   "/epics": pageLoaders.epics,
   "/companies": pageLoaders.companies,
   "/my-queue": pageLoaders.myQueue,
-  "/tasks": pageLoaders.tasks,
   "/kanban": pageLoaders.kanban,
   "/gantt": pageLoaders.gantt,
   "/dependencies": pageLoaders.dependencies,
@@ -79,6 +77,7 @@ const loaderByHref: Record<string, () => Promise<PageModule>> = {
   "/users": pageLoaders.users,
   "/profile": pageLoaders.profile,
   "/trash": pageLoaders.trash,
+  "/audit": pageLoaders.audit,
 };
 
 let preloadPromise: Promise<void> | null = null;

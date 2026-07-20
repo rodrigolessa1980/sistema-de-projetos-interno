@@ -7,7 +7,7 @@ import { PageLoading } from "@/components/shared/page-loading";
 import { useProjectStore } from "@/stores";
 import { useAuth } from "@/hooks/use-auth";
 import { useUserStore } from "@/stores";
-import { formatDate } from "@/lib/utils";
+import { formatDate, todayISO } from "@/lib/utils";
 import { motion } from "@/lib/motion";
 import { FolderKanban, Plus, Users, Calendar, TrendingUp, MoreVertical, Edit, Trash2, Eye, Crown, UserCog, ImagePlus, X, Link2, ExternalLink, Box, GripVertical, ListOrdered, Flag, Building2 } from "lucide-react";
 import { ProjectAvatar } from "@/components/shared/project-avatar";
@@ -84,7 +84,7 @@ export default function ProjectsPage() {
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [moduleDrafts, setModuleDrafts] = useState<ModuleDraft[]>([]);
   const [newModuleName, setNewModuleName] = useState("");
-  const today = new Date().toISOString().split("T")[0];
+  const today = todayISO();
   const companyItems = useMemo(() => companies.map((c) => ({ value: c.id, label: c.name })), [companies]);
   const userItems = useMemo(() => users.map((u) => ({ value: u.id, label: u.name })), [users]);
 
@@ -102,7 +102,7 @@ export default function ProjectsPage() {
     defaultValues: {
       companyId: "",
       name: "", description: "", status: "ATIVO",
-      startDate: new Date().toISOString().split("T")[0],
+      startDate: todayISO(),
       endDate: "",
       estimatedHours: 160, color: projectColors[0], testUrl: "",
     },
@@ -147,7 +147,7 @@ export default function ProjectsPage() {
     form.reset({
       companyId: "",
       name: "", description: "", requestedBy: "", ownerId: "", status: "ATIVO",
-      startDate: new Date().toISOString().split("T")[0],
+      startDate: todayISO(),
       endDate: "",
       estimatedHours: 160, color: projectColors[0], testUrl: "",
     });
@@ -197,7 +197,7 @@ export default function ProjectsPage() {
 
   const onSubmit = async (data: CreateProjectForm) => {
     const fallbackName = `Projeto ${new Date().toLocaleString("pt-BR")}`;
-    const startDate = data.startDate || new Date().toISOString().split("T")[0];
+    const startDate = data.startDate || todayISO();
     try {
       const newProject = await createProject({
         ...data,

@@ -142,14 +142,13 @@ interface UserStore {
   hasLoaded: boolean;
   getUserById: (id: string) => User | undefined;
   fetchUsers: () => Promise<void>;
-  createUser: (data: Omit<User, "id" | "createdAt" | "updatedAt">) => User;
   /** Cria o usuário DE VERDADE no backend (papel respeitado, já aprovado). */
   createUserRemote: (data: CreateUserRemoteInput) => Promise<User>;
   upsertUser: (user: User) => void;
   updateUser: (id: string, data: Partial<User>) => Promise<void>;
   /** Atalho direto para promover/rebaixar admin (persiste no backend). */
   setUserRole: (id: string, role: User["role"]) => Promise<void>;
-  deleteUser: (id: string) => void;
+  deleteUser: (id: string) => Promise<void>;
   updateUserPermissions: (userId: string, permissions: UserPermission[]) => Promise<void>;
   approveUser: (id: string) => Promise<void>;
 }
@@ -186,18 +185,6 @@ export const useUserStore = create<UserStore>()(
           // Mesmo em erro, encerra o loading (evita tela presa em "carregando").
           set({ hasLoaded: true });
         }
-      },
-
-      createUser: (data) => {
-        const now = new Date().toISOString();
-        const user: User = {
-          ...data,
-          id: `user-${Date.now()}`,
-          createdAt: now,
-          updatedAt: now,
-        };
-        set((state) => ({ users: [...state.users, user] }));
-        return user;
       },
 
       createUserRemote: async (data) => {
@@ -249,17 +236,14 @@ export const useUserStore = create<UserStore>()(
       },
 
       updateUser: async (id, data) => {
-        // Persiste no backend os campos editáveis por admin; ignora contas
-        // locais (sem id do servidor) que ainda não foram para o banco.
-        const isRemote = !id.startsWith("user-");
-        if (isRemote) {
-          await api.put(`users/${id}`, {
-            name: data.name,
-            position: data.position,
-            department: data.department,
-            role: data.role,
-          });
-        }
+        // Persiste no backend os campos editáveis por admin. Todo usuário agora é
+        // criado de verdade (createUserRemote), então não há mais conta "local".
+        await api.put(`users/${id}`, {
+          name: data.name,
+          position: data.position,
+          department: data.department,
+          role: data.role,
+        });
         const now = new Date().toISOString();
         set((state) => ({
           users: state.users.map((user) =>
@@ -278,10 +262,16 @@ export const useUserStore = create<UserStore>()(
         }));
       },
 
-      deleteUser: (id) => {
-        set((state) => ({
-          users: state.users.filter((user) => user.id !== id),
-        }));
+      deleteUser: async (id) => {
+        // Soft delete no backend; otimista com rollback se falhar.
+        const previous = get().users;
+        set((state) => ({ users: state.users.filter((user) => user.id !== id) }));
+        try {
+          await api.delete(`users/${id}`);
+        } catch (error) {
+          set({ users: previous });
+          throw error instanceof Error ? error : new Error("Erro ao excluir usuário");
+        }
       },
 
       updateUserPermissions: async (userId, permissions) => {

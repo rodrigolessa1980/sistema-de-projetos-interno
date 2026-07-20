@@ -1,5 +1,5 @@
-import { Body, Controller, Get, HttpCode, Param, Post, Put, UseGuards } from '@nestjs/common';
-import { JwtAuthGuard } from '../guards/jwt-auth.guard';
+import { Body, Controller, Delete, Get, HttpCode, Param, Post, Put, Req, UseGuards } from '@nestjs/common';
+import { JwtAuthGuard, type AuthenticatedRequest } from '../guards/jwt-auth.guard';
 import { PermissionsGuard } from '../guards/permissions.guard';
 import { RequireAdmin, RequirePermission } from '../decorators/require-permission.decorator';
 import { ListUsersUseCase } from '../../../core/use-cases/users/list-users.use-case';
@@ -8,6 +8,7 @@ import { UpdateUserPermissionsUseCase } from '../../../core/use-cases/users/upda
 import { ApproveUserUseCase } from '../../../core/use-cases/users/approve-user.use-case';
 import { CreateUserUseCase } from '../../../core/use-cases/users/create-user.use-case';
 import { UpdateUserUseCase } from '../../../core/use-cases/users/update-user.use-case';
+import { DeleteUserUseCase } from '../../../core/use-cases/users/delete-user.use-case';
 import { UpdatePermissionsDto } from '../dtos/users/update-permissions.dto';
 import { CreateUserDto } from '../dtos/users/create-user.dto';
 import { UpdateUserDto } from '../dtos/users/update-user.dto';
@@ -23,6 +24,7 @@ export class UsersController {
     private readonly approveUserUseCase: ApproveUserUseCase,
     private readonly createUserUseCase: CreateUserUseCase,
     private readonly updateUserUseCase: UpdateUserUseCase,
+    private readonly deleteUserUseCase: DeleteUserUseCase,
   ) {}
 
   @Post()
@@ -39,6 +41,15 @@ export class UsersController {
       role: body.role,
     });
     return UserPresenter.toHTTP(user);
+  }
+
+  @Delete(':id')
+  @RequirePermission('users:update')
+  @RequireAdmin()
+  @HttpCode(200)
+  async remove(@Req() req: AuthenticatedRequest, @Param('id') id: string) {
+    await this.deleteUserUseCase.execute(id, req.userId);
+    return { success: true };
   }
 
   @Put(':id')

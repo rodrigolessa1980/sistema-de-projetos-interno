@@ -28,6 +28,95 @@ import { SetTaskUrgentDto } from '../dtos/tasks/set-task-urgent.dto';
 import { ReorderKanbanTasksDto } from '../dtos/tasks/reorder-kanban-tasks.dto';
 import { TaskPresenter, TaskResponse } from '../presenters/task.presenter';
 import { UserRole } from '../../../core/domain/entities/enums';
+import { CreateCommentUseCase, DeleteCommentUseCase } from '../../../core/use-cases/tasks/comment.use-cases';
+import {
+  CreateSubtaskUseCase,
+  UpdateSubtaskUseCase,
+  DeleteSubtaskUseCase,
+} from '../../../core/use-cases/tasks/subtask.use-cases';
+import {
+  CreateTaskDependencyUseCase,
+  DeleteTaskDependencyUseCase,
+} from '../../../core/use-cases/tasks/task-dependency.use-cases';
+import {
+  CreateTaskAttachmentUseCase,
+  ListTaskAttachmentsUseCase,
+  DeleteTaskAttachmentUseCase,
+} from '../../../core/use-cases/tasks/task-attachment.use-cases';
+import {
+  CreateTaskNoteUseCase,
+  UpdateTaskNoteUseCase,
+  DeleteTaskNoteUseCase,
+} from '../../../core/use-cases/tasks/task-note.use-cases';
+import { CreateCommentDto } from '../dtos/tasks/comment.dto';
+import { CreateSubtaskDto, UpdateSubtaskDto } from '../dtos/tasks/subtask.dto';
+import { CreateTaskDependencyDto } from '../dtos/tasks/task-dependency.dto';
+import { CreateTaskAttachmentDto } from '../dtos/tasks/create-task-attachment.dto';
+import { CreateTaskNoteDto, UpdateTaskNoteDto } from '../dtos/tasks/task-note.dto';
+import { Comment } from '../../../core/domain/entities/comment.entity';
+import { Subtask } from '../../../core/domain/entities/subtask.entity';
+import { TaskDependency } from '../../../core/domain/entities/task-dependency.entity';
+import { TaskAttachment } from '../../../core/domain/entities/task-attachment.entity';
+import { TaskNote } from '../../../core/domain/entities/task-note.entity';
+
+function commentToHTTP(c: Comment) {
+  return {
+    id: c.id,
+    taskId: c.taskId,
+    userId: c.userId,
+    content: c.content,
+    mentions: c.mentions,
+    createdAt: c.createdAt.toISOString(),
+    updatedAt: c.updatedAt.toISOString(),
+  };
+}
+
+function subtaskToHTTP(s: Subtask) {
+  return {
+    id: s.id,
+    taskId: s.taskId,
+    title: s.title,
+    completed: s.completed,
+    assigneeId: s.assigneeId ?? undefined,
+    createdAt: s.createdAt.toISOString(),
+    updatedAt: s.updatedAt.toISOString(),
+  };
+}
+
+function dependencyToHTTP(d: TaskDependency) {
+  return {
+    id: d.id,
+    taskId: d.taskId,
+    dependsOnTaskId: d.dependsOnTaskId,
+    type: d.type,
+    createdAt: d.createdAt.toISOString(),
+  };
+}
+
+function taskAttachmentToHTTP(a: TaskAttachment) {
+  return {
+    id: a.id,
+    taskId: a.taskId,
+    userId: a.userId,
+    name: a.name,
+    type: a.type,
+    size: a.size,
+    dataUrl: a.dataUrl,
+    createdAt: a.createdAt.toISOString(),
+  };
+}
+
+function taskNoteToHTTP(n: TaskNote) {
+  return {
+    id: n.id,
+    taskId: n.taskId,
+    userId: n.userId,
+    content: n.content,
+    isPinned: n.isPinned,
+    createdAt: n.createdAt.toISOString(),
+    updatedAt: n.updatedAt.toISOString(),
+  };
+}
 
 @Controller('tasks')
 @UseGuards(JwtAuthGuard, PermissionsGuard)
@@ -41,6 +130,19 @@ export class TasksController {
     private readonly listTasksByAssigneeUseCase: ListTasksByAssigneeUseCase,
     private readonly setTaskUrgentUseCase: SetTaskUrgentUseCase,
     private readonly reorderKanbanTasksUseCase: ReorderKanbanTasksUseCase,
+    private readonly createCommentUseCase: CreateCommentUseCase,
+    private readonly deleteCommentUseCase: DeleteCommentUseCase,
+    private readonly createSubtaskUseCase: CreateSubtaskUseCase,
+    private readonly updateSubtaskUseCase: UpdateSubtaskUseCase,
+    private readonly deleteSubtaskUseCase: DeleteSubtaskUseCase,
+    private readonly createTaskDependencyUseCase: CreateTaskDependencyUseCase,
+    private readonly deleteTaskDependencyUseCase: DeleteTaskDependencyUseCase,
+    private readonly createTaskAttachmentUseCase: CreateTaskAttachmentUseCase,
+    private readonly listTaskAttachmentsUseCase: ListTaskAttachmentsUseCase,
+    private readonly deleteTaskAttachmentUseCase: DeleteTaskAttachmentUseCase,
+    private readonly createTaskNoteUseCase: CreateTaskNoteUseCase,
+    private readonly updateTaskNoteUseCase: UpdateTaskNoteUseCase,
+    private readonly deleteTaskNoteUseCase: DeleteTaskNoteUseCase,
   ) {}
 
   @Post()
@@ -116,11 +218,13 @@ export class TasksController {
   @Put(':id')
   @RequirePermission('tasks:update')
   async update(
+    @Req() req: AuthenticatedRequest,
     @Param('id') id: string,
     @Body() body: UpdateTaskDto,
   ): Promise<TaskResponse> {
     const task = await this.updateTaskUseCase.execute({
       id,
+      actorUserId: req.userId,
       projectId: body.projectId,
       moduleId: body.moduleId,
       epicId: body.epicId,
@@ -135,6 +239,7 @@ export class TasksController {
       actualHours: body.actualHours,
       startDate: body.startDate !== undefined ? (body.startDate ? new Date(body.startDate) : null) : undefined,
       dueDate: body.dueDate !== undefined ? (body.dueDate ? new Date(body.dueDate) : null) : undefined,
+      completedAt: body.completedAt !== undefined ? (body.completedAt ? new Date(body.completedAt) : null) : undefined,
       isUrgent: body.isUrgent,
       blockedReason: body.blockedReason,
     });
@@ -159,6 +264,145 @@ export class TasksController {
     @Param('id') id: string,
   ): Promise<{ success: boolean }> {
     await this.deleteTaskUseCase.execute(id, req.userId, req.userRole);
+    return { success: true };
+  }
+
+  // ── Comentários ──────────────────────────────────────────────────────────
+  @Post(':id/comments')
+  @RequirePermission('tasks:update')
+  async addComment(
+    @Req() req: AuthenticatedRequest,
+    @Param('id') id: string,
+    @Body() body: CreateCommentDto,
+  ) {
+    const comment = await this.createCommentUseCase.execute({
+      taskId: id,
+      userId: req.userId,
+      content: body.content,
+      mentions: body.mentions,
+    });
+    return commentToHTTP(comment);
+  }
+
+  @Delete('comments/:commentId')
+  @RequirePermission('tasks:update')
+  async removeComment(@Param('commentId') commentId: string) {
+    await this.deleteCommentUseCase.execute(commentId);
+    return { success: true };
+  }
+
+  // ── Subtarefas ───────────────────────────────────────────────────────────
+  @Post(':id/subtasks')
+  @RequirePermission('tasks:update')
+  async addSubtask(@Param('id') id: string, @Body() body: CreateSubtaskDto) {
+    const subtask = await this.createSubtaskUseCase.execute({
+      taskId: id,
+      title: body.title,
+      assigneeId: body.assigneeId ?? null,
+    });
+    return subtaskToHTTP(subtask);
+  }
+
+  @Patch('subtasks/:subtaskId')
+  @RequirePermission('tasks:update')
+  async updateSubtask(@Param('subtaskId') subtaskId: string, @Body() body: UpdateSubtaskDto) {
+    const subtask = await this.updateSubtaskUseCase.execute(subtaskId, {
+      title: body.title,
+      completed: body.completed,
+      assigneeId: body.assigneeId,
+    });
+    return subtaskToHTTP(subtask);
+  }
+
+  @Delete('subtasks/:subtaskId')
+  @RequirePermission('tasks:update')
+  async removeSubtask(@Param('subtaskId') subtaskId: string) {
+    await this.deleteSubtaskUseCase.execute(subtaskId);
+    return { success: true };
+  }
+
+  // ── Dependências ─────────────────────────────────────────────────────────
+  @Post(':id/dependencies')
+  @RequirePermission('tasks:update')
+  async addDependency(@Param('id') id: string, @Body() body: CreateTaskDependencyDto) {
+    const dependency = await this.createTaskDependencyUseCase.execute({
+      taskId: id,
+      dependsOnTaskId: body.dependsOnTaskId,
+      type: body.type,
+    });
+    return dependencyToHTTP(dependency);
+  }
+
+  @Delete('dependencies/:dependencyId')
+  @RequirePermission('tasks:update')
+  async removeDependency(@Param('dependencyId') dependencyId: string) {
+    await this.deleteTaskDependencyUseCase.execute(dependencyId);
+    return { success: true };
+  }
+
+  // ── Anexos (carregados sob demanda; base64 pesado) ───────────────────────
+  @Get(':id/attachments')
+  @RequirePermission('tasks:read')
+  async listAttachments(@Param('id') id: string) {
+    const attachments = await this.listTaskAttachmentsUseCase.execute(id);
+    return { attachments: attachments.map(taskAttachmentToHTTP) };
+  }
+
+  @Post(':id/attachments')
+  @RequirePermission('tasks:update')
+  async addAttachment(
+    @Req() req: AuthenticatedRequest,
+    @Param('id') id: string,
+    @Body() body: CreateTaskAttachmentDto,
+  ) {
+    const attachment = await this.createTaskAttachmentUseCase.execute({
+      taskId: id,
+      userId: req.userId,
+      name: body.name,
+      type: body.type,
+      size: body.size,
+      dataUrl: body.dataUrl,
+    });
+    return { attachment: taskAttachmentToHTTP(attachment) };
+  }
+
+  @Delete('attachments/:attachmentId')
+  @RequirePermission('tasks:update')
+  async removeAttachment(@Param('attachmentId') attachmentId: string) {
+    await this.deleteTaskAttachmentUseCase.execute(attachmentId);
+    return { success: true };
+  }
+
+  // ── Anotações (notes) ────────────────────────────────────────────────────
+  @Post(':id/notes')
+  @RequirePermission('tasks:update')
+  async addNote(
+    @Req() req: AuthenticatedRequest,
+    @Param('id') id: string,
+    @Body() body: CreateTaskNoteDto,
+  ) {
+    const note = await this.createTaskNoteUseCase.execute({
+      taskId: id,
+      userId: req.userId,
+      content: body.content,
+    });
+    return taskNoteToHTTP(note);
+  }
+
+  @Patch('notes/:noteId')
+  @RequirePermission('tasks:update')
+  async updateNote(@Param('noteId') noteId: string, @Body() body: UpdateTaskNoteDto) {
+    const note = await this.updateTaskNoteUseCase.execute(noteId, {
+      content: body.content,
+      isPinned: body.isPinned,
+    });
+    return taskNoteToHTTP(note);
+  }
+
+  @Delete('notes/:noteId')
+  @RequirePermission('tasks:update')
+  async removeNote(@Param('noteId') noteId: string) {
+    await this.deleteTaskNoteUseCase.execute(noteId);
     return { success: true };
   }
 }

@@ -10,7 +10,8 @@ import {
   normalizeEpic,
 } from "@/stores/project-store";
 import { useTaskStore, taskDirty, normalizeTask } from "@/stores/task-store";
-import type { Project, Module, Epic, TimeLog } from "@/types";
+import { useUIStore } from "@/stores/ui-store";
+import type { Project, Module, Epic, TimeLog, Comment, Subtask, TaskNote, TaskDependency } from "@/types";
 
 /** Intervalo do poll com a aba em foco. */
 const POLL_MS = 20_000;
@@ -25,6 +26,10 @@ interface SyncDelta {
     timeLogs: TimeLog[];
     modules: Module[];
     epics: Epic[];
+    comments?: Comment[];
+    subtasks?: Subtask[];
+    notes?: TaskNote[];
+    dependencies?: TaskDependency[];
   };
   ids: {
     projects: string[];
@@ -32,6 +37,10 @@ interface SyncDelta {
     timeLogs: string[];
     modules: string[];
     epics: string[];
+    comments?: string[];
+    subtasks?: string[];
+    notes?: string[];
+    dependencies?: string[];
   };
 }
 
@@ -48,14 +57,33 @@ function applyDelta(d: SyncDelta) {
 
   const taskIds = new Set(d.ids.tasks);
   const timeLogIds = new Set(d.ids.timeLogs);
-  useTaskStore.setState((state) => ({
-    tasks: mergeAndPrune(state.tasks, d.changed.tasks.map(normalizeTask), taskIds, taskDirty.ids),
+  // Coleções de tarefa: só aplica se o backend as enviou (compatível com versões
+  // antigas do endpoint). Anexos ficam de fora (base64 pesado, sob demanda).
+  const patch: Record<string, unknown> = {
+    tasks: mergeAndPrune(useTaskStore.getState().tasks, d.changed.tasks.map(normalizeTask), taskIds, taskDirty.ids),
     timeLogs: mergeAndPrune(
-      state.timeLogs,
+      useTaskStore.getState().timeLogs,
       d.changed.timeLogs.map((tl) => ({ ...tl, date: tl.date ? tl.date.split("T")[0] : tl.date })),
       timeLogIds,
     ),
-  }));
+  };
+  if (d.changed.comments && d.ids.comments) {
+    patch.comments = mergeAndPrune(useTaskStore.getState().comments, d.changed.comments, new Set(d.ids.comments));
+  }
+  if (d.changed.subtasks && d.ids.subtasks) {
+    patch.subtasks = mergeAndPrune(useTaskStore.getState().subtasks, d.changed.subtasks, new Set(d.ids.subtasks));
+  }
+  if (d.changed.notes && d.ids.notes) {
+    patch.notes = mergeAndPrune(useTaskStore.getState().notes, d.changed.notes, new Set(d.ids.notes));
+  }
+  if (d.changed.dependencies && d.ids.dependencies) {
+    patch.dependencies = mergeAndPrune(useTaskStore.getState().dependencies, d.changed.dependencies, new Set(d.ids.dependencies));
+  }
+  useTaskStore.setState(patch as never);
+
+  // Notificações são por-usuário (não vêm no delta do tenant): rebusca as minhas
+  // a cada sinal de mudança, para o sino refletir atribuições/conclusões ao vivo.
+  void useUIStore.getState().fetchNotifications().catch(() => {});
 }
 
 /**

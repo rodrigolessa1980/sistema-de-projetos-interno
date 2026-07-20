@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import Link from "@/lib/router";
 import { useState } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { isTerminal } from "@/lib/utils";
 
 export default function DependenciesPage() {
   const { tasks, dependencies } = useTaskStore();
@@ -47,7 +48,7 @@ export default function DependenciesPage() {
             { label: "Tarefas Bloqueadas", value: visibleTasks.filter((t) => t.status === "BLOQUEADA").length, color: "text-red-400", icon: AlertTriangle },
             { label: "Dependências Resolvidas", value: visibleDeps.filter((d) => {
               const depTask = tasks.find((t) => t.id === d.dependsOnTaskId);
-              return depTask?.status === "CONCLUIDA" || depTask?.status === "CANCELADA";
+              return !!depTask && isTerminal(depTask.status);
             }).length, color: "text-emerald-400", icon: CheckCircle2 },
           ].map((stat) => (
             <div key={stat.label} className="bg-zinc-900/60 border border-zinc-800/50 rounded-xl p-4 flex items-center gap-3">
@@ -66,7 +67,7 @@ export default function DependenciesPage() {
             const depTask = tasks.find((t) => t.id === dep.dependsOnTaskId);
             if (!task || !depTask) return null;
 
-            const isResolved = depTask.status === "CONCLUIDA" || depTask.status === "CANCELADA";
+            const isResolved = isTerminal(depTask.status);
             const isBlocking = !isResolved && task.status === "BLOQUEADA";
 
             return (

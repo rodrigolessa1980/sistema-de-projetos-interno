@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { StatusBadge, ComplexityBadge } from "@/components/shared/task-badge";
-import { formatDate, formatRelativeTime } from "@/lib/utils";
+import { formatDate, formatRelativeTime, isDone } from "@/lib/utils";
 import {
   Mail, Briefcase, Building, Clock, CheckCircle2, AlertTriangle,
   ListTodo, Users, UserPlus, ShieldCheck, FolderKanban, Pencil,
@@ -103,7 +103,7 @@ export default function ProfilePage() {
           <div className="grid grid-cols-4 gap-4 mt-6 pt-6 border-t border-zinc-800/50">
             {[
               { label: "Tarefas Totais", value: myTasks.length, icon: ListTodo, color: "text-zinc-200" },
-              { label: "Concluídas", value: myTasks.filter((t) => t.status === "CONCLUIDA").length, icon: CheckCircle2, color: "text-emerald-400" },
+              { label: "Concluídas", value: myTasks.filter((t) => isDone(t.status)).length, icon: CheckCircle2, color: "text-emerald-400" },
               { label: "Em Andamento", value: myTasks.filter((t) => t.status === "EM_DESENVOLVIMENTO").length, icon: Clock, color: "text-violet-400" },
               { label: "Horas Registradas", value: `${totalHours}h`, icon: Clock, color: "text-blue-400" },
             ].map((stat) => (

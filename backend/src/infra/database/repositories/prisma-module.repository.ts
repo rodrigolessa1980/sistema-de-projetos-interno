@@ -11,15 +11,11 @@ import { Epic } from '../../../core/domain/entities/epic.entity';
 import { Task } from '../../../core/domain/entities/task.entity';
 import { TimeLog } from '../../../core/domain/entities/time-log.entity';
 import { ModuleStatus, ProjectStatus, TaskStatus, TimeLogSource } from '../../../core/domain/entities/enums';
-
-function progressForStatus(status: ModuleStatus): number {
-  const progressByStatus: Record<ModuleStatus, number> = {
-    [ModuleStatus.INICIADO]: 0,
-    [ModuleStatus.EM_PROCESSO]: 50,
-    [ModuleStatus.CONCLUIDO]: 100,
-  };
-  return progressByStatus[status];
-}
+import {
+  MODULE_PROGRESS,
+  deriveModuleStatus,
+  deriveProjectProgress,
+} from '../../../core/domain/services/derive-hierarchy';
 
 @Injectable()
 export class PrismaModuleRepository implements IModuleRepository {
@@ -153,7 +149,12 @@ export class PrismaModuleRepository implements IModuleRepository {
       const existingCount = await tx.module.count({ where: { projectId: input.projectId } });
       const order = input.order ?? existingCount;
       const timeLogUserId = input.assignedUserId ?? project.ownerId;
-      const moduleStatus = input.status ?? ModuleStatus.INICIADO;
+      // Registrar trabalho com horas cria uma tarefa CONCLUÍDA; o módulo nasce
+      // derivado dela (CONCLUIDO, pela regra canônica), em vez do INICIADO manual
+      // que gerava a inconsistência "módulo não iniciado com tarefa concluída".
+      const moduleStatus = shouldLogTime
+        ? deriveModuleStatus([TaskStatus.CONCLUIDA]) ?? ModuleStatus.CONCLUIDO
+        : (input.status ?? ModuleStatus.INICIADO);
 
       const moduleRaw = await tx.module.create({
         data: {
@@ -162,7 +163,7 @@ export class PrismaModuleRepository implements IModuleRepository {
           description: input.description,
           status: moduleStatus,
           order,
-          progress: progressForStatus(moduleStatus),
+          progress: MODULE_PROGRESS[moduleStatus],
           workDate: shouldLogTime ? input.workDate : null,
           loggedHours: shouldLogTime ? input.hours : null,
           loggedByUserId: shouldLogTime ? timeLogUserId : null,
@@ -210,6 +211,12 @@ export class PrismaModuleRepository implements IModuleRepository {
             reporterId: input.userId,
             estimatedHours: Math.ceil(hours),
             actualHours: 0,
+            // Tarefa de trabalho concluído nasce com datas coerentes: sem isto
+            // ficava CONCLUÍDA sem completedAt/startDate e o Gantt a desenhava
+            // correndo até "hoje".
+            startDate: workDate,
+            dueDate: workDate,
+            completedAt: workDate,
             order: 0,
           },
         });
@@ -240,6 +247,26 @@ export class PrismaModuleRepository implements IModuleRepository {
         await tx.project.update({
           where: { id: input.projectId },
           data: { actualHours: projectHours._sum.hours ?? 0 },
+        });
+
+        // Cascata de progresso: projeto = média dos módulos ponderada pelo nº de
+        // tarefas (regra canônica), agora que este módulo entrou como CONCLUIDO.
+        const projMods = await tx.module.findMany({
+          where: { projectId: input.projectId },
+          // count filtrado: soft-deleted não pesa (a extensão de tenant não
+          // filtra `_count`, então explicitamos deletedAt aqui).
+          select: {
+            progress: true,
+            _count: { select: { tasks: { where: { deletedAt: null } } } },
+          },
+        });
+        await tx.project.update({
+          where: { id: input.projectId },
+          data: {
+            progress: deriveProjectProgress(
+              projMods.map((m) => ({ progress: m.progress, taskCount: m._count.tasks })),
+            ),
+          },
         });
       }
 
@@ -301,7 +328,7 @@ export class PrismaModuleRepository implements IModuleRepository {
           name: data.name,
           description: data.description,
           status: data.status,
-          ...(data.status ? { progress: progressForStatus(data.status) } : {}),
+          ...(data.status ? { progress: MODULE_PROGRESS[data.status] } : {}),
           updatedAt: new Date(),
         },
       });
@@ -315,7 +342,7 @@ export class PrismaModuleRepository implements IModuleRepository {
           name: data.name,
           description: data.description,
           status: data.status,
-          ...(data.status ? { progress: progressForStatus(data.status) } : {}),
+          ...(data.status ? { progress: MODULE_PROGRESS[data.status] } : {}),
           ...(data.workDate !== undefined ? { workDate: data.workDate } : {}),
           ...(data.hours !== undefined ? { loggedHours: data.hours } : {}),
           ...(data.assignedUserId ? { loggedByUserId: data.assignedUserId } : {}),

@@ -13,7 +13,7 @@ import {
   Circle, Zap, ChevronDown, CalendarClock, Play,
   CalendarX, TrendingUp,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, getScheduleStatus, isOpen, isDone, todayISO } from "@/lib/utils";
 import { TaskActions } from "@/features/tasks/task-actions";
 import type { Task, Project } from "@/types";
 
@@ -36,8 +36,7 @@ function TaskRow({
   todayHours: number;
 }) {
   const project = projects.find((p) => p.id === task.projectId);
-  const today = new Date().toISOString().split("T")[0];
-  const isOverdue = task.dueDate && task.dueDate < today && !["CONCLUIDA", "CANCELADA"].includes(task.status);
+  const isOverdue = getScheduleStatus(task).status === "atrasada";
   const totalHoursToday = todayHours + (isActive ? elapsedSeconds / 3600 : 0);
   const display = hoursDisplay(totalHoursToday);
 
@@ -178,7 +177,7 @@ export default function MyQueuePage() {
 
   if (isLoading) return null;
 
-  const today = new Date().toISOString().split("T")[0];
+  const today = todayISO();
   const in3Days = new Date(Date.now() + 3 * 86400000).toISOString().split("T")[0];
   const weekAgo = new Date(Date.now() - 7 * 86400000).toISOString().split("T")[0];
 
@@ -202,17 +201,17 @@ export default function MyQueuePage() {
   const hoursWeek = timeLogs.filter((tl) => tl.userId === user?.id && tl.date >= weekStart).reduce((a, tl) => a + tl.hours, 0) + elapsedSec / 3600;
 
   // Seções
-  const urgentTask = myTasks.find((t) => t.isUrgent && !["CONCLUIDA", "CANCELADA"].includes(t.status));
+  const urgentTask = myTasks.find((t) => t.isUrgent && isOpen(t.status));
 
   const overdueTasks = myTasks.filter(
-    (t) => t.dueDate && t.dueDate < today && !["CONCLUIDA", "CANCELADA"].includes(t.status) && !t.isUrgent
+    (t) => getScheduleStatus(t).status === "atrasada" && !t.isUrgent
   );
 
   const activeTasks = myTasks.filter(
     (t) =>
       ["EM_DESENVOLVIMENTO", "EM_REVISAO", "HOMOLOGACAO"].includes(t.status) &&
       !t.isUrgent &&
-      !(t.dueDate && t.dueDate < today)
+      getScheduleStatus(t).status !== "atrasada"
   );
 
   const dueSoonTasks = myTasks.filter(
@@ -228,7 +227,7 @@ export default function MyQueuePage() {
   );
 
   const recentDone = myTasks.filter(
-    (t) => t.status === "CONCLUIDA" && t.completedAt && t.completedAt >= weekAgo
+    (t) => isDone(t.status) && t.completedAt && t.completedAt >= weekAgo
   );
 
   const activeTask = activeSession ? tasks.find((t) => t.id === activeSession.taskId) : null;

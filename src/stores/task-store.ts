@@ -4,7 +4,7 @@ import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { safeLocalStorage } from "@/lib/safe-storage";
 import type { Task, Subtask, TimeLog, Comment, TaskDependency, StatusHistory, TaskStatus, TaskNote, TaskAttachment, ModuleAttachment } from "@/types";
-import { generateId, delay } from "@/lib/utils";
+import { isTerminal, isOpen, isDone } from "@/lib/utils";
 import type { AuditLog } from "@/types";
 import { api } from "@/lib/api";
 import { toast } from "sonner";
@@ -27,11 +27,9 @@ type ApiTask = Omit<Task, "parentTaskId" | "startDate" | "dueDate" | "completedA
   urgentPreviousStatus?: TaskStatus | null;
 };
 
-const TERMINAL_STATUSES: TaskStatus[] = ["CONCLUIDA", "CANCELADA"];
-
 const shouldStopTimerForStatus = (taskId: string, status: TaskStatus): boolean => {
   const activeSession = useWorkSessionStore.getState().activeSession;
-  return TERMINAL_STATUSES.includes(status) && activeSession?.taskId === taskId;
+  return isTerminal(status) && activeSession?.taskId === taskId;
 };
 
 const stopActiveTimerForTask = async (taskId: string, status: TaskStatus, description: string) => {
@@ -152,6 +150,7 @@ interface TaskStore {
 
   // Attachments (Tasks)
   getAttachmentsByTask: (taskId: string) => TaskAttachment[];
+  fetchAttachmentsForTask: (taskId: string) => Promise<void>;
   addAttachment: (data: Omit<TaskAttachment, "id" | "createdAt">) => Promise<TaskAttachment>;
   deleteAttachment: (id: string) => Promise<void>;
 
@@ -197,11 +196,11 @@ export const useTaskStore = create<TaskStore>()(
     const deps = get().dependencies.filter((d) => d.taskId === taskId && d.type === "BLOCKED_BY");
     return deps
       .map((dep) => get().tasks.find((t) => t.id === dep.dependsOnTaskId))
-      .filter((t): t is Task => !!t && t.status !== "CONCLUIDA" && t.status !== "CANCELADA");
+      .filter((t): t is Task => !!t && isOpen(t.status));
   },
 
   getUrgentTaskForDev: (assigneeId) =>
-    get().tasks.find((t) => t.assigneeId === assigneeId && t.isUrgent && !["CONCLUIDA", "CANCELADA"].includes(t.status)),
+    get().tasks.find((t) => t.assigneeId === assigneeId && t.isUrgent && isOpen(t.status)),
 
   setTaskUrgent: (taskId, urgent) => {
     void api.patch<ApiTask>(`tasks/${taskId}/urgent`, { isUrgent: urgent }).then((updated) => {
@@ -236,7 +235,7 @@ export const useTaskStore = create<TaskStore>()(
       await api.put<ApiTask>(`tasks/${id}`, { status: newStatus }).finally(() => taskDirty.clearDirty(id)),
     );
     set((state) => ({
-      tasks: TERMINAL_STATUSES.includes(newStatus)
+      tasks: isTerminal(newStatus)
         ? releaseUrgencyBlocksInStore(
             state.tasks.map((task) => (task.id === id ? updated : task)),
             id,
@@ -347,40 +346,62 @@ export const useTaskStore = create<TaskStore>()(
   },
 
   addComment: async (data) => {
-    await delay(300);
-    const now = new Date().toISOString();
-    const comment: Comment = { ...data, id: generateId("com"), createdAt: now, updatedAt: now };
+    const comment = await api.post<Comment>(`tasks/${data.taskId}/comments`, {
+      content: data.content,
+      mentions: data.mentions ?? [],
+    });
     set((state) => ({ comments: [...state.comments, comment] }));
     return comment;
   },
 
   toggleSubtask: async (subtaskId) => {
-    await delay(200);
+    const current = get().subtasks.find((s) => s.id === subtaskId);
+    if (!current) return;
+    // Otimista: alterna já; reverte se o backend recusar.
+    const previous = get().subtasks;
     set((state) => ({
       subtasks: state.subtasks.map((s) =>
-        s.id === subtaskId ? { ...s, completed: !s.completed, updatedAt: new Date().toISOString() } : s
+        s.id === subtaskId ? { ...s, completed: !s.completed } : s,
       ),
     }));
+    try {
+      const updated = await api.patch<Subtask>(`tasks/subtasks/${subtaskId}`, {
+        completed: !current.completed,
+      });
+      set((state) => ({ subtasks: state.subtasks.map((s) => (s.id === subtaskId ? updated : s)) }));
+    } catch (error) {
+      set({ subtasks: previous });
+      throw error instanceof Error ? error : new Error("Erro ao atualizar subtarefa");
+    }
   },
 
   addSubtask: async (data) => {
-    await delay(200);
-    const now = new Date().toISOString();
-    const subtask: Subtask = { ...data, id: generateId("sub"), createdAt: now, updatedAt: now };
+    const subtask = await api.post<Subtask>(`tasks/${data.taskId}/subtasks`, {
+      title: data.title,
+      assigneeId: data.assigneeId ?? null,
+    });
     set((state) => ({ subtasks: [...state.subtasks, subtask] }));
     return subtask;
   },
 
   addDependency: async (data) => {
-    await delay(300);
-    const dep: TaskDependency = { ...data, id: generateId("dep"), createdAt: new Date().toISOString() };
+    const dep = await api.post<TaskDependency>(`tasks/${data.taskId}/dependencies`, {
+      dependsOnTaskId: data.dependsOnTaskId,
+      type: data.type,
+    });
     set((state) => ({ dependencies: [...state.dependencies, dep] }));
     return dep;
   },
 
   removeDependency: async (id) => {
-    await delay(200);
+    const previous = get().dependencies;
     set((state) => ({ dependencies: state.dependencies.filter((d) => d.id !== id) }));
+    try {
+      await api.delete(`tasks/dependencies/${id}`);
+    } catch (error) {
+      set({ dependencies: previous });
+      throw error instanceof Error ? error : new Error("Erro ao remover dependência");
+    }
   },
 
   setSelectedTask: (id) => set({ selectedTaskId: id }),
@@ -449,7 +470,7 @@ export const useTaskStore = create<TaskStore>()(
             updatedAt: now,
             completedAt:
               task.id === taskId
-                ? targetStatus === "CONCLUIDA"
+                ? isDone(targetStatus)
                   ? now
                   : undefined
                 : task.completedAt,
@@ -469,7 +490,7 @@ export const useTaskStore = create<TaskStore>()(
         return task;
       });
 
-      if (TERMINAL_STATUSES.includes(targetStatus)) {
+      if (isTerminal(targetStatus)) {
         nextTasks = releaseUrgencyBlocksInStore(nextTasks, taskId);
       }
 
@@ -489,37 +510,44 @@ export const useTaskStore = create<TaskStore>()(
       }),
 
   addNote: async (data) => {
-    await delay(200);
-    const now = new Date().toISOString();
-    const note: TaskNote = { ...data, id: generateId("note"), createdAt: now, updatedAt: now };
+    const note = await api.post<TaskNote>(`tasks/${data.taskId}/notes`, {
+      content: data.content,
+    });
     set((state) => ({ notes: [...state.notes, note] }));
     return note;
   },
 
   updateNote: async (id, content) => {
-    await delay(200);
-    const now = new Date().toISOString();
-    let updated!: TaskNote;
-    set((state) => ({
-      notes: state.notes.map((n) => {
-        if (n.id === id) { updated = { ...n, content, updatedAt: now }; return updated; }
-        return n;
-      }),
-    }));
+    const updated = await api.patch<TaskNote>(`tasks/notes/${id}`, { content });
+    set((state) => ({ notes: state.notes.map((n) => (n.id === id ? updated : n)) }));
     return updated;
   },
 
   deleteNote: async (id) => {
-    await delay(150);
+    const previous = get().notes;
     set((state) => ({ notes: state.notes.filter((n) => n.id !== id) }));
+    try {
+      await api.delete(`tasks/notes/${id}`);
+    } catch (error) {
+      set({ notes: previous });
+      throw error instanceof Error ? error : new Error("Erro ao remover anotação");
+    }
   },
 
   togglePinNote: async (id) => {
+    const current = get().notes.find((n) => n.id === id);
+    if (!current) return;
+    const previous = get().notes;
     set((state) => ({
-      notes: state.notes.map((n) =>
-        n.id === id ? { ...n, isPinned: !n.isPinned, updatedAt: new Date().toISOString() } : n
-      ),
+      notes: state.notes.map((n) => (n.id === id ? { ...n, isPinned: !n.isPinned } : n)),
     }));
+    try {
+      const updated = await api.patch<TaskNote>(`tasks/notes/${id}`, { isPinned: !current.isPinned });
+      set((state) => ({ notes: state.notes.map((n) => (n.id === id ? updated : n)) }));
+    } catch (error) {
+      set({ notes: previous });
+      throw error instanceof Error ? error : new Error("Erro ao fixar anotação");
+    }
   },
 
   // ── Attachments ────────────────────────────────────────────────────────────
@@ -528,20 +556,37 @@ export const useTaskStore = create<TaskStore>()(
       .filter((a) => a.taskId === taskId)
       .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
 
+  fetchAttachmentsForTask: async (taskId) => {
+    const response = await api
+      .get<{ attachments: TaskAttachment[] }>(`tasks/${taskId}/attachments`)
+      .catch(() => ({ attachments: [] as TaskAttachment[] }));
+    set((state) => ({
+      attachments: [
+        ...state.attachments.filter((a) => a.taskId !== taskId),
+        ...(response.attachments ?? []),
+      ],
+    }));
+  },
+
   addAttachment: async (data) => {
-    await delay(300);
-    const attachment: TaskAttachment = {
-      ...data,
-      id: generateId("att"),
-      createdAt: new Date().toISOString(),
-    };
+    const response = await api.post<{ attachment: TaskAttachment }>(
+      `tasks/${data.taskId}/attachments`,
+      { name: data.name, type: data.type, size: data.size, dataUrl: data.dataUrl },
+    );
+    const attachment = response.attachment;
     set((state) => ({ attachments: [...state.attachments, attachment] }));
     return attachment;
   },
 
   deleteAttachment: async (id) => {
-    await delay(150);
+    const previous = get().attachments;
     set((state) => ({ attachments: state.attachments.filter((a) => a.id !== id) }));
+    try {
+      await api.delete(`tasks/attachments/${id}`);
+    } catch (error) {
+      set({ attachments: previous });
+      throw error instanceof Error ? error : new Error("Erro ao remover anexo");
+    }
   },
 
   // ── Module Attachments ─────────────────────────────────────────────────────
@@ -579,29 +624,24 @@ export const useTaskStore = create<TaskStore>()(
   {
     name: "devflow-tasks",
     storage: createJSONStorage(() => safeLocalStorage),
-    version: 2,
-    // v2: `attachments` saiu do persist. Guardava o arquivo inteiro em base64
-    // (dataUrl) no localStorage; poucos anexos estouravam a cota (~5MB no Safari)
-    // e QUALQUER `set()` posterior — inclusive criar um módulo — falhava com
-    // "The quota has been exceeded.". Limpa o resíduo antigo do blob persistido.
+    version: 3,
+    // v2: `attachments` saiu do persist (base64 estourava a cota do localStorage).
+    // v3: `notes` saiu do persist — agora é server-state (vem do /bootstrap), não
+    // mais mock local. Limpa o resíduo antigo de ambos.
     migrate: (persisted) => {
       const state = (persisted ?? {}) as Record<string, unknown>;
       delete state.attachments;
+      delete state.notes;
       return state;
     },
-    // INC-07: só persistimos dados LOCAIS (mock/workflow não sincronizado). `tasks` NÃO
-    // é mais persistido — é server-state (vem do /bootstrap e do delta sync); persistir
-    // fazia o reload pintar tasks velhas antes do fetch ("render errado"). O 1º load
-    // hidrata da API; a UI mostra loading via `isLoading` das stores.
+    // INC-07: só persistimos dados LOCAIS não sincronizados. `tasks`, `notes`,
+    // `comments`, `subtasks`, `dependencies` e anexos vêm do backend (bootstrap/
+    // delta sync); persistir fazia o reload pintar dado velho antes do fetch.
     partialize: (state) => ({
       // Logs locais são capados às últimas 200 entradas: crescem sem limite e
       // encheriam o localStorage devagar. Mantemos só o recente ("o necessário").
       statusHistory: state.statusHistory.slice(-200),
       auditLogs: state.auditLogs.slice(-200),
-      notes: state.notes,
-      // tasks, moduleAttachments e timeLogs vêm do backend.
-      // `attachments` NÃO é persistido: são arquivos em base64 (dataUrl) que
-      // enchiam o localStorage e derrubavam mutações com QuotaExceededError.
     }),
   }
 ));

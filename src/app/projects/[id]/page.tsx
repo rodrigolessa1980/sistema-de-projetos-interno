@@ -7,6 +7,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { StatusBadge, ComplexityBadge } from "@/components/shared/task-badge";
 import { motion, AnimatePresence } from "@/lib/motion";
 import { Progress } from "@/components/ui/progress";
+import { Switch } from "@/components/ui/switch";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -38,14 +39,13 @@ import {
   File, FileText, ImageIcon, Download, MoreVertical,
   ChevronDown, ChevronUp, ClipboardList,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, isDone, isTerminal, isModuleDone, calculateProgress } from "@/lib/utils";
 import { ProjectAvatar } from "@/components/shared/project-avatar";
 import Link from "@/lib/router";
 import { notFound, useParams } from "@/lib/router";
 import { ReassignPopover } from "@/components/shared/reassign-popover";
 import { TaskActions } from "@/features/tasks/task-actions";
 import { toast } from "sonner";
-import { ModuleDetailDialog } from "@/features/modules/module-detail-dialog";
 import { ModuleAttachmentUploadField, type PendingModuleFile } from "@/features/modules/module-attachment-upload-field";
 import { api } from "@/lib/api";
 import { CharCounter } from "@/components/shared/char-counter";
@@ -159,10 +159,12 @@ export default function ProjectDetailPage() {
   const [savingModule, setSavingModule] = useState(false);
   const [savingEditId, setSavingEditId] = useState<string | null>(null);
   const [deletingModuleId, setDeletingModuleId] = useState<string | null>(null);
-  const [selectedModuleId, setSelectedModuleId] = useState<string | null>(null);
   const [summary, setSummary] = useState<ProjectSummary | null>(null);
   const [calendar, setCalendar] = useState<CalendarDay[]>([]);
   const [loadingReport, setLoadingReport] = useState(false);
+  // Por padrão esconde módulos/tarefas concluídos (e cancelados) para não poluir.
+  const [showDoneModules, setShowDoneModules] = useState(false);
+  const [showDoneTasks, setShowDoneTasks] = useState(false);
 
   const projectsLoaded = useProjectStore((s) => s.hasLoaded);
   const projectResult = getProjectById(id);
@@ -259,6 +261,13 @@ export default function ProjectDetailPage() {
     tasks: tasks.filter((t) => t.moduleId === mod.id),
     epics: epics.filter((e) => e.moduleId === mod.id),
   }));
+
+  // Consolidação módulo → projeto + listas filtradas pelos toggles "Mostrar concluídos/as".
+  const doneModulesCount = modules.filter((m) => isModuleDone(m.status)).length;
+  const visibleTasksByModule = showDoneModules
+    ? tasksByModule
+    : tasksByModule.filter(({ module }) => !isModuleDone(module.status));
+  const visibleTasks = showDoneTasks ? tasks : tasks.filter((t) => !isTerminal(t.status));
 
   async function handleChangeOwner(userId: string | null) {
     if (!userId) return;
@@ -489,8 +498,6 @@ export default function ProjectDetailPage() {
     }
   }
 
-  const selectedModule = selectedModuleId ? modules.find((m) => m.id === selectedModuleId) ?? null : null;
-  const selectedModuleTasks = selectedModule ? tasks.filter((t) => t.moduleId === selectedModule.id) : [];
 
   return (
       <div className="p-6 w-full">
@@ -1062,7 +1069,7 @@ export default function ProjectDetailPage() {
         <Tabs defaultValue="modules" className="space-y-4">
           <TabsList className="bg-zinc-900 border border-zinc-800">
             <TabsTrigger value="modules" className="data-[state=active]:bg-zinc-800">Módulos</TabsTrigger>
-            <TabsTrigger value="tasks" className="data-[state=active]:bg-zinc-800">Tasks</TabsTrigger>
+            <TabsTrigger value="tasks" className="data-[state=active]:bg-zinc-800">Tarefas</TabsTrigger>
             <TabsTrigger value="team" className="data-[state=active]:bg-zinc-800">
               Equipe ({devs.length + 1})
             </TabsTrigger>
@@ -1073,18 +1080,38 @@ export default function ProjectDetailPage() {
 
           {/* Módulos */}
           <TabsContent value="modules" className="space-y-3">
+            {/* Consolidação módulo → projeto */}
+            {modules.length > 0 && (
+              <div className="rounded-xl border border-zinc-800/50 bg-zinc-900/60 px-4 py-3">
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="text-xs text-zinc-400">
+                    {doneModulesCount} de {modules.length} módulo{modules.length !== 1 ? "s" : ""} concluído{doneModulesCount !== 1 ? "s" : ""}
+                  </span>
+                  <span className="text-xs font-bold text-zinc-300">
+                    {calculateProgress(doneModulesCount, modules.length)}%
+                  </span>
+                </div>
+                <Progress value={calculateProgress(doneModulesCount, modules.length)} className="h-1.5 bg-zinc-800" />
+              </div>
+            )}
             {/* Header da aba */}
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between gap-3">
               <p className="text-xs text-zinc-500">{modules.length} módulo{modules.length !== 1 ? "s" : ""} neste projeto</p>
-              {canAddModule && (
-                <Button
-                  size="sm"
-                  onClick={() => { setAddingModule(true); setEditingModuleId(null); }}
-                  className="h-7 px-3 text-xs bg-violet-600/20 hover:bg-violet-600/40 text-violet-400 border border-violet-500/30 gap-1"
-                >
-                  <Plus className="w-3.5 h-3.5" /> Novo Módulo
-                </Button>
-              )}
+              <div className="flex items-center gap-3">
+                <label className="flex items-center gap-2 text-xs text-zinc-400 cursor-pointer select-none">
+                  <Switch size="sm" checked={showDoneModules} onCheckedChange={(v) => setShowDoneModules(v)} />
+                  Mostrar concluídos
+                </label>
+                {canAddModule && (
+                  <Button
+                    size="sm"
+                    onClick={() => { setAddingModule(true); setEditingModuleId(null); }}
+                    className="h-7 px-3 text-xs bg-violet-600/20 hover:bg-violet-600/40 text-violet-400 border border-violet-500/30 gap-1"
+                  >
+                    <Plus className="w-3.5 h-3.5" /> Novo Módulo
+                  </Button>
+                )}
+              </div>
             </div>
 
             {/* Formulário para adicionar novo módulo */}
@@ -1187,7 +1214,13 @@ export default function ProjectDetailPage() {
               </div>
             )}
 
-            {tasksByModule.map(({ module, tasks: modTasks }, i) => {
+            {modules.length > 0 && visibleTasksByModule.length === 0 && !addingModule && (
+              <p className="text-xs text-zinc-600 italic py-2">
+                Todos os módulos estão concluídos e ocultos. Ative &quot;Mostrar concluídos&quot; para vê-los.
+              </p>
+            )}
+
+            {visibleTasksByModule.map(({ module, tasks: modTasks }, i) => {
               const modAttachments = getAttachmentsByModule(module.id);
               const modTaskIds = new Set(modTasks.map((t) => t.id));
               const modHours = timeLogs
@@ -1264,13 +1297,10 @@ export default function ProjectDetailPage() {
                     </div>
                   </div>
                 ) : (
-                  /* Modo de visualização — clique abre detalhes */
-                  <div
-                    role="button"
-                    tabIndex={0}
-                    onClick={() => setSelectedModuleId(module.id)}
-                    onKeyDown={(e) => e.key === "Enter" && setSelectedModuleId(module.id)}
-                    className="cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-violet-500/40 rounded-lg -m-1 p-1"
+                  /* Modo de visualização — clique abre a página do módulo */
+                  <Link
+                    href={`/modules/${module.id}`}
+                    className="block cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-violet-500/40 rounded-lg -m-1 p-1"
                   >
                     <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center gap-2 min-w-0">
@@ -1331,28 +1361,24 @@ export default function ProjectDetailPage() {
                         <Eye className="w-3.5 h-3.5" /> Ver detalhes
                       </span>
                     </div>
-                  </div>
+                  </Link>
                 )}
               </motion.div>
               );
             })}
-
-            <ModuleDetailDialog
-              module={selectedModule}
-              tasks={selectedModuleTasks}
-              timeLogs={timeLogs}
-              attachments={selectedModule ? getAttachmentsByModule(selectedModule.id) : []}
-              users={users}
-              open={selectedModuleId !== null}
-              onOpenChange={(open) => { if (!open) setSelectedModuleId(null); }}
-              canUpload={canAddModule}
-            />
           </TabsContent>
 
           {/* Tasks */}
           <TabsContent value="tasks">
+            <div className="flex items-center justify-between gap-3 mb-3">
+              <p className="text-xs text-zinc-500">{visibleTasks.length} de {tasks.length} tarefa{tasks.length !== 1 ? "s" : ""}</p>
+              <label className="flex items-center gap-2 text-xs text-zinc-400 cursor-pointer select-none">
+                <Switch size="sm" checked={showDoneTasks} onCheckedChange={(v) => setShowDoneTasks(v)} />
+                Mostrar concluídas
+              </label>
+            </div>
             <div className="space-y-2">
-              {tasks.map((task) => {
+              {visibleTasks.map((task) => {
                 const assignee = users.find((u) => u.id === task.assigneeId);
                 return (
                   <div
@@ -1400,8 +1426,12 @@ export default function ProjectDetailPage() {
                   </div>
                 );
               })}
-              {tasks.length === 0 && (
-                <p className="text-center text-zinc-500 text-sm py-8">Nenhuma tarefa neste projeto</p>
+              {visibleTasks.length === 0 && (
+                <p className="text-center text-zinc-500 text-sm py-8">
+                  {tasks.length === 0
+                    ? "Nenhuma tarefa neste projeto"
+                    : "Nenhuma tarefa aberta — ative \"Mostrar concluídas\" para ver todas."}
+                </p>
               )}
             </div>
           </TabsContent>
@@ -1464,7 +1494,7 @@ export default function ProjectDetailPage() {
                   )}
                   {devs.map((dev) => {
                     const devTasks = tasks.filter((t) => t.assigneeId === dev.id);
-                    const doneTasks = devTasks.filter((t) => t.status === "CONCLUIDA").length;
+                    const doneTasks = devTasks.filter((t) => isDone(t.status)).length;
                     const activeTasks = devTasks.filter((t) => t.status === "EM_DESENVOLVIMENTO").length;
 
                     return (

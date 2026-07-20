@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { TenantContext } from './tenant-context';
+import { AuditContext } from './audit-context';
 import type { AuthenticatedRequest } from '../http/guards/jwt-auth.guard';
 
 /**
@@ -31,7 +32,11 @@ export class TenantContextInterceptor implements NestInterceptor {
 
     return new Observable((subscriber) => {
       TenantContext.run(tenantId, () => {
-        next.handle().subscribe(subscriber);
+        // Inicializa o contexto de auditoria (vazio) — use-cases enriquecem e o
+        // AuditInterceptor lê no fim, dentro deste mesmo escopo assíncrono.
+        AuditContext.run(() => {
+          next.handle().subscribe(subscriber);
+        });
       });
     });
   }

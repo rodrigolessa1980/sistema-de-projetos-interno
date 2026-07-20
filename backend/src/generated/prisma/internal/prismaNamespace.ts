@@ -2023,6 +2023,7 @@ export const UserScalarFieldEnum = {
   isActive: 'isActive',
   isApproved: 'isApproved',
   lastLoginAt: 'lastLoginAt',
+  deletedAt: 'deletedAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

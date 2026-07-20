@@ -2,8 +2,21 @@ import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import type { ITaskRepository } from '../../domain/repositories/task-repository.interface';
 import { ITaskRepositoryToken } from '../../domain/repositories/task-repository.interface';
 import { Task } from '../../domain/entities/task.entity';
-import { TaskStatus } from '../../domain/entities/enums';
+import { TaskStatus, NotificationType, AuditAction } from '../../domain/entities/enums';
 import { ReleaseUrgencyBlocksUseCase } from './release-urgency-blocks.use-case';
+import { NotificationService } from '../../services/notification.service';
+import { AuditService } from '../../services/audit.service';
+
+const STATUS_LABEL: Record<TaskStatus, string> = {
+  [TaskStatus.BACKLOG]: 'Backlog',
+  [TaskStatus.PLANEJADA]: 'Planejada',
+  [TaskStatus.BLOQUEADA]: 'Bloqueada',
+  [TaskStatus.EM_DESENVOLVIMENTO]: 'Em Desenvolvimento',
+  [TaskStatus.EM_REVISAO]: 'Em Revisão',
+  [TaskStatus.HOMOLOGACAO]: 'Homologação',
+  [TaskStatus.CONCLUIDA]: 'Concluída',
+  [TaskStatus.CANCELADA]: 'Cancelada',
+};
 
 export interface UpdateTaskInput {
   id: string;
@@ -21,8 +34,11 @@ export interface UpdateTaskInput {
   actualHours?: number;
   startDate?: Date | null;
   dueDate?: Date | null;
+  completedAt?: Date | null;
   isUrgent?: boolean;
   blockedReason?: string | null;
+  /** Quem executou a ação (para não notificar a si mesmo). */
+  actorUserId?: string;
 }
 
 @Injectable()
@@ -31,6 +47,8 @@ export class UpdateTaskUseCase {
     @Inject(ITaskRepositoryToken)
     private readonly taskRepository: ITaskRepository,
     private readonly releaseUrgencyBlocksUseCase: ReleaseUrgencyBlocksUseCase,
+    private readonly notifications: NotificationService,
+    private readonly audit: AuditService,
   ) {}
 
   async execute(input: UpdateTaskInput): Promise<Task> {
@@ -66,7 +84,13 @@ export class UpdateTaskUseCase {
       actualHours: input.actualHours ?? existing.actualHours,
       startDate: input.startDate !== undefined ? input.startDate : existing.startDate,
       dueDate: input.dueDate !== undefined ? input.dueDate : existing.dueDate,
-      completedAt: newStatus === TaskStatus.CONCLUIDA ? new Date() : (newStatus !== oldStatus ? null : existing.completedAt),
+      // Conclusão aceita data manual: usa a data informada; senão preserva a que
+      // já existia; senão cai para "agora" (ex.: arrastar no Kanban). Fora de
+      // CONCLUIDA, a invariante da entidade zera completedAt.
+      completedAt:
+        newStatus === TaskStatus.CONCLUIDA
+          ? (input.completedAt !== undefined ? input.completedAt : (existing.completedAt ?? new Date()))
+          : (newStatus !== oldStatus ? null : existing.completedAt),
       blockedReason: input.blockedReason !== undefined ? input.blockedReason : existing.blockedReason,
       isUrgent: newIsUrgent,
       urgentBlockedById: existing.urgentBlockedById,
@@ -94,6 +118,57 @@ export class UpdateTaskUseCase {
       oldStatus !== newStatus
     ) {
       await this.releaseUrgencyBlocksUseCase.execute(saved.id);
+    }
+
+    const actor = input.actorUserId;
+    // Reatribuição: o novo responsável (se não for quem editou) é avisado.
+    if (newAssigneeId && newAssigneeId !== oldAssigneeId && newAssigneeId !== actor) {
+      await this.notifications.notify({
+        userId: newAssigneeId,
+        type: NotificationType.TASK_ASSIGNED,
+        title: 'Tarefa atribuída a você',
+        message: `Você foi atribuído à tarefa "${saved.title}".`,
+        relatedTaskId: saved.id,
+        relatedProjectId: saved.projectId,
+      });
+    }
+    // Conclusão: avisa o autor da tarefa (se não for quem concluiu).
+    if (
+      newStatus === TaskStatus.CONCLUIDA &&
+      oldStatus !== TaskStatus.CONCLUIDA &&
+      saved.reporterId &&
+      saved.reporterId !== actor
+    ) {
+      await this.notifications.notify({
+        userId: saved.reporterId,
+        type: NotificationType.TASK_COMPLETED,
+        title: 'Tarefa concluída',
+        message: `A tarefa "${saved.title}" foi marcada como concluída.`,
+        relatedTaskId: saved.id,
+        relatedProjectId: saved.projectId,
+      });
+    }
+
+    // Enriquece o audit log com o "antes/depois" que só o use-case conhece.
+    if (newStatus !== oldStatus) {
+      this.audit.describe({
+        action: AuditAction.STATUS_CHANGED,
+        description: `Alterou o status de "${STATUS_LABEL[oldStatus]}" para "${STATUS_LABEL[newStatus]}"`,
+        previousValue: { status: oldStatus },
+        newValue: { status: newStatus },
+      });
+    } else if (newAssigneeId !== oldAssigneeId) {
+      this.audit.describe({
+        action: AuditAction.ASSIGNED,
+        description: 'Alterou o responsável da tarefa',
+        previousValue: { assigneeId: oldAssigneeId },
+        newValue: { assigneeId: newAssigneeId },
+      });
+    } else {
+      this.audit.describe({
+        action: AuditAction.UPDATED,
+        description: `Atualizou a tarefa "${saved.title}"`,
+      });
     }
 
     return saved;

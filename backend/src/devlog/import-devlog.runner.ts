@@ -6,6 +6,10 @@ import {
   TimeLogSource,
   UserRole,
 } from '../core/domain/entities/enums';
+import {
+  MODULE_PROGRESS,
+  deriveModuleStatus,
+} from '../core/domain/services/derive-hierarchy';
 import type {
   DevlogImportResult,
   DevlogManifest,
@@ -15,14 +19,6 @@ import type {
 
 const VALID_MODULE_STATUSES = new Set<string>(Object.values(ModuleStatus));
 const VALID_PROJECT_STATUSES = new Set<string>(Object.values(ProjectStatus));
-
-function progressForStatus(status: ModuleStatus): number {
-  return {
-    [ModuleStatus.INICIADO]: 0,
-    [ModuleStatus.EM_PROCESSO]: 50,
-    [ModuleStatus.CONCLUIDO]: 100,
-  }[status];
-}
 
 function parseDateOnly(value: string): Date {
   const date = new Date(`${value}T12:00:00.000Z`);
@@ -160,8 +156,13 @@ async function createModuleWithTimeLog(
   entry: DevlogModuleEntry,
   order: number,
 ): Promise<boolean> {
-  const status = normalizeModuleStatus(entry.status);
   const shouldLogTime = entry.hours != null && entry.hours > 0 && entry.workDate;
+  // Com horas, cria-se uma tarefa CONCLUÍDA; o módulo entra derivado dela
+  // (CONCLUIDO, regra canônica) p/ não reintroduzir a inconsistência
+  // "módulo não iniciado com tarefa concluída".
+  const status = shouldLogTime
+    ? deriveModuleStatus([TaskStatus.CONCLUIDA]) ?? ModuleStatus.CONCLUIDO
+    : normalizeModuleStatus(entry.status);
   const workDate = shouldLogTime ? parseDateOnly(entry.workDate!) : null;
   const hours = shouldLogTime ? entry.hours! : null;
   const description = entry.description?.trim() || `Módulo ${entry.name.trim()}`;
@@ -174,7 +175,7 @@ async function createModuleWithTimeLog(
         description,
         status,
         order,
-        progress: progressForStatus(status),
+        progress: MODULE_PROGRESS[status],
         workDate,
         loggedHours: hours,
         loggedByUserId: shouldLogTime ? actorUserId : null,
@@ -211,6 +212,12 @@ async function createModuleWithTimeLog(
         reporterId: actorUserId,
         estimatedHours: Math.ceil(hours),
         actualHours: hours,
+        // Trabalho histórico já concluído: a tarefa nasce com datas coerentes.
+        // Sem isto, ficava CONCLUÍDA sem completedAt/startDate e o Gantt a
+        // desenhava correndo até "hoje" (a barra "concluída que nunca termina").
+        startDate: workDate,
+        dueDate: workDate,
+        completedAt: workDate,
         order: 0,
       },
     });
@@ -296,7 +303,7 @@ async function syncModule(
       name: entry.name.trim(),
       description: entry.description?.trim() || undefined,
       status,
-      progress: progressForStatus(status),
+      progress: MODULE_PROGRESS[status],
       order,
     },
   });

@@ -47,6 +47,26 @@ import { ListTasksByAssigneeUseCase } from './tasks/list-tasks-by-assignee.use-c
 import { SetTaskUrgentUseCase } from './tasks/set-task-urgent.use-case';
 import { ReorderKanbanTasksUseCase } from './tasks/reorder-kanban-tasks.use-case';
 import { ReleaseUrgencyBlocksUseCase } from './tasks/release-urgency-blocks.use-case';
+import { CreateCommentUseCase, DeleteCommentUseCase } from './tasks/comment.use-cases';
+import {
+  CreateSubtaskUseCase,
+  UpdateSubtaskUseCase,
+  DeleteSubtaskUseCase,
+} from './tasks/subtask.use-cases';
+import {
+  CreateTaskDependencyUseCase,
+  DeleteTaskDependencyUseCase,
+} from './tasks/task-dependency.use-cases';
+import {
+  CreateTaskAttachmentUseCase,
+  ListTaskAttachmentsUseCase,
+  DeleteTaskAttachmentUseCase,
+} from './tasks/task-attachment.use-cases';
+import {
+  CreateTaskNoteUseCase,
+  UpdateTaskNoteUseCase,
+  DeleteTaskNoteUseCase,
+} from './tasks/task-note.use-cases';
 
 // TimeLog Use Cases
 import { CreateTimeLogUseCase } from './time-logs/create-time-log.use-case';
@@ -66,6 +86,7 @@ import { UpdateUserPermissionsUseCase } from './users/update-user-permissions.us
 import { ApproveUserUseCase } from './users/approve-user.use-case';
 import { CreateUserUseCase } from './users/create-user.use-case';
 import { UpdateUserUseCase } from './users/update-user.use-case';
+import { DeleteUserUseCase } from './users/delete-user.use-case';
 // Tenant Use Cases
 import { ListTenantsUseCase } from './tenants/list-tenants.use-case';
 import { CreateApiTokenUseCase } from './api-tokens/create-api-token.use-case';
@@ -74,6 +95,8 @@ import {
   RevokeApiTokenUseCase,
 } from './api-tokens/manage-api-tokens.use-case';
 import { PermissionService } from '../permissions/permission.service';
+import { NotificationService } from '../services/notification.service';
+import { AuditService } from '../services/audit.service';
 
 const useCases = [
   // Auth
@@ -126,6 +149,19 @@ const useCases = [
   SetTaskUrgentUseCase,
   ReleaseUrgencyBlocksUseCase,
   ReorderKanbanTasksUseCase,
+  CreateCommentUseCase,
+  DeleteCommentUseCase,
+  CreateSubtaskUseCase,
+  UpdateSubtaskUseCase,
+  DeleteSubtaskUseCase,
+  CreateTaskDependencyUseCase,
+  DeleteTaskDependencyUseCase,
+  CreateTaskAttachmentUseCase,
+  ListTaskAttachmentsUseCase,
+  DeleteTaskAttachmentUseCase,
+  CreateTaskNoteUseCase,
+  UpdateTaskNoteUseCase,
+  DeleteTaskNoteUseCase,
 
   // TimeLogs
   CreateTimeLogUseCase,
@@ -145,6 +181,7 @@ const useCases = [
   ApproveUserUseCase,
   CreateUserUseCase,
   UpdateUserUseCase,
+  DeleteUserUseCase,
   // Tenants
   ListTenantsUseCase,
   CreateApiTokenUseCase,
@@ -163,7 +200,7 @@ const useCases = [
       }),
     }),
   ],
-  providers: [...useCases, PermissionService],
-  exports: [...useCases, JwtModule, PermissionService],
+  providers: [...useCases, PermissionService, NotificationService, AuditService],
+  exports: [...useCases, JwtModule, PermissionService, NotificationService, AuditService],
 })
 export class UseCasesModule {}

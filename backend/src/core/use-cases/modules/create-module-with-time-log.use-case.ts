@@ -1,11 +1,12 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { ModuleStatus } from '../../domain/entities/enums';
+import { ModuleStatus, NotificationType } from '../../domain/entities/enums';
 import type {
   CreateModuleCompleteResult,
   IModuleRepository,
   ModuleAttachmentInput,
 } from '../../domain/repositories/module-repository.interface';
 import { IModuleRepositoryToken } from '../../domain/repositories/module-repository.interface';
+import { NotificationService } from '../../services/notification.service';
 
 export interface CreateModuleWithTimeLogInput {
   projectId: string;
@@ -27,6 +28,7 @@ export class CreateModuleWithTimeLogUseCase {
   constructor(
     @Inject(IModuleRepositoryToken)
     private readonly moduleRepository: IModuleRepository,
+    private readonly notifications: NotificationService,
   ) {}
 
   async execute(input: CreateModuleWithTimeLogInput): Promise<CreateModuleCompleteResult> {
@@ -36,7 +38,7 @@ export class CreateModuleWithTimeLogUseCase {
       }
     }
 
-    return this.moduleRepository.createComplete({
+    const result = await this.moduleRepository.createComplete({
       projectId: input.projectId,
       name: input.name,
       description: input.description,
@@ -48,5 +50,18 @@ export class CreateModuleWithTimeLogUseCase {
       workDate: input.workDate,
       attachments: input.attachments,
     });
+
+    // Módulo atribuído a outra pessoa: avisa quem recebeu.
+    if (input.assignedUserId && input.assignedUserId !== input.userId) {
+      await this.notifications.notify({
+        userId: input.assignedUserId,
+        type: NotificationType.PROJECT_UPDATED,
+        title: 'Módulo atribuído a você',
+        message: `Você foi atribuído ao módulo "${input.name}".`,
+        relatedProjectId: input.projectId,
+      });
+    }
+
+    return result;
   }
 }
