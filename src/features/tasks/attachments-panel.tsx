@@ -12,11 +12,39 @@ import { useAuth } from "@/hooks/use-auth";
 import { formatRelativeTime } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
+import { FIELD_LIMITS } from "@/lib/field-limits";
 import { toast } from "sonner";
 import type { TaskAttachment } from "@/types";
 
 const MAX_SIZE_MB = 10;
 const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
+
+// Alguns navegadores/celulares enviam `file.type` vazio; sem um MIME válido a
+// imagem não ganha preview (o card cai no ícone genérico). Inferimos pela extensão.
+const EXT_MIME: Record<string, string> = {
+  jpg: "image/jpeg", jpeg: "image/jpeg", png: "image/png", gif: "image/gif",
+  webp: "image/webp", bmp: "image/bmp", svg: "image/svg+xml",
+  heic: "image/heic", heif: "image/heif",
+  pdf: "application/pdf", zip: "application/zip", rar: "application/vnd.rar",
+  mp4: "video/mp4", mov: "video/quicktime",
+};
+
+function resolveMimeType(file: File): string {
+  if (file.type) return file.type.slice(0, FIELD_LIMITS.attachment.type);
+  const ext = file.name.split(".").pop()?.toLowerCase() ?? "";
+  return EXT_MIME[ext] ?? "application/octet-stream";
+}
+
+// O nome precisa caber na coluna do banco (VarChar(150)); nome longo antes
+// estourava com 500 e o anexo "não ia". Trunca preservando a extensão.
+function safeFileName(name: string, max = FIELD_LIMITS.attachment.name): string {
+  if (name.length <= max) return name;
+  const dot = name.lastIndexOf(".");
+  if (dot <= 0) return name.slice(0, max);
+  const ext = name.slice(dot);
+  const keep = Math.max(1, max - ext.length);
+  return name.slice(0, keep) + ext;
+}
 
 function formatBytes(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;
@@ -182,8 +210,8 @@ export function AttachmentsPanel({ taskId }: AttachmentsPanelProps) {
         await addAttachment({
           taskId,
           userId: user.id,
-          name: file.name,
-          type: file.type || "application/octet-stream",
+          name: safeFileName(file.name),
+          type: resolveMimeType(file),
           size: file.size,
           dataUrl,
         });

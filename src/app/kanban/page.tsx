@@ -272,7 +272,8 @@ export default function KanbanPage() {
   const hasLoaded = useTaskStore((s) => s.hasLoaded);
   const { projects } = useProjectStore();
   const { users } = useUserStore();
-  const { isAdmin, user } = useAuth();
+  const { user, can } = useAuth();
+  const canCreateTask = can("tasks:create");
   const updateKanbanOrder = useUpdateKanbanOrder();
   const [projectFilter, setProjectFilter] = useState("all");
   // Filtro de responsável: "all" (todos), "me" (minhas) ou um userId específico.
@@ -478,7 +479,7 @@ export default function KanbanPage() {
                 {projects.map((p) => <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>)}
               </SelectContent>
             </Select>
-            {isAdmin && (
+            {canCreateTask && (
               <button
                 onClick={() => setIsCreateOpen(true)}
                 className="flex items-center gap-1.5 px-3 py-1.5 bg-violet-600 hover:bg-violet-700 rounded-lg text-xs font-medium text-white transition-colors"
@@ -521,7 +522,7 @@ export default function KanbanPage() {
         </div>
       </div>
 
-      {isAdmin && <TaskCreateDialog open={isCreateOpen} onOpenChange={setIsCreateOpen} />}
+      {canCreateTask && <TaskCreateDialog open={isCreateOpen} onOpenChange={setIsCreateOpen} />}
     </>
   );
 }

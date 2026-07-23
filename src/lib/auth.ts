@@ -64,10 +64,14 @@ export function hasPermission(user: User | null, permission: string): boolean {
     );
   }
 
-  // Fallback: default permissions for developers without explicit grants
+  // Fallback: default permissions for developers without explicit grants.
+  // Mantido em sincronia com DEFAULT_DEVELOPER_PERMISSIONS no backend
+  // (backend/src/core/permissions/permission-keys.ts).
   const defaultDeveloperPermissions = [
-    "projects:read", "modules:read", "epics:read",
-    "tasks:read", "tasks:update",
+    "projects:read",
+    "modules:read", "modules:create",
+    "epics:read", "epics:create",
+    "tasks:read", "tasks:create", "tasks:update",
     "timelogs:create", "timelogs:read",
     "comments:create", "comments:read",
   ];

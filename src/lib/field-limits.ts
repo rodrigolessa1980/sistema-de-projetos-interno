@@ -52,6 +52,10 @@ export const FIELD_LIMITS = {
   timeLog: {
     description: TEXT_MAX,
   },
+  attachment: {
+    name: 150,
+    type: 100,
+  },
   apiToken: {
     name: 100,
   },

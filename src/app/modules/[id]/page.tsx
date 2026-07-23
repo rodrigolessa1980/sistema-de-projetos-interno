@@ -10,6 +10,7 @@ import { StatusBadge } from "@/components/shared/task-badge";
 import { TaskCreateDialog } from "@/features/tasks/task-create-dialog";
 import { TaskActions } from "@/features/tasks/task-actions";
 import { ModuleActions } from "@/features/modules/module-actions";
+import { useAuth } from "@/hooks/use-auth";
 import { EmptyState } from "@/components/shared/empty-state";
 import { ProjectAvatar } from "@/components/shared/project-avatar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -84,6 +85,8 @@ export default function ModuleDetailPage() {
   const hasLoaded = useProjectStore((s) => s.hasLoaded);
   const { tasks, timeLogs, getAttachmentsByModule, fetchModuleAttachmentsForProject } = useTaskStore();
   const { users } = useUserStore();
+  const { can } = useAuth();
+  const canCreateTask = can("tasks:create");
   const router = useRouter();
   const [taskDialogOpen, setTaskDialogOpen] = useState(false);
 
@@ -215,9 +218,11 @@ export default function ModuleDetailPage() {
       <section className="mb-6">
         <div className="flex items-center justify-between gap-2 mb-2 flex-wrap">
           <h2 className="text-xs font-semibold text-zinc-400 flex items-center gap-1.5"><ListTodo className="w-3.5 h-3.5" /> Tarefas ({moduleTasks.length})</h2>
-          <Button size="sm" onClick={() => setTaskDialogOpen(true)} className="bg-violet-600 hover:bg-violet-700 gap-1.5 h-7">
-            <Plus className="w-3.5 h-3.5" /> Adicionar tarefa
-          </Button>
+          {canCreateTask && (
+            <Button size="sm" onClick={() => setTaskDialogOpen(true)} className="bg-violet-600 hover:bg-violet-700 gap-1.5 h-7">
+              <Plus className="w-3.5 h-3.5" /> Adicionar tarefa
+            </Button>
+          )}
         </div>
         {moduleTasks.length === 0 ? (
           <div className="bg-zinc-800/30 border border-dashed border-zinc-700/50 rounded-lg py-8 text-center">
