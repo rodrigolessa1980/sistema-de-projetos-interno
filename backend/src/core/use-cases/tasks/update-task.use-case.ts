@@ -1,8 +1,8 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import type { ITaskRepository } from '../../domain/repositories/task-repository.interface';
 import { ITaskRepositoryToken } from '../../domain/repositories/task-repository.interface';
 import { Task } from '../../domain/entities/task.entity';
-import { TaskStatus, NotificationType, AuditAction } from '../../domain/entities/enums';
+import { TaskStatus, NotificationType, AuditAction, UserRole } from '../../domain/entities/enums';
 import { ReleaseUrgencyBlocksUseCase } from './release-urgency-blocks.use-case';
 import { NotificationService } from '../../services/notification.service';
 import { AuditService } from '../../services/audit.service';
@@ -39,7 +39,28 @@ export interface UpdateTaskInput {
   blockedReason?: string | null;
   /** Quem executou a ação (para não notificar a si mesmo). */
   actorUserId?: string;
+  /** Papel de quem executou — usado para a regra "admin ou autor" na edição de metadados. */
+  actorUserRole?: UserRole;
 }
+
+/**
+ * Campos de "conteúdo" da tarefa cuja edição é restrita ao autor (reporter) ou admin.
+ * Ações operacionais (status, responsável, urgência, bloqueio) NÃO estão aqui — elas
+ * seguem liberadas para quem tem `tasks:update` (ex.: mover no Kanban, reatribuir),
+ * do contrário um responsável que não criou a tarefa não conseguiria trabalhá-la.
+ */
+const PROTECTED_METADATA_FIELDS: (keyof UpdateTaskInput)[] = [
+  'title',
+  'description',
+  'complexity',
+  'estimatedHours',
+  'startDate',
+  'dueDate',
+  'projectId',
+  'moduleId',
+  'epicId',
+  'parentTaskId',
+];
 
 @Injectable()
 export class UpdateTaskUseCase {
@@ -55,6 +76,17 @@ export class UpdateTaskUseCase {
     const existing = await this.taskRepository.findById(input.id);
     if (!existing) {
       throw new NotFoundException('Tarefa não encontrada.');
+    }
+
+    // Regra "admin ou autor" APENAS para edição de metadados (título, descrição,
+    // datas, etc.). O controller informa o requester; sem ele (chamada interna)
+    // a checagem é ignorada. Status/responsável/urgência ficam de fora (ver
+    // PROTECTED_METADATA_FIELDS) para não travar Kanban/reatribuição.
+    if (input.actorUserId && input.actorUserRole && input.actorUserRole !== UserRole.ADMIN) {
+      const editsMetadata = PROTECTED_METADATA_FIELDS.some((f) => input[f] !== undefined);
+      if (editsMetadata && existing.reporterId !== input.actorUserId) {
+        throw new ForbiddenException('Você só pode editar tarefas que você criou.');
+      }
     }
 
     const oldAssigneeId = existing.assigneeId;

@@ -6,6 +6,7 @@ import Link from "@/lib/router";
 import { useProjectStore, useTaskStore, useUserStore } from "@/stores";
 import { PageLoading } from "@/components/shared/page-loading";
 import { ExpandableText } from "@/components/shared/expandable-text";
+import { ImagePreviewDialog } from "@/components/shared/image-preview-dialog";
 import { StatusBadge } from "@/components/shared/task-badge";
 import { TaskCreateDialog } from "@/features/tasks/task-create-dialog";
 import { TaskActions } from "@/features/tasks/task-actions";
@@ -49,6 +50,7 @@ function formatDate(dateStr: string): string {
 
 function AttachmentCard({ attachment }: { attachment: ModuleAttachment }) {
   const isImage = attachment.type.startsWith("image/");
+  const [previewOpen, setPreviewOpen] = useState(false);
   const handleDownload = () => {
     const link = document.createElement("a");
     link.href = attachment.dataUrl;
@@ -59,9 +61,20 @@ function AttachmentCard({ attachment }: { attachment: ModuleAttachment }) {
   return (
     <div className="bg-zinc-800/60 border border-zinc-700/40 rounded-lg overflow-hidden">
       {isImage && (
-        <div className="w-full max-h-48 bg-zinc-800 overflow-hidden">
+        <button
+          type="button"
+          onClick={() => setPreviewOpen(true)}
+          className="block w-full max-h-48 bg-zinc-800 overflow-hidden cursor-zoom-in"
+          title="Clique para ampliar"
+        >
           <img src={attachment.dataUrl} alt={attachment.name} className="w-full h-full object-contain max-h-48" />
-        </div>
+        </button>
+      )}
+      {isImage && (
+        <ImagePreviewDialog
+          image={previewOpen ? { dataUrl: attachment.dataUrl, name: attachment.name } : null}
+          onClose={() => setPreviewOpen(false)}
+        />
       )}
       <div className="flex items-center gap-2.5 p-3 min-w-0">
         <div className={cn("w-8 h-8 rounded-lg flex items-center justify-center shrink-0", isImage ? "text-violet-400 bg-violet-500/15" : "text-zinc-400 bg-zinc-700/40")}>

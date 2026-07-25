@@ -2,10 +2,14 @@ import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import type { IProjectRepository } from '../../domain/repositories/project-repository.interface';
 import { IProjectRepositoryToken } from '../../domain/repositories/project-repository.interface';
 import { Project } from '../../domain/entities/project.entity';
-import { ProjectStatus } from '../../domain/entities/enums';
+import { ProjectStatus, UserRole } from '../../domain/entities/enums';
+import { assertCanModifyProject } from './project-access';
 
 export interface UpdateProjectInput {
   id: string;
+  /** Quem está editando — para aplicar a regra "admin ou dono". */
+  requesterId?: string;
+  requesterRole?: UserRole;
   companyId?: string | null;
   name?: string;
   description?: string;
@@ -32,6 +36,12 @@ export class UpdateProjectUseCase {
   async execute(input: UpdateProjectInput): Promise<Project> {
     const existing = await this.projectRepository.findById(input.id);
     if (!existing) throw new NotFoundException('Projeto não encontrado.');
+
+    // Autorização "admin ou dono" quando a chamada vem de um usuário (o controller
+    // sempre informa o requester). Chamadas internas/sistêmicas não informam.
+    if (input.requesterId && input.requesterRole) {
+      assertCanModifyProject(existing, input.requesterId, input.requesterRole);
+    }
 
     const updated = new Project({
       id: existing.id,

@@ -231,6 +231,7 @@ export class TasksController {
     const task = await this.updateTaskUseCase.execute({
       id,
       actorUserId: req.userId,
+      actorUserRole: req.userRole,
       projectId: body.projectId,
       moduleId: body.moduleId,
       epicId: body.epicId,

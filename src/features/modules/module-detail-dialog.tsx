@@ -1,11 +1,13 @@
 "use client";
 
+import { useState } from "react";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { ImagePreviewDialog } from "@/components/shared/image-preview-dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -49,6 +51,7 @@ function formatDate(dateStr: string): string {
 
 function ReadOnlyAttachment({ attachment }: { attachment: ModuleAttachment }) {
   const isImage = attachment.type.startsWith("image/");
+  const [previewOpen, setPreviewOpen] = useState(false);
 
   const handleDownload = () => {
     const link = document.createElement("a");
@@ -61,13 +64,24 @@ function ReadOnlyAttachment({ attachment }: { attachment: ModuleAttachment }) {
   return (
     <div className="bg-zinc-800/60 border border-zinc-700/40 rounded-lg overflow-hidden">
       {isImage && (
-        <div className="w-full max-h-48 bg-zinc-800 overflow-hidden">
+        <button
+          type="button"
+          onClick={() => setPreviewOpen(true)}
+          className="block w-full max-h-48 bg-zinc-800 overflow-hidden cursor-zoom-in"
+          title="Clique para ampliar"
+        >
           <img
             src={attachment.dataUrl}
             alt={attachment.name}
             className="w-full h-full object-contain max-h-48"
           />
-        </div>
+        </button>
+      )}
+      {isImage && (
+        <ImagePreviewDialog
+          image={previewOpen ? { dataUrl: attachment.dataUrl, name: attachment.name } : null}
+          onClose={() => setPreviewOpen(false)}
+        />
       )}
       <div className="flex items-center gap-2.5 p-3">
         <div className={cn(

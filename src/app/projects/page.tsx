@@ -80,7 +80,8 @@ export default function ProjectsPage() {
   const { projects, companies, createProject, deleteProject, updateProject, addDeveloperToProject, removeDeveloperFromProject, createModulesBulk } = useProjectStore();
   const hasLoaded = useProjectStore((s) => s.hasLoaded);
   const { users } = useUserStore();
-  const { user, isAdmin } = useAuth();
+  const { user, isAdmin, can } = useAuth();
+  const canCreateProject = can("projects:create");
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
@@ -273,7 +274,7 @@ export default function ProjectsPage() {
       <PageHeader
         title="Projetos"
         description={`${visibleProjects.length} projeto${visibleProjects.length !== 1 ? "s" : ""} encontrado${visibleProjects.length !== 1 ? "s" : ""}`}
-        actions={isAdmin ? [{ label: "Novo Projeto", onClick: handleOpenCreate }] : undefined}
+        actions={canCreateProject ? [{ label: "Novo Projeto", onClick: handleOpenCreate }] : undefined}
       />
 
       <div className="p-6 w-full">
@@ -292,7 +293,7 @@ export default function ProjectsPage() {
             icon={FolderKanban}
             title="Nenhum projeto encontrado"
             description="Crie seu primeiro projeto para começar a gerenciar o desenvolvimento da sua equipe."
-            action={isAdmin ? { label: "Criar Projeto", onClick: handleOpenCreate } : undefined}
+            action={canCreateProject ? { label: "Criar Projeto", onClick: handleOpenCreate } : undefined}
           />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
@@ -362,14 +363,18 @@ export default function ProjectsPage() {
                             <Eye className="w-3.5 h-3.5" /> Ver detalhes
                           </Link>}
                         />
+                        {/* Editar/Excluir: dono do projeto OU admin. */}
+                        {(isAdmin || project.ownerId === user?.id) && (
+                          <DropdownMenuItem
+                            className="flex items-center gap-2 text-zinc-300 focus:bg-zinc-800"
+                            onClick={() => handleOpenEdit(project)}
+                          >
+                            <Edit className="w-3.5 h-3.5" /> Editar projeto
+                          </DropdownMenuItem>
+                        )}
+                        {/* Trocar dono e gerenciar membros seguem exclusivos do admin. */}
                         {isAdmin && (
                           <>
-                            <DropdownMenuItem
-                              className="flex items-center gap-2 text-zinc-300 focus:bg-zinc-800"
-                              onClick={() => handleOpenEdit(project)}
-                            >
-                              <Edit className="w-3.5 h-3.5" /> Editar projeto
-                            </DropdownMenuItem>
                             <DropdownMenuItem
                               className="flex items-center gap-2 text-zinc-300 focus:bg-zinc-800"
                               onSelect={(e) => e.preventDefault()}
@@ -403,13 +408,15 @@ export default function ProjectsPage() {
                                 }}
                               />
                             </DropdownMenuItem>
-                            <DropdownMenuItem
-                              className="flex items-center gap-2 text-red-400 focus:text-red-400 focus:bg-red-500/10"
-                              onClick={() => handleDeleteProject(project)}
-                            >
-                              <Trash2 className="w-3.5 h-3.5" /> Excluir
-                            </DropdownMenuItem>
                           </>
+                        )}
+                        {(isAdmin || project.ownerId === user?.id) && (
+                          <DropdownMenuItem
+                            className="flex items-center gap-2 text-red-400 focus:text-red-400 focus:bg-red-500/10"
+                            onClick={() => handleDeleteProject(project)}
+                          >
+                            <Trash2 className="w-3.5 h-3.5" /> Excluir
+                          </DropdownMenuItem>
                         )}
                       </DropdownMenuContent>
                     </DropdownMenu>

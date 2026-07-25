@@ -134,14 +134,18 @@ export class ProjectsController {
     return ProjectPresenter.toHTTP(project);
   }
 
+  // Sem @RequirePermission: a autorização (admin OU dono) é feita no use-case,
+  // para o dono poder editar o próprio projeto mesmo sem `projects:update`.
   @Put(':id')
-  @RequirePermission('projects:update')
   async update(
+    @Req() req: AuthenticatedRequest,
     @Param('id') id: string,
     @Body() body: UpdateProjectDto,
   ): Promise<ProjectResponse> {
     const project = await this.updateProjectUseCase.execute({
       id,
+      requesterId: req.userId,
+      requesterRole: req.userRole,
       companyId: body.companyId !== undefined ? (body.companyId || null) : undefined,
       name: body.name,
       description: body.description,
@@ -261,10 +265,14 @@ export class ProjectsController {
     await this.prisma.projectDemandAttachment.update({ where: { id }, data: { deletedAt: new Date() } });
   }
 
+  // Sem @RequirePermission: a autorização (admin OU dono) é feita no use-case,
+  // para o dono poder excluir o próprio projeto mesmo sem `projects:delete`.
   @Delete(':id')
-  @RequirePermission('projects:delete')
-  async delete(@Param('id') id: string): Promise<{ success: boolean }> {
-    await this.deleteProjectUseCase.execute(id);
+  async delete(
+    @Req() req: AuthenticatedRequest,
+    @Param('id') id: string,
+  ): Promise<{ success: boolean }> {
+    await this.deleteProjectUseCase.execute(id, req.userId, req.userRole);
     return { success: true };
   }
 

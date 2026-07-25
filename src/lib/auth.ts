@@ -68,7 +68,7 @@ export function hasPermission(user: User | null, permission: string): boolean {
   // Mantido em sincronia com DEFAULT_DEVELOPER_PERMISSIONS no backend
   // (backend/src/core/permissions/permission-keys.ts).
   const defaultDeveloperPermissions = [
-    "projects:read",
+    "projects:read", "projects:create",
     "modules:read", "modules:create",
     "epics:read", "epics:create",
     "tasks:read", "tasks:create", "tasks:update",

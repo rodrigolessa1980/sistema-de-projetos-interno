@@ -18,6 +18,7 @@ export type PermissionKey = `${PermissionModule}:${PermissionAction}`;
 
 export const DEFAULT_DEVELOPER_PERMISSIONS: PermissionKey[] = [
   'projects:read',
+  'projects:create',
   'modules:read',
   'modules:create',
   'epics:read',

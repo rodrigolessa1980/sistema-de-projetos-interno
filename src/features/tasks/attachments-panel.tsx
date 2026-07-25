@@ -11,6 +11,7 @@ import { useUserStore } from "@/stores/ui-store";
 import { useAuth } from "@/hooks/use-auth";
 import { formatRelativeTime } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { ImagePreviewDialog } from "@/components/shared/image-preview-dialog";
 import { cn } from "@/lib/utils";
 import { FIELD_LIMITS } from "@/lib/field-limits";
 import { toast } from "sonner";
@@ -83,6 +84,7 @@ function AttachmentCard({ attachment, onDelete, currentUserId }: AttachmentCardP
   const uploader = users.find((u) => u.id === attachment.userId);
   const colorClass = getFileColor(attachment.type);
   const isImage = attachment.type.startsWith("image/");
+  const [previewOpen, setPreviewOpen] = useState(false);
 
   const handleDownload = () => {
     const link = document.createElement("a");
@@ -101,15 +103,26 @@ function AttachmentCard({ attachment, onDelete, currentUserId }: AttachmentCardP
       transition={{ duration: 0.18 }}
       className="group bg-zinc-900/60 border border-zinc-800/50 rounded-xl overflow-hidden hover:border-zinc-700/50 transition-colors"
     >
-      {/* Preview de imagem */}
+      {/* Preview de imagem — clique abre o modal ampliado */}
       {isImage && (
-        <div className="w-full h-32 bg-zinc-800/60 overflow-hidden">
+        <button
+          type="button"
+          onClick={() => setPreviewOpen(true)}
+          className="block w-full h-32 bg-zinc-800/60 overflow-hidden cursor-zoom-in"
+          title="Clique para ampliar"
+        >
           <img
             src={attachment.dataUrl}
             alt={attachment.name}
             className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
           />
-        </div>
+        </button>
+      )}
+      {isImage && (
+        <ImagePreviewDialog
+          image={previewOpen ? { dataUrl: attachment.dataUrl, name: attachment.name } : null}
+          onClose={() => setPreviewOpen(false)}
+        />
       )}
 
       <div className="flex items-center gap-3 p-3">
